@@ -14,15 +14,15 @@
 </head>
 <body>
     <section class="main">
-        <h1>❤️ Give the Gift of Life! ❤️</h1>
-        <p>👉 Donate Blood Today!</p>
-        <button onclick="location.href='@Url.Action("Donate", "Donor")'">🔴 Donate Blood</button>
+        <h1>Social Service</h1>
+        <p>Information Management System</p>
+        @* <button onclick="location.href='@Url.Action("Donate", "Donor")'">🔴 Donate Blood</button> *@
         @* <button onclick="location.href='@Url.Action("RequestBlood", "Hospital")'">🏥 Request Blood</button> *@
         <button data-bs-toggle="modal" data-bs-target="#loginModal">🔑 Login</button>
     </section>
 
     <section>
-        <h2>Blood Inventory Status</h2>
+        @* <h2>Blood Inventory Status</h2>
         <table>
             <tr><th>Blood Type</th><th>Units Available</th></tr>
             @foreach (var blood in Model.BloodInventory)
@@ -32,11 +32,11 @@
                     <td>@blood.Quantity Units</td>
                 </tr>
             }
-        </table>
+        </table> *@
     </section>
 
     <section>
-        <h2>Recent Hospital Requests</h2>
+        @* <h2>Recent Hospital Requests</h2>
         <table>
             <tr><th>Hospital Name</th><th>Blood Type</th><th>Status</th></tr>
             @foreach (var request in Model.RecentRequests)
@@ -47,7 +47,7 @@
                     <td>@request.Status</td>
                 </tr>
             }
-        </table>
+        </table> *@
     </section>
 </body>
 </html>

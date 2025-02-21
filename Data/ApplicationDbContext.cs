@@ -25,8 +25,6 @@ namespace LittleArkFoundation.Data
         public DbSet<RolesModel> Roles { get; set; }
         public DbSet<RolePermissionsModel> RolePermissions { get; set; }
         public DbSet<PermissionsModel> Permissions { get; set; }
-        public DbSet<BloodInventoryModel> BloodInventory { get; set; }
-        public DbSet<BloodRequestsModel> BloodRequests { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -64,14 +62,7 @@ namespace LittleArkFoundation.Data
             modelBuilder.Entity<PermissionsModel>()
                 .Property(p => p.PermissionID)
                 .ValueGeneratedOnAdd();
-                
-            // BloodInventory & BloodInventoryArchives
-            modelBuilder.Entity<BloodInventoryModel>()
-                .HasKey(b => b.InventoryID);
-
-            // BloodRequests & BloodRequestsArchives
-            modelBuilder.Entity<BloodRequestsModel>()
-                .HasKey(h => h.RequestID);
+            
         }
     }
 }

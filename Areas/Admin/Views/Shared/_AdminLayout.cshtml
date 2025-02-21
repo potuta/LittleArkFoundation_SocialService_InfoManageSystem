@@ -22,7 +22,7 @@
 <body>
     <nav class="navbar-top">
         <div class="left-buttons">
-            <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="btn-navbar"><b>Inventory System</b></a>
+            <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="btn-navbar"><b>Information Management System</b></a>
             <a href="javascript:void(0);" class="btn-navbar" id="menu" onclick="toggleSidebar()">
                 <i class='bx bx-menu'></i> <!-- Menu Icon -->
             </a>
@@ -30,7 +30,7 @@
         <div class="right-buttons">
             <div class="dropdown" onclick="toggleDropdown()">
                 <a href="javascript:void(0);" class="btn-navbar-right">
-                    <img src="~/Resources/profile-icon-design-free-vector.jpg" alt="profile" class="profile-icon" />
+                    <img src="~/resources/profile-icon-design-free-vector.jpg" alt="profile" class="profile-icon" />
                     <span class="profile-label" style="margin-left: 0.5rem;font-size: 1rem;">
                         Welcome @User.FindFirstValue(ClaimTypes.Name)!
                     </span>
