@@ -1,0 +1,129 @@
+﻿@model UsersViewModel
+
+@{
+    ViewData["Title"] = "Edit User";
+    Layout = "_AdminLayout";
+    string dbType = ViewBag.dbType ?? "main";
+    bool isEditPasswordEnabled = ViewBag.isEditPassword ?? false;
+    
+    //TODO: Implement Reset Password through email functionality
+}
+
+<h2>Edit User</h2>
+
+<div>
+    <hr />
+    <form asp-action="Edit" asp-controller="Users" asp-route-dbType="@dbType" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="NewUser.UserID"/>
+        <input type="hidden" asp-for="NewUser.PasswordSalt" />
+        <input type="hidden" id="isEditPasswordEnabled" name="isEditPasswordEnabled" value="false" />
+        <input type="hidden" value="@Model.NewUser.PasswordHash" id="originalPassword" />
+
+        <div class="form-group mt-2">
+            <label asp-for="NewUser.Username" class="control-label"></label>
+            <input asp-for="NewUser.Username" class="form-control" required/>
+            <span asp-validation-for="NewUser.Username" class="text-danger"></span>
+        </div>
+        <div class="form-group mt-2">
+            <label asp-for="NewUser.Email" class="control-label"></label>
+            <input asp-for="NewUser.Email" class="form-control" required/>
+            <span asp-validation-for="NewUser.Email" class="text-danger"></span>
+        </div>
+        <div class="form-group mt-2">
+            <label asp-for="NewUser.PhoneNumber" class="control-label"></label>
+            <input asp-for="NewUser.PhoneNumber" class="form-control" required/>
+            <span asp-validation-for="NewUser.PhoneNumber" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="NewUser.PasswordHash" class="control-label"></label>
+            @* <input type="text" value="@Model.NewUser.PasswordHash" id="originalPassword" class="form-control td-password" readonly /> *@
+
+            <button type="button" class="btn btn-secondary mt-2 mb-2" id="togglePasswordButton">Edit Password</button>
+            
+            @* <button type="button" class="btn-content">Reset Password</button> *@
+            <input type="text" asp-for="NewUser.PasswordHash" class="form-control td-password" id="passwordField" readonly required/>
+
+            <span asp-validation-for="NewUser.PasswordHash" class="text-danger"></span>
+        </div>
+        <div class="form-group mt-2">
+            <label asp-for="NewUser.RoleID" class="control-label"></label>
+            <select asp-for="NewUser.RoleID" class="form-control">
+
+                @* <option value="1">Admin</option> *@
+                @* <option value="2">Donor</option> *@
+                @* <option value="3">Hospital</option> *@
+
+                @foreach (var role in Model.Roles)
+                {
+                    <option value="@role.RoleID">@role.RoleName</option>
+                }
+
+            </select>
+            <span asp-validation-for="NewUser.RoleID" class="text-danger"></span>
+        </div>
+        <div class="form-group mt-2">
+            <label asp-for="NewUser.CreatedAt" class="control-label"></label>
+            <input asp-for="NewUser.CreatedAt" class="form-control" readonly />
+        </div>
+        <div class="form-group mt-2">
+            <input type="submit" value="Save" class="btn btn-primary" />
+        </div>
+    </form>
+</div>
+<div class="mt-2">
+    <a class="btn btn-sm btn-outline-primary" asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var passwordField = document.getElementById('passwordField');
+            var isEditPasswordEnabledField = document.getElementById('isEditPasswordEnabled');
+
+            // Ensure initial state is visually styled as readonly
+            if (passwordField.hasAttribute('readonly')) {
+                passwordField.style.backgroundColor = "#e9ecef";
+                passwordField.style.cursor = "not-allowed";
+                passwordField.style.opacity = "0.6";
+            }
+        });
+
+        document.getElementById('togglePasswordButton').addEventListener('click', function () {
+            var passwordField = document.getElementById('passwordField');
+            var originalPassword = document.getElementById('originalPassword').value;
+            var isEditPasswordEnabledField = document.getElementById('isEditPasswordEnabled');
+
+            if (passwordField.hasAttribute('readonly')) {
+                passwordField.removeAttribute('readonly');
+                passwordField.value = ''; // Allow user to enter a new password
+                passwordField.style.backgroundColor = "#ffffff"; // Restore white background
+                passwordField.style.cursor = "text";
+                passwordField.style.opacity = "1";
+                this.textContent = "Don't Edit Password";
+                if (isEditPasswordEnabledField) isEditPasswordEnabledField.value = 'true';
+            } else {
+                passwordField.setAttribute('readonly', 'readonly');
+                passwordField.value = originalPassword; // Restore original password
+                passwordField.style.backgroundColor = "#e9ecef"; // Grey background when readonly
+                passwordField.style.cursor = "not-allowed";
+                passwordField.style.opacity = "0.6";
+                this.textContent = 'Edit Password';
+                if (isEditPasswordEnabledField) isEditPasswordEnabledField.value = 'false';
+            }
+        });
+
+        // Prevent form submission with empty password
+        document.querySelector('form').addEventListener('submit', function () {
+            var passwordField = document.getElementById('passwordField');
+            var originalPassword = document.getElementById('originalPassword').value;
+            var isEditPasswordEnabledField = document.getElementById('isEditPasswordEnabled');
+
+            if (!passwordField.value.trim() && isEditPasswordEnabledField.value === 'false') {
+                passwordField.value = originalPassword; // Restore old password if unchanged
+            }
+        });
+
+    </script>
+}
+

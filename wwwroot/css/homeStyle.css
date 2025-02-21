@@ -1,0 +1,75 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+.main {
+    background-color: #39B8EA;
+    color: white;
+    padding: 3.125rem 1.25rem; /* 50px 20px */
+    text-align: center;
+}
+
+    .main h1 {
+        margin: 0;
+        font-size: 3.5rem;
+        font-weight: bold;
+    }
+
+    .main p {
+        font-size: 1.2rem;
+        margin: 0.625rem 0; /* 10px */
+    }
+
+    .main button {
+        background-color: white;
+        color: #39B8EA;
+        border: none;
+        padding: 0.9375rem 1.875rem; /* 15px 30px */
+        margin: 0.625rem; /* 10px */
+        font-size: 1rem;
+        border-radius: 0.3125rem; /* 5px */
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+        .main button:hover {
+            background-color: #61d2ff;
+            color: white;
+        }
+
+section {
+    padding: 1.25rem; /* 20px */
+    text-align: center;
+}
+
+    section h2 {
+        font-size: 2rem;
+        margin-bottom: 1.25rem; /* 20px */
+    }
+
+table {
+    width: 80%;
+    margin: 0 auto;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 0 0.625rem rgba(0, 0, 0, 0.1); /* 10px */
+}
+
+    table th, table td {
+        padding: 0.9375rem; /* 15px */
+        border: 0.0625rem solid #ddd; /* 1px */
+        text-align: center;
+    }
+
+    table th {
+        background-color: #39B8EA;
+        color: white;
+    }
+
+    table tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }

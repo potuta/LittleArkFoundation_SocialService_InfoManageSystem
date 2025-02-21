@@ -1,0 +1,27 @@
+html {
+    font-size: 0.875rem; /* 14px / 16px (default browser size) */
+}
+
+@media (min-width: 48rem) { /* 768px / 16 */
+    html {
+        font-size: 1rem; /* 16px */
+    }
+}
+
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.0625rem white, 0 0 0 0.15625rem #258cfb;
+    /* 0.1rem = 0.1 * 16px, 0.25rem = 0.25 * 16px */
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 3.75rem; /* 60px / 16 */
+}

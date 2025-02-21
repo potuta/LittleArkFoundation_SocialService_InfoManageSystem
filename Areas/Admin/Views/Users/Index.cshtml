@@ -1,0 +1,218 @@
+﻿@model UsersViewModel
+
+@{
+    ViewData["Title"] = "Users";
+    Layout = "_AdminLayout";
+    string dbType = ViewBag.dbType ?? "main";
+    bool isArchive = ViewBag.isArchive ?? false;
+    string? sortBy = ViewBag.sortBy ?? null;
+}
+
+<h2>Users</h2>
+
+<div class="search-container">
+    <form asp-action="Search" asp-controller="Users" asp-route-dbType="@dbType" asp-route-isArchive="@isArchive">
+        <div class="input-group">
+            <input type="search" name="searchString" class="form-control" placeholder="Search by UserID/Username" aria-label="Search">
+            <button type="submit" class="btn btn-dark">Search</button>
+        </div>
+    </form>
+    <a class="btn btn-primary" asp-action="Index" asp-controller="Users" asp-route-dbType="@dbType" asp-route-isArchive="@isArchive">Back to Full List</a>
+</div>
+
+<div>
+
+    @if (!isArchive)
+    {
+        <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createUserModal">Create New</a>
+    }
+
+    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+        <a asp-action="Index" asp-controller="Users" asp-route-dbType="@dbType" asp-route-isArchive="false" class="btn btn-secondary @(isArchive ? "" : "active")">
+            <div class="custom-radio">
+                <input type="radio" style="accent-color: dodgerblue" name="dbType" value="main" @(isArchive ? "" : "checked")>
+                <label style="margin-bottom: 0">Main Database</label>
+            </div>
+        </a>
+        <a asp-action="Index" asp-controller="Users" asp-route-dbType="@dbType" asp-route-isArchive="true" class="btn btn-secondary @(isArchive ? "active" : "")">
+            <div class="custom-radio">
+                <input type="radio" style="accent-color: dodgerblue" name="dbType" value="archive" @(isArchive ? "checked" : "")>
+                <label style="margin-bottom: 0">Archive Database</label>
+            </div>
+        </a>
+    </div>
+
+    <div class="btn-group float-end">
+        <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-1" data-bs-toggle="dropdown" aria-expanded="false">
+            @if (string.IsNullOrEmpty(sortBy))
+            {
+                <span class="mb-0">Sort by</span>
+            }
+            else
+            {
+                <span class="mb-0">@sortBy</span>
+            }
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" asp-action="SortBy" asp-controller="Users" asp-route-sortByRoleID="" asp-route-dbType="@dbType" asp-route-isArchive="@isArchive">All</a></li>
+            @foreach (var role in Model.Roles)
+            {
+                <li><a class="dropdown-item" asp-action="SortBy" asp-controller="Users" asp-route-sortByRoleID="@role.RoleID" asp-route-dbType="@dbType" asp-route-isArchive="@isArchive">@role.RoleName</a></li>
+            }
+        </ul>
+    </div>
+
+</div>
+
+@if (TempData["ArchiveError"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ArchiveError"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["CreateSuccess"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["CreateSuccess"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<table class="table">
+    <thead>
+        @if (Model.Users != null || Model.UsersArchives != null)
+        {
+            if (!isArchive)
+            {
+                <tr>
+                    <th>UserID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>PhoneNumber</th>
+                    <th>PasswordHash</th>
+                    <th>RoleID</th>
+                    <th>CreatedAt</th>
+                    <th></th>
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <th>UserID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>PhoneNumber</th>
+                    <th>PasswordHash</th>
+                    <th>RoleID</th>
+                    <th>CreatedAt</th>
+                    <th>ArchivedAt</th>
+                    <th>ArchivedBy</th>
+                    <th></th>
+                </tr>
+            }
+        }
+
+    </thead>
+    <tbody>
+        @if (Model.Users != null || Model.UsersArchives != null)
+        {
+            if (!isArchive)
+            {
+                @foreach (var user in Model.Users)
+                {
+                    <tr>
+                        <td>@user.UserID</td>
+                        <td>@user.Username</td>
+                        <td>@user.Email</td>
+                        <td>@user.PhoneNumber</td>
+                        <td class="td-password">@user.PasswordHash</td>
+                        <td>@user.RoleID</td>
+                        <td>@user.CreatedAt</td>
+                        <td>
+                            <a href="@Url.Action("Edit", new { id = user.UserID })" class="btn btn-primary">Edit</a>
+                            <a href="@Url.Action("Archive", new { id = user.UserID })" class="btn btn-danger" onclick="return confirm('Are you sure you want to archive this user?');">Move to Archive</a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                @foreach (var user in Model.UsersArchives)
+                {
+                    <tr>
+                        <td>@user.UserID</td>
+                        <td>@user.Username</td>
+                        <td>@user.Email</td>
+                        <td>@user.PhoneNumber</td>
+                        <td class="td-password">@user.PasswordHash</td>
+                        <td>@user.RoleID</td>
+                        <td>@user.CreatedAt</td>
+                        <td>@user.ArchivedAt</td>
+                        <td>@user.ArchivedBy</td>
+                        <td>
+                            <a href="@Url.Action("Unarchive", new { id = user.UserID })" class="btn btn-success" onclick="return confirm('Are you sure you want to unarchive this user?');">Unarchive</a>
+                        </td>
+                    </tr>
+                }
+            }
+        }
+    </tbody>
+</table>
+
+<!-- Create User Modal -->
+<div class="modal fade" id="createUserModal" tabindex="-1" role="dialog" aria-labelledby="createUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createUserModalLabel">Create New User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Create" asp-controller="Users" asp-route-dbType="@dbType" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="form-group">
+                        <label asp-for="NewUser.Username" class="control-label"></label>
+                        <input type="text" asp-for="NewUser.Username" class="form-control" required/>
+                        <span asp-validation-for="NewUser.Username" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="NewUser.Email" class="control-label"></label>
+                        <input type="email" asp-for="NewUser.Email" class="form-control" required/>
+                        <span asp-validation-for="NewUser.Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="NewUser.PhoneNumber" class="control-label"></label>
+                        <input type="number" asp-for="NewUser.PhoneNumber" class="form-control" required/>
+                        <span asp-validation-for="NewUser.PhoneNumber" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="NewUser.PasswordHash" class="control-label"></label>
+                        <input type="password" asp-for="NewUser.PasswordHash" class="form-control" required/>
+                        <span asp-validation-for="NewUser.PasswordHash" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="NewUser.RoleID" class="control-label"></label>
+                        <select asp-for="NewUser.RoleID" class="form-control">
+
+                            @foreach (var role in Model.Roles)
+                            {
+                                <option value="@role.RoleID">@role.RoleName</option>
+                            }
+
+                        </select>
+                        <span asp-validation-for="NewUser.RoleID" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mt-2">
+                        <button type="submit" class="btn btn-primary">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/modals.js"></script>
+}

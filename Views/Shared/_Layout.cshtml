@@ -1,0 +1,284 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Little Ark Foundation</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/layoutStyle.css" asp-append-version="true" />
+</head>
+<body class="main-body">
+    <header class="main-header">
+        <nav class="navbar-top-main">
+            <div class="left-buttons">
+                <a class="btn-main-logo" asp-area="" asp-controller="Home" asp-action="Index">
+                    <img src="https://littlearkfoundation.org/wp-content/uploads/2024/11/LittleArk_Logo.png" alt="Logo" class="logo" />
+                </a>
+            </div>
+            <div class="right-buttons">
+                <a class="btn-main" asp-area="" asp-controller="" asp-action="">Donate</a>
+                @* <a class="btn-main" asp-area="" asp-controller="" asp-action="">Request Blood</a> *@
+                <button type="button" class="btn-main" id="btn-main-login" data-bs-toggle="modal" data-bs-target="#loginModal"><b>Login</b></button>
+                @* <a class="btn-main" asp-area="" asp-controller="Admin" asp-action="Index" asp-route-userID=1 asp-route-password="admin">Login</a> *@
+                @* <a href="@Url.Action("Index", "Admin", new {userID = 1, password = "admin"})" class="btn-main">Admin</a> *@
+            </div>
+        </nav>
+    </header>
+
+    <div class="container-fluid">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <!-- Login Modal -->
+
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">Login</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="nav nav-tabs" id="loginTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="admin-tab" data-bs-toggle="tab" data-bs-target="#admin" type="button" role="tab" aria-controls="admin" aria-selected="true">Admin / Donor / Doctor</button>
+                        </li>
+                        @* <li class="nav-item" role="presentation"> *@
+                        @*     <button class="nav-link" id="donor-tab" data-bs-toggle="tab" data-bs-target="#donor" type="button" role="tab" aria-controls="donor" aria-selected="false">Donor</button> *@
+                        @* </li> *@
+                        @* <li class="nav-item" role="presentation"> *@
+                        @*     <button class="nav-link" id="hospital-tab" data-bs-toggle="tab" data-bs-target="#hospital" type="button" role="tab" aria-controls="hospital" aria-selected="false">Hospital</button> *@
+                        @* </li> *@
+                    </ul>
+                    <div class="tab-content" id="loginTabContent">
+                        @if (TempData["LoginError"] != null)
+                        {
+                            <div class="alert alert-danger" id="loginErrorMessage">
+                                @TempData["LoginError"]
+                            </div>
+                        }
+                        @if (TempData["ResetPasswordSuccess"] != null)
+                        {
+                            <div class="alert alert-success" id="resetPasswordSuccessMessage">
+                                @TempData["ResetPasswordSuccess"]
+                            </div>
+                        }
+                        <div class="tab-pane fade show active" id="admin" role="tabpanel" aria-labelledby="admin-tab">
+                            <form id="LoginForm" asp-area="" asp-controller="Account" asp-action="Login" method="post">
+                                @Html.AntiForgeryToken()
+                                <div class="mb-3">
+                                    <label for="adminUserID" class="form-label">User ID:</label>
+                                    <input type="number" class="form-control" id="adminUserID" name="userID" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="adminPassword" class="form-label">Password:</label>
+                                    <a href="javascript:void(0);" class="form-select-sm" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">Forgot Password?</a>
+                                    <input type="password" class="form-control" id="adminPassword" name="password" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Login</button>
+                            </form>
+                        </div>
+                        @* <div class="tab-pane fade" id="donor" role="tabpanel" aria-labelledby="donor-tab">
+                            <form id="donorLoginForm" asp-area="" asp-controller="Account" asp-action="Index" method="post">
+                                <div class="mb-3">
+                                    <label for="donorUserID" class="form-label">User ID</label>
+                                    <input type="text" class="form-control" id="donorUserID" name="userID" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="donorPassword" class="form-label">Password</label>
+                                    <input type="password" class="form-control" id="donorPassword" name="password" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Login</button>
+                            </form>
+                        </div>
+                        <div class="tab-pane fade" id="hospital" role="tabpanel" aria-labelledby="hospital-tab">
+                            <form id="hospitalLoginForm" asp-area="" asp-controller="Account" asp-action="Index" method="post">
+                                <div class="mb-3">
+                                    <label for="hospitalUserID" class="form-label">User ID</label>
+                                    <input type="text" class="form-control" id="hospitalUserID" name="userID" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="hospitalPassword" class="form-label">Password</label>
+                                    <input type="password" class="form-control" id="hospitalPassword" name="password" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Login</button>
+                            </form>
+                        </div> *@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="forgotPasswordModalLabel">Verification Code</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="tab-content" id="forgotPasswordTabContent">
+                        <div class="tab-pane fade show active" id="admin" role="tabpanel" aria-labelledby="admin-tab">
+                            <!-- Send Code Form (AJAX) -->
+                            <form id="sendCodeForm" asp-action="SendCode" asp-controller="Account" method="post">
+                                @Html.AntiForgeryToken()
+                                <div class="mb-3">
+                                    <label for="userID" class="form-label">User ID:</label>
+                                    <input type="number" class="form-control" id="userID" name="userID" required>
+                                    <button type="button" class="btn btn-primary" id="sendCodeButton">Send Code</button>
+                                </div>
+                                <p id="sendCodeMessage"></p> <!-- Success/Error message -->
+                            </form>
+
+                            <!-- Verify Code Form (AJAX) -->
+                            <form id="verifyCodeForm" asp-action="VerifyCode" asp-controller="Account" method="post">
+                                @Html.AntiForgeryToken()
+                                <div class="mb-3">
+                                    <label for="code" class="form-label">Code:</label>
+                                    <input type="hidden" id="hiddenUserID" name="userID" />
+                                    <input type="text" class="form-control" id="code" name="code" required>
+                                </div>
+                                <button type="button" class="btn btn-primary" id="verifyCodeButton">Submit</button>
+                                <p id="verifyCodeMessage"></p> <!-- Success/Error message -->
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Modal -->
+    <div class="modal fade" id="customAlert" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Alert</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="modalMessage">This is an alert message.</div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        // AJAX send code
+        document.getElementById("sendCodeButton").addEventListener("click", async function (event) {
+            event.preventDefault();
+            let userID = document.getElementById("userID").value;
+            let button = this;
+
+            if (!userID) {
+                document.getElementById("sendCodeMessage").textContent = "Please enter your User ID.";
+                document.getElementById("sendCodeMessage").style.color = "red";
+                return;
+            }
+
+            document.getElementById("hiddenUserID").value = userID;
+            button.disabled = true;
+            button.innerText = "Please wait...";
+
+            try {
+                let response = await fetch("/Account/SendCode", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: `userID=${encodeURIComponent(userID)}&__RequestVerificationToken=${document.querySelector("input[name='__RequestVerificationToken']").value}`
+                });
+
+                let data = await response.json();
+                showCustomAlert("Message", data.message);
+
+                if (!data.success) {
+                    button.disabled = false;
+                    button.innerText = "Send Code";
+                } else {
+                    startCountdown(button, 30); // Start 30-sec countdown
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                button.disabled = false;
+                button.innerText = "Send Code";
+            }
+        });
+
+        // AJAX verify code
+        document.getElementById("verifyCodeButton").addEventListener("click", async function (event) {
+            event.preventDefault();
+            let userID = document.getElementById("hiddenUserID").value;
+            let code = document.getElementById("code").value;
+            let button = this;
+
+            if (!userID || !code) {
+                document.getElementById("verifyCodeMessage").textContent = "Missing User ID or Code!";
+                document.getElementById("verifyCodeMessage").style.color = "red";
+                return;
+            }
+
+            button.disabled = true;
+            button.innerText = "Verifying...";
+
+            try {
+                let response = await fetch("/Account/VerifyCode", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: `userID=${encodeURIComponent(userID)}&code=${encodeURIComponent(code)}&__RequestVerificationToken=${document.querySelector("input[name='__RequestVerificationToken']").value}`
+                });
+
+                let data = await response.json();
+                // alert(data.message);
+                showCustomAlert("Message", data.message);
+                if (data.success) window.location.href = "/Account/ResetPassword";
+                else button.disabled = false;
+            } catch (error) {
+                console.error("Error:", error);
+                button.disabled = false;
+            } finally {
+                button.innerText = "Submit";
+            }
+        });
+
+        // Function to show custom alert modal
+        function showCustomAlert(title, message) {
+            document.getElementById("modalTitle").innerText = title;
+            document.getElementById("modalMessage").innerText = message;
+            var myModal = new bootstrap.Modal(document.getElementById("customAlert"));
+            myModal.show();
+        }
+
+        // Function to start a countdown timer on the button
+        function startCountdown(button, seconds) {
+            let remainingTime = seconds;
+            button.innerText = `Wait ${remainingTime}s`;
+
+            let countdown = setInterval(() => {
+                remainingTime--;
+                button.innerText = `Wait ${remainingTime}s`;
+
+                if (remainingTime <= 0) {
+                    clearInterval(countdown);
+                    button.disabled = false;
+                    button.innerText = "Send Code";
+                }
+            }, 1000);
+        }
+
+    </script>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,107 @@
+﻿@model RolesViewModel
+
+@{
+    ViewData["Title"] = "Roles";
+    Layout = "_AdminLayout";
+    string dbType = ViewBag.dbType ?? "main";
+}
+
+<h2>Roles</h2>
+
+<div class="search-container">
+    <form asp-action="Search" asp-controller="Roles" asp-route-dbType="@dbType">
+        <div class="input-group">
+            <input type="search" name="searchString" class="form-control" placeholder="Search by RoleID/RoleName" aria-label="Search">
+            <button type="submit" class="btn btn-dark">Search</button>
+        </div>
+    </form>
+    <a class="btn btn-primary" asp-action="Index" asp-controller="Users" asp-route-dbType="@dbType">Back to Full List</a>
+</div>
+
+<div>
+    <!-- Button to Open Modal -->
+    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createRoleModal">
+        Create New
+    </button>
+</div>
+
+@if (TempData["CreateSuccess"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["CreateSuccess"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["DeleteSuccess"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["DeleteSuccess"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["DeleteError"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["DeleteError"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<table class="table">
+    <thead>
+        @if (Model != null)
+        {
+            <tr>
+                <th>RoleID</th>
+                <th>RoleName</th>
+                <th></th>
+            </tr>
+        }
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            @foreach (var role in Model.Roles)
+            {
+                <tr>
+                    <td>@role.RoleID</td>
+                    <td>@role.RoleName</td>
+                    <td>
+                        <a href="@Url.Action("Edit", new { id = role.RoleID })" class="btn btn-primary">Edit</a>
+                        <a href="@Url.Action("Delete", new { id = role.RoleID })" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this role?');">Delete</a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<!-- Create Role Modal -->
+<div class="modal fade" id="createRoleModal" tabindex="-1" aria-labelledby="createRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createRoleModalLabel">Create New Role</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Create" asp-controller="Roles" asp-route-dbType="@dbType" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="mb-3">
+                        <label for="roleName" class="form-label">Role Name</label>
+                        <input type="text" class="form-control" id="permissionName" name="name" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save Role</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
