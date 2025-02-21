@@ -47,20 +47,22 @@
     <nav class="navbar-left">
         <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")">Dashboard</a>
         <hr />
-        <a asp-area="Admin" asp-controller="Users" asp-action="Index" class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Users" ? "active" : "")">Users</a>
+        @* <a asp-area="Admin" asp-controller="Users" asp-action="Index" class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Users" ? "active" : "")">Users</a>
         <a asp-area="Admin" asp-controller="Roles" asp-action="Index" class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Roles" ? "active" : "")">Roles</a>
-        <a asp-area="Admin" asp-controller="Permissions" asp-action="Index" class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Permissions" ? "active" : "")">Permissions</a>
+        <a asp-area="Admin" asp-controller="Permissions" asp-action="Index" class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Permissions" ? "active" : "")">Permissions</a> *@
 
-        @* <div class="btn-group d-block">
+        <div class="btn-group d-block">
             <!-- Toggle Button for Collapsible Section -->
             <a data-bs-toggle="collapse" href="#usersCollapse" role="button" aria-expanded="false"
-               aria-controls="usersCollapse" class="btn-left align-items-center gap-1">
-                <span class="mb-0">Users & Roles</span>
+               aria-controls="usersCollapse" class="btn-left align-items-center gap-1 d-flex justify-content-between">
+                <span class="mb-0">Manage Users</span>
+                <i class="bx bx-chevron-down collapse-indicator"></i> <!-- Icon -->
             </a>
+
 
             <!-- Collapsible Sort Options -->
             <div class="collapse mt-2" id="usersCollapse">
-                <ul class="list-group list-unstyled ms-3">
+                <ul class="list-group list-unstyled text-center">
                     <li>
                         <a asp-area="Admin" asp-controller="Users" asp-action="Index"
                            class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Users" ? "active" : "")">
@@ -73,9 +75,15 @@
                             Roles
                         </a>
                     </li>
+                    <li>
+                        <a asp-area="Admin" asp-controller="Permissions" asp-action="Index"
+                           class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Permissions" ? "active" : "")">
+                            Permissions
+                        </a>
+                    </li>
                 </ul>
             </div>
-        </div> *@
+        </div>
 
     </nav>
 
@@ -89,24 +97,41 @@
     <!-- Scripts -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            let collapseKey = "sidebarCollapseState"; // Key to store in localStorage
+            let collapseKey = "sidebarCollapseState"; // LocalStorage key
             let collapseElement = document.getElementById("usersCollapse");
+            let indicatorIcon = document.querySelector(".collapse-indicator");
 
-            // Restore state from localStorage
-            if (localStorage.getItem(collapseKey) === "open") {
-                collapseElement.classList.add("show"); // Ensure it's expanded
+            // Function to update the icon
+            function updateIndicator(isOpen) {
+                if (isOpen) {
+                    indicatorIcon.classList.remove("bx-chevron-down");
+                    indicatorIcon.classList.add("bx-chevron-up");
+                } else {
+                    indicatorIcon.classList.remove("bx-chevron-up");
+                    indicatorIcon.classList.add("bx-chevron-down");
+                }
+            }
+
+            // Restore state from LocalStorage
+            let isCollapsed = localStorage.getItem(collapseKey) === "open";
+            if (isCollapsed) {
+                collapseElement.classList.add("show"); // Expand by default
+                updateIndicator(true);
             }
 
             // Listen for collapse events
             collapseElement.addEventListener("show.bs.collapse", function () {
-                localStorage.setItem(collapseKey, "open"); // Save state as open
+                localStorage.setItem(collapseKey, "open");
+                updateIndicator(true);
             });
 
             collapseElement.addEventListener("hide.bs.collapse", function () {
-                localStorage.setItem(collapseKey, "closed"); // Save state as closed
+                localStorage.setItem(collapseKey, "closed");
+                updateIndicator(false);
             });
         });
     </script>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 

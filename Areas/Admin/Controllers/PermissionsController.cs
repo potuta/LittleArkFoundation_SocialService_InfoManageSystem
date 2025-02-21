@@ -1,4 +1,5 @@
-﻿using LittleArkFoundation.Areas.Admin.Models;
+﻿using LittleArkFoundation.Areas.Admin.Data;
+using LittleArkFoundation.Areas.Admin.Models;
 using LittleArkFoundation.Authorize;
 using LittleArkFoundation.Data;
 using Microsoft.AspNetCore.Authorization;
@@ -54,8 +55,10 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 {
                     if (!string.IsNullOrEmpty(name))
                     {
+                        int newID = await new PermissionsRepository(connectionString).GenerateID();
                         var permission = new PermissionsModel()
                         {
+                            PermissionID = newID,
                             Name = name
                         };
 

@@ -18,7 +18,7 @@ namespace LittleArkFoundation.Data
                 using (var connection = new SqlConnection(_connectionString))
                 {
                     await connection.OpenAsync();
-                    string backupQuery = $"BACKUP DATABASE [LittleArkFoundation_DB] TO DISK = '{backupPath}'";
+                    string backupQuery = $"BACKUP DATABASE [LittleArkFoundation_DB] TO DISK = '{backupPath}' WITH INIT";
                     using (var command = new SqlCommand(backupQuery, connection))
                     {
                         await command.ExecuteNonQueryAsync();

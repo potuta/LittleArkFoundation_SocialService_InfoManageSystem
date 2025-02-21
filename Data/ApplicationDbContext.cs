@@ -59,10 +59,6 @@ namespace LittleArkFoundation.Data
                 .ToTable("Permissions")
                 .HasKey(p => p.PermissionID);
 
-            modelBuilder.Entity<PermissionsModel>()
-                .Property(p => p.PermissionID)
-                .ValueGeneratedOnAdd();
-            
         }
     }
 }

@@ -15,7 +15,7 @@
 
         <div class="form-group mt-2">
             <label asp-for="NewRole.RoleName" class="control-label"></label>
-            @if (Model.NewRole.RoleID == 1 || Model.NewRole.RoleID == 2 || Model.NewRole.RoleID == 3)
+            @if (Model.NewRole.RoleID == 1)
             {
                 <input asp-for="NewRole.RoleName" class="form-control" id="roleNameField" required readonly/>
             }

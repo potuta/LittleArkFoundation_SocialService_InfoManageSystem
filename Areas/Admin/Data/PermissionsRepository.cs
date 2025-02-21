@@ -1,4 +1,5 @@
-﻿using LittleArkFoundation.Data;
+﻿using LittleArkFoundation.Areas.Admin.Models;
+using LittleArkFoundation.Data;
 using Microsoft.Data.SqlClient;
 
 namespace LittleArkFoundation.Areas.Admin.Data
@@ -53,6 +54,22 @@ namespace LittleArkFoundation.Areas.Admin.Data
             catch(SqlException ex)
             {
                 throw;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<int> GenerateID()
+        {
+            try
+            {
+                using (var context = new ApplicationDbContext(_connectionString))
+                {
+                    List<PermissionsModel> permissions = context.Permissions.ToList();
+                    return permissions.Count + 1;
+                }
             }
             catch (Exception ex)
             {
