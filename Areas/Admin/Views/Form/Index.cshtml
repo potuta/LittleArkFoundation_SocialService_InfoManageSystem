@@ -1,0 +1,60 @@
+﻿@model FormViewModel
+@{
+	ViewData["Title"] = "Form";
+	Layout = "_AdminLayout";
+	string dbType = ViewBag.dbType ?? "main";
+}
+
+<h2>Social Service Form</h2>
+
+<div class="search-container">
+    <form asp-action="Search" asp-controller="Form" asp-route-dbType="@dbType">
+        <div class="input-group">
+            <input type="search" name="searchString" class="form-control" placeholder="Search by Id/FullName" aria-label="Search">
+            <button type="submit" class="btn btn-dark">Search</button>
+        </div>
+    </form>
+    <a class="btn btn-primary" asp-action="Index" asp-controller="Form" asp-route-dbType="@dbType">Back to Full List</a>
+</div>
+
+<div>
+    <a class="btn btn-primary" asp-action="Create" asp-controller="Form" asp-route-dbType="@dbType">Create New</a>
+</div>
+
+@if (TempData["CreateSuccess"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["CreateSuccess"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<table class="table">
+    <thead>
+        @if (Model != null)
+        {
+            <tr>
+                <th>Id</th>
+                <th>FullName</th>
+                <th></th>
+            </tr>
+        }
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            @foreach (var form in Model.FormResponses)
+            {
+                <tr>
+                    <td>@form.Id</td>
+                    <td>@form.FullName</td>
+                    <td>
+                        <a href="@Url.Action("ViewForm", new { id = form.Id })" class="btn btn-primary">Form</a>
+                        <a href="@Url.Action("Archive", new { id = form.Id })" class="btn btn-danger" onclick="return confirm('Are you sure you want to archive this data?');">Archive</a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+

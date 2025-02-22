@@ -1,0 +1,21 @@
+﻿@{
+	ViewData["Title"] = "View Form";
+	Layout = "_AdminLayout";
+	string dbType = ViewBag.dbType ?? "main";
+}
+
+<h2>View Form</h2>
+<hr />
+
+@Html.Raw(ViewData["FormHtml"])
+
+<form asp-action="DownloadPDF" asp-route-dbType="@dbType" method="post">
+	@Html.AntiForgeryToken()
+	<input type="hidden" name="id" value="@ViewBag.Id" />
+	<a class="btn btn-sm btn-success" asp-action="Edit" asp-route-dbType="@dbType" asp-route-id="@ViewBag.Id">Edit</a>
+	<button type="submit" class="btn btn-sm btn-primary">Download PDF</button>
+</form>
+
+<div class="mt-2">
+	<a class="btn btn-sm btn-outline-primary" asp-action="Index">Back to List</a>
+</div>

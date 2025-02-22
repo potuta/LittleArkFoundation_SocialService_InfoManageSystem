@@ -25,6 +25,7 @@ namespace LittleArkFoundation.Data
         public DbSet<RolesModel> Roles { get; set; }
         public DbSet<RolePermissionsModel> RolePermissions { get; set; }
         public DbSet<PermissionsModel> Permissions { get; set; }
+        public DbSet<FormResponsesModel> FormResponses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -58,6 +59,15 @@ namespace LittleArkFoundation.Data
             modelBuilder.Entity<PermissionsModel>()
                 .ToTable("Permissions")
                 .HasKey(p => p.PermissionID);
+
+            // FormResponses
+            modelBuilder.Entity<FormResponsesModel>()
+                .ToTable("FormResponses")
+                .HasKey(i => i.Id);
+
+            modelBuilder.Entity<FormResponsesModel>()
+                .Property(i => i.Id)
+                .ValueGeneratedOnAdd();
 
         }
     }

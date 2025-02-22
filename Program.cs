@@ -3,6 +3,10 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using LittleArkFoundation.Authorize;
+using Microsoft.Build.Execution;
+using DinkToPdfAll;
+using DinkToPdf.Contracts;
+using DinkToPdf;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,9 +33,12 @@ builder.Services.AddSession(options =>
 //    options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
 //});
 
+LibraryLoader.Load();
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
 builder.Services.AddSingleton<ConnectionService>();
 
 //builder.WebHost.ConfigureKestrel(options =>

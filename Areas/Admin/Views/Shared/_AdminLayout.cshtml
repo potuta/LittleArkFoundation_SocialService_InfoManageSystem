@@ -51,6 +51,10 @@
         <a asp-area="Admin" asp-controller="Roles" asp-action="Index" class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Roles" ? "active" : "")">Roles</a>
         <a asp-area="Admin" asp-controller="Permissions" asp-action="Index" class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Permissions" ? "active" : "")">Permissions</a> *@
 
+        <a asp-area="Admin" asp-controller="Form" asp-action="Index" class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Permissions" ? "active" : "")">
+            Social Service Form
+        </a> 
+
         <div class="btn-group d-block">
             <!-- Toggle Button for Collapsible Section -->
             <a data-bs-toggle="collapse" href="#usersCollapse" role="button" aria-expanded="false"
