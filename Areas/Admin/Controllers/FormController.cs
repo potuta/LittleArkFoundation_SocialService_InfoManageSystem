@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using DinkToPdf;
 using System.Runtime.InteropServices;
 using DinkToPdf.Contracts;
+using HtmlAgilityPack;
 
 namespace LittleArkFoundation.Areas.Admin.Controllers
 {
@@ -17,6 +18,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         private readonly ConnectionService _connectionService;
         private readonly IWebHostEnvironment _environment;
         private readonly IConverter _pdfConverter;
+
         public FormController(ConnectionService connectionService, IWebHostEnvironment environment, IConverter pdfConverter)
         {
             _connectionService = connectionService;
@@ -80,7 +82,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
 
                 // Load the HTML template
-                string templatePath = Path.Combine(_environment.WebRootPath, "templates/sample_form_template.html");
+                string templatePath = Path.Combine(_environment.WebRootPath, "templates/page1_form_template.html");
 
                 if (!System.IO.File.Exists(templatePath))
                 {
@@ -89,14 +91,32 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                 string htmlContent = await System.IO.File.ReadAllTextAsync(templatePath);
 
+                var htmlDoc = new HtmlDocument();
+                htmlDoc.LoadHtml(htmlContent);
+
                 // Replace placeholders with user data
-                htmlContent = htmlContent.Replace("{FullName}", response.FullName)
-                                         .Replace("{Email}", response.Email)
-                                         .Replace("{Address}", response.Address)
-                                         .Replace("{Message}", response.Message);
+                //htmlContent = htmlContent.Replace("{FullName}", response.FullName)
+                //                         .Replace("{Email}", response.Email)
+                //                         .Replace("{Address}", response.Address)
+                //                         .Replace("{Message}", response.Message);
+
+                var dateofinterview = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Dateofinterview']");
+                if (dateofinterview != null)
+                {
+                    dateofinterview.InnerHtml = DateTime.Now.ToString();
+                }
+
+                var sexmalecheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Sexmalecheckbox']");
+                if (sexmalecheckbox != null)
+                {
+                    string existingStyle = sexmalecheckbox.GetAttributeValue("style", "");
+                    sexmalecheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+
+                htmlContent = htmlDoc.DocumentNode.OuterHtml;
 
                 // Pass the modified HTML to the view
-                ViewData["FormHtml"] = htmlContent;
+                TempData["FormHtml"] = htmlContent;
                 ViewBag.Id = id;
             }
 
@@ -118,23 +138,46 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             {
                 string connectionString = _connectionService.GetConnectionString(dbType);
 
-                using var context = new ApplicationDbContext(connectionString);
-                var response = await context.FormResponses.FindAsync(id);
+                //using var context = new ApplicationDbContext(connectionString);
+                //var response = await context.FormResponses.FindAsync(id);
 
-                if (response == null)
-                {
-                    return NotFound();
-                }
+                //if (response == null)
+                //{
+                //    return NotFound();
+                //}
 
-                // Load the HTML template
-                string templatePath = Path.Combine(_environment.WebRootPath, "templates/sample_form_template.html");
+                //// Load the HTML template
+                string templatePath = Path.Combine(_environment.WebRootPath, "templates/page1_form_template.html");
                 string htmlContent = await System.IO.File.ReadAllTextAsync(templatePath);
 
-                // Replace placeholders with actual data
-                htmlContent = htmlContent.Replace("{FullName}", response.FullName)
-                                         .Replace("{Email}", response.Email)
-                                         .Replace("{Address}", response.Address)
-                                         .Replace("{Message}", response.Message);
+                var htmlDoc = new HtmlDocument();
+                htmlDoc.LoadHtml(htmlContent);
+
+                // Replace placeholders with user data
+                //htmlContent = htmlContent.Replace("{FullName}", response.FullName)
+                //                         .Replace("{Email}", response.Email)
+                //                         .Replace("{Address}", response.Address)
+                //                         .Replace("{Message}", response.Message);
+
+                var dateofinterview = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Dateofinterview']");
+                if (dateofinterview != null)
+                {
+                    dateofinterview.InnerHtml = DateTime.Now.ToString();
+                }
+
+                var sexmalecheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Sexmalecheckbox']");
+                if (sexmalecheckbox != null)
+                {
+                    string existingStyle = sexmalecheckbox.GetAttributeValue("style", "");
+                    sexmalecheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+
+                htmlContent = htmlDoc.DocumentNode.OuterHtml;
+
+                string imagePath = Path.Combine(_environment.WebRootPath, "resources", "NCH-Logo.png");
+                byte[] imageBytes = System.IO.File.ReadAllBytes(imagePath);
+                string base64String = Convert.ToBase64String(imageBytes);
+                htmlContent = htmlContent.Replace("/resources/NCH-Logo.png", $"data:image/png;base64,{base64String}");
 
                 var pdfDocument = new HtmlToPdfDocument()
                 {
@@ -143,15 +186,26 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                         ColorMode = ColorMode.Color,
                         Orientation = Orientation.Portrait,
                         PaperSize = PaperKind.A4,
-                        Margins = new MarginSettings { Top = 10, Bottom = 10, Left = 10, Right = 10 },
-                        DocumentTitle = "Generated PDF"
+                        Margins = new MarginSettings { Top = 0, Bottom = 0, Left = 0, Right = 0 },
+                        DocumentTitle = "Generated PDF",
+                        DPI = 300
                     },
                     Objects =
                     {
                         new ObjectSettings
                         {
                             HtmlContent = htmlContent,
-                            WebSettings = { DefaultEncoding = "utf-8" }
+                            WebSettings = 
+                            {
+                                DefaultEncoding = "utf-8",
+                                LoadImages = true,
+                                PrintMediaType = true
+                            },
+                            UseExternalLinks = true,
+                            LoadSettings =
+                            {
+                                ZoomFactor = 2
+                            }
                         }
                     }
                 };
