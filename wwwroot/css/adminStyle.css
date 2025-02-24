@@ -51,7 +51,7 @@ body {
     background-color: #f8f8f8;
     box-sizing: border-box;
 /*    width: fit-content;*/
-    width: 9.8rem;
+    width: 12rem;
     padding: 0.625rem; /* 10px */
 }
 
@@ -64,6 +64,7 @@ body.sidebar-collapsed .navbar-left {
 .main-content {
     grid-column: 2;
     grid-row: 2;
+    margin-left: 2rem;
     padding: 1.25rem; /* 20px */
     box-sizing: border-box;
 }
