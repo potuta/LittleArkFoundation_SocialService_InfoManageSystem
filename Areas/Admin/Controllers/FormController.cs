@@ -99,11 +99,11 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 //                         .Replace("{Email}", response.Email)
                 //                         .Replace("{Address}", response.Address)
                 //                         .Replace("{Message}", response.Message);
-
+                string date = string.Empty;
                 var dateofinterview = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Dateofinterview']");
                 if (dateofinterview != null)
                 {
-                    dateofinterview.InnerHtml = DateTime.Now.ToString();
+                    dateofinterview.InnerHtml = date;
                 }
 
                 var sexmalecheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Sexmalecheckbox']");

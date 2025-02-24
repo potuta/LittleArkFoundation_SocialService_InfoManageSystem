@@ -51,16 +51,32 @@
         <a asp-area="Admin" asp-controller="Roles" asp-action="Index" class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Roles" ? "active" : "")">Roles</a>
         <a asp-area="Admin" asp-controller="Permissions" asp-action="Index" class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Permissions" ? "active" : "")">Permissions</a> *@
 
-        <a asp-area="Admin" asp-controller="Form" asp-action="Index" class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Form" ? "active" : "")">
-            Social Service Form
-        </a> 
+        <div class="btn-group d-block">
+            <!-- Toggle Button for Collapsible Section -->
+            <a data-bs-toggle="collapse" href="#mswdCollapse" role="button" aria-expanded="false"
+               aria-controls="mswdCollapse" class="btn-left align-items-center gap-1 d-flex justify-content-between">
+                <span class="mb-0">MSWD</span>
+                <i class="bx bx-chevron-down mswd-collapse-indicator"></i> <!-- Icon -->
+            </a>
+
+            <!-- Collapsible Sort Options -->
+            <div class="collapse mt-2" id="mswdCollapse">
+                <ul class="list-group list-unstyled text-center">
+                    <li>
+                        <a asp-area="Admin" asp-controller="Form" asp-action="Index" class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Form" ? "active" : "")">
+                            Social Service Form
+                        </a> 
+                    </li>
+                </ul>
+            </div>
+        </div>
 
         <div class="btn-group d-block">
             <!-- Toggle Button for Collapsible Section -->
             <a data-bs-toggle="collapse" href="#usersCollapse" role="button" aria-expanded="false"
                aria-controls="usersCollapse" class="btn-left align-items-center gap-1 d-flex justify-content-between">
                 <span class="mb-0">Manage Users</span>
-                <i class="bx bx-chevron-down collapse-indicator"></i> <!-- Icon -->
+                <i class="bx bx-chevron-down users-collapse-indicator"></i> <!-- Icon -->
             </a>
 
 
@@ -101,37 +117,59 @@
     <!-- Scripts -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            let collapseKey = "sidebarCollapseState"; // LocalStorage key
-            let collapseElement = document.getElementById("usersCollapse");
-            let indicatorIcon = document.querySelector(".collapse-indicator");
+            let usersCollapseKey = "usersCollapseState"; // LocalStorage key for users
+            let mswdCollapseKey = "mswdCollapseState"; // LocalStorage key for MSWD
+
+            let usersCollapseElement = document.getElementById("usersCollapse");
+            let usersIndicatorIcon = document.querySelector(".users-collapse-indicator");
+
+            let mswdCollapseElement = document.getElementById("mswdCollapse");
+            let mswdIndicatorIcon = document.querySelector(".mswd-collapse-indicator");
 
             // Function to update the icon
-            function updateIndicator(isOpen) {
+            function updateIndicator(iconElement, isOpen) {
                 if (isOpen) {
-                    indicatorIcon.classList.remove("bx-chevron-down");
-                    indicatorIcon.classList.add("bx-chevron-up");
+                    iconElement.classList.remove("bx-chevron-down");
+                    iconElement.classList.add("bx-chevron-up");
                 } else {
-                    indicatorIcon.classList.remove("bx-chevron-up");
-                    indicatorIcon.classList.add("bx-chevron-down");
+                    iconElement.classList.remove("bx-chevron-up");
+                    iconElement.classList.add("bx-chevron-down");
                 }
             }
 
             // Restore state from LocalStorage
-            let isCollapsed = localStorage.getItem(collapseKey) === "open";
-            if (isCollapsed) {
-                collapseElement.classList.add("show"); // Expand by default
-                updateIndicator(true);
+            let isUsersCollapsed = localStorage.getItem(usersCollapseKey) === "open";
+            let isMswdCollapsed = localStorage.getItem(mswdCollapseKey) === "open";
+
+            if (isUsersCollapsed) {
+                usersCollapseElement.classList.add("show");
+                updateIndicator(usersIndicatorIcon, true);
+            }
+
+            if (isMswdCollapsed) {
+                mswdCollapseElement.classList.add("show");
+                updateIndicator(mswdIndicatorIcon, true);
             }
 
             // Listen for collapse events
-            collapseElement.addEventListener("show.bs.collapse", function () {
-                localStorage.setItem(collapseKey, "open");
-                updateIndicator(true);
+            usersCollapseElement.addEventListener("show.bs.collapse", function () {
+                localStorage.setItem(usersCollapseKey, "open");
+                updateIndicator(usersIndicatorIcon, true);
             });
 
-            collapseElement.addEventListener("hide.bs.collapse", function () {
-                localStorage.setItem(collapseKey, "closed");
-                updateIndicator(false);
+            usersCollapseElement.addEventListener("hide.bs.collapse", function () {
+                localStorage.setItem(usersCollapseKey, "closed");
+                updateIndicator(usersIndicatorIcon, false);
+            });
+
+            mswdCollapseElement.addEventListener("show.bs.collapse", function () {
+                localStorage.setItem(mswdCollapseKey, "open");
+                updateIndicator(mswdIndicatorIcon, true);
+            });
+
+            mswdCollapseElement.addEventListener("hide.bs.collapse", function () {
+                localStorage.setItem(mswdCollapseKey, "closed");
+                updateIndicator(mswdIndicatorIcon, false);
             });
         });
     </script>
