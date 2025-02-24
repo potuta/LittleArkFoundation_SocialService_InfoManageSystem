@@ -5,7 +5,7 @@
 	string dbType = ViewBag.dbType ?? "main";
 }
 
-<h2>Create Form</h2>
+@* <h2>Create Form</h2>
 <hr/>
 
 <h2>Fill Out the Form</h2>
@@ -36,5 +36,635 @@
     </div>
 
     <button type="submit" class="btn btn-sm btn-primary">Submit</button>
+</form> *@
+
+<style>
+    /* body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+    } */
+
+    .form-container {
+        width: 100%;
+        max-width: 900px;
+        margin: auto;
+        border: 1px solid #000;
+        padding: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        border: 1px solid black;
+        padding: 5px;
+        text-align: left;
+    }
+
+    .section-title {
+        background-color: #f2f2f2;
+        font-weight: bold;
+        padding: 5px;
+        text-align: center;
+    }
+
+    input, select {
+        width: 98%;
+        font-size: large;
+    }
+
+    .required {
+        color: red;
+        font-weight: bold;
+    }
+
+    .checkbox-group, .radio-group {
+        display: flex;
+        align-items: center;
+        gap: 10px; /* Adjust spacing between checkbox/radio and text */
+        margin-bottom: 5px;
+    }
+
+        .checkbox-group input[type="checkbox"],
+        .radio-group input[type="radio"] {
+            transform: scale(1.2); /* Slightly increase size for better visibility */
+            padding: 0;
+            margin: 0;
+            width: 2rem;
+        }
+
+</style>
+
+<form asp-action="Create" asp-route-dbType="@dbType" method="post">
+
+    <div class="form-container">
+        <h2 style="text-align: center;">Republic of the Philippines - Department of Health</h2>
+        <h3 style="text-align: center;">MSWD Assessment Tool for Children/Adolescent</h3>
+
+        <table>
+            <tr>
+                <td>
+                    Date of Interview: <span class="required">*</span>
+                    <input type="date" id="dateInput" required>
+                </td>
+                <td>
+                    Time of Interview: <span class="required">*</span>
+                    <input type="time" id="timeInput" required>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Basic Ward: <span class="required">*</span>
+                    <input type="text" required>
+                </td>
+                <td>
+                    Non-Basic Ward: <span class="required">*</span>
+                    <input type="text" required>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Health Record No: <span class="required">*</span>
+                    <input type="text" required>
+                </td>
+                <td>
+                    MSWD No: <span class="required">*</span>
+                    <input type="text" required>
+                </td>
+            </tr>
+        </table>
+
+        <div class="section-title">Source of Referral</div>
+        <table>
+            <tr>
+                <td>
+                    Referral Name: <span class="required">*</span>
+                    <input type="text" required>
+                </td>
+                <td>
+                    Address: <span class="required">*</span>
+                    <input type="text" required>
+                </td>
+                <td>
+                    Contact No: <span class="required">*</span>
+                    <input type="text" required>
+                </td>
+            </tr>
+
+        </table>
+
+        <div class="section-title">Source of Informant</div>
+        <table>
+            <tr>
+                <td>
+                    Informant Name: <span class="required">*</span>
+                    <input type="text" required>
+                </td>
+                <td>
+                    Relation to Patient: <span class="required">*</span>
+                    <input type="text" required>
+                </td>
+                <td>
+                    Contact No: <span class="required">*</span>
+                    <input type="text" required>
+                </td>
+                <td>
+                    Address: <span class="required">*</span>
+                    <input type="text" required>
+                </td>
+            </tr>
+        </table>
+
+        <div class="section-title">I. Demographic Data </div>
+        <table>
+            <tr>
+                <td>
+                    Patient's Last Name: <span class="required">*</span>
+                    <input type="text" required>
+                </td>
+                <td>
+                    Patient's First Name: <span class="required">*</span>
+                    <input type="text" required>
+                </td>
+                <td>
+                    Patient's Middle Name: <span class="required">*</span>
+                    <input type="text" required>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Date of Birth: <span class="required">*</span>
+                    <input type="date" required>
+                </td>
+                <td>
+                    Age: <span class="required">*</span>
+                    <input type="number" required>
+                </td>
+                <td>
+                    Sex: <span class="required">*</span>
+                    <select required>
+                        <option>Male</option>
+                        <option>Female</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Contact No: <span class="required">*</span>
+                    <input type="text" required>
+                </td>
+                <td>
+                    Place of Birth: <span class="required">*</span>
+                    <input type="text" required>
+                </td>
+                <td>
+                    Gender: <span class="required">*</span>
+                    <select required>
+                        <option>Male</option>
+                        <option>Female</option>
+                        <option>LGBTQIA+</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Religion: <span class="required">*</span>
+                    <input type="text" required>
+                </td>
+                <td colspan="2">
+                    Nationality: <span class="required">*</span>
+                    <input type="text" required>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Permanent Address: <span class="required">*</span>
+                    <input type="text" required>
+                </td>
+                <td colspan="2">
+                    Temporary Address: <span class="required">*</span>
+                    <input type="text" required>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    Civil Status (Check) <span class="required">*</span>
+                </td>
+                <td colspan="2">
+                    <div class="radio-group">
+                        <div class="radio-group">
+                            <input type="radio" name="civil_status" value="Legitimate" required> Legitimate
+                        </div>
+
+                        <div class="radio-group">
+                            <input type="radio" name="civil_status" value="Ilegitimate"> Ilegitimate
+                        </div>
+
+                        <div class="radio-group">
+                            <input type="radio" name="civil_status" value="Married"> Married
+                        </div>
+
+                        <div class="radio-group">
+                            <input type="radio" name="civil_status" value="Common Law"> Common Law
+                        </div>
+
+                        <div class="radio-group">
+                            <input type="radio" name="civil_status" value="Widowed"> Widowed
+                        </div>
+                    </div>
+                </td>
+
+            </tr>
+
+            <tr>
+                <td>
+                    Highest Educational Attainment <span class="required">*</span>
+                </td>
+                <td colspan="2">
+                    <div class="radio-group">
+                        <input type="radio" name="highest_educational_attainment" value="Primary" required> Primary
+                        <input type="radio" name="highest_educational_attainment" value="Secondary"> Secondary
+                        <input type="radio" name="highest_educational_attainment" value="Vocational"> Vocational
+                        <input type="radio" name="highest_educational_attainment" value="Tertiary"> Tertiary
+                        <input type="radio" name="highest_educational_attainment" value="No Educational Attainment"> No Educational Attainment
+                    </div>
+
+                    <div class="radio-group">
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    Occupation: <span class="required">*</span>
+                    <input type="text" required>
+                </td>
+                <td colspan="2">
+                    Patient's Monthly Income: <span class="required">*</span>
+                    <input type="number" required>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    PhilHealth Identification Number (PIN): <span class="required">*</span>
+                    <input type="number" required>
+                </td>
+
+                <td colspan="2">
+                    <div class="radio-group">
+                        PhilHealth Membership (Check): <span class="required">*</span>
+                        <div class="radio-group">
+                            <input type="radio" name="pin_membership" value="Direct Contributor" required> Direct Contributor
+                            <input type="radio" name="pin_membership" value="Indirect Contributor"> Indirect Contributor
+                        </div>
+                    </div>
+                </td>
+            </tr>
+
+        </table>
+
+        <div class="section-title">Family Composition</div>
+        <table id="family-table">
+            <tr>
+                <th>Name <span class="required">*</span></th>
+                <th>Age <span class="required">*</span></th>
+                <th>Date of Birth <span class="required">*</span></th>
+                <th>Civil Status <span class="required">*</span></th>
+                <th>Relationship to Patient <span class="required">*</span></th>
+                <th>Living with Child <span class="required">*</span></th>
+                <th>Educational Attainment <span class="required">*</span></th>
+                <th>Occupation <span class="required">*</span></th>
+                <th>Monthly Income <span class="required">*</span></th>
+                <th>Action</th>
+            </tr>
+            <tr>
+                <td><input type="text" name="family[0][name]" required></td>
+                <td><input type="number" name="family[0][age]" required></td>
+                <td><input type="date" name="family[0][dob]" required></td>
+                <td><input type="text" name="family[0][civil_status]" required></td>
+                <td><input type="text" name="family[0][relationship]" required></td>
+                <td><select name="family[0][living]" required><option>Yes</option><option>No</option></select></td>
+                <td><input type="text" name="family[0][education]" required></td>
+                <td><input type="text" name="family[0][occupation]" required></td>
+                <td><input type="number" name="family[0][income]" required></td>
+                <td><button type="button" onclick="removeRow(this)">❌</button></td>
+            </tr>
+        </table>
+
+        <button type="button" onclick="addRow()">➕ Add Row</button>
+
+        <div class="section-title">II. MSWD Classification</div>
+        <table>
+            <tr>
+                <td>Main Classification:</td>
+                <td>
+                    <div class="radio-group">
+                        <input type="radio" name="main_classification" value="Financially Capable/Capacitated" required> Financially Capable/Capacitated
+                    </div>
+
+                    <div class="radio-group">
+                        <input type="radio" name="main_classification" value="Financially Incapable/Incapacitated"> Financially Incapable/Incapacitated
+                    </div>
+
+                    <div class="radio-group">
+                        <input type="radio" name="main_classification" value="Indigent"> Indigent
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>Sub Classification:</td>
+                <td>
+                    <div class="radio-group">
+                        <input type="radio" name="sub_classification" value="C1" required> C1
+                    </div>
+
+                    <div class="radio-group">
+                        <input type="radio" name="sub_classification" value="C2"> C2
+                    </div>
+
+                    <div class="radio-group">
+                        <input type="radio" name="sub_classification" value="C3"> C3
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>Membership to Marginalized Sector (Check)</td>
+                <td>
+                    <div class="radio-group">
+                        <input type="radio" name="member_classification" value="Artisanal Fisher Folk" onchange="toggleRequiredRadio(this)" required> Artisanal Fisher Folk
+                    </div>
+
+                    <div class="radio-group">
+                        <input type="radio" name="member_classification" value="Farmer And Landless Rural Worker" onchange="toggleRequiredRadio(this)"> Farmer And Landless Rural Worker
+                    </div>
+
+                    <div class="radio-group">
+                        <input type="radio" name="member_classification" value="Urban Poor" onchange="toggleRequiredRadio(this)"> Urban Poor
+                    </div>
+
+                    <div class="radio-group">
+                        <input type="radio" name="member_classification" value="Indigenous Peoples" onchange="toggleRequiredRadio(this)"> Indigenous Peoples
+                    </div>
+
+                    <div class="radio-group">
+                        <input type="radio" name="member_classification" value="Senior Citizen" onchange="toggleRequiredRadio(this)"> Senior Citizen
+                    </div>
+
+                    <div class="radio-group">
+                        <input type="radio" name="member_classification" value="Formal Labor and Migrant Workers" onchange="toggleRequiredRadio(this)"> Formal Labor and Migrant Workers
+                    </div>
+
+                    <div class="radio-group">
+                        <input type="radio" name="member_classification" value="Workers in Informal Sector" onchange="toggleRequiredRadio(this)"> Workers in Informal Sector
+                    </div>
+
+                    <div class="radio-group">
+                        <input type="radio" name="member_classification" value="PWD" onchange="toggleRequiredRadio(this)"> PWD
+                    </div>
+
+                    <div class="radio-group">
+                        <input type="radio" name="member_classification" value="Victims Of Disaster and Calamity" onchange="toggleRequiredRadio(this)"> Victims Of Disaster and Calamity
+                    </div>
+
+                    <div class="radio-group">
+                        <input type="radio" name="member_classification" value="Others" data-target="member-others-specify" onchange="toggleRequiredRadio(this)"> Others
+                        <input type="text" id="member-others-specify" placeholder="Specify" disabled>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <div class="section-title">III. Monthly Expenses</div>
+        <table id="expenses-table">
+            <tr>
+                <th>Particulars</th>
+                <th>Estimated Monthly Cost (PHP)</th>
+                <th>Particulars</th>
+                <th>Estimated Monthly Cost (PHP)</th>
+            </tr>
+            <tr>
+                <td>House & Lot</td>
+                <td><input type="number" class="expense" required></td>
+                <td>Communication</td>
+                <td><input type="number" class="expense" required></td>
+            </tr>
+            <tr>
+                <td>Food & Water</td>
+                <td><input type="number" class="expense" required></td>
+                <td>House Help</td>
+                <td><input type="number" class="expense" required></td>
+            </tr>
+            <tr>
+                <td>Education</td>
+                <td><input type="number" class="expense" required></td>
+                <td>Medical Expenses</td>
+                <td><input type="number" class="expense" required></td>
+            </tr>
+            <tr>
+                <td>Clothing</td>
+                <td><input type="number" class="expense" required></td>
+                <td>Others</td>
+                <td>
+                    <input type="text" placeholder="Specify">
+                    <input type="number" class="expense">
+                </td>
+            </tr>
+            <tr>
+                <td>Transportation</td>
+                <td colspan="3"><input type="number" class="expense" required></td>
+
+            </tr>
+            <tr>
+                <td><strong>Total</strong></td>
+                <td colspan="3"><input type="number" id="total-expenses" readonly></td>
+            </tr>
+        </table>
+
+        <div class="section-title">Utilities</div>
+        <table>
+            <tr>
+                <td>Light Source (Check and state amount)</td>
+                <td>Fuel Source (Check one)</td>
+                <td>Water Source (Check one)</td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="radio-group">
+                        <input type="radio" name="light_source" value="Electric" data-target="electric-amount" onchange="toggleRequiredRadio(this)"> Electric
+                        <input type="number" id="electric-amount" placeholder="State amount" disabled>
+                    </div>
+
+                    <div class="radio-group">
+                        <input type="radio" name="light_source" value="Kerosene" data-target="kerosene-amount" onchange="toggleRequiredRadio(this)"> Kerosene
+                        <input type="number" id="kerosene-amount" placeholder="State amount" disabled>
+                    </div>
+
+                    <div class="radio-group">
+                        <input type="radio" name="light_source" value="Candle" data-target="candle-amount" onchange="toggleRequiredRadio(this)"> Candle
+                        <input type="number" id="candle-amount" placeholder="State amount" disabled>
+                    </div>
+
+                </td>
+                <td>
+                    <div class="radio-group">
+                        <input type="radio" name="fuel_source" value="Gas"> Gas
+                    </div>
+
+                    <div class="radio-group">
+                        <input type="radio" name="fuel_source" value="Firewood"> Firewood
+                    </div>
+
+                    <div class="radio-group">
+                        <input type="radio" name="fuel_source" value="Charcoal"> Charcoal
+                    </div>
+                </td>
+                <td>
+                    <div class="radio-group">
+                        <input type="radio" name="water_source" value="Artesian Well"> Artesian Well
+                    </div>
+
+                    <div class="radio-group">
+                        <input type="radio" name="water_source" value="Public"> Public
+                    </div>
+
+                    <div class="radio-group">
+                        <input type="radio" name="water_source" value="Private"> Private
+                    </div>
+
+                    <div class="radio-group">
+                        <input type="radio" name="water_source" value="Water District"> Water District
+                    </div>
+                </td>
+            </tr>
+            
+            @* --- Add new here --- *@
+
+        </table>
+
+        <div class="mt-2" style="text-align: center;">
+            <button type="submit" class="btn btn-sm btn-primary">Submit</button>
+        </div>
+        <div class="mt-2" style="text-align: center;">
+            <a class="btn btn-sm btn-outline-primary" asp-action="Index">Back to List</a>
+        </div>
+    </div>
+
 </form>
+
+<script>
+    // Get today's date in YYYY-MM-DD format
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById("dateInput").value = today;
+
+    // Get current time in HH:MM format
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    document.getElementById("timeInput").value = `${hours}:${minutes}`;
+
+    function addRow() {
+        let table = document.getElementById("family-table");
+
+        if (table.rows.length - 1 == 12){
+            alert("Only 12 rows allowed");
+            return;
+        }
+
+        let rowCount = table.rows.length - 1; // Exclude header row
+        //let rowCount = table.rows.length; // Includes header, so first row starts at 1
+        let newRow = table.insertRow(-1); // Insert at the end
+
+        let cols = `
+            <td><input type="text" name="family[${rowCount}][name]" required></td>
+            <td><input type="number" name="family[${rowCount}][age]" required></td>
+            <td><input type="date" name="family[${rowCount}][dob]" required></td>
+            <td><input type="text" name="family[${rowCount}][civil_status]" required></td>
+            <td><input type="text" name="family[${rowCount}][relationship]" required></td>
+            <td><select name="family[${rowCount}][living]" required><option>Yes</option><option>No</option></select></td>
+            <td><input type="text" name="family[${rowCount}][education]" required></td>
+            <td><input type="text" name="family[${rowCount}][occupation]" required></td>
+            <td><input type="number" name="family[${rowCount}][income]" required></td>
+            <td><button type="button" onclick="removeRow(this)">❌</button></td>
+        `;
+        newRow.innerHTML = cols;
+    }
+
+    function removeRow(button) {
+        let row = button.parentNode.parentNode;
+        let table = document.getElementById("family-table");
+
+        if (table.rows.length > 2) { // Keep at least one row
+            row.remove();
+            updateNames();
+        } else {
+            alert("At least one row is required!");
+        }
+    }
+
+    function updateNames() {
+        let table = document.getElementById("family-table");
+        for (let i = 1; i < table.rows.length; i++) { // Skip header row
+            let row = table.rows[i];
+            row.cells[0].querySelector("input").name = `family[${i - 1}][name]`;
+            row.cells[1].querySelector("input").name = `family[${i - 1}][age]`;
+            row.cells[2].querySelector("input").name = `family[${i - 1}][dob]`;
+            row.cells[3].querySelector("input").name = `family[${i - 1}][civil_status]`;
+            row.cells[4].querySelector("input").name = `family[${i - 1}][relationship]`;
+            row.cells[5].querySelector("select").name = `family[${i - 1}][living]`;
+            row.cells[6].querySelector("input").name = `family[${i - 1}][education]`;
+            row.cells[7].querySelector("input").name = `family[${i - 1}][occupation]`;
+            row.cells[8].querySelector("input").name = `family[${i - 1}][income]`;
+        }
+    }
+
+    document.addEventListener("input", function() {
+        let total = 0;
+        document.querySelectorAll(".expense").forEach(input => {
+            total += Number(input.value) || 0;
+        });
+        document.getElementById("total-expenses").value = total;
+    });
+
+    function toggleRequired(checkbox) {
+        let inputField = checkbox.nextElementSibling; // The input field next to the checkbox
+
+        if (checkbox.checked) {
+            inputField.required = true;
+            inputField.disabled = false;
+        } else {
+            inputField.required = false;
+            inputField.disabled = true;
+            inputField.value = ""; // Clear value when unchecked
+        }
+    }
+
+    function toggleRequiredRadio(radio) {
+        let targetId = radio.getAttribute("data-target"); // Get the ID of the input field
+        let inputField = document.getElementById(targetId); // Find the input field by ID
+
+        // Disable all input fields within the same name group
+        let radioGroup = document.getElementsByName(radio.name);
+        radioGroup.forEach(r => {
+            let field = document.getElementById(r.getAttribute("data-target"));
+            if (field) {
+                field.required = false;
+                field.disabled = true;
+                field.value = ""; // Clear value
+            }
+        });
+
+        // Enable only the selected radio button’s input field
+        if (inputField) {
+            inputField.required = true;
+            inputField.disabled = false;
+        }
+    }
+
+</script>
+
+
 

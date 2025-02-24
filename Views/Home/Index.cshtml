@@ -1,10 +1,9 @@
-﻿@model HomeViewModel
-@{
+﻿@{
     ViewData["Title"] = "Home Page";
-    Layout = "_Layout";
+    Layout = "_LoginLayout";
 }
 
-<!DOCTYPE html>
+@* <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -16,39 +15,197 @@
     <section class="main">
         <h1>Social Service</h1>
         <p>Information Management System</p>
-        @* <button onclick="location.href='@Url.Action("Donate", "Donor")'">🔴 Donate Blood</button> *@
-        @* <button onclick="location.href='@Url.Action("RequestBlood", "Hospital")'">🏥 Request Blood</button> *@
         <button data-bs-toggle="modal" data-bs-target="#loginModal">🔑 Login</button>
-    </section>
-
-    <section>
-        @* <h2>Blood Inventory Status</h2>
-        <table>
-            <tr><th>Blood Type</th><th>Units Available</th></tr>
-            @foreach (var blood in Model.BloodInventory)
-            {
-                <tr>
-                    <td>@blood.BloodType</td>
-                    <td>@blood.Quantity Units</td>
-                </tr>
-            }
-        </table> *@
-    </section>
-
-    <section>
-        @* <h2>Recent Hospital Requests</h2>
-        <table>
-            <tr><th>Hospital Name</th><th>Blood Type</th><th>Status</th></tr>
-            @foreach (var request in Model.RecentRequests)
-            {
-                <tr>
-                    <td>@request.HospitalID</td>
-                    <td>@request.BloodType</td>
-                    <td>@request.Status</td>
-                </tr>
-            }
-        </table> *@
     </section>
 </body>
 </html>
+ *@
+
+<div class="form-box">
+    <!-- Login Form -->
+    <div id="loginForm">
+        <h2>Login</h2>
+        @if (TempData["LoginError"] != null)
+        {
+            <div class="alert alert-danger" id="loginErrorMessage">
+                @TempData["LoginError"]
+            </div>
+        }
+        @if (TempData["ResetPasswordSuccess"] != null)
+        {
+            <div class="alert alert-success" id="resetPasswordSuccessMessage">
+                @TempData["ResetPasswordSuccess"]
+            </div>
+        }
+        <form asp-action="Login" asp-controller="Account" method="post">
+            @Html.AntiForgeryToken()
+            <div class="mb-3">
+                <label for="adminUserId" class="form-label">User ID</label>
+                <input type="number" class="form-control" id="adminUserId" name="userID" placeholder="Enter your User ID" required>
+            </div>
+            <div class="mb-3">
+                <label for="adminPassword" class="form-label">Password</label>
+                <input type="password" class="form-control" id="adminPassword" name="password" placeholder="Enter your password" required>
+                <a onclick="showForgotPassword()">Forgot password?</a>
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+    </div>
+
+    <!-- Forgot Password Form -->
+    <div id="forgotPasswordForm" style="display: none;">
+        <h2>Reset Password</h2>
+        <form asp-action="SendCode" asp-controller="Account" method="post">
+            @Html.AntiForgeryToken()
+            <div class="mb-3">
+                <label for="userID" class="form-label">User ID</label>
+                <input type="number" class="form-control" id="userID" name="userID" placeholder="Enter your User ID" required>
+            </div>
+            <button type="button" class="btn btn-secondary" onclick="sendCode()" id="sendCodeButton">Send Code</button>
+            <p id="sendCodeMessage"></p> <!-- Success/Error message -->
+
+        </form>
+
+        <form asp-action="VerifyCode" asp-controller="Account" method="post">
+            @Html.AntiForgeryToken()
+            <div class="mb-3 mt-3">
+                <label for="code" class="form-label">Enter Code</label>
+                <input type="hidden" id="hiddenUserID" name="userID" />
+                <input type="text" class="form-control" id="code" name="code" placeholder="Enter code" required>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="verifyCode()" id="verifyCodeButton">Verify</button>
+            <p id="verifyCodeMessage"></p> <!-- Success/Error message -->
+
+            <a onclick="showLogin()">Back to Login</a>
+        </form>
+    </div>
+
+</div>
+
+<!-- Bootstrap Modal -->
+<div class="modal fade" id="customAlert" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Alert</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modalMessage">This is an alert message.</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showForgotPassword() {
+        document.getElementById("loginForm").style.display = "none";
+        document.getElementById("forgotPasswordForm").style.display = "block";
+    }
+
+    function showLogin() {
+        document.getElementById("loginForm").style.display = "block";
+        document.getElementById("forgotPasswordForm").style.display = "none";
+        document.getElementById("resetPasswordForm").style.display = "none";
+    }
+
+    async function sendCode() {
+        let userID = document.getElementById("userID").value;
+        let button = document.getElementById("sendCodeButton")
+
+        if (!userID) {
+            document.getElementById("sendCodeMessage").textContent = "Please enter your User ID.";
+            document.getElementById("sendCodeMessage").style.color = "red";
+            return;
+        }
+
+        document.getElementById("hiddenUserID").value = userID;
+        button.disabled = true;
+        button.innerText = "Please wait...";
+
+        try {
+            let response = await fetch("/Account/SendCode", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `userID=${encodeURIComponent(userID)}&__RequestVerificationToken=${document.querySelector("input[name='__RequestVerificationToken']").value}`
+            });
+
+            let data = await response.json();
+            showCustomAlert("Message", data.message);
+
+            if (!data.success) {
+                button.disabled = false;
+                button.innerText = "Send Code";
+            } else {
+                startCountdown(button, 30); // Start 30-sec countdown
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            button.disabled = false;
+            button.innerText = "Send Code";
+        }
+    }
+
+    async function verifyCode() {
+        let userID = document.getElementById("hiddenUserID").value;
+        let code = document.getElementById("code").value;
+        let button = document.getElementById("verifyCodeButton");
+
+        if (!userID || !code) {
+            document.getElementById("verifyCodeMessage").textContent = "Missing User ID or Code!";
+            document.getElementById("verifyCodeMessage").style.color = "red";
+            return;
+        }
+
+        button.disabled = true;
+        button.innerText = "Verifying...";
+
+        try {
+            let response = await fetch("/Account/VerifyCode", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `userID=${encodeURIComponent(userID)}&code=${encodeURIComponent(code)}&__RequestVerificationToken=${document.querySelector("input[name='__RequestVerificationToken']").value}`
+            });
+
+            let data = await response.json();
+            // alert(data.message);
+            showCustomAlert("Message", data.message);
+            if (data.success) window.location.href = "/Account/ResetPassword";
+            else button.disabled = false;
+        } catch (error) {
+            console.error("Error:", error);
+            button.disabled = false;
+        } finally {
+            button.innerText = "Verify";
+        }
+    }
+
+    // Function to show custom alert modal
+    function showCustomAlert(title, message) {
+        document.getElementById("modalTitle").innerText = title;
+        document.getElementById("modalMessage").innerText = message;
+        var myModal = new bootstrap.Modal(document.getElementById("customAlert"));
+        myModal.show();
+    }
+
+    // Function to start a countdown timer on the button
+    function startCountdown(button, seconds) {
+        let remainingTime = seconds;
+        button.innerText = `Wait ${remainingTime}s`;
+
+        let countdown = setInterval(() => {
+            remainingTime--;
+            button.innerText = `Wait ${remainingTime}s`;
+
+            if (remainingTime <= 0) {
+                clearInterval(countdown);
+                button.disabled = false;
+                button.innerText = "Send Code";
+            }
+        }, 1000);
+    }
+
+</script>
+
 
