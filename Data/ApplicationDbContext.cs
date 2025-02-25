@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using LittleArkFoundation.Areas.Admin.Models;
+using LittleArkFoundation.Areas.Admin.Models.Form;
+using LittleArkFoundation.Areas.Admin.Models.Patients;
 
 namespace LittleArkFoundation.Data
 {
@@ -26,6 +28,7 @@ namespace LittleArkFoundation.Data
         public DbSet<RolePermissionsModel> RolePermissions { get; set; }
         public DbSet<PermissionsModel> Permissions { get; set; }
         public DbSet<FormResponsesModel> FormResponses { get; set; }
+        public DbSet<PatientsModel> Patients { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -68,6 +71,11 @@ namespace LittleArkFoundation.Data
             modelBuilder.Entity<FormResponsesModel>()
                 .Property(i => i.Id)
                 .ValueGeneratedOnAdd();
+
+            // Patients
+            modelBuilder.Entity<PatientsModel>()
+                .ToTable("Patients")
+                .HasKey(p => p.PatientID);
 
         }
     }

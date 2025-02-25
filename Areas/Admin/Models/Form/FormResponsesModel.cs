@@ -1,4 +1,4 @@
-﻿namespace LittleArkFoundation.Areas.Admin.Models
+﻿namespace LittleArkFoundation.Areas.Admin.Models.Form
 {
     public class FormResponsesModel
     {

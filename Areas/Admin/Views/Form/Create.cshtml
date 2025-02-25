@@ -1,4 +1,5 @@
-﻿@model FormResponsesModel
+﻿@using LittleArkFoundation.Areas.Admin.Models.Form
+@model FormViewModel
 @{
 	ViewData["Title"] = "Create Form";
 	Layout = "_AdminLayout";
@@ -103,7 +104,7 @@
         <h2 style="text-align: center;">Republic of the Philippines - Department of Health</h2>
         <h3 style="text-align: center;">MSWD Assessment Tool for Children/Adolescent</h3>
 
-        <table>
+        @* <table>
             <tr>
                 <td>
                     Date of Interview: <span class="required">*</span>
@@ -175,77 +176,97 @@
                     <input type="text" required>
                 </td>
             </tr>
-        </table>
+        </table> *@
 
         <div class="section-title">I. Demographic Data </div>
         <table>
             <tr>
                 <td>
                     Patient's Last Name: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Patient.LastName" required>
+                    <span asp-validation-for="Patient.LastName" class="text-danger"></span>
                 </td>
                 <td>
                     Patient's First Name: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Patient.FirstName" required>
+                    <span asp-validation-for="Patient.FirstName" class="text-danger"></span>
                 </td>
                 <td>
                     Patient's Middle Name: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Patient.MiddleName" required>
+                    <span asp-validation-for="Patient.MiddleName" class="text-danger"></span>
                 </td>
             </tr>
             <tr>
                 <td>
                     Date of Birth: <span class="required">*</span>
-                    <input type="date" required>
+                    <input type="date" asp-for="Patient.DateOfBirth" required>
+                    <span asp-validation-for="Patient.DateOfBirth" class="text-danger"></span>
                 </td>
                 <td>
                     Age: <span class="required">*</span>
-                    <input type="number" required>
+                    <input type="number" asp-for="Patient.Age" required>
+                    <span asp-validation-for="Patient.Age" class="text-danger"></span>
                 </td>
                 <td>
                     Sex: <span class="required">*</span>
-                    <select required>
+                    <select asp-for="Patient.Sex" required>
                         <option>Male</option>
                         <option>Female</option>
                     </select>
+                    <span asp-validation-for="Patient.Sex" class="text-danger"></span>
                 </td>
             </tr>
             <tr>
                 <td>
                     Contact No: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Patient.ContactNo" required>
+                    <span asp-validation-for="Patient.ContactNo" class="text-danger"></span>
+
                 </td>
                 <td>
                     Place of Birth: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Patient.PlaceOfBirth" required>
+                    <span asp-validation-for="Patient.PlaceOfBirth" class="text-danger"></span>
+
                 </td>
                 <td>
                     Gender: <span class="required">*</span>
-                    <select required>
+                    <select asp-for="Patient.Gender" required>
                         <option>Male</option>
                         <option>Female</option>
                         <option>LGBTQIA+</option>
                     </select>
+                    <span asp-validation-for="Patient.Gender" class="text-danger"></span>
+
                 </td>
             </tr>
             <tr>
                 <td>
                     Religion: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Patient.Religion" required>
+                    <span asp-validation-for="Patient.Religion" class="text-danger"></span>
+
                 </td>
                 <td colspan="2">
                     Nationality: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Patient.Nationality" required>
+                    <span asp-validation-for="Patient.Nationality" class="text-danger"></span>
+
                 </td>
             </tr>
             <tr>
                 <td>
                     Permanent Address: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Patient.PermanentAddress" required>
+                    <span asp-validation-for="Patient.PermanentAddress" class="text-danger"></span>
+
                 </td>
                 <td colspan="2">
                     Temporary Address: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Patient.TemporaryAddress" required>
+                    <span asp-validation-for="Patient.TemporaryAddress" class="text-danger"></span>
+
                 </td>
             </tr>
 
@@ -256,24 +277,25 @@
                 <td colspan="2">
                     <div class="radio-group">
                         <div class="radio-group">
-                            <input type="radio" name="civil_status" value="Legitimate" required> Legitimate
+                            <input type="radio" asp-for="Patient.CivilStatus" value="Legitimate" required> Legitimate
                         </div>
 
                         <div class="radio-group">
-                            <input type="radio" name="civil_status" value="Ilegitimate"> Ilegitimate
+                            <input type="radio" asp-for="Patient.CivilStatus" value="Illegitimate"> Illegitimate
                         </div>
 
                         <div class="radio-group">
-                            <input type="radio" name="civil_status" value="Married"> Married
+                            <input type="radio" asp-for="Patient.CivilStatus" value="Married"> Married
                         </div>
 
                         <div class="radio-group">
-                            <input type="radio" name="civil_status" value="Common Law"> Common Law
+                            <input type="radio" asp-for="Patient.CivilStatus" value="Common Law"> Common Law
                         </div>
 
                         <div class="radio-group">
-                            <input type="radio" name="civil_status" value="Widowed"> Widowed
+                            <input type="radio" asp-for="Patient.CivilStatus" value="Widowed"> Widowed
                         </div>
+                        <span asp-validation-for="Patient.CivilStatus" class="text-danger"></span>
                     </div>
                 </td>
 
@@ -285,14 +307,13 @@
                 </td>
                 <td colspan="2">
                     <div class="radio-group">
-                        <input type="radio" name="highest_educational_attainment" value="Primary" required> Primary
-                        <input type="radio" name="highest_educational_attainment" value="Secondary"> Secondary
-                        <input type="radio" name="highest_educational_attainment" value="Vocational"> Vocational
-                        <input type="radio" name="highest_educational_attainment" value="Tertiary"> Tertiary
-                        <input type="radio" name="highest_educational_attainment" value="No Educational Attainment"> No Educational Attainment
-                    </div>
+                        <input type="radio" asp-for="Patient.EducationLevel" value="Primary" required> Primary
+                        <input type="radio" asp-for="Patient.EducationLevel" value="Secondary"> Secondary
+                        <input type="radio" asp-for="Patient.EducationLevel" value="Vocational"> Vocational
+                        <input type="radio" asp-for="Patient.EducationLevel" value="Tertiary"> Tertiary
+                        <input type="radio" asp-for="Patient.EducationLevel" value="No Educational Attainment"> No Educational Attainment
+                        <span asp-validation-for="Patient.EducationLevel" class="text-danger"></span>
 
-                    <div class="radio-group">
                     </div>
                 </td>
             </tr>
@@ -300,26 +321,33 @@
             <tr>
                 <td>
                     Occupation: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Patient.Occupation" required>
+                    <span asp-validation-for="Patient.Occupation" class="text-danger"></span>
+
                 </td>
                 <td colspan="2">
                     Patient's Monthly Income: <span class="required">*</span>
-                    <input type="number" required>
+                    <input type="number" asp-for="Patient.MonthlyIncome" required>
+                    <span asp-validation-for="Patient.MonthlyIncome" class="text-danger"></span>
+
                 </td>
             </tr>
 
             <tr>
                 <td>
                     PhilHealth Identification Number (PIN): <span class="required">*</span>
-                    <input type="number" required>
+                    <input type="number" asp-for="Patient.PhilhealthPIN" required>
+                    <span asp-validation-for="Patient.PhilhealthPIN" class="text-danger"></span>
+
                 </td>
 
                 <td colspan="2">
                     <div class="radio-group">
                         PhilHealth Membership (Check): <span class="required">*</span>
                         <div class="radio-group">
-                            <input type="radio" name="pin_membership" value="Direct Contributor" required> Direct Contributor
-                            <input type="radio" name="pin_membership" value="Indirect Contributor"> Indirect Contributor
+                            <input type="radio" asp-for="Patient.PhilhealthMembership" value="Direct Contributor" required> Direct Contributor
+                            <input type="radio" asp-for="Patient.PhilhealthMembership" value="Indirect Contributor"> Indirect Contributor
+                            <span asp-validation-for="Patient.PhilhealthMembership" class="text-danger"></span>
                         </div>
                     </div>
                 </td>
@@ -327,7 +355,7 @@
 
         </table>
 
-        <div class="section-title">Family Composition</div>
+        @* <div class="section-title">Family Composition</div>
         <table id="family-table">
             <tr>
                 <th>Name <span class="required">*</span></th>
@@ -539,7 +567,7 @@
                         <input type="radio" name="water_source" value="Water District"> Water District
                     </div>
                 </td>
-            </tr>
+            </tr> *@
             
             @* --- Add new here --- *@
 
