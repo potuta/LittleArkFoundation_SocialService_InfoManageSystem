@@ -418,20 +418,20 @@
                         <td><button type="button" onclick="removeRow(this)">❌</button></td>
                     </tr> *@
                     <tr>
-                        <td><input type="text" name="FamilyMembers[@i].Name" required></td>
-                        <td><input type="number" name="FamilyMembers[@i].Age" required></td>
-                        <td><input type="date" name="FamilyMembers[@i].DateOfBirth" required></td>
-                        <td><input type="text" name="FamilyMembers[@i].CivilStatus" required></td>
-                        <td><input type="text" name="FamilyMembers[@i].RelationshipToPatient" required></td>
+                        <td><input type="text" asp-for="FamilyMembers[i].Name" required></td>
+                        <td><input type="number" asp-for="FamilyMembers[i].Age" required></td>
+                        <td><input type="date" asp-for="FamilyMembers[i].DateOfBirth" required></td>
+                        <td><input type="text" asp-for="FamilyMembers[i].CivilStatus" required></td>
+                        <td><input type="text" asp-for="FamilyMembers[i].RelationshipToPatient" required></td>
                         <td>
-                            <select name="FamilyMembers[@i].LivingWithChild" required>
+                            <select asp-for="FamilyMembers[i].LivingWithChild" required>
                                 <option value="true">Yes</option>
                                 <option value="false">No</option>
                             </select>
                         </td>
-                        <td><input type="text" name="FamilyMembers[@i].EducationalAttainment" required></td>
-                        <td><input type="text" name="FamilyMembers[@i].Occupation" required></td>
-                        <td><input type="number" name="FamilyMembers[@i].MonthlyIncome" required></td>
+                        <td><input type="text" asp-for="FamilyMembers[i].EducationalAttainment" required></td>
+                        <td><input type="text" asp-for="FamilyMembers[i].Occupation" required></td>
+                        <td><input type="number" asp-for="FamilyMembers[i].MonthlyIncome" required></td>
                         <td><button type="button" onclick="removeRow(this)">❌</button></td>
                     </tr>
                 }

@@ -151,7 +151,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 FamilyMembers = familymembers
             };
 
-            return View();
+            return View(viewModel);
         }
 
         [HttpPost]
@@ -176,8 +176,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             context.Informants.Update(formViewModel.Informants);
             context.Patients.Update(formViewModel.Patient);
 
+            TempData["EditSuccess"] = $"Successfully edited PatientID: {id}";
             await context.SaveChangesAsync();
-            return View("Index");
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
