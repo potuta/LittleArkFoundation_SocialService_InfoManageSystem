@@ -24,7 +24,7 @@ namespace LittleArkFoundation.Areas.Admin.Data
         {
             try
             {
-                using (var connection = new SqlConnection(_connectionString))
+                await using (var connection = new SqlConnection(_connectionString))
                 {
                     string query = "SELECT PasswordHash, PasswordSalt FROM Users WHERE UserID = @UserID";
                     using (var command = new SqlCommand(query, connection))
@@ -72,7 +72,7 @@ namespace LittleArkFoundation.Areas.Admin.Data
                 }
 
                 UsersModel user = null;
-                using (var connection = new SqlConnection(_connectionString))
+                await using (var connection = new SqlConnection(_connectionString))
                 {
                     string query = $"SELECT * FROM Users WHERE UserID = @UserID";
                     using (var command = new SqlCommand(query, connection))
@@ -116,7 +116,7 @@ namespace LittleArkFoundation.Areas.Admin.Data
             {
                 int userID = roleID * 10000;
 
-                using (var context = new ApplicationDbContext(_connectionString))
+                await using (var context = new ApplicationDbContext(_connectionString))
                 {
                     List<UsersModel> usersList = await context.Users
                         .Where(r => r.RoleID == roleID)

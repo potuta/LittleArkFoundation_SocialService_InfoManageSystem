@@ -23,7 +23,7 @@ namespace LittleArkFoundation.Areas.Admin.Data
         public async Task<IEnumerable<RolesModel>> GetRolesAsync(string dbType)
         {
             string connectionString = _connectionService.GetConnectionString(dbType);
-            using (var context = new ApplicationDbContext(connectionString))
+            await using (var context = new ApplicationDbContext(connectionString))
             {
                 return await Task.Run(() => context.Roles.ToList());
             }
@@ -33,10 +33,10 @@ namespace LittleArkFoundation.Areas.Admin.Data
         {
             try
             {
-                using (var connection = new SqlConnection(_connectionString))
+                await using (var connection = new SqlConnection(_connectionString))
                 {
                     string query = $"SELECT RoleName FROM Roles WHERE RoleID = @RoleID";
-                    using (var command = new SqlCommand(query, connection))
+                    await using (var command = new SqlCommand(query, connection))
                     {
                         command.Parameters.AddWithValue("@RoleID", roleID);
                         await connection.OpenAsync();

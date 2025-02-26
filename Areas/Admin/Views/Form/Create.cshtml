@@ -1,8 +1,10 @@
-﻿@model FormResponsesModel
+﻿@using LittleArkFoundation.Areas.Admin.Models.Form
+@using LittleArkFoundation.Areas.Admin.Models.FamilyComposition
+@model FormViewModel
 @{
-	ViewData["Title"] = "Create Form";
-	Layout = "_AdminLayout";
-	string dbType = ViewBag.dbType ?? "main";
+    ViewData["Title"] = "Create Form";
+    Layout = "_AdminLayout";
+    string dbType = ViewBag.dbType ?? "main";
 }
 
 @* <h2>Create Form</h2>
@@ -39,61 +41,56 @@
 </form> *@
 
 <style>
-    /* body {
-        font-family: Arial, sans-serif;
-        margin: 20px;
-    } */
-
     .form-container {
-        width: 100%;
-        max-width: 900px;
-        margin: auto;
-        border: 1px solid #000;
-        padding: 20px;
+    width: 100%;
+    max-width: 900px;
+    margin: auto;
+    border: 1px solid #000;
+    padding: 20px;
     }
 
     table {
-        width: 100%;
-        border-collapse: collapse;
+    width: 100%;
+    border-collapse: collapse;
     }
 
     th, td {
-        border: 1px solid black;
-        padding: 5px;
-        text-align: left;
+    border: 1px solid black;
+    padding: 5px;
+    text-align: left;
     }
 
     .section-title {
-        background-color: #f2f2f2;
-        font-weight: bold;
-        padding: 5px;
-        text-align: center;
+    background-color: #f2f2f2;
+    font-weight: bold;
+    padding: 5px;
+    text-align: center;
     }
 
     input, select {
-        width: 98%;
-        font-size: large;
+    width: 98%;
+    font-size: large;
     }
 
     .required {
-        color: red;
-        font-weight: bold;
+    color: red;
+    font-weight: bold;
     }
 
     .checkbox-group, .radio-group {
-        display: flex;
-        align-items: center;
-        gap: 10px; /* Adjust spacing between checkbox/radio and text */
-        margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Adjust spacing between checkbox/radio and text */
+    margin-bottom: 5px;
     }
 
-        .checkbox-group input[type="checkbox"],
-        .radio-group input[type="radio"] {
-            transform: scale(1.2); /* Slightly increase size for better visibility */
-            padding: 0;
-            margin: 0;
-            width: 2rem;
-        }
+    .checkbox-group input[type="checkbox"],
+    .radio-group input[type="radio"] {
+    transform: scale(1.2); /* Slightly increase size for better visibility */
+    padding: 0;
+    margin: 0;
+    width: 2rem;
+    }
 
 </style>
 
@@ -107,31 +104,43 @@
             <tr>
                 <td>
                     Date of Interview: <span class="required">*</span>
-                    <input type="date" id="dateInput" required>
+                    <input type="date" asp-for="Assessments.DateOfInterview" id="dateInput" required>
+                    <span asp-validation-for="Assessments.DateOfInterview" class="text-danger"></span>
+
                 </td>
                 <td>
                     Time of Interview: <span class="required">*</span>
-                    <input type="time" id="timeInput" required>
+                    <input type="time" asp-for="Assessments.TimeOfInterview" id="timeInput" required>
+                    <span asp-validation-for="Assessments.TimeOfInterview" class="text-danger"></span>
+
                 </td>
             </tr>
             <tr>
                 <td>
                     Basic Ward: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Assessments.BasicWard" required>
+                    <span asp-validation-for="Assessments.BasicWard" class="text-danger"></span>
+
                 </td>
                 <td>
                     Non-Basic Ward: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Assessments.NonBasicWard" required>
+                    <span asp-validation-for="Assessments.NonBasicWard" class="text-danger"></span>
+
                 </td>
             </tr>
             <tr>
                 <td>
                     Health Record No: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Assessments.HealthRecordNo" required>
+                    <span asp-validation-for="Assessments.HealthRecordNo" class="text-danger"></span>
+
                 </td>
                 <td>
                     MSWD No: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Assessments.MSWDNo" required>
+                    <span asp-validation-for="Assessments.MSWDNo" class="text-danger"></span>
+
                 </td>
             </tr>
         </table>
@@ -141,15 +150,21 @@
             <tr>
                 <td>
                     Referral Name: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Referrals.Name" required>
+                    <span asp-validation-for="Referrals.Name" class="text-danger"></span>
+
                 </td>
                 <td>
                     Address: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Referrals.Address" required>
+                    <span asp-validation-for="Referrals.Address" class="text-danger"></span>
+
                 </td>
                 <td>
                     Contact No: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Referrals.ContactNo" required>
+                    <span asp-validation-for="Referrals.ContactNo" class="text-danger"></span>
+
                 </td>
             </tr>
 
@@ -160,19 +175,27 @@
             <tr>
                 <td>
                     Informant Name: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Informants.Name" required>
+                    <span asp-validation-for="Informants.Name" class="text-danger"></span>
+
                 </td>
                 <td>
                     Relation to Patient: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Informants.RelationToPatient" required>
+                    <span asp-validation-for="Informants.RelationToPatient" class="text-danger"></span>
+
                 </td>
                 <td>
                     Contact No: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Informants.ContactNo" required>
+                    <span asp-validation-for="Informants.ContactNo" class="text-danger"></span>
+
                 </td>
                 <td>
                     Address: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Informants.Address" required>
+                    <span asp-validation-for="Informants.Address" class="text-danger"></span>
+
                 </td>
             </tr>
         </table>
@@ -182,70 +205,90 @@
             <tr>
                 <td>
                     Patient's Last Name: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Patient.LastName" required>
+                    <span asp-validation-for="Patient.LastName" class="text-danger"></span>
                 </td>
                 <td>
                     Patient's First Name: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Patient.FirstName" required>
+                    <span asp-validation-for="Patient.FirstName" class="text-danger"></span>
                 </td>
                 <td>
                     Patient's Middle Name: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Patient.MiddleName" required>
+                    <span asp-validation-for="Patient.MiddleName" class="text-danger"></span>
                 </td>
             </tr>
             <tr>
                 <td>
                     Date of Birth: <span class="required">*</span>
-                    <input type="date" required>
+                    <input type="date" asp-for="Patient.DateOfBirth" required>
+                    <span asp-validation-for="Patient.DateOfBirth" class="text-danger"></span>
                 </td>
                 <td>
                     Age: <span class="required">*</span>
-                    <input type="number" required>
+                    <input type="number" asp-for="Patient.Age" required>
+                    <span asp-validation-for="Patient.Age" class="text-danger"></span>
                 </td>
                 <td>
                     Sex: <span class="required">*</span>
-                    <select required>
+                    <select asp-for="Patient.Sex" required>
                         <option>Male</option>
                         <option>Female</option>
                     </select>
+                    <span asp-validation-for="Patient.Sex" class="text-danger"></span>
                 </td>
             </tr>
             <tr>
                 <td>
                     Contact No: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Patient.ContactNo" required>
+                    <span asp-validation-for="Patient.ContactNo" class="text-danger"></span>
+
                 </td>
                 <td>
                     Place of Birth: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Patient.PlaceOfBirth" required>
+                    <span asp-validation-for="Patient.PlaceOfBirth" class="text-danger"></span>
+
                 </td>
                 <td>
                     Gender: <span class="required">*</span>
-                    <select required>
+                    <select asp-for="Patient.Gender" required>
                         <option>Male</option>
                         <option>Female</option>
                         <option>LGBTQIA+</option>
                     </select>
+                    <span asp-validation-for="Patient.Gender" class="text-danger"></span>
+
                 </td>
             </tr>
             <tr>
                 <td>
                     Religion: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Patient.Religion" required>
+                    <span asp-validation-for="Patient.Religion" class="text-danger"></span>
+
                 </td>
                 <td colspan="2">
                     Nationality: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Patient.Nationality" required>
+                    <span asp-validation-for="Patient.Nationality" class="text-danger"></span>
+
                 </td>
             </tr>
             <tr>
                 <td>
                     Permanent Address: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Patient.PermanentAddress" required>
+                    <span asp-validation-for="Patient.PermanentAddress" class="text-danger"></span>
+
                 </td>
                 <td colspan="2">
                     Temporary Address: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Patient.TemporaryAddress" required>
+                    <span asp-validation-for="Patient.TemporaryAddress" class="text-danger"></span>
+
                 </td>
             </tr>
 
@@ -256,24 +299,25 @@
                 <td colspan="2">
                     <div class="radio-group">
                         <div class="radio-group">
-                            <input type="radio" name="civil_status" value="Legitimate" required> Legitimate
+                            <input type="radio" asp-for="Patient.CivilStatus" value="Legitimate" required> Legitimate
                         </div>
 
                         <div class="radio-group">
-                            <input type="radio" name="civil_status" value="Ilegitimate"> Ilegitimate
+                            <input type="radio" asp-for="Patient.CivilStatus" value="Illegitimate"> Illegitimate
                         </div>
 
                         <div class="radio-group">
-                            <input type="radio" name="civil_status" value="Married"> Married
+                            <input type="radio" asp-for="Patient.CivilStatus" value="Married"> Married
                         </div>
 
                         <div class="radio-group">
-                            <input type="radio" name="civil_status" value="Common Law"> Common Law
+                            <input type="radio" asp-for="Patient.CivilStatus" value="Common Law"> Common Law
                         </div>
 
                         <div class="radio-group">
-                            <input type="radio" name="civil_status" value="Widowed"> Widowed
+                            <input type="radio" asp-for="Patient.CivilStatus" value="Widowed"> Widowed
                         </div>
+                        <span asp-validation-for="Patient.CivilStatus" class="text-danger"></span>
                     </div>
                 </td>
 
@@ -285,14 +329,13 @@
                 </td>
                 <td colspan="2">
                     <div class="radio-group">
-                        <input type="radio" name="highest_educational_attainment" value="Primary" required> Primary
-                        <input type="radio" name="highest_educational_attainment" value="Secondary"> Secondary
-                        <input type="radio" name="highest_educational_attainment" value="Vocational"> Vocational
-                        <input type="radio" name="highest_educational_attainment" value="Tertiary"> Tertiary
-                        <input type="radio" name="highest_educational_attainment" value="No Educational Attainment"> No Educational Attainment
-                    </div>
+                        <input type="radio" asp-for="Patient.EducationLevel" value="Primary" required> Primary
+                        <input type="radio" asp-for="Patient.EducationLevel" value="Secondary"> Secondary
+                        <input type="radio" asp-for="Patient.EducationLevel" value="Vocational"> Vocational
+                        <input type="radio" asp-for="Patient.EducationLevel" value="Tertiary"> Tertiary
+                        <input type="radio" asp-for="Patient.EducationLevel" value="No Educational Attainment"> No Educational Attainment
+                        <span asp-validation-for="Patient.EducationLevel" class="text-danger"></span>
 
-                    <div class="radio-group">
                     </div>
                 </td>
             </tr>
@@ -300,26 +343,33 @@
             <tr>
                 <td>
                     Occupation: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Patient.Occupation" required>
+                    <span asp-validation-for="Patient.Occupation" class="text-danger"></span>
+
                 </td>
                 <td colspan="2">
                     Patient's Monthly Income: <span class="required">*</span>
-                    <input type="number" required>
+                    <input type="number" asp-for="Patient.MonthlyIncome" required>
+                    <span asp-validation-for="Patient.MonthlyIncome" class="text-danger"></span>
+
                 </td>
             </tr>
 
             <tr>
                 <td>
                     PhilHealth Identification Number (PIN): <span class="required">*</span>
-                    <input type="number" required>
+                    <input type="number" asp-for="Patient.PhilhealthPIN" required>
+                    <span asp-validation-for="Patient.PhilhealthPIN" class="text-danger"></span>
+
                 </td>
 
                 <td colspan="2">
                     <div class="radio-group">
                         PhilHealth Membership (Check): <span class="required">*</span>
                         <div class="radio-group">
-                            <input type="radio" name="pin_membership" value="Direct Contributor" required> Direct Contributor
-                            <input type="radio" name="pin_membership" value="Indirect Contributor"> Indirect Contributor
+                            <input type="radio" asp-for="Patient.PhilhealthMembership" value="Direct Contributor" required> Direct Contributor
+                            <input type="radio" asp-for="Patient.PhilhealthMembership" value="Indirect Contributor"> Indirect Contributor
+                            <span asp-validation-for="Patient.PhilhealthMembership" class="text-danger"></span>
                         </div>
                     </div>
                 </td>
@@ -341,23 +391,45 @@
                 <th>Monthly Income <span class="required">*</span></th>
                 <th>Action</th>
             </tr>
-            <tr>
-                <td><input type="text" name="family[0][name]" required></td>
-                <td><input type="number" name="family[0][age]" required></td>
-                <td><input type="date" name="family[0][dob]" required></td>
-                <td><input type="text" name="family[0][civil_status]" required></td>
-                <td><input type="text" name="family[0][relationship]" required></td>
-                <td><select name="family[0][living]" required><option>Yes</option><option>No</option></select></td>
-                <td><input type="text" name="family[0][education]" required></td>
-                <td><input type="text" name="family[0][occupation]" required></td>
-                <td><input type="number" name="family[0][income]" required></td>
-                <td><button type="button" onclick="removeRow(this)">❌</button></td>
-            </tr>
+            <tbody id="family-body">
+                @for (int i = 0; i < Model.FamilyMembers.Count; i++)
+                {
+                    @* <tr>
+                        <td><input type="text" name="family[0][name]" required></td>
+                        <td><input type="number" name="family[0][age]" required></td>
+                        <td><input type="date" name="family[0][dob]" required></td>
+                        <td><input type="text" name="family[0][civil_status]" required></td>
+                        <td><input type="text" name="family[0][relationship]" required></td>
+                        <td><select name="family[0][living]" required><option>Yes</option><option>No</option></select></td>
+                        <td><input type="text" name="family[0][education]" required></td>
+                        <td><input type="text" name="family[0][occupation]" required></td>
+                        <td><input type="number" name="family[0][income]" required></td>
+                        <td><button type="button" onclick="removeRow(this)">❌</button></td>
+                    </tr> *@
+                    <tr>
+                        <td><input type="text" name="FamilyMembers[@i].Name" required></td>
+                        <td><input type="number" name="FamilyMembers[@i].Age" required></td>
+                        <td><input type="date" name="FamilyMembers[@i].DateOfBirth" required></td>
+                        <td><input type="text" name="FamilyMembers[@i].CivilStatus" required></td>
+                        <td><input type="text" name="FamilyMembers[@i].RelationshipToPatient" required></td>
+                        <td>
+                            <select name="FamilyMembers[@i].LivingWithChild" required>
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </td>
+                        <td><input type="text" name="FamilyMembers[@i].EducationalAttainment" required></td>
+                        <td><input type="text" name="FamilyMembers[@i].Occupation" required></td>
+                        <td><input type="number" name="FamilyMembers[@i].MonthlyIncome" required></td>
+                        <td><button type="button" onclick="removeRow(this)">❌</button></td>
+                    </tr>
+                }
+            </tbody>
         </table>
 
         <button type="button" onclick="addRow()">➕ Add Row</button>
 
-        <div class="section-title">II. MSWD Classification</div>
+        @* <div class="section-title">II. MSWD Classification</div>
         <table>
             <tr>
                 <td>Main Classification:</td>
@@ -539,7 +611,7 @@
                         <input type="radio" name="water_source" value="Water District"> Water District
                     </div>
                 </td>
-            </tr>
+            </tr> *@
             
             @* --- Add new here --- *@
 
@@ -579,15 +651,20 @@
         let newRow = table.insertRow(-1); // Insert at the end
 
         let cols = `
-            <td><input type="text" name="family[${rowCount}][name]" required></td>
-            <td><input type="number" name="family[${rowCount}][age]" required></td>
-            <td><input type="date" name="family[${rowCount}][dob]" required></td>
-            <td><input type="text" name="family[${rowCount}][civil_status]" required></td>
-            <td><input type="text" name="family[${rowCount}][relationship]" required></td>
-            <td><select name="family[${rowCount}][living]" required><option>Yes</option><option>No</option></select></td>
-            <td><input type="text" name="family[${rowCount}][education]" required></td>
-            <td><input type="text" name="family[${rowCount}][occupation]" required></td>
-            <td><input type="number" name="family[${rowCount}][income]" required></td>
+            <td><input type="text" name="FamilyMembers[${rowCount}].Name" required></td>
+            <td><input type="number" name="FamilyMembers[${rowCount}].Age" required></td>
+            <td><input type="date" name="FamilyMembers[${rowCount}].DateOfBirth" required></td>
+            <td><input type="text" name="FamilyMembers[${rowCount}].CivilStatus" required></td>
+            <td><input type="text" name="FamilyMembers[${rowCount}].RelationshipToPatient" required></td>
+            <td>
+                <select name="FamilyMembers[${rowCount}].LivingWithChild" required>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                </select>
+            </td>
+            <td><input type="text" name="FamilyMembers[${rowCount}].EducationalAttainment" required></td>
+            <td><input type="text" name="FamilyMembers[${rowCount}].Occupation" required></td>
+            <td><input type="number" name="FamilyMembers[${rowCount}].MonthlyIncome" required></td>
             <td><button type="button" onclick="removeRow(this)">❌</button></td>
         `;
         newRow.innerHTML = cols;
@@ -609,15 +686,15 @@
         let table = document.getElementById("family-table");
         for (let i = 1; i < table.rows.length; i++) { // Skip header row
             let row = table.rows[i];
-            row.cells[0].querySelector("input").name = `family[${i - 1}][name]`;
-            row.cells[1].querySelector("input").name = `family[${i - 1}][age]`;
-            row.cells[2].querySelector("input").name = `family[${i - 1}][dob]`;
-            row.cells[3].querySelector("input").name = `family[${i - 1}][civil_status]`;
-            row.cells[4].querySelector("input").name = `family[${i - 1}][relationship]`;
-            row.cells[5].querySelector("select").name = `family[${i - 1}][living]`;
-            row.cells[6].querySelector("input").name = `family[${i - 1}][education]`;
-            row.cells[7].querySelector("input").name = `family[${i - 1}][occupation]`;
-            row.cells[8].querySelector("input").name = `family[${i - 1}][income]`;
+            row.cells[0].querySelector("input").name = `FamilyMembers[${i - 1}].Name`;
+            row.cells[1].querySelector("input").name = `FamilyMembers[${i - 1}].Age`;
+            row.cells[2].querySelector("input").name = `FamilyMembers[${i - 1}].DateOfBirth`;
+            row.cells[3].querySelector("input").name = `FamilyMembers[${i - 1}].CivilStatus`;
+            row.cells[4].querySelector("input").name = `FamilyMembers[${i - 1}].RelationshipToPatient`;
+            row.cells[5].querySelector("select").name = `FamilyMembers[${i - 1}].LivingWithChild`;
+            row.cells[6].querySelector("input").name = `FamilyMembers[${i - 1}].EducationalAttainment`;
+            row.cells[7].querySelector("input").name = `FamilyMembers[${i - 1}].Occupation`;
+            row.cells[8].querySelector("input").name = `FamilyMembers[${i - 1}].MonthlyIncome`;
         }
     }
 

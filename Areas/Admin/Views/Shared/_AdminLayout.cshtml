@@ -22,7 +22,7 @@
 <body>
     <nav class="navbar-top">
         <div class="left-buttons">
-            <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="btn-navbar"><b>Information Management System</b></a>
+            <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="btn-navbar"><b>MSWDLINK</b></a>
             <a href="javascript:void(0);" class="btn-navbar" id="menu" onclick="toggleSidebar()">
                 <i class='bx bx-menu'></i> <!-- Menu Icon -->
             </a>
@@ -63,8 +63,8 @@
             <div class="collapse mt-2" id="mswdCollapse">
                 <ul class="list-group list-unstyled text-center">
                     <li>
-                        <a asp-area="Admin" asp-controller="Form" asp-action="Index" class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Form" ? "active" : "")">
-                            Social Service Form
+                        <a asp-area="Admin" asp-controller="Form" asp-action="Index" class="btn-left-sub @(ViewContext.RouteData.Values["controller"]?.ToString() == "Form" ? "active" : "")">
+                            Admission
                         </a> 
                     </li>
                 </ul>
@@ -85,19 +85,19 @@
                 <ul class="list-group list-unstyled text-center">
                     <li>
                         <a asp-area="Admin" asp-controller="Users" asp-action="Index"
-                           class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Users" ? "active" : "")">
+                           class="btn-left-sub @(ViewContext.RouteData.Values["controller"]?.ToString() == "Users" ? "active" : "")">
                             Users
                         </a>
                     </li>
                     <li>
                         <a asp-area="Admin" asp-controller="Roles" asp-action="Index"
-                           class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Roles" ? "active" : "")">
+                           class="btn-left-sub @(ViewContext.RouteData.Values["controller"]?.ToString() == "Roles" ? "active" : "")">
                             Roles
                         </a>
                     </li>
                     <li>
                         <a asp-area="Admin" asp-controller="Permissions" asp-action="Index"
-                           class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Permissions" ? "active" : "")">
+                           class="btn-left-sub @(ViewContext.RouteData.Values["controller"]?.ToString() == "Permissions" ? "active" : "")">
                             Permissions
                         </a>
                     </li>
@@ -135,6 +135,15 @@
                     iconElement.classList.remove("bx-chevron-up");
                     iconElement.classList.add("bx-chevron-down");
                 }
+            }
+
+            // Ensure default state is collapsed if LocalStorage is empty
+            if (!localStorage.getItem(usersCollapseKey)) {
+                localStorage.setItem(usersCollapseKey, "closed");
+            }
+
+            if (!localStorage.getItem(mswdCollapseKey)) {
+                localStorage.setItem(mswdCollapseKey, "closed");
             }
 
             // Restore state from LocalStorage

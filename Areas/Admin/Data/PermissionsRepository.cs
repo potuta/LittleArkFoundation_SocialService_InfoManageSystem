@@ -25,7 +25,7 @@ namespace LittleArkFoundation.Areas.Admin.Data
             {
                 var permissions = new List<string>();
 
-                using (var connection = new SqlConnection(_connectionString))
+                await using (var connection = new SqlConnection(_connectionString))
                 {
 
                     string query = @"
@@ -65,7 +65,7 @@ namespace LittleArkFoundation.Areas.Admin.Data
         {
             try
             {
-                using (var context = new ApplicationDbContext(_connectionString))
+                await using (var context = new ApplicationDbContext(_connectionString))
                 {
                     List<PermissionsModel> permissions = context.Permissions.ToList();
                     return permissions.Count + 1;
