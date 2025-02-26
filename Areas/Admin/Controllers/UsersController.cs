@@ -180,7 +180,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                 string connectionString = _connectionService.GetConnectionString(dbType);
 
-                using (var context = new ApplicationDbContext(connectionString))
+                await using (var context = new ApplicationDbContext(connectionString))
                 {
                     int newUserID = await new UsersRepository(connectionString).GenerateUserIDAsync(viewModel.NewUser.RoleID);
                     viewModel.NewUser.UserID = newUserID;
@@ -230,7 +230,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         public async Task<IActionResult> Edit(string dbType, int id)
         {
             string connectionString = _connectionService.GetConnectionString(dbType);
-            using (var context = new ApplicationDbContext(connectionString))
+            await using (var context = new ApplicationDbContext(connectionString))
             {
                 var user = await context.Users.FindAsync(id);
                 if (user == null) return NotFound();
@@ -273,7 +273,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                 LoggingService.LogInformation($"User edit attempt. UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
 
-                using (var context = new ApplicationDbContext(connectionString))
+                await using (var context = new ApplicationDbContext(connectionString))
                 {
                     //context.Entry(user).State = EntityState.Modified;
                     //context.Update(user.NewUser);
@@ -310,7 +310,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 string connectionString = _connectionService.GetConnectionString(dbType);
 
                 LoggingService.LogInformation($"User archive attempt. UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
-                using (var context = new ApplicationDbContext(connectionString))
+                await using (var context = new ApplicationDbContext(connectionString))
                 {
                     var user = await context.Users.FindAsync(id);
 
@@ -360,7 +360,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                 LoggingService.LogInformation($"User unarchive attempt. UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
 
-                using (var context = new ApplicationDbContext(connectionString))
+                await using (var context = new ApplicationDbContext(connectionString))
                 {
                     var userArchive = await context.UsersArchives.FindAsync(id);
 

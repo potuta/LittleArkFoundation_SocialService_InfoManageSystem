@@ -2,6 +2,10 @@ using Microsoft.EntityFrameworkCore;
 using LittleArkFoundation.Areas.Admin.Models;
 using LittleArkFoundation.Areas.Admin.Models.Form;
 using LittleArkFoundation.Areas.Admin.Models.Patients;
+using LittleArkFoundation.Areas.Admin.Models.Assessments;
+using LittleArkFoundation.Areas.Admin.Models.Referrals;
+using LittleArkFoundation.Areas.Admin.Models.Informants;
+using LittleArkFoundation.Areas.Admin.Models.FamilyComposition;
 
 namespace LittleArkFoundation.Data
 {
@@ -29,6 +33,10 @@ namespace LittleArkFoundation.Data
         public DbSet<PermissionsModel> Permissions { get; set; }
         public DbSet<FormResponsesModel> FormResponses { get; set; }
         public DbSet<PatientsModel> Patients { get; set; }
+        public DbSet<AssessmentsModel> Assessments { get; set; } 
+        public DbSet<ReferralsModel> Referrals { get; set; }
+        public DbSet<InformantsModel> Informants { get; set; }
+        public DbSet<FamilyCompositionModel> FamilyComposition { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -77,6 +85,41 @@ namespace LittleArkFoundation.Data
                 .ToTable("Patients")
                 .HasKey(p => p.PatientID);
 
+            // Assessments
+            modelBuilder.Entity<AssessmentsModel>()
+                .ToTable("Assessments")
+                .HasKey(a => a.AssessmentID);
+
+            modelBuilder.Entity<AssessmentsModel>()
+                .Property(a => a.AssessmentID)
+                .ValueGeneratedOnAdd();
+
+            // Referrals
+            modelBuilder.Entity<ReferralsModel>()
+                .ToTable("Referrals")
+                .HasKey(r => r.ReferralID);
+
+            modelBuilder.Entity<ReferralsModel>()
+                .Property(r => r.ReferralID)
+                .ValueGeneratedOnAdd();
+
+            // Informants
+            modelBuilder.Entity<InformantsModel>()
+                .ToTable("Informants")
+                .HasKey(i => i.InformantID);
+
+            modelBuilder.Entity<InformantsModel>()
+                .Property(i => i.InformantID)
+                .ValueGeneratedOnAdd();
+
+            // FamilyComposition
+            modelBuilder.Entity<FamilyCompositionModel>()
+                .ToTable("FamilyComposition")
+                .HasKey(i => i.Id);
+
+            modelBuilder.Entity<FamilyCompositionModel>()
+                .Property(i => i.Id)
+                .ValueGeneratedOnAdd();
         }
     }
 }
