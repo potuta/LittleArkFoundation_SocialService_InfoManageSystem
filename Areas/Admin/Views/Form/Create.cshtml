@@ -95,7 +95,7 @@
 </style>
 
 <form asp-action="Create" asp-route-dbType="@dbType" method="post">
-
+    @Html.AntiForgeryToken()
     <div class="form-container">
         <h2 style="text-align: center;">Republic of the Philippines - Department of Health</h2>
         <h3 style="text-align: center;">MSWD Assessment Tool for Children/Adolescent</h3>

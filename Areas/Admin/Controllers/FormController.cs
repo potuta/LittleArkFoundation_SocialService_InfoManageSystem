@@ -134,12 +134,50 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             await using var context = new ApplicationDbContext(connectionString);
 
+            var assessment = await context.Assessments.FirstOrDefaultAsync(a => a.PatientID == id);
+            var referral = await context.Referrals.FirstOrDefaultAsync(r => r.PatientID == id);
+            var informant = await context.Informants.FirstOrDefaultAsync(i => i.PatientID == id);
+            var patient = await context.Patients.FindAsync(id);
+            var familymembers = await context.FamilyComposition
+                                .Where(f => f.PatientID == id)
+                                .ToListAsync();
+
             var viewModel = new FormViewModel()
             {
-
+                Assessments = assessment,
+                Referrals = referral,
+                Informants = informant,
+                Patient = patient,
+                FamilyMembers = familymembers
             };
 
             return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(string dbType, FormViewModel formViewModel)
+        {
+            string connectionString = _connectionService.GetConnectionString(dbType);
+
+            await using var context = new ApplicationDbContext(connectionString);
+            int id = formViewModel.Patient.PatientID;
+            var familyMembers = context.FamilyComposition.Where(f => f.PatientID == id);
+            context.FamilyComposition.RemoveRange(familyMembers);
+
+            foreach (var familyMember in formViewModel.FamilyMembers)
+            {
+                familyMember.PatientID = id;
+            }
+
+            await context.FamilyComposition.AddRangeAsync(formViewModel.FamilyMembers);
+            context.Assessments.Update(formViewModel.Assessments);
+            context.Referrals.Update(formViewModel.Referrals);
+            context.Informants.Update(formViewModel.Informants);
+            context.Patients.Update(formViewModel.Patient);
+
+            await context.SaveChangesAsync();
+            return View("Index");
         }
 
         [HttpPost]

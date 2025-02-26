@@ -8,7 +8,6 @@
     string dbType = ViewBag.dbType ?? "main";
 }
 
-
 @* <h2>Create Form</h2>
 <hr/>
 
@@ -96,8 +95,18 @@
 
 </style>
 
-<form asp-action="Create" asp-route-dbType="@dbType" method="post">
-
+<form asp-action="Edit" asp-route-dbType="@dbType" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Assessments.AssessmentID" />
+    <input type="hidden" asp-for="Assessments.PatientID" />
+    <input type="hidden" asp-for="Referrals.ReferralID" />
+    <input type="hidden" asp-for="Referrals.PatientID" />
+    <input type="hidden" asp-for="Referrals.DateOfReferral" />
+    <input type="hidden" asp-for="Informants.InformantID" />
+    <input type="hidden" asp-for="Informants.PatientID" />
+    <input type="hidden" asp-for="Informants.DateOfInformant" />
+    <input type="hidden" asp-for="Patient.PatientID" />
+    
     <div class="form-container">
         <h2 style="text-align: center;">Republic of the Philippines - Department of Health</h2>
         <h3 style="text-align: center;">MSWD Assessment Tool for Children/Adolescent</h3>
@@ -620,7 +629,7 @@
         </table>
 
         <div class="mt-2" style="text-align: center;">
-            <button type="submit" class="btn btn-sm btn-primary">Submit</button>
+            <button type="submit" class="btn btn-sm btn-primary">Save Changes</button>
         </div>
         <div class="mt-2" style="text-align: center;">
             <a class="btn btn-sm btn-outline-primary" asp-action="Index">Back to List</a>
