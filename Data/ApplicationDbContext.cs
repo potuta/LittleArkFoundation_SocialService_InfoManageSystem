@@ -5,6 +5,7 @@ using LittleArkFoundation.Areas.Admin.Models.Patients;
 using LittleArkFoundation.Areas.Admin.Models.Assessments;
 using LittleArkFoundation.Areas.Admin.Models.Referrals;
 using LittleArkFoundation.Areas.Admin.Models.Informants;
+using LittleArkFoundation.Areas.Admin.Models.FamilyComposition;
 
 namespace LittleArkFoundation.Data
 {
@@ -35,6 +36,7 @@ namespace LittleArkFoundation.Data
         public DbSet<AssessmentsModel> Assessments { get; set; } 
         public DbSet<ReferralsModel> Referrals { get; set; }
         public DbSet<InformantsModel> Informants { get; set; }
+        public DbSet<FamilyCompositionModel> FamilyComposition { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -108,6 +110,15 @@ namespace LittleArkFoundation.Data
 
             modelBuilder.Entity<InformantsModel>()
                 .Property(i => i.InformantID)
+                .ValueGeneratedOnAdd();
+
+            // FamilyComposition
+            modelBuilder.Entity<FamilyCompositionModel>()
+                .ToTable("FamilyComposition")
+                .HasKey(i => i.Id);
+
+            modelBuilder.Entity<FamilyCompositionModel>()
+                .Property(i => i.Id)
                 .ValueGeneratedOnAdd();
         }
     }

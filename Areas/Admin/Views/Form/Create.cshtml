@@ -1,9 +1,10 @@
 ﻿@using LittleArkFoundation.Areas.Admin.Models.Form
+@using LittleArkFoundation.Areas.Admin.Models.FamilyComposition
 @model FormViewModel
 @{
-	ViewData["Title"] = "Create Form";
-	Layout = "_AdminLayout";
-	string dbType = ViewBag.dbType ?? "main";
+    ViewData["Title"] = "Create Form";
+    Layout = "_AdminLayout";
+    string dbType = ViewBag.dbType ?? "main";
 }
 
 @* <h2>Create Form</h2>
@@ -40,61 +41,56 @@
 </form> *@
 
 <style>
-    /* body {
-        font-family: Arial, sans-serif;
-        margin: 20px;
-    } */
-
     .form-container {
-        width: 100%;
-        max-width: 900px;
-        margin: auto;
-        border: 1px solid #000;
-        padding: 20px;
+    width: 100%;
+    max-width: 900px;
+    margin: auto;
+    border: 1px solid #000;
+    padding: 20px;
     }
 
     table {
-        width: 100%;
-        border-collapse: collapse;
+    width: 100%;
+    border-collapse: collapse;
     }
 
     th, td {
-        border: 1px solid black;
-        padding: 5px;
-        text-align: left;
+    border: 1px solid black;
+    padding: 5px;
+    text-align: left;
     }
 
     .section-title {
-        background-color: #f2f2f2;
-        font-weight: bold;
-        padding: 5px;
-        text-align: center;
+    background-color: #f2f2f2;
+    font-weight: bold;
+    padding: 5px;
+    text-align: center;
     }
 
     input, select {
-        width: 98%;
-        font-size: large;
+    width: 98%;
+    font-size: large;
     }
 
     .required {
-        color: red;
-        font-weight: bold;
+    color: red;
+    font-weight: bold;
     }
 
     .checkbox-group, .radio-group {
-        display: flex;
-        align-items: center;
-        gap: 10px; /* Adjust spacing between checkbox/radio and text */
-        margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Adjust spacing between checkbox/radio and text */
+    margin-bottom: 5px;
     }
 
-        .checkbox-group input[type="checkbox"],
-        .radio-group input[type="radio"] {
-            transform: scale(1.2); /* Slightly increase size for better visibility */
-            padding: 0;
-            margin: 0;
-            width: 2rem;
-        }
+    .checkbox-group input[type="checkbox"],
+    .radio-group input[type="radio"] {
+    transform: scale(1.2); /* Slightly increase size for better visibility */
+    padding: 0;
+    margin: 0;
+    width: 2rem;
+    }
 
 </style>
 
@@ -381,7 +377,7 @@
 
         </table>
 
-        @* <div class="section-title">Family Composition</div>
+        <div class="section-title">Family Composition</div>
         <table id="family-table">
             <tr>
                 <th>Name <span class="required">*</span></th>
@@ -395,23 +391,45 @@
                 <th>Monthly Income <span class="required">*</span></th>
                 <th>Action</th>
             </tr>
-            <tr>
-                <td><input type="text" name="family[0][name]" required></td>
-                <td><input type="number" name="family[0][age]" required></td>
-                <td><input type="date" name="family[0][dob]" required></td>
-                <td><input type="text" name="family[0][civil_status]" required></td>
-                <td><input type="text" name="family[0][relationship]" required></td>
-                <td><select name="family[0][living]" required><option>Yes</option><option>No</option></select></td>
-                <td><input type="text" name="family[0][education]" required></td>
-                <td><input type="text" name="family[0][occupation]" required></td>
-                <td><input type="number" name="family[0][income]" required></td>
-                <td><button type="button" onclick="removeRow(this)">❌</button></td>
-            </tr>
+            <tbody id="family-body">
+                @for (int i = 0; i < Model.FamilyMembers.Count; i++)
+                {
+                    @* <tr>
+                        <td><input type="text" name="family[0][name]" required></td>
+                        <td><input type="number" name="family[0][age]" required></td>
+                        <td><input type="date" name="family[0][dob]" required></td>
+                        <td><input type="text" name="family[0][civil_status]" required></td>
+                        <td><input type="text" name="family[0][relationship]" required></td>
+                        <td><select name="family[0][living]" required><option>Yes</option><option>No</option></select></td>
+                        <td><input type="text" name="family[0][education]" required></td>
+                        <td><input type="text" name="family[0][occupation]" required></td>
+                        <td><input type="number" name="family[0][income]" required></td>
+                        <td><button type="button" onclick="removeRow(this)">❌</button></td>
+                    </tr> *@
+                    <tr>
+                        <td><input type="text" name="FamilyMembers[@i].Name" required></td>
+                        <td><input type="number" name="FamilyMembers[@i].Age" required></td>
+                        <td><input type="date" name="FamilyMembers[@i].DateOfBirth" required></td>
+                        <td><input type="text" name="FamilyMembers[@i].CivilStatus" required></td>
+                        <td><input type="text" name="FamilyMembers[@i].RelationshipToPatient" required></td>
+                        <td>
+                            <select name="FamilyMembers[@i].LivingWithChild" required>
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </td>
+                        <td><input type="text" name="FamilyMembers[@i].EducationalAttainment" required></td>
+                        <td><input type="text" name="FamilyMembers[@i].Occupation" required></td>
+                        <td><input type="number" name="FamilyMembers[@i].MonthlyIncome" required></td>
+                        <td><button type="button" onclick="removeRow(this)">❌</button></td>
+                    </tr>
+                }
+            </tbody>
         </table>
 
         <button type="button" onclick="addRow()">➕ Add Row</button>
 
-        <div class="section-title">II. MSWD Classification</div>
+        @* <div class="section-title">II. MSWD Classification</div>
         <table>
             <tr>
                 <td>Main Classification:</td>
@@ -633,15 +651,20 @@
         let newRow = table.insertRow(-1); // Insert at the end
 
         let cols = `
-            <td><input type="text" name="family[${rowCount}][name]" required></td>
-            <td><input type="number" name="family[${rowCount}][age]" required></td>
-            <td><input type="date" name="family[${rowCount}][dob]" required></td>
-            <td><input type="text" name="family[${rowCount}][civil_status]" required></td>
-            <td><input type="text" name="family[${rowCount}][relationship]" required></td>
-            <td><select name="family[${rowCount}][living]" required><option>Yes</option><option>No</option></select></td>
-            <td><input type="text" name="family[${rowCount}][education]" required></td>
-            <td><input type="text" name="family[${rowCount}][occupation]" required></td>
-            <td><input type="number" name="family[${rowCount}][income]" required></td>
+            <td><input type="text" name="FamilyMembers[${rowCount}].Name" required></td>
+            <td><input type="number" name="FamilyMembers[${rowCount}].Age" required></td>
+            <td><input type="date" name="FamilyMembers[${rowCount}].DateOfBirth" required></td>
+            <td><input type="text" name="FamilyMembers[${rowCount}].CivilStatus" required></td>
+            <td><input type="text" name="FamilyMembers[${rowCount}].RelationshipToPatient" required></td>
+            <td>
+                <select name="FamilyMembers[${rowCount}].LivingWithChild" required>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                </select>
+            </td>
+            <td><input type="text" name="FamilyMembers[${rowCount}].EducationalAttainment" required></td>
+            <td><input type="text" name="FamilyMembers[${rowCount}].Occupation" required></td>
+            <td><input type="number" name="FamilyMembers[${rowCount}].MonthlyIncome" required></td>
             <td><button type="button" onclick="removeRow(this)">❌</button></td>
         `;
         newRow.innerHTML = cols;
@@ -663,15 +686,15 @@
         let table = document.getElementById("family-table");
         for (let i = 1; i < table.rows.length; i++) { // Skip header row
             let row = table.rows[i];
-            row.cells[0].querySelector("input").name = `family[${i - 1}][name]`;
-            row.cells[1].querySelector("input").name = `family[${i - 1}][age]`;
-            row.cells[2].querySelector("input").name = `family[${i - 1}][dob]`;
-            row.cells[3].querySelector("input").name = `family[${i - 1}][civil_status]`;
-            row.cells[4].querySelector("input").name = `family[${i - 1}][relationship]`;
-            row.cells[5].querySelector("select").name = `family[${i - 1}][living]`;
-            row.cells[6].querySelector("input").name = `family[${i - 1}][education]`;
-            row.cells[7].querySelector("input").name = `family[${i - 1}][occupation]`;
-            row.cells[8].querySelector("input").name = `family[${i - 1}][income]`;
+            row.cells[0].querySelector("input").name = `FamilyMembers[${i - 1}].Name`;
+            row.cells[1].querySelector("input").name = `FamilyMembers[${i - 1}].Age`;
+            row.cells[2].querySelector("input").name = `FamilyMembers[${i - 1}].DateOfBirth`;
+            row.cells[3].querySelector("input").name = `FamilyMembers[${i - 1}].CivilStatus`;
+            row.cells[4].querySelector("input").name = `FamilyMembers[${i - 1}].RelationshipToPatient`;
+            row.cells[5].querySelector("select").name = `FamilyMembers[${i - 1}].LivingWithChild`;
+            row.cells[6].querySelector("input").name = `FamilyMembers[${i - 1}].EducationalAttainment`;
+            row.cells[7].querySelector("input").name = `FamilyMembers[${i - 1}].Occupation`;
+            row.cells[8].querySelector("input").name = `FamilyMembers[${i - 1}].MonthlyIncome`;
         }
     }
 

@@ -11,6 +11,7 @@ using LittleArkFoundation.Areas.Admin.Models.Form;
 using LittleArkFoundation.Areas.Admin.Data;
 using LittleArkFoundation.Areas.Admin.Models.Patients;
 using System.Data;
+using LittleArkFoundation.Areas.Admin.Models.FamilyComposition;
 
 namespace LittleArkFoundation.Areas.Admin.Controllers
 {
@@ -45,9 +46,18 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create(string dbType)
         {
-            return View();
+            string connectionString = _connectionService.GetConnectionString(dbType);
+
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var viewModel = new FormViewModel()
+            {
+                FamilyMembers = new List<FamilyCompositionModel>() { new FamilyCompositionModel() }
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost]
@@ -79,10 +89,17 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 // PATIENTS
                 formViewModel.Patient.PatientID = patientID;
 
+                // FAMILY COMPOSITION
+                foreach (var familyMember in formViewModel.FamilyMembers)
+                {
+                    familyMember.PatientID = patientID;
+                }
+
                 await context.Assessments.AddAsync(formViewModel.Assessments);
                 await context.Referrals.AddAsync(formViewModel.Referrals);
                 await context.Informants.AddAsync(formViewModel.Informants);
                 await context.Patients.AddAsync(formViewModel.Patient);
+                await context.FamilyComposition.AddRangeAsync(formViewModel.FamilyMembers);
                 await context.SaveChangesAsync();
 
                 TempData["CreateSuccess"] = "Successfully created new form";
@@ -111,8 +128,17 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         }
 
         // TODO: Implement edit form
-        public async Task<IActionResult> Edit()
+        public async Task<IActionResult> Edit(string dbType, int id)
         {
+            string connectionString = _connectionService.GetConnectionString(dbType);
+
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var viewModel = new FormViewModel()
+            {
+
+            };
+
             return View();
         }
 
