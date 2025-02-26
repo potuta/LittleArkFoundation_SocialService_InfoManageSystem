@@ -32,7 +32,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         public async Task<IActionResult> Index(string dbType)
         {
             string connectionString = _connectionService.GetConnectionString(dbType);
-            using (var context = new ApplicationDbContext(connectionString))
+            await using (var context = new ApplicationDbContext(connectionString))
             {
                 var patients = await context.Patients.ToListAsync();
 
@@ -56,16 +56,32 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         {
             string connectionString = _connectionService.GetConnectionString(dbType);
 
-            using (var context = new ApplicationDbContext(connectionString))
+            await using (var context = new ApplicationDbContext(connectionString))
             {
                 if (!ModelState.IsValid)
                 {
                     return View(formViewModel);
                 }
 
-                // PATIENTS
-                formViewModel.Patient.PatientID = await new PatientsRepository(connectionString).GenerateID();
+                var patientID = await new PatientsRepository(connectionString).GenerateID();
 
+                // ASSESSMENTS
+                formViewModel.Assessments.PatientID = patientID;
+
+                // REFERRALS
+                formViewModel.Referrals.PatientID = patientID;
+                formViewModel.Referrals.DateOfReferral = formViewModel.Assessments.DateOfInterview.ToDateTime(formViewModel.Assessments.TimeOfInterview);
+
+                // INFORMANTS
+                formViewModel.Informants.PatientID = patientID;
+                formViewModel.Informants.DateOfInformant = formViewModel.Assessments.DateOfInterview.ToDateTime(formViewModel.Assessments.TimeOfInterview);
+
+                // PATIENTS
+                formViewModel.Patient.PatientID = patientID;
+
+                await context.Assessments.AddAsync(formViewModel.Assessments);
+                await context.Referrals.AddAsync(formViewModel.Referrals);
+                await context.Informants.AddAsync(formViewModel.Informants);
                 await context.Patients.AddAsync(formViewModel.Patient);
                 await context.SaveChangesAsync();
 
@@ -85,7 +101,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
 
             string htmlContent = await System.IO.File.ReadAllTextAsync(templatePath);
-            htmlContent = await ModifyHtmlTemplateAsync_Page1(htmlContent, dbType, id);
+            htmlContent = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page1(htmlContent, dbType, id);
 
             // Pass the modified HTML to the view
             TempData["FormHtml"] = htmlContent;
@@ -121,10 +137,10 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
 
                 string htmlContent = await System.IO.File.ReadAllTextAsync(templatePath);
-                htmlContent = await ModifyHtmlTemplateAsync_Page1(htmlContent, dbType, id);
+                htmlContent = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page1(htmlContent, dbType, id);
 
                 string htmlContent2 = await System.IO.File.ReadAllTextAsync(templatePath2);
-                htmlContent2 = await ModifyHtmlTemplateAsync_Page2(htmlContent2, dbType, id);
+                htmlContent2 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page2(htmlContent2, dbType, id);
 
                 var pdf1 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent);
                 var pdf2 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent2);
@@ -144,76 +160,6 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 Console.WriteLine($"PDF Generation Error: {ex.Message}");
                 return StatusCode(500, "An error occurred while generating the PDF.");
             }
-        }
-
-        private async Task<string> ModifyHtmlTemplateAsync_Page1(string htmlContent, string dbType, int id)
-        {
-            string connectionString = _connectionService.GetConnectionString(dbType);
-
-            using var context = new ApplicationDbContext(connectionString);
-
-            var patient = await context.Patients.FindAsync(id);
-
-            if (patient == null)
-            {
-                return null;
-            }
-
-            // UPDATE LOGO IMAGE
-            string imagePath = Path.Combine(_environment.WebRootPath, "resources", "NCH-Logo.png");
-            byte[] imageBytes = System.IO.File.ReadAllBytes(imagePath);
-            string base64String = Convert.ToBase64String(imageBytes);
-            htmlContent = htmlContent.Replace("/resources/NCH-Logo.png", $"data:image/png;base64,{base64String}");
-
-            // USING HTMLAGILITYPACK
-            var htmlDoc = new HtmlDocument();
-            htmlDoc.LoadHtml(htmlContent);
-
-            // ASSESSMENT
-            string date = string.Empty;
-            var dateofinterview = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Dateofinterview']");
-            if (dateofinterview != null)
-            {
-                dateofinterview.InnerHtml = date;
-            }
-
-            // Update Sex Male Checkbox (change background color)
-            var sexmalecheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Sexmalecheckbox']");
-            if (sexmalecheckbox != null)
-            {
-                string existingStyle = sexmalecheckbox.GetAttributeValue("style", "");
-                sexmalecheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
-            }
-
-            // PATIENTS
-            var patientlastname = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Patientsurname']");
-            if (patientlastname != null)
-            {
-                patientlastname.InnerHtml = patient.LastName;
-            }
-
-            return htmlDoc.DocumentNode.OuterHtml; // Return updated HTML
-        }
-
-        private async Task<string> ModifyHtmlTemplateAsync_Page2(string htmlContent, string dbType, int id)
-        {
-            string connectionString = _connectionService.GetConnectionString(dbType);
-
-            using var context = new ApplicationDbContext(connectionString);
-
-            var patient = await context.Patients.FindAsync(id);
-
-            if (patient == null)
-            {
-                return null;
-            }
-
-            htmlContent = htmlContent.Replace("{FullName}", patient.FirstName)
-                                     .Replace("{Email}", patient.ContactNo)
-                                     .Replace("{Address}", patient.PermanentAddress)
-                                     .Replace("{Message}", patient.PhilhealthMembership);
-
-            return htmlContent;
         }
 
     }

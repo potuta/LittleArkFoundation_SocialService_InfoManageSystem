@@ -104,35 +104,47 @@
         <h2 style="text-align: center;">Republic of the Philippines - Department of Health</h2>
         <h3 style="text-align: center;">MSWD Assessment Tool for Children/Adolescent</h3>
 
-        @* <table>
+        <table>
             <tr>
                 <td>
                     Date of Interview: <span class="required">*</span>
-                    <input type="date" id="dateInput" required>
+                    <input type="date" asp-for="Assessments.DateOfInterview" id="dateInput" required>
+                    <span asp-validation-for="Assessments.DateOfInterview" class="text-danger"></span>
+
                 </td>
                 <td>
                     Time of Interview: <span class="required">*</span>
-                    <input type="time" id="timeInput" required>
+                    <input type="time" asp-for="Assessments.TimeOfInterview" id="timeInput" required>
+                    <span asp-validation-for="Assessments.TimeOfInterview" class="text-danger"></span>
+
                 </td>
             </tr>
             <tr>
                 <td>
                     Basic Ward: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Assessments.BasicWard" required>
+                    <span asp-validation-for="Assessments.BasicWard" class="text-danger"></span>
+
                 </td>
                 <td>
                     Non-Basic Ward: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Assessments.NonBasicWard" required>
+                    <span asp-validation-for="Assessments.NonBasicWard" class="text-danger"></span>
+
                 </td>
             </tr>
             <tr>
                 <td>
                     Health Record No: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Assessments.HealthRecordNo" required>
+                    <span asp-validation-for="Assessments.HealthRecordNo" class="text-danger"></span>
+
                 </td>
                 <td>
                     MSWD No: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Assessments.MSWDNo" required>
+                    <span asp-validation-for="Assessments.MSWDNo" class="text-danger"></span>
+
                 </td>
             </tr>
         </table>
@@ -142,15 +154,21 @@
             <tr>
                 <td>
                     Referral Name: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Referrals.Name" required>
+                    <span asp-validation-for="Referrals.Name" class="text-danger"></span>
+
                 </td>
                 <td>
                     Address: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Referrals.Address" required>
+                    <span asp-validation-for="Referrals.Address" class="text-danger"></span>
+
                 </td>
                 <td>
                     Contact No: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Referrals.ContactNo" required>
+                    <span asp-validation-for="Referrals.ContactNo" class="text-danger"></span>
+
                 </td>
             </tr>
 
@@ -161,22 +179,30 @@
             <tr>
                 <td>
                     Informant Name: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Informants.Name" required>
+                    <span asp-validation-for="Informants.Name" class="text-danger"></span>
+
                 </td>
                 <td>
                     Relation to Patient: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Informants.RelationToPatient" required>
+                    <span asp-validation-for="Informants.RelationToPatient" class="text-danger"></span>
+
                 </td>
                 <td>
                     Contact No: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Informants.ContactNo" required>
+                    <span asp-validation-for="Informants.ContactNo" class="text-danger"></span>
+
                 </td>
                 <td>
                     Address: <span class="required">*</span>
-                    <input type="text" required>
+                    <input type="text" asp-for="Informants.Address" required>
+                    <span asp-validation-for="Informants.Address" class="text-danger"></span>
+
                 </td>
             </tr>
-        </table> *@
+        </table>
 
         <div class="section-title">I. Demographic Data </div>
         <table>

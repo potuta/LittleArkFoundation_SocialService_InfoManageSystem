@@ -22,7 +22,7 @@ namespace LittleArkFoundation.Areas.Admin.Data
         {
             try
             {
-                var context = new ApplicationDbContext(_connectionString);
+                await using var context = new ApplicationDbContext(_connectionString);
                 var list = await context.Patients.ToListAsync();
                 return list.Count + 1;
             }

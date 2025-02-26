@@ -25,9 +25,10 @@ namespace LittleArkFoundation.Data
                         ColorMode = ColorMode.Color,
                         Orientation = Orientation.Portrait,
                         PaperSize = PaperKind.A4,
-                        Margins = new MarginSettings { Top = 0, Bottom = 0, Left = 0, Right = 0 },
+                        Margins = new MarginSettings { Top = 10, Bottom = 10, Left = 10, Right = 10 },
                         DocumentTitle = documentTitle,
-                        DPI = 300
+                        DPI = 300,
+                        ViewportSize = "595x842" // Set to A4 dimensions
                     },
                     Objects =
                     {
@@ -43,7 +44,7 @@ namespace LittleArkFoundation.Data
                             UseExternalLinks = true,
                             LoadSettings =
                             {
-                                ZoomFactor = 2
+                                ZoomFactor = 1.5
                             }
                         }
                     }
@@ -52,7 +53,6 @@ namespace LittleArkFoundation.Data
                 return _pdfConverter.Convert(pdfDocument);
             });
         }
-
 
         public async Task<byte[]> MergePdfsAsync(List<byte[]> pdfFiles)
         {
