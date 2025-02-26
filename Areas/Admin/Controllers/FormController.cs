@@ -4,13 +4,13 @@ using LittleArkFoundation.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
-using DinkToPdf;
 using System.Runtime.InteropServices;
 using DinkToPdf.Contracts;
 using HtmlAgilityPack;
 using LittleArkFoundation.Areas.Admin.Models.Form;
 using LittleArkFoundation.Areas.Admin.Data;
 using LittleArkFoundation.Areas.Admin.Models.Patients;
+using System.Data;
 
 namespace LittleArkFoundation.Areas.Admin.Controllers
 {
@@ -76,66 +76,22 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
         public async Task<IActionResult> ViewForm(string dbType, int id)
         {
-            string connectionString = _connectionService.GetConnectionString(dbType);
+            // Load the HTML template
+            string templatePath = Path.Combine(_environment.WebRootPath, "templates/page1_form_template.html");
 
-            using (var context = new ApplicationDbContext(connectionString))
+            if (!System.IO.File.Exists(templatePath))
             {
-                var patient = await context.Patients.FindAsync(id);
-
-                if (patient == null)
-                {
-                    return NotFound();
-                }
-
-                // Load the HTML template
-                string templatePath = Path.Combine(_environment.WebRootPath, "templates/page1_form_template.html");
-
-                if (!System.IO.File.Exists(templatePath))
-                {
-                    return StatusCode(500, "Form template not found.");
-                }
-
-                string htmlContent = await System.IO.File.ReadAllTextAsync(templatePath);
-
-                var htmlDoc = new HtmlDocument();
-                htmlDoc.LoadHtml(htmlContent);
-
-                // Replace placeholders with user data
-                //htmlContent = htmlContent.Replace("{FullName}", response.FullName)
-                //                         .Replace("{Email}", response.Email)
-                //                         .Replace("{Address}", response.Address)
-                //                         .Replace("{Message}", response.Message);
-
-                string date = string.Empty;
-                var dateofinterview = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Dateofinterview']");
-                if (dateofinterview != null)
-                {
-                    dateofinterview.InnerHtml = date;
-                }
-
-                var sexmalecheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Sexmalecheckbox']");
-                if (sexmalecheckbox != null)
-                {
-                    string existingStyle = sexmalecheckbox.GetAttributeValue("style", "");
-                    sexmalecheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
-                }
-
-                // PATIENTS
-                var patientlastname = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Patientsurname']");
-                if (patientlastname != null)
-                {
-                    patientlastname.InnerHtml = patient.LastName;
-                }
-
-                htmlContent = htmlDoc.DocumentNode.OuterHtml;
-
-                // Pass the modified HTML to the view
-                TempData["FormHtml"] = htmlContent;
-                ViewBag.Id = id;
+                return StatusCode(500, "Form template not found.");
             }
 
-            return View();
+            string htmlContent = await System.IO.File.ReadAllTextAsync(templatePath);
+            htmlContent = await ModifyHtmlTemplateAsync_Page1(htmlContent, dbType, id);
 
+            // Pass the modified HTML to the view
+            TempData["FormHtml"] = htmlContent;
+            ViewBag.Id = id;
+
+            return View();
         }
 
         // TODO: Implement edit form
@@ -150,105 +106,114 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         {
             try
             {
-                string connectionString = _connectionService.GetConnectionString(dbType);
-
-                using var context = new ApplicationDbContext(connectionString);
-
-                var patient = await context.Patients.FindAsync(id);
-
-                if (patient == null)
-                {
-                    return NotFound();
-                }
-
                 //// Load the HTML template
                 string templatePath = Path.Combine(_environment.WebRootPath, "templates/page1_form_template.html");
+                string templatePath2 = Path.Combine(_environment.WebRootPath, "templates/sample_form_template.html");
 
                 if (!System.IO.File.Exists(templatePath))
                 {
                     return StatusCode(500, "Form template not found.");
                 }
 
+                if (!System.IO.File.Exists(templatePath2))
+                {
+                    return StatusCode(500, "Form template not found.");
+                }
+
                 string htmlContent = await System.IO.File.ReadAllTextAsync(templatePath);
+                htmlContent = await ModifyHtmlTemplateAsync_Page1(htmlContent, dbType, id);
 
-                var htmlDoc = new HtmlDocument();
-                htmlDoc.LoadHtml(htmlContent);
+                string htmlContent2 = await System.IO.File.ReadAllTextAsync(templatePath2);
+                htmlContent2 = await ModifyHtmlTemplateAsync_Page2(htmlContent2, dbType, id);
 
-                // Replace placeholders with user data
-                //htmlContent = htmlContent.Replace("{FullName}", response.FullName)
-                //                         .Replace("{Email}", response.Email)
-                //                         .Replace("{Address}", response.Address)
-                //                         .Replace("{Message}", response.Message);
+                var pdf1 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent);
+                var pdf2 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent2);
 
-                string date = string.Empty;
-                var dateofinterview = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Dateofinterview']");
-                if (dateofinterview != null)
+                List<byte[]> pdfList = new List<byte[]>
                 {
-                    dateofinterview.InnerHtml = date;
-                }
-
-                var sexmalecheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Sexmalecheckbox']");
-                if (sexmalecheckbox != null)
-                {
-                    string existingStyle = sexmalecheckbox.GetAttributeValue("style", "");
-                    sexmalecheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
-                }
-
-                // PATIENTS
-                var patientlastname = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Patientsurname']");
-                if (patientlastname != null)
-                {
-                    patientlastname.InnerHtml = patient.LastName;
-                }
-
-                htmlContent = htmlDoc.DocumentNode.OuterHtml;
-
-                string imagePath = Path.Combine(_environment.WebRootPath, "resources", "NCH-Logo.png");
-                byte[] imageBytes = System.IO.File.ReadAllBytes(imagePath);
-                string base64String = Convert.ToBase64String(imageBytes);
-                htmlContent = htmlContent.Replace("/resources/NCH-Logo.png", $"data:image/png;base64,{base64String}");
-
-                var pdfDocument = new HtmlToPdfDocument()
-                {
-                    GlobalSettings = new GlobalSettings
-                    {
-                        ColorMode = ColorMode.Color,
-                        Orientation = Orientation.Portrait,
-                        PaperSize = PaperKind.A4,
-                        Margins = new MarginSettings { Top = 0, Bottom = 0, Left = 0, Right = 0 },
-                        DocumentTitle = "Generated PDF",
-                        DPI = 300
-                    },
-                    Objects =
-                    {
-                        new ObjectSettings
-                        {
-                            HtmlContent = htmlContent,
-                            WebSettings = 
-                            {
-                                DefaultEncoding = "utf-8",
-                                LoadImages = true,
-                                PrintMediaType = true
-                            },
-                            UseExternalLinks = true,
-                            LoadSettings =
-                            {
-                                ZoomFactor = 2
-                            }
-                        }
-                    }
+                    pdf1,
+                    pdf2
                 };
 
-                // Use the injected singleton converter
-                byte[] pdfBytes = _pdfConverter.Convert(pdfDocument);
-
-                return File(pdfBytes, "application/pdf", "UserForm.pdf");
+                //byte[] pdfBytes = _pdfConverter.Convert(pdfDocument);
+                byte[] mergedPdf = await new PDFService(_pdfConverter).MergePdfsAsync(pdfList);
+                return File(mergedPdf, "application/pdf", "UserForm.pdf");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"PDF Generation Error: {ex.Message}");
                 return StatusCode(500, "An error occurred while generating the PDF.");
             }
+        }
+
+        private async Task<string> ModifyHtmlTemplateAsync_Page1(string htmlContent, string dbType, int id)
+        {
+            string connectionString = _connectionService.GetConnectionString(dbType);
+
+            using var context = new ApplicationDbContext(connectionString);
+
+            var patient = await context.Patients.FindAsync(id);
+
+            if (patient == null)
+            {
+                return null;
+            }
+
+            // UPDATE LOGO IMAGE
+            string imagePath = Path.Combine(_environment.WebRootPath, "resources", "NCH-Logo.png");
+            byte[] imageBytes = System.IO.File.ReadAllBytes(imagePath);
+            string base64String = Convert.ToBase64String(imageBytes);
+            htmlContent = htmlContent.Replace("/resources/NCH-Logo.png", $"data:image/png;base64,{base64String}");
+
+            // USING HTMLAGILITYPACK
+            var htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(htmlContent);
+
+            // ASSESSMENT
+            string date = string.Empty;
+            var dateofinterview = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Dateofinterview']");
+            if (dateofinterview != null)
+            {
+                dateofinterview.InnerHtml = date;
+            }
+
+            // Update Sex Male Checkbox (change background color)
+            var sexmalecheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Sexmalecheckbox']");
+            if (sexmalecheckbox != null)
+            {
+                string existingStyle = sexmalecheckbox.GetAttributeValue("style", "");
+                sexmalecheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
+            }
+
+            // PATIENTS
+            var patientlastname = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Patientsurname']");
+            if (patientlastname != null)
+            {
+                patientlastname.InnerHtml = patient.LastName;
+            }
+
+            return htmlDoc.DocumentNode.OuterHtml; // Return updated HTML
+        }
+
+        private async Task<string> ModifyHtmlTemplateAsync_Page2(string htmlContent, string dbType, int id)
+        {
+            string connectionString = _connectionService.GetConnectionString(dbType);
+
+            using var context = new ApplicationDbContext(connectionString);
+
+            var patient = await context.Patients.FindAsync(id);
+
+            if (patient == null)
+            {
+                return null;
+            }
+
+            htmlContent = htmlContent.Replace("{FullName}", patient.FirstName)
+                                     .Replace("{Email}", patient.ContactNo)
+                                     .Replace("{Address}", patient.PermanentAddress)
+                                     .Replace("{Message}", patient.PhilhealthMembership);
+
+            return htmlContent;
         }
 
     }
