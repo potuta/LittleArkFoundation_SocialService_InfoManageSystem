@@ -8,6 +8,9 @@ using DinkToPdf;
 using System.Runtime.InteropServices;
 using DinkToPdf.Contracts;
 using HtmlAgilityPack;
+using LittleArkFoundation.Areas.Admin.Models.Form;
+using LittleArkFoundation.Areas.Admin.Data;
+using LittleArkFoundation.Areas.Admin.Models.Patients;
 
 namespace LittleArkFoundation.Areas.Admin.Controllers
 {
@@ -31,11 +34,11 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             string connectionString = _connectionService.GetConnectionString(dbType);
             using (var context = new ApplicationDbContext(connectionString))
             {
-                var responses = await context.FormResponses.ToListAsync();
+                var patients = await context.Patients.ToListAsync();
 
-                var viewModel = new FormViewModel
+                var viewModel = new PatientsViewModel
                 {
-                    FormResponses = responses
+                    Patients = patients
                 };
 
                 return View(viewModel);
@@ -49,7 +52,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(string dbType, FormResponsesModel form)
+        public async Task<IActionResult> Create(string dbType, FormViewModel formViewModel)
         {
             string connectionString = _connectionService.GetConnectionString(dbType);
 
@@ -57,10 +60,13 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    return View(form);
+                    return View(formViewModel);
                 }
 
-                await context.FormResponses.AddAsync(form);
+                // PATIENTS
+                formViewModel.Patient.PatientID = await new PatientsRepository(connectionString).GenerateID();
+
+                await context.Patients.AddAsync(formViewModel.Patient);
                 await context.SaveChangesAsync();
 
                 TempData["CreateSuccess"] = "Successfully created new form";
@@ -74,9 +80,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             using (var context = new ApplicationDbContext(connectionString))
             {
-                var response = await context.FormResponses.FindAsync(id);
+                var patient = await context.Patients.FindAsync(id);
 
-                if (response == null)
+                if (patient == null)
                 {
                     return NotFound();
                 }
@@ -99,6 +105,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 //                         .Replace("{Email}", response.Email)
                 //                         .Replace("{Address}", response.Address)
                 //                         .Replace("{Message}", response.Message);
+
                 string date = string.Empty;
                 var dateofinterview = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Dateofinterview']");
                 if (dateofinterview != null)
@@ -111,6 +118,13 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 {
                     string existingStyle = sexmalecheckbox.GetAttributeValue("style", "");
                     sexmalecheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+
+                // PATIENTS
+                var patientlastname = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Patientsurname']");
+                if (patientlastname != null)
+                {
+                    patientlastname.InnerHtml = patient.LastName;
                 }
 
                 htmlContent = htmlDoc.DocumentNode.OuterHtml;
@@ -138,16 +152,23 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             {
                 string connectionString = _connectionService.GetConnectionString(dbType);
 
-                //using var context = new ApplicationDbContext(connectionString);
-                //var response = await context.FormResponses.FindAsync(id);
+                using var context = new ApplicationDbContext(connectionString);
 
-                //if (response == null)
-                //{
-                //    return NotFound();
-                //}
+                var patient = await context.Patients.FindAsync(id);
+
+                if (patient == null)
+                {
+                    return NotFound();
+                }
 
                 //// Load the HTML template
                 string templatePath = Path.Combine(_environment.WebRootPath, "templates/page1_form_template.html");
+
+                if (!System.IO.File.Exists(templatePath))
+                {
+                    return StatusCode(500, "Form template not found.");
+                }
+
                 string htmlContent = await System.IO.File.ReadAllTextAsync(templatePath);
 
                 var htmlDoc = new HtmlDocument();
@@ -159,10 +180,11 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 //                         .Replace("{Address}", response.Address)
                 //                         .Replace("{Message}", response.Message);
 
+                string date = string.Empty;
                 var dateofinterview = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Dateofinterview']");
                 if (dateofinterview != null)
                 {
-                    dateofinterview.InnerHtml = DateTime.Now.ToString();
+                    dateofinterview.InnerHtml = date;
                 }
 
                 var sexmalecheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Sexmalecheckbox']");
@@ -170,6 +192,13 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 {
                     string existingStyle = sexmalecheckbox.GetAttributeValue("style", "");
                     sexmalecheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+
+                // PATIENTS
+                var patientlastname = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Patientsurname']");
+                if (patientlastname != null)
+                {
+                    patientlastname.InnerHtml = patient.LastName;
                 }
 
                 htmlContent = htmlDoc.DocumentNode.OuterHtml;

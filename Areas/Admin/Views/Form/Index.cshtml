@@ -1,4 +1,5 @@
-﻿@model FormViewModel
+﻿@using LittleArkFoundation.Areas.Admin.Models.Patients
+@model PatientsViewModel
 @{
 	ViewData["Title"] = "Form";
 	Layout = "_AdminLayout";
@@ -34,8 +35,8 @@
         @if (Model != null)
         {
             <tr>
-                <th>Id</th>
-                <th>FullName</th>
+                <th>PatientID</th>
+                <th>FirstName</th>
                 <th></th>
             </tr>
         }
@@ -43,14 +44,14 @@
     <tbody>
         @if (Model != null)
         {
-            @foreach (var form in Model.FormResponses)
+            @foreach (var patient in Model.Patients)
             {
                 <tr>
-                    <td>@form.Id</td>
-                    <td>@form.FullName</td>
+                    <td>@patient.PatientID</td>
+                    <td>@patient.FirstName</td>
                     <td>
-                        <a href="@Url.Action("ViewForm", new { id = form.Id })" class="btn btn-primary">Form</a>
-                        <a href="@Url.Action("Archive", new { id = form.Id })" class="btn btn-danger" onclick="return confirm('Are you sure you want to archive this data?');">Archive</a>
+                        <a href="@Url.Action("ViewForm", new { id = patient.PatientID })" class="btn btn-primary">Form</a>
+                        <a href="@Url.Action("Archive", new { id = patient.PatientID })" class="btn btn-danger" onclick="return confirm('Are you sure you want to archive this data?');">Archive</a>
                     </td>
                 </tr>
             }
