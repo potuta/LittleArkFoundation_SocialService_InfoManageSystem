@@ -163,14 +163,21 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             await using var context = new ApplicationDbContext(connectionString);
             int id = formViewModel.Patient.PatientID;
             var familyMembers = context.FamilyComposition.Where(f => f.PatientID == id);
-            context.FamilyComposition.RemoveRange(familyMembers);
 
-            foreach (var familyMember in formViewModel.FamilyMembers)
+            if (familyMembers.Any())
             {
-                familyMember.PatientID = id;
+                context.FamilyComposition.RemoveRange(familyMembers);
             }
 
-            await context.FamilyComposition.AddRangeAsync(formViewModel.FamilyMembers);
+            if (formViewModel.FamilyMembers != null)
+            {
+                foreach (var familyMember in formViewModel.FamilyMembers)
+                {
+                    familyMember.PatientID = id;
+                }
+                await context.FamilyComposition.AddRangeAsync(formViewModel.FamilyMembers);
+            }
+
             context.Assessments.Update(formViewModel.Assessments);
             context.Referrals.Update(formViewModel.Referrals);
             context.Informants.Update(formViewModel.Informants);
