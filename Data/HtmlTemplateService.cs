@@ -25,6 +25,9 @@ namespace LittleArkFoundation.Data
             var assessment = await context.Assessments.FirstOrDefaultAsync(a => a.PatientID == id);
             var referral = await context.Referrals.FirstOrDefaultAsync(r => r.PatientID == id);
             var informant = await context.Informants.FirstOrDefaultAsync(i => i.PatientID == id);
+            var familymembers = await context.FamilyComposition
+                                .Where(f => f.PatientID == id)
+                                .ToListAsync();
 
             if (patient == null)
             {
@@ -364,6 +367,79 @@ namespace LittleArkFoundation.Data
             }
 
             // FAMILY COMPOSITION
+            int i = 1;
+            foreach (var familyMember in familymembers)
+            {
+                var name = htmlDoc.DocumentNode.SelectSingleNode($"//div[@class='Familyname{i}']");
+                if (name != null)
+                {
+                    name.InnerHtml = familyMember.Name;
+                }
+
+                var age = htmlDoc.DocumentNode.SelectSingleNode($"//div[@class='Familyage{i}']");
+                if (age != null)
+                {
+                    age.InnerHtml = familyMember.Age.ToString();
+                }
+
+                var dateofbirth = htmlDoc.DocumentNode.SelectSingleNode($"//div[@class='Familydateofbirth{i}']");
+                if (dateofbirth != null)
+                {
+                    dateofbirth.InnerHtml = familyMember.DateOfBirth.ToString();
+                }
+
+                var civilstatus = htmlDoc.DocumentNode.SelectSingleNode($"//div[@class='Familycivilstatus{i}']");
+                if (civilstatus != null)
+                {
+                    civilstatus.InnerHtml = familyMember.CivilStatus;
+                }
+
+                var relationship = htmlDoc.DocumentNode.SelectSingleNode($"//div[@class='Familyrelationshiptopatient{i}']");
+                if (relationship != null)
+                {
+                    relationship.InnerHtml = familyMember.RelationshipToPatient;
+                }
+
+                switch (familyMember.LivingWithChild)
+                {
+                    case true:
+                        var livingwithchildyes = htmlDoc.DocumentNode.SelectSingleNode($"//div[@class='Yesfamilylivingwithchild{i}']");
+                        if (livingwithchildyes != null)
+                        {
+                            string existingStyle = livingwithchildyes.GetAttributeValue("style", "");
+                            livingwithchildyes.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                        }
+                        break;
+                    case false:
+                        var livingwithchildno = htmlDoc.DocumentNode.SelectSingleNode($"//div[@class='Nofamilylivingwithchild{i}']");
+                        if (livingwithchildno != null)
+                        {
+                            string existingStyle = livingwithchildno.GetAttributeValue("style", "");
+                            livingwithchildno.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                        }
+                        break;
+                }
+
+                var educationlevel = htmlDoc.DocumentNode.SelectSingleNode($"//div[@class='Familyeducationalattainment{i}']");
+                if (educationlevel != null)
+                {
+                    educationlevel.InnerHtml = familyMember.EducationalAttainment;
+                }
+
+                var occupation = htmlDoc.DocumentNode.SelectSingleNode($"//div[@class='Familyoccupation{i}']");
+                if (occupation != null)
+                {
+                    occupation.InnerHtml = familyMember.Occupation;
+                }
+
+                var monthlyincome = htmlDoc.DocumentNode.SelectSingleNode($"//div[@class='Familymonthlyincome{i}']");
+                if (monthlyincome != null)
+                {
+                    monthlyincome.InnerHtml = familyMember.MonthlyIncome.ToString();
+                }
+
+                i++;
+            }
 
 
             return htmlDoc.DocumentNode.OuterHtml; // Return updated HTML
