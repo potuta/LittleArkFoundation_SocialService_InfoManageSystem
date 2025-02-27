@@ -58,6 +58,7 @@
     border: 1px solid black;
     padding: 5px;
     text-align: left;
+    font-size: medium;
     }
 
     .section-title {
@@ -68,8 +69,8 @@
     }
 
     input, select {
-    width: 98%;
-    font-size: large;
+        width: 98%;
+        font-size: medium;
     }
 
     .required {
@@ -394,18 +395,6 @@
             <tbody id="family-body">
                 @for (int i = 0; i < Model.FamilyMembers.Count; i++)
                 {
-                    @* <tr>
-                        <td><input type="text" name="family[0][name]" required></td>
-                        <td><input type="number" name="family[0][age]" required></td>
-                        <td><input type="date" name="family[0][dob]" required></td>
-                        <td><input type="text" name="family[0][civil_status]" required></td>
-                        <td><input type="text" name="family[0][relationship]" required></td>
-                        <td><select name="family[0][living]" required><option>Yes</option><option>No</option></select></td>
-                        <td><input type="text" name="family[0][education]" required></td>
-                        <td><input type="text" name="family[0][occupation]" required></td>
-                        <td><input type="number" name="family[0][income]" required></td>
-                        <td><button type="button" onclick="removeRow(this)">❌</button></td>
-                    </tr> *@
                     <tr>
                         <td><input type="text" name="FamilyMembers[@i].Name" required></td>
                         <td><input type="number" name="FamilyMembers[@i].Age" required></td>
