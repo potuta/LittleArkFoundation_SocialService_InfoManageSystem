@@ -28,6 +28,8 @@ namespace LittleArkFoundation.Data
             var familymembers = await context.FamilyComposition
                                 .Where(f => f.PatientID == id)
                                 .ToListAsync();
+            var household = await context.Households.FirstOrDefaultAsync(h => h.PatientID == id);
+            var mswdclassification = await context.MSWDClassification.FirstOrDefaultAsync(m => m.PatientID == id);
 
             if (patient == null)
             {
@@ -441,6 +443,176 @@ namespace LittleArkFoundation.Data
                 i++;
             }
 
+            var othersourcesofincome = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Othersourcesofincome']");
+            if (othersourcesofincome != null)
+            {
+                othersourcesofincome.InnerHtml = household.OtherSourcesOfIncome;
+            }
+
+            var householdsize = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Householdsize']");
+            if (householdsize != null)
+            {
+                householdsize.InnerHtml = household.HouseholdSize.ToString();
+            }
+
+            var totalhouseholdincome = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Totalhouseholdincome']");
+            if (totalhouseholdincome != null)
+            {
+                totalhouseholdincome.InnerHtml = household.TotalHouseholdIncome.ToString();
+            }
+
+            var percapitaincome = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Percapitaincome']");
+            if (percapitaincome != null)
+            {
+                percapitaincome.InnerHtml = household.PerCapitaIncome.ToString();
+            }
+
+            // MSWD CLASSIFICATION
+            switch (mswdclassification.MainClassification)
+            {
+                case "Financially Capable/Capacitated":
+                    var financiallycapable = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Financiallycapablecheckbox']");
+                    if (financiallycapable != null)
+                    {
+                        string existingStyle = financiallycapable.GetAttributeValue("style", "");
+                        financiallycapable.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case "Financially Incapable/Incapacitated":
+                    var financiallyincapable = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Financiallyincapablecheckbox']");
+                    if (financiallyincapable != null)
+                    {
+                        string existingStyle = financiallyincapable.GetAttributeValue("style", "");
+                        financiallyincapable.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case "Indigent":
+                    var indigent = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Indigentcheckbox']");
+                    if (indigent != null)
+                    {
+                        string existingStyle = indigent.GetAttributeValue("style", "");
+                        indigent.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+            }
+
+            switch (mswdclassification.SubClassification)
+            {
+                case "C1":
+                    var c1 = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='C1checkbox']");
+                    if (c1 != null)
+                    {
+                        string existingStyle = c1.GetAttributeValue("style", "");
+                        c1.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case "C2":
+                    var c2 = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='C2checkbox']");
+                    if (c2 != null)
+                    {
+                        string existingStyle = c2.GetAttributeValue("style", "");
+                        c2.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case "C3":
+                    var c3 = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='C3checkbox']");
+                    if (c3 != null)
+                    {
+                        string existingStyle = c3.GetAttributeValue("style", "");
+                        c3.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+            }
+
+            switch (mswdclassification.MembershipSector)
+            {
+                case "Artisenal Fisher Folk":
+                    var artisenalfisherfolk = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Artisenalcheckbox']");
+                    if (artisenalfisherfolk != null)
+                    {
+                        string existingStyle = artisenalfisherfolk.GetAttributeValue("style", "");
+                        artisenalfisherfolk.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case "Farmer and Landless Rural Worker":
+                    var farmerandlandless = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Farmercheckbox']");
+                    if (farmerandlandless != null)
+                    {
+                        string existingStyle = farmerandlandless.GetAttributeValue("style", "");
+                        farmerandlandless.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case "Urban Poor":
+                    var urbanpoor = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Urbancheckbox']");
+                    if (urbanpoor != null)
+                    {
+                        string existingStyle = urbanpoor.GetAttributeValue("style", "");
+                        urbanpoor.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case "Indigenous Peoples":
+                    var indigenouspeople = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Indigenouscheckbox']");
+                    if (indigenouspeople != null)
+                    {
+                        string existingStyle = indigenouspeople.GetAttributeValue("style", "");
+                        indigenouspeople.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case "Senior Citizen":
+                    var seniorcitizen = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Seniorcitizencheckbox']");
+                    if (seniorcitizen != null)
+                    {
+                        string existingStyle = seniorcitizen.GetAttributeValue("style", "");
+                        seniorcitizen.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case "Formal Labor and Migrant Workers":
+                    var formallabor = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Formallaborcheckbox']");
+                    if (formallabor != null)
+                    {
+                        string existingStyle = formallabor.GetAttributeValue("style", "");
+                        formallabor.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case "Workers in Informal Sector":
+                    var informalworker = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Workersinformalcheckbox']");
+                    if (informalworker != null)
+                    {
+                        string existingStyle = informalworker.GetAttributeValue("style", "");
+                        informalworker.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case "PWD":
+                    var pwd = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Pwdcheckbox']");
+                    if (pwd != null)
+                    {
+                        string existingStyle = pwd.GetAttributeValue("style", "");
+                        pwd.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case "Victims Of Disaster and Calamity":
+                    var victimsofdisaster = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Victimscheckbox']");
+                    if (victimsofdisaster != null)
+                    {
+                        string existingStyle = victimsofdisaster.GetAttributeValue("style", "");
+                        victimsofdisaster.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                default:
+                    var others = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Otherscheckbox']");
+                    if (others != null)
+                    {
+                        string existingStyle = others.GetAttributeValue("style", "");
+                        others.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    var otherstext = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='mswdothers']");
+                    if (otherstext != null)
+                    {
+                        otherstext.InnerHtml = mswdclassification.MembershipSector;
+                    }
+                    break;
+
+            }
 
             return htmlDoc.DocumentNode.OuterHtml; // Return updated HTML
         }

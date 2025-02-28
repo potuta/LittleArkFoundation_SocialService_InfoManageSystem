@@ -6,7 +6,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using System.Runtime.InteropServices;
 using DinkToPdf.Contracts;
-using HtmlAgilityPack;
 using LittleArkFoundation.Areas.Admin.Models.Form;
 using LittleArkFoundation.Areas.Admin.Data;
 using LittleArkFoundation.Areas.Admin.Models.Patients;
@@ -95,11 +94,19 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     familyMember.PatientID = patientID;
                 }
 
+                // HOUSEHOLD
+                formViewModel.Household.PatientID = patientID;
+
+                // MSWD CLASSIFICATION
+                formViewModel.MSWDClassification.PatientID = patientID;
+
                 await context.Assessments.AddAsync(formViewModel.Assessments);
                 await context.Referrals.AddAsync(formViewModel.Referrals);
                 await context.Informants.AddAsync(formViewModel.Informants);
                 await context.Patients.AddAsync(formViewModel.Patient);
                 await context.FamilyComposition.AddRangeAsync(formViewModel.FamilyMembers);
+                await context.Households.AddAsync(formViewModel.Household);
+                await context.MSWDClassification.AddAsync(formViewModel.MSWDClassification);
                 await context.SaveChangesAsync();
 
                 TempData["CreateSuccess"] = "Successfully created new form";
@@ -127,7 +134,6 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return View();
         }
 
-        // TODO: Implement edit form
         public async Task<IActionResult> Edit(string dbType, int id)
         {
             string connectionString = _connectionService.GetConnectionString(dbType);
@@ -141,6 +147,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var familymembers = await context.FamilyComposition
                                 .Where(f => f.PatientID == id)
                                 .ToListAsync();
+            var household = await context.Households.FirstOrDefaultAsync(h => h.PatientID == id);
+            var mswdClassification = await context.MSWDClassification.FirstOrDefaultAsync(m => m.PatientID == id);
 
             var viewModel = new FormViewModel()
             {
@@ -148,7 +156,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 Referrals = referral,
                 Informants = informant,
                 Patient = patient,
-                FamilyMembers = familymembers
+                FamilyMembers = familymembers,
+                Household = household,
+                MSWDClassification = mswdClassification
             };
 
             return View(viewModel);
@@ -182,6 +192,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             context.Referrals.Update(formViewModel.Referrals);
             context.Informants.Update(formViewModel.Informants);
             context.Patients.Update(formViewModel.Patient);
+            context.Households.Update(formViewModel.Household);
+            context.MSWDClassification.Update(formViewModel.MSWDClassification);
 
             TempData["EditSuccess"] = $"Successfully edited PatientID: {id}";
             await context.SaveChangesAsync();

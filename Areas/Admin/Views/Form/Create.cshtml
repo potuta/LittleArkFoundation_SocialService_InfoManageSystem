@@ -418,21 +418,42 @@
 
         <button type="button" onclick="addRow()">➕ Add Row</button>
 
-        @* <div class="section-title">II. MSWD Classification</div>
+        <table>
+            <tr>
+                <td>
+                    Other Sources of Income: <span class="required">*</span>
+                    <input type="text" asp-for="Household.OtherSourcesOfIncome" required>
+                </td>
+                <td>
+                    Household Size: <span class="required">*</span>
+                    <input type="number" asp-for="Household.HouseholdSize" required>
+                </td>
+                <td>
+                    Total Household Income: <span class="required">*</span>
+                    <input type="number" asp-for="Household.TotalHouseholdIncome" required>
+                </td>
+                <td>
+                    Per Capita Income: <span class="required">*</span>
+                    <input type="number" asp-for="Household.PerCapitaIncome" required>
+                </td>
+            </tr>
+        </table>
+
+        <div class="section-title">II. MSWD Classification</div>
         <table>
             <tr>
                 <td>Main Classification:</td>
                 <td>
                     <div class="radio-group">
-                        <input type="radio" name="main_classification" value="Financially Capable/Capacitated" required> Financially Capable/Capacitated
+                        <input type="radio" asp-for="MSWDClassification.MainClassification" value="Financially Capable/Capacitated" required> Financially Capable/Capacitated
                     </div>
 
                     <div class="radio-group">
-                        <input type="radio" name="main_classification" value="Financially Incapable/Incapacitated"> Financially Incapable/Incapacitated
+                        <input type="radio" asp-for="MSWDClassification.MainClassification" value="Financially Incapable/Incapacitated"> Financially Incapable/Incapacitated
                     </div>
 
                     <div class="radio-group">
-                        <input type="radio" name="main_classification" value="Indigent"> Indigent
+                        <input type="radio" asp-for="MSWDClassification.MainClassification" value="Indigent"> Indigent
                     </div>
                 </td>
             </tr>
@@ -440,15 +461,15 @@
                 <td>Sub Classification:</td>
                 <td>
                     <div class="radio-group">
-                        <input type="radio" name="sub_classification" value="C1" required> C1
+                        <input type="radio" asp-for="MSWDClassification.SubClassification" value="C1" required> C1
                     </div>
 
                     <div class="radio-group">
-                        <input type="radio" name="sub_classification" value="C2"> C2
+                        <input type="radio" asp-for="MSWDClassification.SubClassification" value="C2"> C2
                     </div>
 
                     <div class="radio-group">
-                        <input type="radio" name="sub_classification" value="C3"> C3
+                        <input type="radio" asp-for="MSWDClassification.SubClassification" value="C3"> C3
                     </div>
                 </td>
             </tr>
@@ -456,50 +477,54 @@
                 <td>Membership to Marginalized Sector (Check)</td>
                 <td>
                     <div class="radio-group">
-                        <input type="radio" name="member_classification" value="Artisanal Fisher Folk" onchange="toggleRequiredRadio(this)" required> Artisanal Fisher Folk
+                        <input type="radio" asp-for="MSWDClassification.MembershipSector" value="Artisanal Fisher Folk" onchange="toggleRequiredRadio(this)" required> Artisanal Fisher Folk
                     </div>
 
                     <div class="radio-group">
-                        <input type="radio" name="member_classification" value="Farmer And Landless Rural Worker" onchange="toggleRequiredRadio(this)"> Farmer And Landless Rural Worker
+                        <input type="radio" asp-for="MSWDClassification.MembershipSector" value="Farmer And Landless Rural Worker" onchange="toggleRequiredRadio(this)"> Farmer And Landless Rural Worker
                     </div>
 
                     <div class="radio-group">
-                        <input type="radio" name="member_classification" value="Urban Poor" onchange="toggleRequiredRadio(this)"> Urban Poor
+                        <input type="radio" asp-for="MSWDClassification.MembershipSector" value="Urban Poor" onchange="toggleRequiredRadio(this)"> Urban Poor
                     </div>
 
                     <div class="radio-group">
-                        <input type="radio" name="member_classification" value="Indigenous Peoples" onchange="toggleRequiredRadio(this)"> Indigenous Peoples
+                        <input type="radio" asp-for="MSWDClassification.MembershipSector" value="Indigenous Peoples" onchange="toggleRequiredRadio(this)"> Indigenous Peoples
                     </div>
 
                     <div class="radio-group">
-                        <input type="radio" name="member_classification" value="Senior Citizen" onchange="toggleRequiredRadio(this)"> Senior Citizen
+                        <input type="radio" asp-for="MSWDClassification.MembershipSector" value="Senior Citizen" onchange="toggleRequiredRadio(this)"> Senior Citizen
                     </div>
 
                     <div class="radio-group">
-                        <input type="radio" name="member_classification" value="Formal Labor and Migrant Workers" onchange="toggleRequiredRadio(this)"> Formal Labor and Migrant Workers
+                        <input type="radio" asp-for="MSWDClassification.MembershipSector" value="Formal Labor and Migrant Workers" onchange="toggleRequiredRadio(this)"> Formal Labor and Migrant Workers
                     </div>
 
                     <div class="radio-group">
-                        <input type="radio" name="member_classification" value="Workers in Informal Sector" onchange="toggleRequiredRadio(this)"> Workers in Informal Sector
+                        <input type="radio" asp-for="MSWDClassification.MembershipSector" value="Workers in Informal Sector" onchange="toggleRequiredRadio(this)"> Workers in Informal Sector
                     </div>
 
                     <div class="radio-group">
-                        <input type="radio" name="member_classification" value="PWD" onchange="toggleRequiredRadio(this)"> PWD
+                        <input type="radio" asp-for="MSWDClassification.MembershipSector" value="PWD" onchange="toggleRequiredRadio(this)"> PWD
                     </div>
 
                     <div class="radio-group">
-                        <input type="radio" name="member_classification" value="Victims Of Disaster and Calamity" onchange="toggleRequiredRadio(this)"> Victims Of Disaster and Calamity
+                        <input type="radio" asp-for="MSWDClassification.MembershipSector" value="Victims Of Disaster and Calamity" onchange="toggleRequiredRadio(this)"> Victims Of Disaster and Calamity
                     </div>
 
                     <div class="radio-group">
-                        <input type="radio" name="member_classification" value="Others" data-target="member-others-specify" onchange="toggleRequiredRadio(this)"> Others
-                        <input type="text" id="member-others-specify" placeholder="Specify" disabled>
+                        <input type="radio" asp-for="MSWDClassification.MembershipSector" value="Others"
+                                id="others-radio" data-target="member-others-specify"
+                               onchange="toggleRequiredRadio(this)"> Others
+
+                        <input type="text" id="member-others-specify" placeholder="Specify" disabled
+                               oninput="updateOthersValue(this)">
                     </div>
                 </td>
             </tr>
         </table>
 
-        <div class="section-title">III. Monthly Expenses</div>
+        @* <div class="section-title">III. Monthly Expenses</div>
         <table id="expenses-table">
             <tr>
                 <th>Particulars</th>
@@ -708,27 +733,47 @@
         }
     }
 
-    function toggleRequiredRadio(radio) {
-        let targetId = radio.getAttribute("data-target"); // Get the ID of the input field
-        let inputField = document.getElementById(targetId); // Find the input field by ID
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll('input[type="radio"][data-target]').forEach(radio => {
+            let inputField = document.getElementById(radio.getAttribute("data-target"));
 
-        // Disable all input fields within the same name group
-        let radioGroup = document.getElementsByName(radio.name);
-        radioGroup.forEach(r => {
+            if (radio.checked && radio.value !== "Others" && inputField) {
+                inputField.disabled = false;
+                inputField.required = true;
+                inputField.value = radio.value; // Set stored value for "Others"
+            }
+        });
+    });
+
+    function toggleRequiredRadio(radio) {
+        let targetId = radio.getAttribute("data-target");
+        let inputField = document.getElementById(targetId);
+
+        // Disable all "Others" input fields within the same radio group
+        document.getElementsByName(radio.name).forEach(r => {
             let field = document.getElementById(r.getAttribute("data-target"));
             if (field) {
-                field.required = false;
                 field.disabled = true;
-                field.value = ""; // Clear value
+                field.required = false;
+                field.value = ""; // Clear value when another radio is selected
             }
         });
 
-        // Enable only the selected radio button’s input field
-        if (inputField) {
-            inputField.required = true;
+        // Enable the "Others" input field only when selected
+        if (inputField && radio.value === "Others") {
             inputField.disabled = false;
+            inputField.required = true;
         }
     }
+
+    function updateOthersValue(input) {
+        let radio = document.querySelector(`input[data-target="${input.id}"]`);
+
+        if (radio.checked && input.value.trim() !== "") {
+            radio.value = input.value.trim(); // Update radio value dynamically
+        }
+    }
+
 
 </script>
 
