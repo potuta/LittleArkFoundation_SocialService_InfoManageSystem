@@ -6,6 +6,8 @@ using LittleArkFoundation.Areas.Admin.Models.Assessments;
 using LittleArkFoundation.Areas.Admin.Models.Referrals;
 using LittleArkFoundation.Areas.Admin.Models.Informants;
 using LittleArkFoundation.Areas.Admin.Models.FamilyComposition;
+using LittleArkFoundation.Areas.Admin.Models.Household;
+using LittleArkFoundation.Areas.Admin.Models.MSWDClassification;
 
 namespace LittleArkFoundation.Data
 {
@@ -37,6 +39,8 @@ namespace LittleArkFoundation.Data
         public DbSet<ReferralsModel> Referrals { get; set; }
         public DbSet<InformantsModel> Informants { get; set; }
         public DbSet<FamilyCompositionModel> FamilyComposition { get; set; }
+        public DbSet<HouseholdModel> Households { get; set; }
+        public DbSet<MSWDClassificationModel> MSWDClassification { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -119,6 +123,24 @@ namespace LittleArkFoundation.Data
 
             modelBuilder.Entity<FamilyCompositionModel>()
                 .Property(i => i.Id)
+                .ValueGeneratedOnAdd();
+
+            // Households
+            modelBuilder.Entity<HouseholdModel>()
+                .ToTable("Households")
+                .HasKey(h => h.HouseholdID);
+
+            modelBuilder.Entity<HouseholdModel>()
+                .Property(h => h.HouseholdID)
+                .ValueGeneratedOnAdd();
+
+            // MSWDClassification
+            modelBuilder.Entity<MSWDClassificationModel>()
+                .ToTable("MSWDClassification")
+                .HasKey(m => m.ClassificationID);
+
+            modelBuilder.Entity<MSWDClassificationModel>()
+                .Property(m => m.ClassificationID)
                 .ValueGeneratedOnAdd();
         }
     }
