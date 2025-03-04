@@ -20,7 +20,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
-            string connectionString = _connectionService.GetConnectionString("main");
+            string connectionString = _connectionService.GetCurrentConnectionString();
 
             using (var context = new ApplicationDbContext(connectionString))
             {

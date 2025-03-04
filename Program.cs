@@ -20,9 +20,11 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.ExpireTimeSpan = TimeSpan.FromDays(7);
     });
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(10); // Extend session timeout if needed
+    //options.IdleTimeout = TimeSpan.FromMinutes(5); // Extend session timeout if needed
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
@@ -40,6 +42,7 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
 builder.Services.AddSingleton<ConnectionService>();
+builder.Services.AddSingleton<DatabaseService>();
 
 //builder.WebHost.ConfigureKestrel(options =>
 //{

@@ -3,7 +3,6 @@
 @{
     ViewData["Title"] = "Edit User";
     Layout = "_AdminLayout";
-    string dbType = ViewBag.dbType ?? "main";
     bool isEditPasswordEnabled = ViewBag.isEditPassword ?? false;
     
     //TODO: Implement Reset Password through email functionality
@@ -13,7 +12,7 @@
 
 <div>
     <hr />
-    <form asp-action="Edit" asp-controller="Users" asp-route-dbType="@dbType" method="post">
+    <form asp-action="Edit" asp-controller="Users" method="post">
         @Html.AntiForgeryToken()
         <input type="hidden" asp-for="NewUser.UserID"/>
         <input type="hidden" asp-for="NewUser.PasswordSalt" />

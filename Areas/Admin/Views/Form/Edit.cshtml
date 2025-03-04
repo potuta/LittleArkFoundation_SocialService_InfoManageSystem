@@ -5,41 +5,7 @@
 @{
     ViewData["Title"] = "Edit Assessment Form";
     Layout = "_AdminLayout";
-    string dbType = ViewBag.dbType ?? "main";
 }
-
-@* <h2>Create Form</h2>
-<hr/>
-
-<h2>Fill Out the Form</h2>
-
-<form asp-action="Create" asp-route-dbType="@dbType" method="post">
-    @Html.AntiForgeryToken()
-    <div>
-        <label>Full Name:</label>
-        <input asp-for="FullName" required />
-        <span asp-validation-for="FullName"></span>
-    </div>
-
-    <div>
-        <label>Email:</label>
-        <input asp-for="Email" type="email" required />
-        <span asp-validation-for="Email"></span>
-    </div>
-
-    <div>
-        <label>Address:</label>
-        <input asp-for="Address" />
-    </div>
-
-    <div>
-        <label>Message:</label>
-        <textarea asp-for="Message" required></textarea>
-        <span asp-validation-for="Message"></span>
-    </div>
-
-    <button type="submit" class="btn btn-sm btn-primary">Submit</button>
-</form> *@
 
 <style>
     .form-container {
@@ -95,7 +61,7 @@
 
 </style>
 
-<form asp-action="Edit" asp-route-dbType="@dbType" method="post">
+<form asp-action="Edit" method="post">
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="Assessments.AssessmentID" />
     <input type="hidden" asp-for="Assessments.PatientID" />

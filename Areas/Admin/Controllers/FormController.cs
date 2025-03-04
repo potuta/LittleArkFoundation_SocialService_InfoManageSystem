@@ -29,9 +29,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             _pdfConverter = pdfConverter;
         }
 
-        public async Task<IActionResult> Index(string dbType)
+        public async Task<IActionResult> Index()
         {
-            string connectionString = _connectionService.GetConnectionString(dbType);
+            string connectionString = _connectionService.GetCurrentConnectionString();
             await using (var context = new ApplicationDbContext(connectionString))
             {
                 var patients = await context.Patients.ToListAsync();
@@ -45,9 +45,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
-        public async Task<IActionResult> Create(string dbType)
+        public async Task<IActionResult> Create()
         {
-            string connectionString = _connectionService.GetConnectionString(dbType);
+            string connectionString = _connectionService.GetCurrentConnectionString();
 
             await using var context = new ApplicationDbContext(connectionString);
 
@@ -61,9 +61,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(string dbType, FormViewModel formViewModel)
+        public async Task<IActionResult> Create(FormViewModel formViewModel)
         {
-            string connectionString = _connectionService.GetConnectionString(dbType);
+            string connectionString = _connectionService.GetCurrentConnectionString();
 
             await using (var context = new ApplicationDbContext(connectionString))
             {
@@ -114,7 +114,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
-        public async Task<IActionResult> ViewForm(string dbType, int id)
+        public async Task<IActionResult> ViewForm(int id)
         {
             // Load the HTML template
             string templatePath = Path.Combine(_environment.WebRootPath, "templates/page1_form_template.html");
@@ -125,7 +125,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
 
             string htmlContent = await System.IO.File.ReadAllTextAsync(templatePath);
-            htmlContent = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page1(htmlContent, dbType, id);
+            htmlContent = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page1(htmlContent, id);
 
             // Pass the modified HTML to the view
             TempData["FormHtml"] = htmlContent;
@@ -134,9 +134,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Edit(string dbType, int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            string connectionString = _connectionService.GetConnectionString(dbType);
+            string connectionString = _connectionService.GetCurrentConnectionString();
 
             await using var context = new ApplicationDbContext(connectionString);
 
@@ -166,9 +166,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string dbType, FormViewModel formViewModel)
+        public async Task<IActionResult> Edit(FormViewModel formViewModel)
         {
-            string connectionString = _connectionService.GetConnectionString(dbType);
+            string connectionString = _connectionService.GetCurrentConnectionString();
 
             await using var context = new ApplicationDbContext(connectionString);
             int id = formViewModel.Patient.PatientID;
@@ -202,7 +202,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DownloadPDF(string dbType, int id)
+        public async Task<IActionResult> DownloadPDF(int id)
         {
             try
             {
@@ -221,10 +221,10 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
 
                 string htmlContent = await System.IO.File.ReadAllTextAsync(templatePath);
-                htmlContent = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page1(htmlContent, dbType, id);
+                htmlContent = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page1(htmlContent, id);
 
                 string htmlContent2 = await System.IO.File.ReadAllTextAsync(templatePath2);
-                htmlContent2 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page2(htmlContent2, dbType, id);
+                htmlContent2 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page2(htmlContent2, id);
 
                 var pdf1 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent);
                 var pdf2 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent2);

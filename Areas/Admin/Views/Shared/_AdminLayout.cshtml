@@ -1,4 +1,5 @@
 @using System.Security.Claims
+@inject IHttpContextAccessor HttpContextAccessor
 
 <!DOCTYPE html>
 <html lang="en">
@@ -45,66 +46,93 @@
     </nav>
 
     <nav class="navbar-left">
-        <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")">
-            Home
-        </a>
-        <hr />
-        @* <a asp-area="Admin" asp-controller="Users" asp-action="Index" class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Users" ? "active" : "")">Users</a>
-        <a asp-area="Admin" asp-controller="Roles" asp-action="Index" class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Roles" ? "active" : "")">Roles</a>
-        <a asp-area="Admin" asp-controller="Permissions" asp-action="Index" class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Permissions" ? "active" : "")">Permissions</a> *@
 
-        <div class="btn-group d-block">
-            <!-- Toggle Button for Collapsible Section -->
-            <a data-bs-toggle="collapse" href="#mswdCollapse" role="button" aria-expanded="false"
-               aria-controls="mswdCollapse" class="btn-left align-items-center gap-1 d-flex justify-content-between">
-                <span class="mb-0">MSWD</span>
-                <i class="bx bx-chevron-down mswd-collapse-indicator"></i> <!-- Icon -->
+        <div>
+
+            <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")">
+                Home
             </a>
+            <hr />
 
-            <!-- Collapsible Sort Options -->
-            <div class="collapse mt-2" id="mswdCollapse">
-                <ul class="list-group list-unstyled text-center">
-                    <li>
-                        <a asp-area="Admin" asp-controller="Form" asp-action="Index" class="btn-left-sub @(ViewContext.RouteData.Values["controller"]?.ToString() == "Form" ? "active" : "")">
-                            Admission
-                        </a> 
-                    </li>
-                </ul>
+            <div class="btn-group d-block">
+                <!-- Toggle Button for Collapsible Section -->
+                <a data-bs-toggle="collapse" href="#mswdCollapse" role="button" aria-expanded="false"
+                   aria-controls="mswdCollapse" class="btn-left align-items-center gap-1 d-flex justify-content-between">
+                    <span class="mb-0">MSWD</span>
+                    <i class="bx bx-chevron-down mswd-collapse-indicator"></i> <!-- Icon -->
+                </a>
+
+                <!-- Collapsible Sort Options -->
+                <div class="collapse mt-2" id="mswdCollapse">
+                    <ul class="list-group list-unstyled text-center">
+                        <li>
+                            <a asp-area="Admin" asp-controller="Form" asp-action="Index" class="btn-left-sub @(ViewContext.RouteData.Values["controller"]?.ToString() == "Form" ? "active" : "")">
+                                Admission
+                            </a> 
+                        </li>
+                    </ul>
+                </div>
             </div>
+
+            <div class="btn-group d-block">
+                <!-- Toggle Button for Collapsible Section -->
+                <a data-bs-toggle="collapse" href="#usersCollapse" role="button" aria-expanded="false"
+                   aria-controls="usersCollapse" class="btn-left align-items-center gap-1 d-flex justify-content-between">
+                    <span class="mb-0">Manage Users</span>
+                    <i class="bx bx-chevron-down users-collapse-indicator"></i> <!-- Icon -->
+                </a>
+
+
+                <!-- Collapsible Sort Options -->
+                <div class="collapse mt-2" id="usersCollapse">
+                    <ul class="list-group list-unstyled text-center">
+                        <li>
+                            <a asp-area="Admin" asp-controller="Users" asp-action="Index"
+                               class="btn-left-sub @(ViewContext.RouteData.Values["controller"]?.ToString() == "Users" ? "active" : "")">
+                                Users
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-area="Admin" asp-controller="Roles" asp-action="Index"
+                               class="btn-left-sub @(ViewContext.RouteData.Values["controller"]?.ToString() == "Roles" ? "active" : "")">
+                                Roles
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-area="Admin" asp-controller="Permissions" asp-action="Index"
+                               class="btn-left-sub @(ViewContext.RouteData.Values["controller"]?.ToString() == "Permissions" ? "active" : "")">
+                                Permissions
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="btn-group d-block">
+                <!-- Toggle Button for Collapsible Section -->
+                <a data-bs-toggle="collapse" href="#databaseCollapse" role="button" aria-expanded="false"
+                   aria-controls="databaseCollapse" class="btn-left align-items-center gap-1 d-flex justify-content-between">
+                    <span class="mb-0">Manage Database</span>
+                    <i class="bx bx-chevron-down database-collapse-indicator"></i> <!-- Icon -->
+                </a>
+
+                <!-- Collapsible Sort Options -->
+                <div class="collapse mt-2" id="databaseCollapse">
+                    <ul class="list-group list-unstyled text-center">
+                        <li>
+                            <a asp-area="Admin" asp-controller="Database" asp-action="Index" class="btn-left-sub @(ViewContext.RouteData.Values["controller"]?.ToString() == "Database" ? "active" : "")">
+                                Backup & Restore
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
         </div>
 
         <div class="btn-group d-block">
-            <!-- Toggle Button for Collapsible Section -->
-            <a data-bs-toggle="collapse" href="#usersCollapse" role="button" aria-expanded="false"
-               aria-controls="usersCollapse" class="btn-left align-items-center gap-1 d-flex justify-content-between">
-                <span class="mb-0">Manage Users</span>
-                <i class="bx bx-chevron-down users-collapse-indicator"></i> <!-- Icon -->
-            </a>
-
-
-            <!-- Collapsible Sort Options -->
-            <div class="collapse mt-2" id="usersCollapse">
-                <ul class="list-group list-unstyled text-center">
-                    <li>
-                        <a asp-area="Admin" asp-controller="Users" asp-action="Index"
-                           class="btn-left-sub @(ViewContext.RouteData.Values["controller"]?.ToString() == "Users" ? "active" : "")">
-                            Users
-                        </a>
-                    </li>
-                    <li>
-                        <a asp-area="Admin" asp-controller="Roles" asp-action="Index"
-                           class="btn-left-sub @(ViewContext.RouteData.Values["controller"]?.ToString() == "Roles" ? "active" : "")">
-                            Roles
-                        </a>
-                    </li>
-                    <li>
-                        <a asp-area="Admin" asp-controller="Permissions" asp-action="Index"
-                           class="btn-left-sub @(ViewContext.RouteData.Values["controller"]?.ToString() == "Permissions" ? "active" : "")">
-                            Permissions
-                        </a>
-                    </li>
-                </ul>
-            </div>
+            <hr />
+            <strong>Connection:</strong> @HttpContextAccessor.HttpContext?.Session.GetString("DatabaseName")
         </div>
 
     </nav>
@@ -121,12 +149,16 @@
         document.addEventListener("DOMContentLoaded", function () {
             let usersCollapseKey = "usersCollapseState"; // LocalStorage key for users
             let mswdCollapseKey = "mswdCollapseState"; // LocalStorage key for MSWD
+			let databaseCollapseKey = "databaseCollapseState"; // LocalStorage key for database
 
             let usersCollapseElement = document.getElementById("usersCollapse");
             let usersIndicatorIcon = document.querySelector(".users-collapse-indicator");
 
             let mswdCollapseElement = document.getElementById("mswdCollapse");
             let mswdIndicatorIcon = document.querySelector(".mswd-collapse-indicator");
+
+			let databaseCollapseElement = document.getElementById("databaseCollapse");
+			let databaseIndicatorIcon = document.querySelector(".database-collapse-indicator");
 
             // Function to update the icon
             function updateIndicator(iconElement, isOpen) {
@@ -162,6 +194,11 @@
                 updateIndicator(mswdIndicatorIcon, true);
             }
 
+			if (isDatabaseCollapsed) {
+				databaseCollapseElement.classList.add("show");
+				updateIndicator(databaseIndicatorIcon, true);
+			}
+
             // Listen for collapse events
             usersCollapseElement.addEventListener("show.bs.collapse", function () {
                 localStorage.setItem(usersCollapseKey, "open");
@@ -181,6 +218,16 @@
             mswdCollapseElement.addEventListener("hide.bs.collapse", function () {
                 localStorage.setItem(mswdCollapseKey, "closed");
                 updateIndicator(mswdIndicatorIcon, false);
+            });
+
+			databaseCollapseElement.addEventListener("show.bs.collapse", function () {
+				localStorage.setItem(databaseCollapseKey, "open");
+				updateIndicator(databaseIndicatorIcon, true);
+            });
+
+			databaseCollapseElement.addEventListener("hide.bs.collapse", function () {
+				localStorage.setItem(databaseCollapseKey, "closed");
+				updateIndicator(databaseIndicatorIcon, false);
             });
         });
     </script>

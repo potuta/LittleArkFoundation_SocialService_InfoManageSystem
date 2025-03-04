@@ -4,20 +4,28 @@
     public class ConnectionService
     {
         private readonly IConfiguration _configuration;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public ConnectionService(IConfiguration configuration)
         {
             _configuration = configuration;
         }
 
-        public string GetConnectionString(string dbType)
+        public ConnectionService(IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
         {
-            if (dbType == "backup")
-            {
-                // return "Data Source=DESKTOP-MQAI63D\\SQLEXPRESS;Initial Catalog=STU_DB_2023_2024;Integrated Security=True;TrustServerCertificate=True;Column Encryption Setting=Disabled";
-                return _configuration.GetConnectionString("DefaultConnection");
-            }
+            _configuration = configuration;
+            _httpContextAccessor = httpContextAccessor;
+        }
+
+        public string GetDefaultConnectionString()
+        {
             return _configuration.GetConnectionString("DefaultConnection");
+        }
+
+        public string GetCurrentConnectionString()
+        {
+            return _httpContextAccessor.HttpContext?.Session.GetString("ConnectionString")
+                   ?? GetDefaultConnectionString();
         }
     }
 }

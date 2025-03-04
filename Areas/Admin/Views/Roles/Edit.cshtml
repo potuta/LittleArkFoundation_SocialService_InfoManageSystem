@@ -3,13 +3,12 @@
 @{
     ViewData["Title"] = "Edit Role";
     Layout = "_AdminLayout";
-    string dbType = ViewBag.dbType ?? "main";
 }
 
 <h2>Edit Role</h2>
 
 <div>
-    <form asp-action="Edit" asp-controller="Roles" asp-route-dbType="@dbType" method="post">
+    <form asp-action="Edit" asp-controller="Roles" method="post">
         @Html.AntiForgeryToken()
         <input type="hidden" asp-for="NewRole.RoleID" />
 

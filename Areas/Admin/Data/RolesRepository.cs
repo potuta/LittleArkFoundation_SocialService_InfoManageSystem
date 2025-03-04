@@ -20,9 +20,9 @@ namespace LittleArkFoundation.Areas.Admin.Data
             _connectionService = connectionService;
         }
 
-        public async Task<IEnumerable<RolesModel>> GetRolesAsync(string dbType)
+        public async Task<IEnumerable<RolesModel>> GetRolesAsync()
         {
-            string connectionString = _connectionService.GetConnectionString(dbType);
+            string connectionString = _connectionService.GetCurrentConnectionString();
             await using (var context = new ApplicationDbContext(connectionString))
             {
                 return await Task.Run(() => context.Roles.ToList());

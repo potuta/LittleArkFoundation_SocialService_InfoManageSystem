@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using LittleArkFoundation.Areas.Admin.Data;
 using LittleArkFoundation.Areas.Admin.Models;
 using LittleArkFoundation.Authorize;
+using Microsoft.IdentityModel.Tokens;
 
 namespace LittleArkFoundation.Areas.Admin.Controllers
 {
@@ -22,9 +23,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             _connectionService = connectionService;
         }
 
-        public async Task<IActionResult> Index(string dbType, bool isArchive)
+        public async Task<IActionResult> Index(bool isArchive)
         {
-            string connectionString = _connectionService.GetConnectionString(dbType);
+            string connectionString = _connectionService.GetCurrentConnectionString();
 
             await using (var context = new ApplicationDbContext(connectionString))
             {
@@ -37,7 +38,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     {
                         UsersArchives = usersArchives,
                         //NewUserArchive = new UsersArchivesModel(),
-                        Roles = await new RolesRepository(_connectionService).GetRolesAsync(dbType)
+                        Roles = await new RolesRepository(_connectionService).GetRolesAsync()
                     };
 
                     ViewBag.isArchive = isArchive;
@@ -50,7 +51,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 {
                     Users = users,
                     NewUser = new UsersModel(),
-                    Roles = await new RolesRepository(_connectionService).GetRolesAsync(dbType)
+                    Roles = await new RolesRepository(_connectionService).GetRolesAsync()
                 };
 
                 ViewBag.isArchive = isArchive;
@@ -58,9 +59,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
-        public async Task<IActionResult> Search(string searchString, string dbType, bool isArchive)
+        public async Task<IActionResult> Search(string searchString, bool isArchive)
         {
-            string connectionString = _connectionService.GetConnectionString(dbType);
+            string connectionString = _connectionService.GetCurrentConnectionString();
 
             await using (var context = new ApplicationDbContext(connectionString))
             {
@@ -78,7 +79,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                         var viewArchivesModel = new UsersViewModel
                         {
                             UsersArchives = usersArchive,
-                            Roles = await new RolesRepository(_connectionService).GetRolesAsync(dbType)
+                            Roles = await new RolesRepository(_connectionService).GetRolesAsync()
                         };
 
                         ViewBag.isArchive = isArchive;
@@ -95,20 +96,20 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     {
                         Users = users,
                         NewUser = new UsersModel(),
-                        Roles = await new RolesRepository(_connectionService).GetRolesAsync(dbType)
+                        Roles = await new RolesRepository(_connectionService).GetRolesAsync()
                     };
 
                     ViewBag.isArchive = isArchive;
                     return View("Index", viewModel);
                 }
 
-                return RedirectToAction("Index", new {dbType, isArchive});
+                return RedirectToAction("Index", new {isArchive});
             }
         }
 
-        public async Task<IActionResult> SortBy(string sortByRoleID, string dbType, bool isArchive)
+        public async Task<IActionResult> SortBy(string sortByRoleID, bool isArchive)
         {
-            string connectionString = _connectionService.GetConnectionString(dbType);
+            string connectionString = _connectionService.GetCurrentConnectionString();
 
             await using (var context = new ApplicationDbContext(connectionString))
             {
@@ -125,7 +126,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                         var viewArchivesModel = new UsersViewModel
                         {
                             UsersArchives = usersArchive,
-                            Roles = await new RolesRepository(_connectionService).GetRolesAsync(dbType)
+                            Roles = await new RolesRepository(_connectionService).GetRolesAsync()
                         };
 
                         ViewBag.sortBy = await new RolesRepository(connectionString).GetRoleNameByRoleID(int.Parse(sortByRoleID));
@@ -141,7 +142,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     var viewModel = new UsersViewModel
                     {
                         Users = users,
-                        Roles = await new RolesRepository(_connectionService).GetRolesAsync(dbType)
+                        Roles = await new RolesRepository(_connectionService).GetRolesAsync()
                     };
 
                     ViewBag.sortBy = await new RolesRepository(connectionString).GetRoleNameByRoleID(int.Parse(sortByRoleID));
@@ -150,14 +151,14 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                 }
 
-                return RedirectToAction("Index", new { dbType, isArchive });
+                return RedirectToAction("Index", new { isArchive });
             }
         }
 
         // CREATE: Create a new user
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(string dbType, UsersViewModel viewModel)
+        public async Task<IActionResult> Create(UsersViewModel viewModel)
         {
             //Console.WriteLine($"viewModel is null: {viewModel == null}");
 
@@ -178,7 +179,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
                 LoggingService.LogInformation($"User creation attempt. UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
 
-                string connectionString = _connectionService.GetConnectionString(dbType);
+                string connectionString = _connectionService.GetCurrentConnectionString();
 
                 await using (var context = new ApplicationDbContext(connectionString))
                 {
@@ -214,9 +215,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         }
 
         // 🟢 READ: Show details
-        public async Task<IActionResult> Details(string dbType, int id)
+        public async Task<IActionResult> Details(int id)
         {
-            string connectionString = _connectionService.GetConnectionString(dbType);
+            string connectionString = _connectionService.GetCurrentConnectionString();
 
             await using (var context = new ApplicationDbContext(connectionString))
             {
@@ -227,9 +228,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         }
 
         // 🟡 EDIT: Show edit page
-        public async Task<IActionResult> Edit(string dbType, int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            string connectionString = _connectionService.GetConnectionString(dbType);
+            string connectionString = _connectionService.GetCurrentConnectionString();
             await using (var context = new ApplicationDbContext(connectionString))
             {
                 var user = await context.Users.FindAsync(id);
@@ -239,7 +240,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 {
                     Users = new List<UsersModel>(),
                     NewUser = user,
-                    Roles = await new RolesRepository(_connectionService).GetRolesAsync(dbType)
+                    Roles = await new RolesRepository(_connectionService).GetRolesAsync()
                 };
 
                 return View(viewModel);
@@ -249,7 +250,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         // 🔵 UPDATE: Save changes
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string dbType, UsersViewModel user, bool isEditPasswordEnabled)
+        public async Task<IActionResult> Edit(UsersViewModel user, bool isEditPasswordEnabled)
         {
             Console.WriteLine($"viewModel is null: {user == null}");
 
@@ -262,14 +263,14 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                         Console.WriteLine("ModelState Error: " + error.ErrorMessage, error.Exception);
                     }
                 }
-                user.Roles = await new RolesRepository(_connectionService).GetRolesAsync(dbType);
+                user.Roles = await new RolesRepository(_connectionService).GetRolesAsync();
                 return View("Index", user);
             }
 
             try
             {
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-                string connectionString = _connectionService.GetConnectionString(dbType);
+                string connectionString = _connectionService.GetCurrentConnectionString();
 
                 LoggingService.LogInformation($"User edit attempt. UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
 
@@ -295,19 +296,19 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             catch (Exception ex)
             {
                 LoggingService.LogError("Error: " + ex.Message);
-                return RedirectToAction("Index", new { dbType, isArchive = false });
+                return RedirectToAction("Index", new { isArchive = false });
             }
 
             return RedirectToAction("Index");
         }
 
         // 🟡 ARCHIVE: Archive the user
-        public async Task<IActionResult> Archive(string dbType, int id)
+        public async Task<IActionResult> Archive(int id)
         {
             try
             {
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-                string connectionString = _connectionService.GetConnectionString(dbType);
+                string connectionString = _connectionService.GetCurrentConnectionString();
 
                 LoggingService.LogInformation($"User archive attempt. UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
                 await using (var context = new ApplicationDbContext(connectionString))
@@ -317,7 +318,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     if (user.UserID.ToString() == userIdClaim.Value)
                     {
                         TempData["ArchiveError"] = "Can't archive the user you're currently using.";
-                        return RedirectToAction("Index", new { dbType, isArchive = false });
+                        return RedirectToAction("Index", new { isArchive = false });
                     }
 
                     var userArchive = new UsersArchivesModel()
@@ -344,19 +345,19 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             catch (Exception ex)
             {
                 LoggingService.LogError("Error: " + ex.Message);
-                return RedirectToAction("Index", new { dbType, isArchive = false });
+                return RedirectToAction("Index", new { isArchive = false });
             }
 
-            return RedirectToAction("Index", new {dbType, isArchive = false});
+            return RedirectToAction("Index", new {isArchive = false});
         }
 
         // 🟡 UNARCHIVE: Unarchive the user
-        public async Task<IActionResult> Unarchive(string dbType, int id)
+        public async Task<IActionResult> Unarchive(int id)
         {
             try
             {
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-                string connectionString = _connectionService.GetConnectionString(dbType);
+                string connectionString = _connectionService.GetCurrentConnectionString();
 
                 LoggingService.LogInformation($"User unarchive attempt. UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
 
@@ -387,10 +388,10 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             catch (Exception ex)
             {
                 LoggingService.LogError("Error: " + ex.Message);
-                return RedirectToAction("Index", new { dbType, isArchive = false });
+                return RedirectToAction("Index", new { isArchive = false });
             }
 
-            return RedirectToAction("Index", new { dbType, isArchive = true });
+            return RedirectToAction("Index", new { isArchive = true });
         }
 
     }

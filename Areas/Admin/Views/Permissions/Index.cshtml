@@ -3,19 +3,18 @@
 @{
     ViewData["Title"] = "Permissions";
     Layout = "_AdminLayout";
-    string dbType = ViewBag.dbType ?? "main";
 }
 
 <h2>Permissions</h2>
 
 <div class="search-container">
-    <form asp-action="Search" asp-controller="Permissions" asp-route-dbType="@dbType">
+    <form asp-action="Search" asp-controller="Permissions">
         <div class="input-group">
             <input type="search" name="searchString" class="form-control" placeholder="Search by PermissionID/Name" aria-label="Search">
             <button type="submit" class="btn btn-dark">Search</button>
         </div>
     </form>
-    <a class="btn btn-primary" asp-action="Index" asp-controller="Permissions" asp-route-dbType="@dbType">Back to Full List</a>
+    <a class="btn btn-primary" asp-action="Index" asp-controller="Permissions">Back to Full List</a>
 </div>
 
 <div>
@@ -71,7 +70,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form asp-action="Create" asp-controller="Permissions" asp-route-dbType="@dbType" method="post">
+                <form asp-action="Create" asp-controller="Permissions" method="post">
                     @Html.AntiForgeryToken()
                     <div class="mb-3">
                         <label for="permissionName" class="form-label">Permission Name</label>

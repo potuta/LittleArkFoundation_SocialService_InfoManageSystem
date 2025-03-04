@@ -15,9 +15,9 @@ namespace LittleArkFoundation.Data
             _connectionService = connectionService;
         }
 
-        public async Task<string> ModifyHtmlTemplateAsync_Page1(string htmlContent, string dbType, int id)
+        public async Task<string> ModifyHtmlTemplateAsync_Page1(string htmlContent, int id)
         {
-            string connectionString = _connectionService.GetConnectionString(dbType);
+            string connectionString = _connectionService.GetCurrentConnectionString();
 
             await using var context = new ApplicationDbContext(connectionString);
 
@@ -617,9 +617,9 @@ namespace LittleArkFoundation.Data
             return htmlDoc.DocumentNode.OuterHtml; // Return updated HTML
         }
 
-        public async Task<string> ModifyHtmlTemplateAsync_Page2(string htmlContent, string dbType, int id)
+        public async Task<string> ModifyHtmlTemplateAsync_Page2(string htmlContent, int id)
         {
-            string connectionString = _connectionService.GetConnectionString(dbType);
+            string connectionString = _connectionService.GetCurrentConnectionString();
 
             await using var context = new ApplicationDbContext(connectionString);
 

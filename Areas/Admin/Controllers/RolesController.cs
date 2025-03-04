@@ -21,9 +21,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             _connectionService = connectionService;
         }
 
-        public async Task<IActionResult> Index(string dbType)
+        public async Task<IActionResult> Index()
         {
-            string connectionString = _connectionService.GetConnectionString(dbType);
+            string connectionString = _connectionService.GetCurrentConnectionString();
 
             await using (var context = new ApplicationDbContext(connectionString))
             {
@@ -41,9 +41,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         // TODO: Implement search role
 
         // TODO: add logs for creating roles
-        public async Task<IActionResult> Create(string dbType, string name)
+        public async Task<IActionResult> Create(string name)
         {
-            string connectionString = _connectionService.GetConnectionString(dbType);
+            string connectionString = _connectionService.GetCurrentConnectionString();
 
             await using (var context = new ApplicationDbContext(connectionString))
             {
@@ -66,9 +66,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         }
 
         // TODO: add logs for editing roles
-        public async Task<IActionResult> Edit(string dbType, int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            string connectionString = _connectionService.GetConnectionString(dbType);
+            string connectionString = _connectionService.GetCurrentConnectionString();
 
             await using (var context = new ApplicationDbContext(connectionString))
             {
@@ -99,14 +99,14 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string dbType, RolesViewModel roleViewModel)
+        public async Task<IActionResult> Edit(RolesViewModel roleViewModel)
         {
             if (!ModelState.IsValid)
             {
                 return View(roleViewModel);
             }
 
-            string connectionString = _connectionService.GetConnectionString(dbType);
+            string connectionString = _connectionService.GetCurrentConnectionString();
 
             await using (var context = new ApplicationDbContext(connectionString))
             {
@@ -141,9 +141,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
         // TODO: add logs to delete role
 
-        public async Task<IActionResult> Delete(string dbType, int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            string connectionString = _connectionService.GetConnectionString(dbType);
+            string connectionString = _connectionService.GetCurrentConnectionString();
             string roleName = await new RolesRepository(connectionString).GetRoleNameByRoleID(id);
 
             await using (var context = new ApplicationDbContext(connectionString))

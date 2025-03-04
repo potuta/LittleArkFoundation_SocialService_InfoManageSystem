@@ -3,19 +3,18 @@
 @{
     ViewData["Title"] = "Roles";
     Layout = "_AdminLayout";
-    string dbType = ViewBag.dbType ?? "main";
 }
 
 <h2>Roles</h2>
 
 <div class="search-container">
-    <form asp-action="Search" asp-controller="Roles" asp-route-dbType="@dbType">
+    <form asp-action="Search" asp-controller="Roles">
         <div class="input-group">
             <input type="search" name="searchString" class="form-control" placeholder="Search by RoleID/RoleName" aria-label="Search">
             <button type="submit" class="btn btn-dark">Search</button>
         </div>
     </form>
-    <a class="btn btn-primary" asp-action="Index" asp-controller="Users" asp-route-dbType="@dbType">Back to Full List</a>
+    <a class="btn btn-primary" asp-action="Index" asp-controller="Users">Back to Full List</a>
 </div>
 
 <div>
@@ -87,7 +86,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form asp-action="Create" asp-controller="Roles" asp-route-dbType="@dbType" method="post">
+                <form asp-action="Create" asp-controller="Roles" method="post">
                     @Html.AntiForgeryToken()
                     <div class="mb-3">
                         <label for="roleName" class="form-label">Role Name</label>

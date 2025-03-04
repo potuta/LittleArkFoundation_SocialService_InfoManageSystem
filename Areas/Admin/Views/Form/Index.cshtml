@@ -3,23 +3,22 @@
 @{
 	ViewData["Title"] = "Admission";
 	Layout = "_AdminLayout";
-	string dbType = ViewBag.dbType ?? "main";
 }
 
 <h2>Admission</h2>
 
 <div class="search-container">
-    <form asp-action="Search" asp-controller="Form" asp-route-dbType="@dbType">
+    <form asp-action="Search" asp-controller="Form">
         <div class="input-group">
             <input type="search" name="searchString" class="form-control" placeholder="Search by Id/FullName" aria-label="Search">
             <button type="submit" class="btn btn-dark">Search</button>
         </div>
     </form>
-    <a class="btn btn-primary" asp-action="Index" asp-controller="Form" asp-route-dbType="@dbType">Back to Full List</a>
+    <a class="btn btn-primary" asp-action="Index" asp-controller="Form">Back to Full List</a>
 </div>
 
 <div>
-    <a class="btn btn-success" asp-action="Create" asp-controller="Form" asp-route-dbType="@dbType">Create New</a>
+    <a class="btn btn-success" asp-action="Create" asp-controller="Form">Create New</a>
 </div>
 
 @if (TempData["CreateSuccess"] != null)
