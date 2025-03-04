@@ -21,9 +21,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             _connectionService = connectionService;
         }
 
-        public async Task<IActionResult> Index(string dbType)
+        public async Task<IActionResult> Index()
         {
-            string connectionString = _connectionService.GetConnectionString(dbType);
+            string connectionString = _connectionService.GetCurrentConnectionString();
 
             await using (var context = new ApplicationDbContext(connectionString))
             {
@@ -42,14 +42,14 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(string dbType, string name)
+        public async Task<IActionResult> Create(string name)
         {
             try
             {
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
                 LoggingService.LogInformation($"Permission creation attempt. UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
 
-                string connectionString = _connectionService.GetConnectionString(dbType);
+                string connectionString = _connectionService.GetCurrentConnectionString();
 
                 await using (var context = new ApplicationDbContext(connectionString))
                 {
@@ -85,14 +85,14 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Delete(string dbType, int id)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
                 LoggingService.LogInformation($"Permission deletion attempt. UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
 
-                string connectionString = _connectionService.GetConnectionString(dbType);
+                string connectionString = _connectionService.GetCurrentConnectionString();
 
                 await using (var context = new ApplicationDbContext(connectionString))
                 {

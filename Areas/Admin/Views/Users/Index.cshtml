@@ -3,7 +3,6 @@
 @{
     ViewData["Title"] = "Users";
     Layout = "_AdminLayout";
-    string dbType = ViewBag.dbType ?? "main";
     bool isArchive = ViewBag.isArchive ?? false;
     string? sortBy = ViewBag.sortBy ?? null;
 }
@@ -11,13 +10,13 @@
 <h2>Users</h2>
 
 <div class="search-container">
-    <form asp-action="Search" asp-controller="Users" asp-route-dbType="@dbType" asp-route-isArchive="@isArchive">
+    <form asp-action="Search" asp-controller="Users" asp-route-isArchive="@isArchive">
         <div class="input-group">
             <input type="search" name="searchString" class="form-control" placeholder="Search by UserID/Username" aria-label="Search">
             <button type="submit" class="btn btn-dark">Search</button>
         </div>
     </form>
-    <a class="btn btn-primary" asp-action="Index" asp-controller="Users" asp-route-dbType="@dbType" asp-route-isArchive="@isArchive">Back to Full List</a>
+    <a class="btn btn-primary" asp-action="Index" asp-controller="Users" asp-route-isArchive="@isArchive">Back to Full List</a>
 </div>
 
 <div>
@@ -28,15 +27,15 @@
     }
 
     <div class="btn-group btn-group-toggle" data-toggle="buttons">
-        <a asp-action="Index" asp-controller="Users" asp-route-dbType="@dbType" asp-route-isArchive="false" class="btn btn-secondary @(isArchive ? "" : "active")">
+        <a asp-action="Index" asp-controller="Users" asp-route-isArchive="false" class="btn btn-secondary @(isArchive ? "" : "active")">
             <div class="custom-radio">
-                <input type="radio" style="accent-color: dodgerblue" name="dbType" value="main" @(isArchive ? "" : "checked")>
+                <input type="radio" style="accent-color: dodgerblue" value="main" @(isArchive ? "" : "checked")>
                 <label style="margin-bottom: 0">Main Database</label>
             </div>
         </a>
-        <a asp-action="Index" asp-controller="Users" asp-route-dbType="@dbType" asp-route-isArchive="true" class="btn btn-secondary @(isArchive ? "active" : "")">
+        <a asp-action="Index" asp-controller="Users" asp-route-isArchive="true" class="btn btn-secondary @(isArchive ? "active" : "")">
             <div class="custom-radio">
-                <input type="radio" style="accent-color: dodgerblue" name="dbType" value="archive" @(isArchive ? "checked" : "")>
+                <input type="radio" style="accent-color: dodgerblue" value="archive" @(isArchive ? "checked" : "")>
                 <label style="margin-bottom: 0">Archive Database</label>
             </div>
         </a>
@@ -54,10 +53,10 @@
             }
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" asp-action="SortBy" asp-controller="Users" asp-route-sortByRoleID="" asp-route-dbType="@dbType" asp-route-isArchive="@isArchive">All</a></li>
+            <li><a class="dropdown-item" asp-action="SortBy" asp-controller="Users" asp-route-sortByRoleID="" asp-route-isArchive="@isArchive">All</a></li>
             @foreach (var role in Model.Roles)
             {
-                <li><a class="dropdown-item" asp-action="SortBy" asp-controller="Users" asp-route-sortByRoleID="@role.RoleID" asp-route-dbType="@dbType" asp-route-isArchive="@isArchive">@role.RoleName</a></li>
+                <li><a class="dropdown-item" asp-action="SortBy" asp-controller="Users" asp-route-sortByRoleID="@role.RoleID" asp-route-isArchive="@isArchive">@role.RoleName</a></li>
             }
         </ul>
     </div>
@@ -170,7 +169,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form asp-action="Create" asp-controller="Users" asp-route-dbType="@dbType" method="post">
+                <form asp-action="Create" asp-controller="Users" method="post">
                     @Html.AntiForgeryToken()
                     <div class="form-group">
                         <label asp-for="NewUser.Username" class="control-label"></label>

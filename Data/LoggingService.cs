@@ -25,7 +25,7 @@ namespace LittleArkFoundation.Data
                 _logger = new LoggerConfiguration()
                     .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day)
                     .WriteTo.MSSqlServer(
-                        connectionString: connectionService.GetConnectionString("main"),
+                        connectionString: connectionService.GetDefaultConnectionString(),
                         sinkOptions: new MSSqlServerSinkOptions
                         {
                             TableName = "Logs",

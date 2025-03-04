@@ -12,17 +12,19 @@ namespace LittleArkFoundation.Controllers
     public class AccountController : Controller
     {
         private readonly ConnectionService _connectionService;
+        private readonly DatabaseService _databaseService;
 
-        public AccountController(ConnectionService connectionService)
+        public AccountController(ConnectionService connectionService, DatabaseService databaseService)
         {
             _connectionService = connectionService;
+            _databaseService = databaseService;
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(int userID, string password)
         {
-            string connectionString = _connectionService.GetConnectionString("main");
+            string connectionString = _connectionService.GetDefaultConnectionString();
 
             try
             {
@@ -58,6 +60,8 @@ namespace LittleArkFoundation.Controllers
                 var principal = new ClaimsPrincipal(identity);
 
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+                HttpContext.Session.SetString("ConnectionString", connectionString);
+                HttpContext.Session.SetString("DatabaseName", _databaseService.GetSelectedDatabaseInConnectionString(connectionString));
 
                 LoggingService.LogInformation($"User logged in. UserID: {userID}, Role: {role}, DateTime: {DateTime.Now}");
 
@@ -72,13 +76,6 @@ namespace LittleArkFoundation.Controllers
                 }
                
                 return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
-
-                //return role switch
-                //{
-                //    "Admin" => RedirectToAction("Index", "Dashboard", new { area = "Admin" }),
-                //    "Donor" => RedirectToAction("Index", "Dashboard", new { area = "Donor" }),
-                //    _ => RedirectToAction("Index", "Home")
-                //};
             }
             catch (SqlException ex)
             {
@@ -136,10 +133,10 @@ namespace LittleArkFoundation.Controllers
 
             // Store session values correctly
             HttpContext.Session.SetString("VerificationCode", verificationCode);
-            HttpContext.Session.SetString("CodeExpiresAt", DateTime.UtcNow.AddMinutes(5).Ticks.ToString());
+            HttpContext.Session.SetString("CodeExpiresAt", DateTime.UtcNow.AddMinutes(3).Ticks.ToString());
 
             // Send email asynchronously
-            string connectionString = _connectionService.GetConnectionString("main");
+            string connectionString = _connectionService.GetDefaultConnectionString();
             using (var context = new ApplicationDbContext(connectionString))
             {
                 var user = await context.Users.FindAsync(userID);
@@ -222,7 +219,7 @@ namespace LittleArkFoundation.Controllers
             {
                 LoggingService.LogInformation($"User reset password attempt. UserID: {userID}, DateTime: {DateTime.Now}");
 
-                string connectionString = _connectionService.GetConnectionString("main");
+                string connectionString = _connectionService.GetDefaultConnectionString();
 
                 using (var context = new ApplicationDbContext(connectionString))
                 {

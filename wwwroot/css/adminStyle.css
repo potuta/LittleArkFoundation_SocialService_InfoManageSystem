@@ -53,6 +53,7 @@ body {
 /*    width: fit-content;*/
     width: 12rem;
     padding: 0.625rem; /* 10px */
+    justify-content: space-between;
 }
 
 body.sidebar-collapsed .navbar-left {

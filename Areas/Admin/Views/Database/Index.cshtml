@@ -1,0 +1,80 @@
+﻿@using LittleArkFoundation.Areas.Admin.Models.Database
+@using LittleArkFoundation.Data
+@inject IHttpContextAccessor HttpContextAccessor
+@model DatabaseViewModel
+@{
+    ViewData["Title"] = "Manage Database";
+    Layout = "_AdminLayout";
+    string currentConnectionString = ViewBag.CurrentConnectionString;
+	string defaultConnectionString = ViewBag.DefaultConnectionString;
+}
+
+<h2>Manage Database</h2>
+
+<div>
+    @if (currentConnectionString == defaultConnectionString)
+    {
+        <a href="@Url.Action("CreateNewDatabaseYear")" class="btn btn-primary" onclick="return confirm('Warning! creating a new database year will automatically archive this year's database, do you still want to continue?');">
+            Create new database year
+        </a>
+    }
+</div>
+
+@if (TempData["ConnectSuccess"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert" style="width: 60%;">
+        @TempData["ConnectSuccess"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["CreateSuccess"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert" style="width: 60%;">
+        @TempData["CreateSuccess"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["EditSuccess"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert" style="width: 60%;">
+        @TempData["EditSuccess"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="table-responsive" style="width: 60%;">
+    <table class="table" style="width: max-content;">
+        <thead>
+            @if (Model != null)
+            {
+                <tr>
+                    <th>Connect to database</th>
+                    <th>Database Name</th>
+                    <th>Actions</th>
+                </tr>
+            }
+        </thead>
+        <tbody>
+            @if (Model != null)
+            {
+                @foreach (var database in Model.Databases)
+                {
+                    <tr>
+                        <td>
+                            <a href="@Url.Action("Connect", new { connectionString = database.Value })" class="btn btn-primary">Connect</a>
+                        </td>
+                        <td>@database.Key</td>
+                        <td>
+                            <a href="@Url.Action("Backup", new { name = database.Key })" class="btn btn-success" onclick="return confirm('Are you sure you want to archive this data?');">Backup</a>
+                            <a href="@Url.Action("Restore", new { name = database.Key })" class="btn btn-secondary" onclick="return confirm('Are you sure you want to archive this data?');">Restore</a>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+</div>
+
