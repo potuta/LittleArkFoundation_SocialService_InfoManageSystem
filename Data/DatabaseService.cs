@@ -38,7 +38,7 @@ namespace LittleArkFoundation.Data
             }
         }
 
-        public async Task<bool> RestoreDatabaseAsync(string backupFilePath, string originalDbName, string newDbName)
+        public async Task<bool> RestoreDatabaseAsync(string backupFilePath, string newDbName)
         {
             try
             {
@@ -49,7 +49,14 @@ namespace LittleArkFoundation.Data
                 {
                     await connection.OpenAsync();
 
-                    // Step 1: Get Logical File Names from Backup
+                    // Step 1: Set Database to SINGLE_USER Mode to Force Close Active Connections
+                    string setSingleUserQuery = $"ALTER DATABASE [{newDbName}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;";
+                    await using (SqlCommand singleUserCommand = new SqlCommand(setSingleUserQuery, connection))
+                    {
+                        await singleUserCommand.ExecuteNonQueryAsync();
+                    }
+
+                    // Step 2: Get Logical File Names from Backup
                     string fileListQuery = $"RESTORE FILELISTONLY FROM DISK = '{backupFilePath}'";
 
                     await using (SqlCommand fileListCommand = new SqlCommand(fileListQuery, connection))
@@ -68,7 +75,7 @@ namespace LittleArkFoundation.Data
                     if (string.IsNullOrEmpty(dataLogicalName) || string.IsNullOrEmpty(logLogicalName))
                         throw new Exception("Could not determine logical file names from backup.");
 
-                    // Step 2: Restore Using Correct Logical Names
+                    // Step 3: Restore Using Correct Logical Names
                     string restoreQuery = $@"
                         RESTORE DATABASE [{newDbName}]
                         FROM DISK = '{backupFilePath}'
@@ -80,24 +87,28 @@ namespace LittleArkFoundation.Data
                     {
                         await restoreCommand.ExecuteNonQueryAsync();
                     }
+
+                    // Step 4: Set Database Back to MULTI_USER Mode
+                    string setMultiUserQuery = $"ALTER DATABASE [{newDbName}] SET MULTI_USER;";
+                    await using (SqlCommand multiUserCommand = new SqlCommand(setMultiUserQuery, connection))
+                    {
+                        await multiUserCommand.ExecuteNonQueryAsync();
+                    }
                 }
 
                 return true;
             }
             catch (SqlException ex)
             {
-                // Log error for debugging
                 Console.WriteLine($"SQL Error: {ex.Message}");
                 throw;
             }
             catch (Exception ex)
             {
-                // Log error for debugging
                 Console.WriteLine($"General Error: {ex.Message}");
                 throw;
             }
         }
-
 
         public async Task<string> GetSqlDefaultDataPathAsync()
         {
@@ -138,7 +149,46 @@ namespace LittleArkFoundation.Data
             return defaultDataDirectory;
         }
 
-        public async Task<bool> DeleteDatabase(string databaseName)
+        // Not working, but works in sql idk why
+        public async Task<string> GetSqlBackupPathAsync(string connectionString)
+        {
+            try
+            {
+                string backupPath = "";
+
+                await using (var connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    await using (var command = new SqlCommand(@"
+                                DECLARE @BackupPath NVARCHAR(500)
+                                EXEC master.dbo.xp_instance_regread 
+                                    N'HKEY_LOCAL_MACHINE', 
+                                    N'SOFTWARE\Microsoft\MSSQLServer\MSSQLServer', 
+                                    N'BackupDirectory', 
+                                    @BackupPath OUTPUT
+                                SELECT @BackupPath AS BackupFolderPath", connection))
+                    {
+                        var result = await command.ExecuteScalarAsync();
+                        if (result != null)
+                        {
+                            backupPath = result.ToString();
+                        }
+                    }
+                }
+
+                return backupPath;
+            }
+            catch (SqlException ex)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<bool> DeleteDatabaseAsync(string databaseName)
         {
             try
             {
@@ -240,35 +290,31 @@ namespace LittleArkFoundation.Data
         public async Task<string> GenerateNewDatabaseNameAsync(string originalDbName)
         {
             Dictionary<string, string> databases = await GetDatabaseConnectionStringsAsync();
-            List<int> dbPreviousYearList = new List<int>();
-            List<int> dbNextYearList = new List<int>();
-            string newYear = string.Empty;
-
+            List<int> dbYearList = new List<int>();
+            string year = string.Empty;
             foreach (string name in databases.Keys)
             {
                 if (name.Contains("2"))
                 {
                     string[] nameParts = name.Split('_');
-                    dbPreviousYearList.Add(Convert.ToInt32(nameParts[2]));
-                    dbNextYearList.Add(Convert.ToInt32(nameParts[3]));
+                    dbYearList.Add(Convert.ToInt32(nameParts[3]));
                 }
                 else
                 {
-                    dbPreviousYearList.Add(DateTime.Now.Year - 1);
-                    dbNextYearList.Add(DateTime.Now.Year);
+                    dbYearList.Add(DateTime.Now.Year);
                 }
             }
 
             if (databases.Count == 1)
             {
-                newYear = $"{dbPreviousYearList.Max()}_{dbNextYearList.Max()}";
+                year = $"{dbYearList.Max()}";
             }
             else
             {
-                newYear = $"{dbPreviousYearList.Max() + 1}_{dbNextYearList.Max() + 1}";
+                year = $"{dbYearList.Max() + 1}";
             }
 
-            string newDbName = $"{originalDbName}_{newYear}";
+            string newDbName = $"{originalDbName}_{year}";
             return newDbName;
         }
 

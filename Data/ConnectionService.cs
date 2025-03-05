@@ -24,8 +24,12 @@
 
         public string GetCurrentConnectionString()
         {
-            return _httpContextAccessor.HttpContext?.Session.GetString("ConnectionString")
-                   ?? GetDefaultConnectionString();
+            var session = _httpContextAccessor.HttpContext?.Session;
+            if (session != null && session.GetString("ConnectionString") != null)
+            {
+                return session.GetString("ConnectionString");
+            }
+            return _configuration.GetConnectionString("DefaultConnection"); // Fallback to default
         }
     }
 }

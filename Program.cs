@@ -41,6 +41,7 @@ LibraryLoader.Load();
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<ConnectionService>();
 builder.Services.AddSingleton<DatabaseService>();
 

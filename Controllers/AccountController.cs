@@ -93,6 +93,8 @@ namespace LittleArkFoundation.Controllers
         {
             //await HttpContext.SignOutAsync("CookieAuth");
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            HttpContext.Session.Remove("ConnectionString");
+            HttpContext.Session.Remove("DatabaseName");
 
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim != null)
