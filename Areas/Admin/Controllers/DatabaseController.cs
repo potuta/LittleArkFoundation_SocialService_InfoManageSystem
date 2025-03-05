@@ -69,7 +69,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         public async Task<IActionResult> Restore(string name)
         {
             string backupPath = @"C:\Program Files\Microsoft SQL Server\MSSQL16.SQLEXPRESS\MSSQL\Backup";
-            string searchPattern = "LittleArkFoundation_SocialService_DB*.bak"; 
+            string searchPattern = "MSWD_DB*.bak"; 
             string[] files = Directory.GetFiles(backupPath, searchPattern);
             string[] fileNames = Array.ConvertAll(files, Path.GetFileName); // Extract only file names
 

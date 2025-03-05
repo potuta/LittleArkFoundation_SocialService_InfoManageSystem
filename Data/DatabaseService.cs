@@ -332,7 +332,7 @@ namespace LittleArkFoundation.Data
             string query = @"SELECT name
                             FROM sys.databases
                             WHERE (name NOT IN ('master', 'tempdb', 'model', 'msdb')) 
-                            AND (name LIKE '%LittleArkFoundation_SocialService_DB%')";
+                            AND (name LIKE '%MSWD_DB%')";
 
             try
             {
@@ -395,7 +395,7 @@ namespace LittleArkFoundation.Data
                 if (name.Contains("2"))
                 {
                     string[] nameParts = name.Split('_');
-                    dbYearList.Add(Convert.ToInt32(nameParts[3]));
+                    dbYearList.Add(Convert.ToInt32(nameParts[2]));
                 }
                 else
                 {

@@ -132,7 +132,10 @@
 
         <div class="btn-group d-block">
             <hr />
-            <strong>Connection:</strong> @HttpContextAccessor.HttpContext?.Session.GetString("DatabaseName")
+            <strong>Connection:</strong> 
+            <p style="word-wrap: break-word; font-size: 0.9rem;">
+                @HttpContextAccessor.HttpContext?.Session.GetString("DatabaseName")
+            </p>
         </div>
 
     </nav>
