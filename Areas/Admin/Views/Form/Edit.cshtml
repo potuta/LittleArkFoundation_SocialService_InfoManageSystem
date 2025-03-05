@@ -85,13 +85,13 @@
             <tr>
                 <td>
                     Date of Interview: <span class="required">*</span>
-                    <input type="date" asp-for="Assessments.DateOfInterview" id="dateInput" required>
+                    <input type="date" asp-for="Assessments.DateOfInterview" id="dateInput" readonly required>
                     <span asp-validation-for="Assessments.DateOfInterview" class="text-danger"></span>
 
                 </td>
                 <td>
                     Time of Interview: <span class="required">*</span>
-                    <input type="time" asp-for="Assessments.TimeOfInterview" id="timeInput" required>
+                    <input type="time" asp-for="Assessments.TimeOfInterview" id="timeInput" readonly required>
                     <span asp-validation-for="Assessments.TimeOfInterview" class="text-danger"></span>
 
                 </td>
@@ -649,16 +649,6 @@
 </form>
 
 <script>
-    // Get today's date in YYYY-MM-DD format
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById("dateInput").value = today;
-
-    // Get current time in HH:MM format
-    const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    document.getElementById("timeInput").value = `${hours}:${minutes}`;
-
     function addRow() {
         let table = document.getElementById("family-table");
 
