@@ -1,0 +1,47 @@
+﻿@using LittleArkFoundation.Areas.Admin.Models.Database
+@model DatabaseViewModel
+@{
+	ViewData["Title"] = "Restore Database";
+	Layout = "_AdminLayout";
+}
+
+<h2>Restore Database</h2>
+<hr />
+
+<div class="table-responsive" style="width: 60%;">
+    <table class="table" style="width: max-content;">
+        <thead>
+            @if (Model != null)
+            {
+                <tr>
+                    <th>Select backup file</th>
+                    <th>Backup File Name</th>
+                </tr>
+            }
+        </thead>
+        <tbody>
+            @if (Model != null)
+            {
+                @foreach (var file in Model.DatabaseBackupFiles)
+                {
+                    <tr>
+                        <td>
+                            <form asp-action="Restore" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="name" value="@Model.DatabaseName" />
+                                <input type="hidden" name="backupFileName" value="@file" />
+                                <button type="submit" class="btn btn-primary">Select</button>
+                            </form>
+                        </td>
+                        <td>@file</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+</div>
+
+<div class="mt-2">
+    <a class="btn btn-sm btn-outline-primary" asp-action="Index">Back to List</a>
+</div>

@@ -144,23 +144,14 @@
         </main>
     </div>
 
-    <!-- Scripts -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            let usersCollapseKey = "usersCollapseState"; // LocalStorage key for users
-            let mswdCollapseKey = "mswdCollapseState"; // LocalStorage key for MSWD
-			let databaseCollapseKey = "databaseCollapseState"; // LocalStorage key for database
+            let collapseKeys = {
+                users: "usersCollapseState",
+                mswd: "mswdCollapseState",
+                database: "databaseCollapseState"
+            };
 
-            let usersCollapseElement = document.getElementById("usersCollapse");
-            let usersIndicatorIcon = document.querySelector(".users-collapse-indicator");
-
-            let mswdCollapseElement = document.getElementById("mswdCollapse");
-            let mswdIndicatorIcon = document.querySelector(".mswd-collapse-indicator");
-
-			let databaseCollapseElement = document.getElementById("databaseCollapse");
-			let databaseIndicatorIcon = document.querySelector(".database-collapse-indicator");
-
-            // Function to update the icon
             function updateIndicator(iconElement, isOpen) {
                 if (isOpen) {
                     iconElement.classList.remove("bx-chevron-down");
@@ -171,63 +162,54 @@
                 }
             }
 
-            // Ensure default state is collapsed if LocalStorage is empty
-            if (!localStorage.getItem(usersCollapseKey)) {
-                localStorage.setItem(usersCollapseKey, "closed");
+            function restoreCollapseState(collapseElement, iconElement, key) {
+                let isCollapsed = localStorage.getItem(key) === "open";
+                if (isCollapsed) {
+                    collapseElement.classList.add("show");
+                    updateIndicator(iconElement, true);
+                }
             }
 
-            if (!localStorage.getItem(mswdCollapseKey)) {
-                localStorage.setItem(mswdCollapseKey, "closed");
+            function setupCollapseEvents(collapseElement, iconElement, key) {
+                collapseElement.addEventListener("show.bs.collapse", function () {
+                    localStorage.setItem(key, "open");
+                    updateIndicator(iconElement, true);
+                });
+
+                collapseElement.addEventListener("hide.bs.collapse", function () {
+                    localStorage.setItem(key, "closed");
+                    updateIndicator(iconElement, false);
+                });
             }
 
-            // Restore state from LocalStorage
-            let isUsersCollapsed = localStorage.getItem(usersCollapseKey) === "open";
-            let isMswdCollapsed = localStorage.getItem(mswdCollapseKey) === "open";
+            let usersCollapseElement = document.getElementById("usersCollapse");
+            let usersIndicatorIcon = document.querySelector(".users-collapse-indicator");
 
-            if (isUsersCollapsed) {
-                usersCollapseElement.classList.add("show");
-                updateIndicator(usersIndicatorIcon, true);
-            }
+            let mswdCollapseElement = document.getElementById("mswdCollapse");
+            let mswdIndicatorIcon = document.querySelector(".mswd-collapse-indicator");
 
-            if (isMswdCollapsed) {
-                mswdCollapseElement.classList.add("show");
-                updateIndicator(mswdIndicatorIcon, true);
-            }
+            let databaseCollapseElement = document.getElementById("databaseCollapse");
+            let databaseIndicatorIcon = document.querySelector(".database-collapse-indicator");
 
-			if (isDatabaseCollapsed) {
-				databaseCollapseElement.classList.add("show");
-				updateIndicator(databaseIndicatorIcon, true);
-			}
+            restoreCollapseState(usersCollapseElement, usersIndicatorIcon, collapseKeys.users);
+            restoreCollapseState(mswdCollapseElement, mswdIndicatorIcon, collapseKeys.mswd);
+            restoreCollapseState(databaseCollapseElement, databaseIndicatorIcon, collapseKeys.database);
 
-            // Listen for collapse events
-            usersCollapseElement.addEventListener("show.bs.collapse", function () {
-                localStorage.setItem(usersCollapseKey, "open");
-                updateIndicator(usersIndicatorIcon, true);
-            });
+            setupCollapseEvents(usersCollapseElement, usersIndicatorIcon, collapseKeys.users);
+            setupCollapseEvents(mswdCollapseElement, mswdIndicatorIcon, collapseKeys.mswd);
+            setupCollapseEvents(databaseCollapseElement, databaseIndicatorIcon, collapseKeys.database);
 
-            usersCollapseElement.addEventListener("hide.bs.collapse", function () {
-                localStorage.setItem(usersCollapseKey, "closed");
-                updateIndicator(usersIndicatorIcon, false);
-            });
-
-            mswdCollapseElement.addEventListener("show.bs.collapse", function () {
-                localStorage.setItem(mswdCollapseKey, "open");
-                updateIndicator(mswdIndicatorIcon, true);
-            });
-
-            mswdCollapseElement.addEventListener("hide.bs.collapse", function () {
-                localStorage.setItem(mswdCollapseKey, "closed");
-                updateIndicator(mswdIndicatorIcon, false);
-            });
-
-			databaseCollapseElement.addEventListener("show.bs.collapse", function () {
-				localStorage.setItem(databaseCollapseKey, "open");
-				updateIndicator(databaseIndicatorIcon, true);
-            });
-
-			databaseCollapseElement.addEventListener("hide.bs.collapse", function () {
-				localStorage.setItem(databaseCollapseKey, "closed");
-				updateIndicator(databaseIndicatorIcon, false);
+            // Ensure clicking on a submenu item keeps the collapsible open
+            document.querySelectorAll(".btn-left-sub").forEach(item => {
+                item.addEventListener("click", function () {
+                    let parentCollapse = item.closest(".collapse");
+                    if (parentCollapse) {
+                        let key = Object.keys(collapseKeys).find(k => collapseKeys[k] === parentCollapse.id + "State");
+                        if (key) {
+                            localStorage.setItem(collapseKeys[key], "open");
+                        }
+                    }
+                });
             });
         });
     </script>
