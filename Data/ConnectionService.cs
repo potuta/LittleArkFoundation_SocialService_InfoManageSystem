@@ -29,7 +29,7 @@
             {
                 return session.GetString("ConnectionString");
             }
-            return _configuration.GetConnectionString("DefaultConnection"); // Fallback to default
+            return _configuration.GetConnectionString("DefaultConnection"); 
         }
     }
 }

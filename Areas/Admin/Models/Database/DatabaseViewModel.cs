@@ -6,9 +6,10 @@ namespace LittleArkFoundation.Areas.Admin.Models.Database
 {
     public class DatabaseViewModel
     {
-        public string? DatabaseName { get; set; }
-        public string? CurrentConnectionString { get; set; }
         public string? DefaultConnectionString { get; set; }
+        public string? DefaultDatabaseName { get; set; }
+        public string? CurrentConnectionString { get; set; }
+        public string? CurrentDatabaseName { get; set; }
         public Dictionary<string, string>? Databases { get; set; }
         public List<string>? DatabaseBackupFiles { get; set; }
     }
