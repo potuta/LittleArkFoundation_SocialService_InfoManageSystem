@@ -38,6 +38,78 @@ namespace LittleArkFoundation.Data
             }
         }
 
+        //public async Task<bool> RestoreDatabaseAsync(string backupFilePath, string newDbName)
+        //{
+        //    try
+        //    {
+        //        string dataLogicalName = "";
+        //        string logLogicalName = "";
+
+        //        await using (var connection = new SqlConnection(_connectionService.GetCurrentConnectionString()))
+        //        {
+        //            await connection.OpenAsync();
+
+        //            // Step 1: Set Database to SINGLE_USER Mode to Force Close Active Connections
+        //            string setSingleUserQuery = $"ALTER DATABASE [{newDbName}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;";
+        //            await using (SqlCommand singleUserCommand = new SqlCommand(setSingleUserQuery, connection))
+        //            {
+        //                await singleUserCommand.ExecuteNonQueryAsync();
+        //            }
+
+        //            // Step 2: Get Logical File Names from Backup
+        //            string fileListQuery = $"RESTORE FILELISTONLY FROM DISK = '{backupFilePath}'";
+
+        //            await using (SqlCommand fileListCommand = new SqlCommand(fileListQuery, connection))
+        //            await using (SqlDataReader reader = await fileListCommand.ExecuteReaderAsync())
+        //            {
+        //                while (await reader.ReadAsync())
+        //                {
+        //                    string logicalName = reader["LogicalName"].ToString();
+        //                    string type = reader["Type"].ToString();
+
+        //                    if (type == "D") dataLogicalName = logicalName; // Data file
+        //                    if (type == "L") logLogicalName = logicalName;  // Log file
+        //                }
+        //            }
+
+        //            if (string.IsNullOrEmpty(dataLogicalName) || string.IsNullOrEmpty(logLogicalName))
+        //                throw new Exception("Could not determine logical file names from backup.");
+
+        //            // Step 3: Restore Using Correct Logical Names
+        //            string restoreQuery = $@"
+        //                RESTORE DATABASE [{newDbName}]
+        //                FROM DISK = '{backupFilePath}'
+        //                WITH MOVE '{dataLogicalName}' TO '{await GetSqlDefaultDataPathAsync()}\{newDbName}.mdf',
+        //                MOVE '{logLogicalName}' TO '{await GetSqlDefaultDataPathAsync()}\{newDbName}_log.ldf',
+        //                REPLACE, RECOVERY";
+
+        //            await using (SqlCommand restoreCommand = new SqlCommand(restoreQuery, connection))
+        //            {
+        //                await restoreCommand.ExecuteNonQueryAsync();
+        //            }
+
+        //            // Step 4: Set Database Back to MULTI_USER Mode
+        //            string setMultiUserQuery = $"ALTER DATABASE [{newDbName}] SET MULTI_USER;";
+        //            await using (SqlCommand multiUserCommand = new SqlCommand(setMultiUserQuery, connection))
+        //            {
+        //                await multiUserCommand.ExecuteNonQueryAsync();
+        //            }
+        //        }
+
+        //        return true;
+        //    }
+        //    catch (SqlException ex)
+        //    {
+        //        Console.WriteLine($"SQL Error: {ex.Message}");
+        //        throw;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($"General Error: {ex.Message}");
+        //        throw;
+        //    }
+        //}
+
         public async Task<bool> RestoreDatabaseAsync(string backupFilePath, string newDbName)
         {
             try
@@ -49,14 +121,40 @@ namespace LittleArkFoundation.Data
                 {
                     await connection.OpenAsync();
 
-                    // Step 1: Set Database to SINGLE_USER Mode to Force Close Active Connections
-                    string setSingleUserQuery = $"ALTER DATABASE [{newDbName}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;";
-                    await using (SqlCommand singleUserCommand = new SqlCommand(setSingleUserQuery, connection))
+                    // Change database context to master
+                    await using (var masterCommand = new SqlCommand("USE master;", connection))
                     {
-                        await singleUserCommand.ExecuteNonQueryAsync();
+                        await masterCommand.ExecuteNonQueryAsync();
                     }
 
-                    // Step 2: Get Logical File Names from Backup
+                    // Step 1: Drop active connections
+                    string dropConnectionsQuery = $@"
+                        DECLARE @DatabaseName NVARCHAR(255) = '{newDbName}';
+                        DECLARE @SQL NVARCHAR(MAX) = '';
+
+                        SELECT @SQL = @SQL + 'KILL ' + CONVERT(VARCHAR(10), session_id) + ';'
+                        FROM sys.dm_exec_sessions
+                        WHERE database_id = DB_ID(@DatabaseName);
+
+                        EXEC sp_executesql @SQL;
+                        ";
+
+                    await using (SqlCommand dropConnectionsCommand = new SqlCommand(dropConnectionsQuery, connection))
+                    {
+                        await dropConnectionsCommand.ExecuteNonQueryAsync();
+                    }
+
+                    // Step 2: Check if the database exists before altering
+                    string checkDbExistsQuery = $@"
+                        IF DB_ID('{newDbName}') IS NOT NULL
+                            ALTER DATABASE [{newDbName}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;";
+
+                    await using (SqlCommand checkDbCommand = new SqlCommand(checkDbExistsQuery, connection))
+                    {
+                        await checkDbCommand.ExecuteNonQueryAsync();
+                    }
+
+                    // Step 3: Get Logical File Names from Backup
                     string fileListQuery = $"RESTORE FILELISTONLY FROM DISK = '{backupFilePath}'";
 
                     await using (SqlCommand fileListCommand = new SqlCommand(fileListQuery, connection))
@@ -67,15 +165,15 @@ namespace LittleArkFoundation.Data
                             string logicalName = reader["LogicalName"].ToString();
                             string type = reader["Type"].ToString();
 
-                            if (type == "D") dataLogicalName = logicalName; // Data file
-                            if (type == "L") logLogicalName = logicalName;  // Log file
+                            if (type == "D") dataLogicalName = logicalName;
+                            if (type == "L") logLogicalName = logicalName;
                         }
                     }
 
                     if (string.IsNullOrEmpty(dataLogicalName) || string.IsNullOrEmpty(logLogicalName))
                         throw new Exception("Could not determine logical file names from backup.");
 
-                    // Step 3: Restore Using Correct Logical Names
+                    // Step 4: Restore Using Correct Logical Names
                     string restoreQuery = $@"
                         RESTORE DATABASE [{newDbName}]
                         FROM DISK = '{backupFilePath}'
@@ -88,7 +186,7 @@ namespace LittleArkFoundation.Data
                         await restoreCommand.ExecuteNonQueryAsync();
                     }
 
-                    // Step 4: Set Database Back to MULTI_USER Mode
+                    // Step 5: Set Database Back to MULTI_USER Mode
                     string setMultiUserQuery = $"ALTER DATABASE [{newDbName}] SET MULTI_USER;";
                     await using (SqlCommand multiUserCommand = new SqlCommand(setMultiUserQuery, connection))
                     {
