@@ -25,9 +25,10 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         {
             var viewModel = new DatabaseViewModel
             {
-                DatabaseName = _databaseService.GetSelectedDatabaseInConnectionString(_connectionService.GetDefaultConnectionString()),
-                CurrentConnectionString = _connectionService.GetCurrentConnectionString(),
                 DefaultConnectionString = _connectionService.GetDefaultConnectionString(),
+                DefaultDatabaseName = _databaseService.GetSelectedDatabaseInConnectionString(_connectionService.GetDefaultConnectionString()),
+                CurrentConnectionString = _connectionService.GetCurrentConnectionString(),
+                CurrentDatabaseName = _databaseService.GetSelectedDatabaseInConnectionString(_connectionService.GetCurrentConnectionString()),
                 Databases = await _databaseService.GetDatabaseConnectionStringsAsync()
             };
 
@@ -74,7 +75,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             var viewModel = new DatabaseViewModel
             {
-                DatabaseName = name,
+                DefaultDatabaseName = name,
                 DatabaseBackupFiles = fileNames.ToList()
             };
 

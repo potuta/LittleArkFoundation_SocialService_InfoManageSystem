@@ -28,7 +28,7 @@
                         <td>
                             <form asp-action="Restore" method="post">
                                 @Html.AntiForgeryToken()
-                                <input type="hidden" name="name" value="@Model.DatabaseName" />
+                                <input type="hidden" name="name" value="@Model.DefaultDatabaseName" />
                                 <input type="hidden" name="backupFileName" value="@file" />
                                 <button type="submit" class="btn btn-primary">Select</button>
                             </form>
