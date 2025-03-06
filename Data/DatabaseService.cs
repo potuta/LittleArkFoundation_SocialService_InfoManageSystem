@@ -313,14 +313,10 @@ namespace LittleArkFoundation.Data
             catch (SqlException ex)
             {
                 throw;
-                Console.WriteLine($"SQL Error in DeleteDatabase: {ex.Message}");
-                LoggingService.LogError($"SQL Error in DeleteDatabase: {ex.Message}");
             }
             catch (Exception ex)
             {
                 throw;
-                Console.WriteLine($"Unexpected error in DeleteDatabase: {ex.Message}");
-                LoggingService.LogError($"Unexpected error in DeleteDatabase: {ex.Message}");
             }
         }
 
@@ -362,12 +358,10 @@ namespace LittleArkFoundation.Data
             catch (SqlException ex)
             {
                 throw;
-                Console.WriteLine($"SQL Error in GetDatabaseConnectionStrings: {ex.Message}");
             }
             catch (Exception ex)
             {
                 throw;
-                Console.WriteLine($"Unexpected error in GetDatabaseConnectionStrings: {ex.Message}");
             }
             
             return databases;
@@ -380,40 +374,49 @@ namespace LittleArkFoundation.Data
                 InitialCatalog = databaseName
             }.ToString();
 
-            //var connectionString = new SqlConnection(getConnectionString);
-
             return getConnectionString;
         }
 
         public async Task<string> GenerateNewDatabaseNameAsync(string originalDbName)
         {
-            Dictionary<string, string> databases = await GetDatabaseConnectionStringsAsync();
-            List<int> dbYearList = new List<int>();
-            string year = string.Empty;
-            foreach (string name in databases.Keys)
+            try
             {
-                if (name.Contains("2"))
+                Dictionary<string, string> databases = await GetDatabaseConnectionStringsAsync();
+                List<int> dbYearList = new List<int>();
+                string year = string.Empty;
+                foreach (string name in databases.Keys)
                 {
-                    string[] nameParts = name.Split('_');
-                    dbYearList.Add(Convert.ToInt32(nameParts[2]));
+                    if (name.Contains("2"))
+                    {
+                        string[] nameParts = name.Split('_');
+                        dbYearList.Add(Convert.ToInt32(nameParts[2]));
+                    }
+                    else
+                    {
+                        dbYearList.Add(DateTime.Now.Year);
+                    }
+                }
+
+                if (databases.Count == 1)
+                {
+                    year = $"{dbYearList.Max()}";
                 }
                 else
                 {
-                    dbYearList.Add(DateTime.Now.Year);
+                    year = $"{dbYearList.Max() + 1}";
                 }
-            }
 
-            if (databases.Count == 1)
-            {
-                year = $"{dbYearList.Max()}";
+                string newDbName = $"{originalDbName}_{year}";
+                return newDbName;
             }
-            else
+            catch (SqlException ex)
             {
-                year = $"{dbYearList.Max() + 1}";
+                throw;
             }
-
-            string newDbName = $"{originalDbName}_{year}";
-            return newDbName;
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public string GetSelectedDatabaseInConnectionString(string connectionString)
@@ -424,7 +427,6 @@ namespace LittleArkFoundation.Data
         }
 
         // TODO: add truncate database method
-
         public async Task<bool> TruncateDatabaseAsync(string databaseName)
         {
             return false;

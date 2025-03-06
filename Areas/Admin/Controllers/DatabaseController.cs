@@ -3,8 +3,9 @@ using LittleArkFoundation.Data;
 using LittleArkFoundation.Areas.Admin.Models.Database;
 using LittleArkFoundation.Authorize;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Data.SqlClient;
+using System.Security.Claims;
 
-// TODO: Add logs to all methods in database controller
 namespace LittleArkFoundation.Areas.Admin.Controllers
 {
     [Area("Admin")]
@@ -23,32 +24,67 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var viewModel = new DatabaseViewModel
+            try
             {
-                DefaultConnectionString = _connectionService.GetDefaultConnectionString(),
-                DefaultDatabaseName = _databaseService.GetSelectedDatabaseInConnectionString(_connectionService.GetDefaultConnectionString()),
-                CurrentConnectionString = _connectionService.GetCurrentConnectionString(),
-                CurrentDatabaseName = _databaseService.GetSelectedDatabaseInConnectionString(_connectionService.GetCurrentConnectionString()),
-                Databases = await _databaseService.GetDatabaseConnectionStringsAsync()
-            };
+                var viewModel = new DatabaseViewModel
+                {
+                    DefaultConnectionString = _connectionService.GetDefaultConnectionString(),
+                    DefaultDatabaseName = _databaseService.GetSelectedDatabaseInConnectionString(_connectionService.GetDefaultConnectionString()),
+                    CurrentConnectionString = _connectionService.GetCurrentConnectionString(),
+                    CurrentDatabaseName = _databaseService.GetSelectedDatabaseInConnectionString(_connectionService.GetCurrentConnectionString()),
+                    Databases = await _databaseService.GetDatabaseConnectionStringsAsync()
+                };
 
-            return View(viewModel);
+                return View(viewModel);
+            }
+            catch (SqlException ex)
+            {
+                LoggingService.LogError("SQL Error: " + ex.Message);
+                TempData["ErrorMessage"] = " SQL Error: " + ex.Message;
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                LoggingService.LogError("Error: " + ex.Message);
+                TempData["ErrorMessage"] = "Error: " + ex.Message;
+                return RedirectToAction("Index");
+            }
         } 
 
         public async Task<IActionResult> CreateNewDatabaseYear()
         {
-            string originalDbName = _databaseService.GetSelectedDatabaseInConnectionString(_connectionService.GetDefaultConnectionString());
-            string newDbName = await _databaseService.GenerateNewDatabaseNameAsync(originalDbName);
-            string backupFilePath = $"{originalDbName}_backup.bak";
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
-            await _databaseService.BackupDatabaseAsync(backupFilePath, originalDbName);
-            await _databaseService.RestoreDatabaseAsync(backupFilePath, newDbName);
+                string originalDbName = _databaseService.GetSelectedDatabaseInConnectionString(_connectionService.GetDefaultConnectionString());
+                string newDbName = await _databaseService.GenerateNewDatabaseNameAsync(originalDbName);
+                string backupFilePath = $"{originalDbName}_backup.bak";
 
-            TempData["SuccessMessage"] = $"Successfully created new database year {newDbName}.";
-            return RedirectToAction("Index");
+                LoggingService.LogInformation($"Database creation attempt. Database: {newDbName}, UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+
+                await _databaseService.BackupDatabaseAsync(backupFilePath, originalDbName);
+                await _databaseService.RestoreDatabaseAsync(backupFilePath, newDbName);
+
+                TempData["SuccessMessage"] = $"Successfully created new database year {newDbName}.";
+                LoggingService.LogInformation($"Database creation attempt successful. Database: {newDbName}, UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                return RedirectToAction("Index");
+            }
+            catch (SqlException ex)
+            {
+                LoggingService.LogError("SQL Error: " + ex.Message);
+                TempData["ErrorMessage"] = " SQL Error: " + ex.Message;
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                LoggingService.LogError("Error: " + ex.Message);
+                TempData["ErrorMessage"] = "Error: " + ex.Message;
+                return RedirectToAction("Index");
+            }
         }
 
-        public async Task<IActionResult> Connect(string connectionString)
+        public IActionResult Connect(string connectionString)
         {
             HttpContext.Session.Remove("ConnectionString");
             HttpContext.Session.Remove("DatabaseName");
@@ -60,13 +96,33 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
         public async Task<IActionResult> Backup(string name)
         {
-            string backupFilePath = $"{name}_backup.bak";
-            await _databaseService.BackupDatabaseAsync(backupFilePath, name);
-            TempData["SuccessMessage"] = $"Successfully backed up database {name}.";
-            return RedirectToAction("Index");
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                LoggingService.LogInformation($"Database backup attempt. Database: {name}, UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+
+                string backupFilePath = $"{name}_backup.bak";
+                await _databaseService.BackupDatabaseAsync(backupFilePath, name);
+
+                TempData["SuccessMessage"] = $"Successfully backed up database {name}.";
+                LoggingService.LogInformation($"Database backup attempt successful. Database: {name}, UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                return RedirectToAction("Index");
+            }
+            catch (SqlException ex)
+            {
+                LoggingService.LogError("SQL Error: " + ex.Message);
+                TempData["ErrorMessage"] = " SQL Error: " + ex.Message;
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                LoggingService.LogError("Error: " + ex.Message);
+                TempData["ErrorMessage"] = "Error: " + ex.Message;
+                return RedirectToAction("Index");
+            }
         }
 
-        public async Task<IActionResult> Restore(string name)
+        public IActionResult Restore(string name)
         {
             string backupPath = @"C:\Program Files\Microsoft SQL Server\MSSQL16.SQLEXPRESS\MSSQL\Backup";
             string searchPattern = "MSWD_DB*.bak"; 
@@ -86,31 +142,70 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Restore(string name, string backupFileName)
         {
-            Console.WriteLine($"Restoring database {name} from backup file {backupFileName}.");
-            string originalDbName = _databaseService.GetSelectedDatabaseInConnectionString(_connectionService.GetDefaultConnectionString());
-            string backupFilePath = $"{backupFileName}";
-            await _databaseService.RestoreDatabaseAsync(backupFilePath, name);
-            TempData["SuccessMessage"] = $"Successfully restored database {name}.";
-            return RedirectToAction("Index");
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                LoggingService.LogInformation($"Database restore attempt. Database: {name}, BackupFileName: {backupFileName} UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+
+                string originalDbName = _databaseService.GetSelectedDatabaseInConnectionString(_connectionService.GetDefaultConnectionString());
+                string backupFilePath = $"{backupFileName}";
+                await _databaseService.RestoreDatabaseAsync(backupFilePath, name);
+
+                TempData["SuccessMessage"] = $"Successfully restored database {name}.";
+                LoggingService.LogInformation($"Database restore attempt successful. Database: {name}, BackupFileName: {backupFileName} UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                return RedirectToAction("Index");
+            }
+            catch (SqlException ex)
+            {
+                LoggingService.LogError("SQL Error: " + ex.Message);
+                TempData["ErrorMessage"] = " SQL Error: " + ex.Message;
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                LoggingService.LogError("Error: " + ex.Message);
+                TempData["ErrorMessage"] = "Error: " + ex.Message;
+                return RedirectToAction("Index");
+            }
         }
 
         public async Task<IActionResult> Delete(string name)
         {
-            if (name == _databaseService.GetSelectedDatabaseInConnectionString(_connectionService.GetDefaultConnectionString()))
+            try
             {
-                TempData["ErrorMessage"] = "Cannot delete the default database.";
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                LoggingService.LogInformation($"Database delete attempt. Database: {name}, UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+
+                if (name == _databaseService.GetSelectedDatabaseInConnectionString(_connectionService.GetDefaultConnectionString()))
+                {
+                    TempData["ErrorMessage"] = "Cannot delete the default database.";
+                    return RedirectToAction("Index");
+                }
+
+                if (name == _databaseService.GetSelectedDatabaseInConnectionString(_connectionService.GetCurrentConnectionString()))
+                {
+                    TempData["ErrorMessage"] = "Cannot delete the database you're currently connected to. Please change to the default database.";
+                    return RedirectToAction("Index");
+                }
+
+                await _databaseService.DeleteDatabaseAsync(name);
+
+                TempData["SuccessMessage"] = $"Successfully deleted database {name}.";
+                LoggingService.LogInformation($"Database delete attempt successful. Database: {name}, UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
                 return RedirectToAction("Index");
             }
-
-            if (name == _databaseService.GetSelectedDatabaseInConnectionString(_connectionService.GetCurrentConnectionString()))
+            catch (SqlException ex)
             {
-                TempData["ErrorMessage"] = "Cannot delete the database you're currently connected to. Please change to the default database.";
+                LoggingService.LogError("SQL Error: " + ex.Message);
+                TempData["ErrorMessage"] = " SQL Error: " + ex.Message;
                 return RedirectToAction("Index");
             }
-
-            TempData["SuccessMessage"] = $"Successfully deleted database {name}.";
-            await _databaseService.DeleteDatabaseAsync(name);
-            return RedirectToAction("Index");
+            catch (Exception ex)
+            {
+                LoggingService.LogError("Error: " + ex.Message);
+                TempData["ErrorMessage"] = "Error: " + ex.Message;
+                return RedirectToAction("Index");
+            }
         }
     }
 }
