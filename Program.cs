@@ -24,8 +24,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
-    // TODO: IDLETIMEOUT Research
-    //options.IdleTimeout = TimeSpan.FromMinutes(5); // Extend session timeout if needed
+    //options.IdleTimeout = TimeSpan.FromMinutes(10); // Extend session timeout if needed
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });

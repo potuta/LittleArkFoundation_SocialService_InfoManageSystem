@@ -421,9 +421,16 @@ namespace LittleArkFoundation.Data
 
         public string GetSelectedDatabaseInConnectionString(string connectionString)
         {
-            var connectionStringBuilder = new SqlConnectionStringBuilder(connectionString);
-            string InitialCatalog = connectionStringBuilder.InitialCatalog;
-            return InitialCatalog;
+            try
+            {
+                var connectionStringBuilder = new SqlConnectionStringBuilder(connectionString);
+                string InitialCatalog = connectionStringBuilder.InitialCatalog;
+                return InitialCatalog;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         // TODO: add truncate database method

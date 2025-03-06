@@ -86,12 +86,21 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
         public IActionResult Connect(string connectionString)
         {
-            HttpContext.Session.Remove("ConnectionString");
-            HttpContext.Session.Remove("DatabaseName");
-            HttpContext.Session.SetString("ConnectionString", connectionString);
-            HttpContext.Session.SetString("DatabaseName", _databaseService.GetSelectedDatabaseInConnectionString(connectionString));
-            TempData["SuccessMessage"] = $"Successfully connected to database {_databaseService.GetSelectedDatabaseInConnectionString(connectionString)}.";
-            return RedirectToAction("Index");
+            try
+            {
+                HttpContext.Session.Remove("ConnectionString");
+                HttpContext.Session.Remove("DatabaseName");
+                HttpContext.Session.SetString("ConnectionString", connectionString);
+                HttpContext.Session.SetString("DatabaseName", _databaseService.GetSelectedDatabaseInConnectionString(connectionString));
+                TempData["SuccessMessage"] = $"Successfully connected to database {_databaseService.GetSelectedDatabaseInConnectionString(connectionString)}.";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                LoggingService.LogError("Error: " + ex.Message);
+                TempData["ErrorMessage"] = "Error: " + ex.Message;
+                return RedirectToAction("Index");
+            }
         }
 
         public async Task<IActionResult> Backup(string name)
