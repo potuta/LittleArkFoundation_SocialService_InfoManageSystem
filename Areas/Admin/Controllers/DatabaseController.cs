@@ -59,12 +59,15 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                 string originalDbName = _databaseService.GetSelectedDatabaseInConnectionString(_connectionService.GetDefaultConnectionString());
                 string newDbName = await _databaseService.GenerateNewDatabaseNameAsync(originalDbName);
-                string backupFilePath = $"{originalDbName}_backup.bak";
+                string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss"); // Safe format
+                string backupFilePath = $"{originalDbName}_{timestamp}_backup.bak";
+                string newBackupFilePath = $"{newDbName}_{timestamp}_backup.bak";
 
                 LoggingService.LogInformation($"Database creation attempt. Database: {newDbName}, UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
 
                 await _databaseService.BackupDatabaseAsync(backupFilePath, originalDbName);
                 await _databaseService.RestoreDatabaseAsync(backupFilePath, newDbName);
+                await _databaseService.BackupDatabaseAsync(newBackupFilePath, newDbName);
 
                 TempData["SuccessMessage"] = $"Successfully created new database year {newDbName}.";
                 LoggingService.LogInformation($"Database creation attempt successful. Database: {newDbName}, UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
@@ -110,7 +113,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
                 LoggingService.LogInformation($"Database backup attempt. Database: {name}, UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
 
-                string backupFilePath = $"{name}_backup.bak";
+                string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss"); // Safe format
+                string backupFilePath = $"{name}_{timestamp}_backup.bak";
                 await _databaseService.BackupDatabaseAsync(backupFilePath, name);
 
                 TempData["SuccessMessage"] = $"Successfully backed up database {name}.";
