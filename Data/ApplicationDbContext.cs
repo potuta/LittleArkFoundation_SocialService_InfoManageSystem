@@ -8,6 +8,7 @@ using LittleArkFoundation.Areas.Admin.Models.Informants;
 using LittleArkFoundation.Areas.Admin.Models.FamilyComposition;
 using LittleArkFoundation.Areas.Admin.Models.Household;
 using LittleArkFoundation.Areas.Admin.Models.MSWDClassification;
+using LittleArkFoundation.Areas.Admin.Models.SystemLogs;
 
 namespace LittleArkFoundation.Data
 {
@@ -28,6 +29,7 @@ namespace LittleArkFoundation.Data
             }
         }
 
+        public DbSet<LogsModel> Logs { get; set; }
         public DbSet<UsersModel> Users { get; set; } 
         public DbSet<UsersArchivesModel> UsersArchives { get; set; }
         public DbSet<RolesModel> Roles { get; set; }
@@ -45,6 +47,15 @@ namespace LittleArkFoundation.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            // Logs
+            modelBuilder.Entity<LogsModel>()
+                .ToTable("Logs")
+                .HasKey(l => l.Id);
+
+            modelBuilder.Entity<LogsModel>()
+                .Property(l => l.Id)
+                .ValueGeneratedOnAdd();
 
             // Users & UsersArchives
             // Define primary key for Users entity

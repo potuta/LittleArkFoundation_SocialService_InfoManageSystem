@@ -201,6 +201,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     return RedirectToAction("Index");
                 }
 
+                string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss"); // Safe format
+                string backupFilePath = $"{name}_{timestamp}_backup.bak";
+                await _databaseService.BackupDatabaseAsync(backupFilePath, name);
                 await _databaseService.DeleteDatabaseAsync(name);
 
                 TempData["SuccessMessage"] = $"Successfully deleted database {name}.";

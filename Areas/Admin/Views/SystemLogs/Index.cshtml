@@ -1,0 +1,56 @@
+﻿@using LittleArkFoundation.Areas.Admin.Models.SystemLogs
+@model LogsViewModel
+@{
+	ViewData["Title"] = "System Logs";
+	Layout = "_AdminLayout";
+}
+
+<h2>System Logs</h2>
+<hr />
+
+<div class="search-container">
+    <form asp-action="Search" asp-controller="SystemLogs" >
+        <div class="input-group">
+            <input type="search" name="searchString" class="form-control" placeholder="Search by UserID/Username" aria-label="Search">
+            <button type="submit" class="btn btn-dark">Search</button>
+        </div>
+    </form>
+    <a class="btn btn-primary" asp-action="Index" asp-controller="SystemLogs">Back to Full List</a>
+</div>
+
+<div class="table-responsive" style="width: 60%;">
+    <table class="table" style="width: fit-content;">
+        <thead>
+            @if (Model != null)
+            {
+                <tr>
+                    <th>Id</th>
+                    <th>Message</th>
+                    <th>MessageTemplate</th>
+                    <th>Level</th>
+                    <th>TimeStamp</th>
+                    <th>Exception</th>
+					<th>Properties</th>
+                </tr>
+            }
+        </thead>
+        <tbody>
+            @if (Model != null)
+            {
+                @foreach (var log in Model.LogsList)
+                {
+                    <tr>
+                        <th>@log.Id</th>
+                        <th>@log.Message</th>
+                        <th>@log.MessageTemplate</th>
+                        <th>@log.Level</th>
+                        <th>@log.TimeStamp</th>
+                        <th>@log.Exception</th>
+                        <th>@log.Properties</th>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+</div>

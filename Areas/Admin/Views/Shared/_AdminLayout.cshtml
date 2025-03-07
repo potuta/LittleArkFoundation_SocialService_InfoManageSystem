@@ -128,6 +128,10 @@
                 </div>
             </div>
 
+            <a asp-area="Admin" asp-controller="SystemLogs" asp-action="Index" class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "SystemLogs" ? "active" : "")">
+                Systems Logs
+            </a>
+
         </div>
 
         <div class="btn-group d-block">
