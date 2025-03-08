@@ -3,7 +3,7 @@ using LittleArkFoundation.Authorize;
 using LittleArkFoundation.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
+// TODO: Implement logging for system logs
 namespace LittleArkFoundation.Areas.Admin.Controllers
 {
     [Area("Admin")]
@@ -37,7 +37,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                LoggingService.LogError("Error: " + ex.Message);
+                TempData["ErrorMessage"] = "Error: " + ex.Message;
                 return View("Index");
             }
         }

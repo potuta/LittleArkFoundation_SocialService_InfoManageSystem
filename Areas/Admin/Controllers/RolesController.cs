@@ -2,10 +2,13 @@
 using LittleArkFoundation.Areas.Admin.Models;
 using LittleArkFoundation.Authorize;
 using LittleArkFoundation.Data;
+using LittleArkFoundation.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Security;
+using System.Security.Claims;
 
 namespace LittleArkFoundation.Areas.Admin.Controllers
 {
@@ -23,77 +26,106 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index()
         {
-            string connectionString = _connectionService.GetCurrentConnectionString();
-
-            await using (var context = new ApplicationDbContext(connectionString))
+            try
             {
-                var role = await context.Roles.ToListAsync();
+                string connectionString = _connectionService.GetCurrentConnectionString();
 
-                var viewModel = new RolesViewModel()
+                await using (var context = new ApplicationDbContext(connectionString))
                 {
-                    Roles = role
-                };
+                    var role = await context.Roles.ToListAsync();
 
-                return View(viewModel);
+                    var viewModel = new RolesViewModel()
+                    {
+                        Roles = role
+                    };
+
+                    return View(viewModel);
+                }
+            }
+            catch (Exception ex)
+            {
+                LoggingService.LogError("Error: " + ex.Message);
+                TempData["ErrorMessage"] = "Error: " + ex.Message;
+                return RedirectToAction("Index");
             }
         }
 
         // TODO: Implement search role
 
-        // TODO: add logs for creating roles
         public async Task<IActionResult> Create(string name)
         {
-            string connectionString = _connectionService.GetCurrentConnectionString();
-
-            await using (var context = new ApplicationDbContext(connectionString))
+            try
             {
-                if (!string.IsNullOrEmpty(name))
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                LoggingService.LogInformation($"Role creation attempt. Role: {name}, UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+
+                string connectionString = _connectionService.GetCurrentConnectionString();
+
+                await using (var context = new ApplicationDbContext(connectionString))
                 {
-                    var role = new RolesModel()
+                    if (!string.IsNullOrEmpty(name))
                     {
-                        RoleID = await new RolesRepository(connectionString).GenerateRoleIDAsync(),
-                        RoleName = name
-                    };
+                        var role = new RolesModel()
+                        {
+                            RoleID = await new RolesRepository(connectionString).GenerateRoleIDAsync(),
+                            RoleName = name
+                        };
 
-                    await context.Roles.AddAsync(role);
-                    await context.SaveChangesAsync();
+                        await context.Roles.AddAsync(role);
+                        await context.SaveChangesAsync();
 
-                    TempData["CreateSuccess"] = $"Successfully added new role! RoleName: {name}";
+                        TempData["SuccessMessage"] = $"Successfully added new role! RoleName: {name}";
+                    }
                 }
-            }
 
-            return RedirectToAction("Index");
+                LoggingService.LogInformation($"Role creation attempt successful. Role: {name}, UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                LoggingService.LogError("Error: " + ex.Message);
+                TempData["ErrorMessage"] = "Error: " + ex.Message;
+                return RedirectToAction("Index");
+            }
         }
 
-        // TODO: add logs for editing roles
         public async Task<IActionResult> Edit(int id)
         {
-            string connectionString = _connectionService.GetCurrentConnectionString();
-
-            await using (var context = new ApplicationDbContext(connectionString))
+            try
             {
-                var role = await context.Roles
-                    .Include(r => r.RolePermissions)
-                    .ThenInclude(rp => rp.Permissions)
-                    .FirstOrDefaultAsync(r => r.RoleID == id);
+                string connectionString = _connectionService.GetCurrentConnectionString();
 
-                if (role == null)
-                    return NotFound();
-
-                var allPermissions = await context.Permissions.ToListAsync();
-
-                var viewModel = new RolesViewModel
+                await using (var context = new ApplicationDbContext(connectionString))
                 {
-                    NewRole = role,
-                    Permissions = allPermissions.Select(p => new PermissionCheckbox
-                    {
-                        PermissionID = p.PermissionID,
-                        Name = p.Name,
-                        IsSelected = role.RolePermissions.Any(rp => rp.PermissionID == p.PermissionID)
-                    }).ToList()
-                };
+                    var role = await context.Roles
+                        .Include(r => r.RolePermissions)
+                        .ThenInclude(rp => rp.Permissions)
+                        .FirstOrDefaultAsync(r => r.RoleID == id);
 
-                return View(viewModel);
+                    if (role == null)
+                        return NotFound();
+
+                    var allPermissions = await context.Permissions.ToListAsync();
+
+                    var viewModel = new RolesViewModel
+                    {
+                        NewRole = role,
+                        Permissions = allPermissions.Select(p => new PermissionCheckbox
+                        {
+                            PermissionID = p.PermissionID,
+                            Name = p.Name,
+                            IsSelected = role.RolePermissions.Any(rp => rp.PermissionID == p.PermissionID)
+                        }).ToList()
+                    };
+
+                    return View(viewModel);
+                }
+            }
+            catch (Exception ex)
+            {
+                LoggingService.LogError("Error: " + ex.Message);
+                TempData["ErrorMessage"] = "Error: " + ex.Message;
+                return RedirectToAction("Index");
             }
         }
 
@@ -106,64 +138,94 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 return View(roleViewModel);
             }
 
-            string connectionString = _connectionService.GetCurrentConnectionString();
-
-            await using (var context = new ApplicationDbContext(connectionString))
+            try
             {
-                var role = await context.Roles
-                    .Include(r => r.RolePermissions)
-                    .FirstOrDefaultAsync(r => r.RoleID == roleViewModel.NewRole.RoleID);
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                LoggingService.LogInformation($"Role edit attempt. Role: {roleViewModel.NewRole.RoleName}, UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
 
-                if (role == null)
-                    return NotFound();
+                string connectionString = _connectionService.GetCurrentConnectionString();
 
-                // Update Role Name
-                role.RoleName = roleViewModel.NewRole.RoleName;
+                await using (var context = new ApplicationDbContext(connectionString))
+                {
+                    var role = await context.Roles
+                        .Include(r => r.RolePermissions)
+                        .FirstOrDefaultAsync(r => r.RoleID == roleViewModel.NewRole.RoleID);
 
-                // Remove existing permissions
-                context.RolePermissions.RemoveRange(role.RolePermissions);
+                    if (role == null)
+                        return NotFound();
 
-                // Add selected permissions
-                var selectedPermissions = roleViewModel.Permissions
-                    .Where(p => p.IsSelected)
-                    .Select(p => new RolePermissionsModel
-                    {
-                        RoleID = role.RoleID,
-                        PermissionID = p.PermissionID
-                    });
+                    // Update Role Name
+                    role.RoleName = roleViewModel.NewRole.RoleName;
 
-                await context.RolePermissions.AddRangeAsync(selectedPermissions);
-                await context.SaveChangesAsync();
+                    // Remove existing permissions
+                    context.RolePermissions.RemoveRange(role.RolePermissions);
+
+                    // Add selected permissions
+                    var selectedPermissions = roleViewModel.Permissions
+                        .Where(p => p.IsSelected)
+                        .Select(p => new RolePermissionsModel
+                        {
+                            RoleID = role.RoleID,
+                            PermissionID = p.PermissionID
+                        });
+
+                    await context.RolePermissions.AddRangeAsync(selectedPermissions);
+                    await context.SaveChangesAsync();
+                }
+
+                LoggingService.LogInformation($"Role edit attempt successful. Role: {roleViewModel.NewRole.RoleName}, UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                return RedirectToAction("Index");
             }
-
-            return RedirectToAction("Index");
+            catch (Exception ex)
+            {
+                LoggingService.LogError("Error: " + ex.Message);
+                TempData["ErrorMessage"] = "Error: " + ex.Message;
+                return RedirectToAction("Index");
+            }
         }
-
-        // TODO: add logs to delete role
 
         public async Task<IActionResult> Delete(int id)
         {
-            string connectionString = _connectionService.GetCurrentConnectionString();
-            string roleName = await new RolesRepository(connectionString).GetRoleNameByRoleID(id);
-
-            await using (var context = new ApplicationDbContext(connectionString))
+            try
             {
-                if (id == 0) return NotFound();
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                LoggingService.LogInformation($"Role delete attempt. RoleID: {id}, UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
 
-                if (id == 1 || id == 2 || id == 3)
+                string connectionString = _connectionService.GetCurrentConnectionString();
+                string roleName = await new RolesRepository(connectionString).GetRoleNameByRoleID(id);
+
+                await using (var context = new ApplicationDbContext(connectionString))
                 {
-                    TempData["DeleteError"] = $"Not allowed to delete {roleName}";
-                    return RedirectToAction("Index");
+                    if (id == 0) return NotFound();
+
+                    if (id == 1 || id == 2 || id == 3)
+                    {
+                        TempData["ErrorMessage"] = $"Not allowed to delete {roleName}";
+                        return RedirectToAction("Index");
+                    }
+
+                    var role = await context.Roles.FindAsync(id);
+
+                    context.Roles.Remove(role);
+                    await context.SaveChangesAsync();
                 }
 
-                var role = await context.Roles.FindAsync(id);
-
-                context.Roles.Remove(role);
-                await context.SaveChangesAsync();
+                TempData["SuccessMessage"] = $"Successfully deleted Role: {roleName}";
+                LoggingService.LogInformation($"Role delete attempt successful. RoleID: {id}, UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                return RedirectToAction("Index");
             }
-
-            TempData["DeleteSuccess"] = $"Successfully deleted Role: {roleName}";
-            return RedirectToAction("Index");
+            catch (SqlException ex)
+            {
+                LoggingService.LogError("SQL Error: " + ex.Message);
+                TempData["ErrorMessage"] = "SQL Error: " + ex.Message;
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                LoggingService.LogError("Error: " + ex.Message);
+                TempData["ErrorMessage"] = "Error: " + ex.Message;
+                return RedirectToAction("Index");
+            }
         }
 
     }

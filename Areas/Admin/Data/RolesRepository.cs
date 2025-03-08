@@ -22,10 +22,17 @@ namespace LittleArkFoundation.Areas.Admin.Data
 
         public async Task<IEnumerable<RolesModel>> GetRolesAsync()
         {
-            string connectionString = _connectionService.GetCurrentConnectionString();
-            await using (var context = new ApplicationDbContext(connectionString))
+            try
             {
-                return await Task.Run(() => context.Roles.ToList());
+                string connectionString = _connectionService.GetCurrentConnectionString();
+                await using (var context = new ApplicationDbContext(connectionString))
+                {
+                    return await Task.Run(() => context.Roles.ToListAsync());
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
 
@@ -57,10 +64,17 @@ namespace LittleArkFoundation.Areas.Admin.Data
 
         public async Task<int> GenerateRoleIDAsync()
         {
-            await using (var context = new ApplicationDbContext(_connectionString))
+            try
             {
-                List<RolesModel> roles = await context.Roles.ToListAsync();
-                return roles.Count + 1;
+                await using (var context = new ApplicationDbContext(_connectionString))
+                {
+                    List<RolesModel> roles = await context.Roles.ToListAsync();
+                    return roles.Count + 1;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
     }

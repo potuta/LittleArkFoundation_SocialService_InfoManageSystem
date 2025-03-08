@@ -21,14 +21,14 @@
     <a class="btn btn-success" asp-action="Create" asp-controller="Form">Create New</a>
 </div>
 
-@if (TempData["CreateSuccess"] != null)
+@if (TempData["SuccessMessage"] != null)
 {
     <div class="alert alert-success alert-dismissible fade show" role="alert" style="width: 60%;">
         @TempData["CreateSuccess"]
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
-@if (TempData["EditSuccess"] != null)
+@if (TempData["ErrorMessage"] != null)
 {
     <div class="alert alert-success alert-dismissible fade show" role="alert" style="width: 60%;">
         @TempData["EditSuccess"]

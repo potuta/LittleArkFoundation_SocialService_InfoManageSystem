@@ -33,7 +33,7 @@ namespace LittleArkFoundation.Data
 
             if (patient == null)
             {
-                return null;
+                return string.Empty;
             }
 
             // UPDATE LOGO IMAGE

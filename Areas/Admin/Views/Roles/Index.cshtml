@@ -24,15 +24,7 @@
     </button>
 </div>
 
-@if (TempData["CreateSuccess"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @TempData["CreateSuccess"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-}
-
-@if (TempData["DeleteSuccess"] != null)
+@if (TempData["SuccessMessage"] != null)
 {
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         @TempData["DeleteSuccess"]
@@ -40,7 +32,7 @@
     </div>
 }
 
-@if (TempData["DeleteError"] != null)
+@if (TempData["ErrorMessage"] != null)
 {
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
         @TempData["DeleteError"]

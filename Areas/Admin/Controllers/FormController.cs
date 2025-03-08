@@ -11,7 +11,7 @@ using LittleArkFoundation.Areas.Admin.Data;
 using LittleArkFoundation.Areas.Admin.Models.Patients;
 using System.Data;
 using LittleArkFoundation.Areas.Admin.Models.FamilyComposition;
-
+// TODO: Implement logging for forms
 namespace LittleArkFoundation.Areas.Admin.Controllers
 {
     [Area("Admin")]
@@ -109,7 +109,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 await context.MSWDClassification.AddAsync(formViewModel.MSWDClassification);
                 await context.SaveChangesAsync();
 
-                TempData["CreateSuccess"] = "Successfully created new form";
+                TempData["SuccessMessage"] = "Successfully created new form";
                 return RedirectToAction("Index");
             }
         }
@@ -195,7 +195,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             context.Households.Update(formViewModel.Household);
             context.MSWDClassification.Update(formViewModel.MSWDClassification);
 
-            TempData["EditSuccess"] = $"Successfully edited PatientID: {id}";
+            TempData["SuccessMessage"] = $"Successfully edited PatientID: {id}";
             await context.SaveChangesAsync();
             return RedirectToAction("Index");
         }
@@ -241,8 +241,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"PDF Generation Error: {ex.Message}");
-                return StatusCode(500, "An error occurred while generating the PDF.");
+                LoggingService.LogError("Error: " + ex.Message);
+                TempData["ErrorMessage"] = "Error: " + ex.Message;
+                return RedirectToAction("Index");
             }
         }
 
