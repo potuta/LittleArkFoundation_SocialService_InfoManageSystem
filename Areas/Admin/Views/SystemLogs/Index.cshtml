@@ -11,12 +11,28 @@
 <div class="search-container">
     <form asp-action="Search" asp-controller="SystemLogs" >
         <div class="input-group">
-            <input type="search" name="searchString" class="form-control" placeholder="Search by UserID/Username" aria-label="Search">
+            <input type="date" name="searchString" class="form-control" placeholder="Search by Date" aria-label="Search">
             <button type="submit" class="btn btn-dark">Search</button>
         </div>
     </form>
     <a class="btn btn-primary" asp-action="Index" asp-controller="SystemLogs">Back to Full List</a>
 </div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert" style="width: 60%;">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="width: 60%;">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 
 <div class="table-responsive" style="width: 60%;">
     <table class="table" style="width: fit-content;">

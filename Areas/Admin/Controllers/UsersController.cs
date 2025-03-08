@@ -129,7 +129,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                             Roles = await new RolesRepository(_connectionService).GetRolesAsync()
                         };
 
-                        ViewBag.sortBy = await new RolesRepository(connectionString).GetRoleNameByRoleID(int.Parse(sortByRoleID));
+                        ViewBag.sortBy = await new RolesRepository(_connectionService).GetRoleNameByRoleID(int.Parse(sortByRoleID));
                         ViewBag.isArchive = isArchive;
                         return View("Index", viewArchivesModel);
                     }
@@ -145,7 +145,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                         Roles = await new RolesRepository(_connectionService).GetRolesAsync()
                     };
 
-                    ViewBag.sortBy = await new RolesRepository(connectionString).GetRoleNameByRoleID(int.Parse(sortByRoleID));
+                    ViewBag.sortBy = await new RolesRepository(_connectionService).GetRoleNameByRoleID(int.Parse(sortByRoleID));
                     ViewBag.isArchive = isArchive;
                     return View("Index", viewModel);
 

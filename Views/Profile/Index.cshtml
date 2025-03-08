@@ -1,0 +1,166 @@
+﻿@using LittleArkFoundation.Areas.Admin.Models
+@model UsersViewModel
+@{
+	ViewData["Title"] = "User Profile";
+	Layout = "_ProfileLayout";
+}
+
+<style>
+	.td-password,
+	#td-password {
+		-webkit-text-security: disc;
+	}
+</style>
+
+<h2>User Profile</h2>
+<hr />
+
+@if (TempData["ErrorMessage"] != null)
+{
+	<div class="alert alert-danger alert-dismissible fade show" role="alert" style="width: 60%;">
+		@TempData["ErrorMessage"]
+		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+	</div>
+}
+
+<div>
+	<form asp-action="Edit" asp-controller="Profile" method="post">
+		@Html.AntiForgeryToken()
+		<input type="hidden" asp-for="NewUser.PasswordSalt" />
+		<input type="hidden" id="isEditPasswordEnabled" name="isEditPasswordEnabled" value="false" />
+		<input type="hidden" value="@Model.NewUser.PasswordHash" id="originalPassword" />
+
+		<div class="form-group mt-2">
+			<label asp-for="NewUser.UserID" class="control-label"></label>
+			<input asp-for="NewUser.UserID" class="form-control" readonly/>
+			<span asp-validation-for="NewUser.UserID" class="text-danger"></span>
+		</div>
+
+		<div class="form-group mt-2">
+			<label asp-for="NewUser.Username" class="control-label"></label>
+			<input asp-for="NewUser.Username" class="form-control" required />
+			<span asp-validation-for="NewUser.Username" class="text-danger"></span>
+		</div>
+
+		<div class="form-group mt-2">
+			<label asp-for="NewUser.Email" class="control-label"></label>
+			<input asp-for="NewUser.Email" class="form-control" required />
+			<span asp-validation-for="NewUser.Email" class="text-danger"></span>
+		</div>
+
+		<div class="form-group mt-2">
+			<label asp-for="NewUser.PhoneNumber" class="control-label"></label>
+			<input asp-for="NewUser.PhoneNumber" class="form-control" required />
+			<span asp-validation-for="NewUser.PhoneNumber" class="text-danger"></span>
+		</div>
+
+		<div class="form-group">
+			<label asp-for="NewUser.PasswordHash" class="control-label"></label>
+			<button type="button" class="btn btn-secondary mt-2 mb-2" id="togglePasswordButton">Edit Password</button>
+			<input type="text" asp-for="NewUser.PasswordHash" class="form-control td-password" id="passwordField" readonly required />
+			<span asp-validation-for="NewUser.PasswordHash" class="text-danger"></span>
+		</div>
+
+		<div class="form-group mt-2" id="confirmPasswordContainer">
+			<label for="confirmPassword" class="control-label">Confirm New Password</label>
+			<input type="password" class="form-control" id="confirmPassword" placeholder="Confirm new password">
+			<span class="text-danger" id="confirmPasswordError"></span>
+			<p id="confirmPasswordMessage"></p>
+		</div>
+
+		<div class="form-group mt-2">
+			<label asp-for="NewUser.RoleID" class="control-label"></label>
+			<input type="hidden" asp-for="NewUser.RoleID" class="form-control" />
+
+			@foreach (var role in Model.Roles)
+			{
+				if (role.RoleID == Model.NewUser.RoleID)
+				{
+					<input type="text" value="@role.RoleName" class="form-control" readonly />
+				}
+			}
+			<span asp-validation-for="NewUser.RoleID" class="text-danger"></span>
+		</div>
+
+		<div class="form-group mt-2">
+			<label asp-for="NewUser.CreatedAt" class="control-label"></label>
+			<input asp-for="NewUser.CreatedAt" class="form-control" readonly/>
+		</div>
+
+		<div class="form-group mt-2">
+			<input type="submit" value="Save" class="btn btn-primary" />
+		</div>
+
+	</form>
+</div>
+
+@section Scripts {
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			var passwordField = document.getElementById('passwordField');
+			var isEditPasswordEnabledField = document.getElementById('isEditPasswordEnabled');
+			var confirmPasswordField = document.getElementById('confirmPassword');
+
+			// Ensure initial state
+			if (passwordField.hasAttribute('readonly')) {
+				passwordField.style.backgroundColor = "#e9ecef";
+				passwordField.style.cursor = "not-allowed";
+				passwordField.style.opacity = "0.6";
+			}
+
+			// Hide confirm password field initially
+			confirmPasswordField.style.display = "none";
+		});
+
+		document.getElementById('togglePasswordButton').addEventListener('click', function () {
+			var passwordField = document.getElementById('passwordField');
+			var confirmPasswordField = document.getElementById('confirmPassword');
+			var originalPassword = document.getElementById('originalPassword').value;
+			var isEditPasswordEnabledField = document.getElementById('isEditPasswordEnabled');
+
+			if (passwordField.hasAttribute('readonly')) {
+				// Enable password editing
+				passwordField.removeAttribute('readonly');
+				passwordField.value = ''; // Clear password field for new input
+				passwordField.style.backgroundColor = "#ffffff";
+				passwordField.style.cursor = "text";
+				passwordField.style.opacity = "1";
+				this.textContent = "Don't Edit Password";
+
+				// Show confirm password field
+				confirmPasswordField.style.display = "block";
+
+				if (isEditPasswordEnabledField) isEditPasswordEnabledField.value = 'true';
+			} else {
+				// Disable password editing
+				passwordField.setAttribute('readonly', 'readonly');
+				passwordField.value = originalPassword; // Restore original password
+				passwordField.style.backgroundColor = "#e9ecef";
+				passwordField.style.cursor = "not-allowed";
+				passwordField.style.opacity = "0.6";
+				this.textContent = 'Edit Password';
+
+				// Hide confirm password field
+				confirmPasswordField.style.display = "none";
+				confirmPasswordField.value = ''; // Clear confirm password field
+
+				if (isEditPasswordEnabledField) isEditPasswordEnabledField.value = 'false';
+			}
+		});
+
+		// Prevent form submission if passwords don't match
+		document.querySelector('form').addEventListener('submit', function (e) {
+			var passwordField = document.getElementById('passwordField');
+			var confirmPasswordField = document.getElementById('confirmPassword');
+			var isEditPasswordEnabledField = document.getElementById('isEditPasswordEnabled');
+
+			if (isEditPasswordEnabledField.value === 'true' && passwordField.value !== confirmPasswordField.value) {
+				document.getElementById("confirmPasswordMessage").textContent = "Passwords do not match!";
+				document.getElementById("confirmPasswordMessage").style.color = "red";
+				e.preventDefault(); // Stop form submission
+			}
+		});
+	</script>
+
+}
+

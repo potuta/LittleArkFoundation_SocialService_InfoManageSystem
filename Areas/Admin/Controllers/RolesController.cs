@@ -192,7 +192,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 LoggingService.LogInformation($"Role delete attempt. RoleID: {id}, UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
 
                 string connectionString = _connectionService.GetCurrentConnectionString();
-                string roleName = await new RolesRepository(connectionString).GetRoleNameByRoleID(id);
+                string roleName = await new RolesRepository(_connectionService).GetRoleNameByRoleID(id);
 
                 await using (var context = new ApplicationDbContext(connectionString))
                 {

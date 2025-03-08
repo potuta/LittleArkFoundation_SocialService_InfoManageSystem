@@ -39,7 +39,7 @@ namespace LittleArkFoundation.Controllers
                     return RedirectToAction("Index", "Home");
                 }
 
-                string role = await new RolesRepository(connectionString).GetRoleNameByRoleID(user.RoleID);
+                string role = await new RolesRepository(_connectionService).GetRoleNameByRoleID(user.RoleID);
                 var permissions = await new PermissionsRepository(connectionString).GetPermissionsByRoleID(user.RoleID);
 
                 var claims = new List<Claim>

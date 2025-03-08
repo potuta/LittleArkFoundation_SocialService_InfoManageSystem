@@ -24,14 +24,14 @@
 @if (TempData["SuccessMessage"] != null)
 {
     <div class="alert alert-success alert-dismissible fade show" role="alert" style="width: 60%;">
-        @TempData["CreateSuccess"]
+        @TempData["SuccessMessage"]
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
 @if (TempData["ErrorMessage"] != null)
 {
     <div class="alert alert-success alert-dismissible fade show" role="alert" style="width: 60%;">
-        @TempData["EditSuccess"]
+        @TempData["ErrorMessage"]
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }

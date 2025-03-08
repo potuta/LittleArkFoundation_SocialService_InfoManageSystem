@@ -37,8 +37,7 @@
                     </span>
                 </a>
                 <div id="dropdown-profile-menu" class="dropdown-profile-content">
-                    <a href="javascript:void(0);">Profile</a>
-                    <a href="javascript:void(0);">Settings</a>
+                    <a asp-area="" asp-action="Index" asp-controller="Profile" asp-route-id="@User.FindFirstValue(ClaimTypes.NameIdentifier)" >Profile</a>
                     <a asp-area="" asp-action="Logout" asp-controller="Account">Logout</a>
                 </div>
             </div>

@@ -3,7 +3,7 @@ using LittleArkFoundation.Authorize;
 using LittleArkFoundation.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-// TODO: Implement logging for system logs
+
 namespace LittleArkFoundation.Areas.Admin.Controllers
 {
     [Area("Admin")]
@@ -43,6 +43,36 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
-        // TODO: Add search logs
+        public async Task<IActionResult> Search(string searchString)
+        {
+            try
+            {
+                string connectionString = _connectionService.GetCurrentConnectionString();
+                await using var context = new ApplicationDbContext(connectionString);
+
+                if (string.IsNullOrEmpty(searchString))
+                {
+                    return RedirectToAction("Index");
+                }
+
+                var logs = await context.Logs
+                    .Where(l => string.IsNullOrEmpty(searchString) || 
+                    l.TimeStamp.Date == DateTime.Parse(searchString).Date)
+                    .ToListAsync();
+
+                var logsViewModel = new LogsViewModel
+                {
+                    LogsList = logs
+                };
+
+                return View("Index", logsViewModel);
+            }
+            catch (Exception ex)
+            {
+                LoggingService.LogError("Error: " + ex.Message);
+                TempData["ErrorMessage"] = "Error: " + ex.Message;
+                return View("Index");
+            }
+        }
     }
 }

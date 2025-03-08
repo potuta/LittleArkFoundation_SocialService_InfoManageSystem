@@ -40,7 +40,8 @@ namespace LittleArkFoundation.Areas.Admin.Data
         {
             try
             {
-                await using (var connection = new SqlConnection(_connectionString))
+                string connectionString = _connectionService.GetCurrentConnectionString();
+                await using (var connection = new SqlConnection(connectionString))
                 {
                     string query = $"SELECT RoleName FROM Roles WHERE RoleID = @RoleID";
                     await using (var command = new SqlCommand(query, connection))
