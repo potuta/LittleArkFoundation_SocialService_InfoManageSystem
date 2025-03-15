@@ -1,20 +1,52 @@
 ﻿@{
-	ViewData["Title"] = "View Form";
-	Layout = "_AdminLayout";
+    ViewData["Title"] = "View Form";
+    Layout = "_AdminLayout";
 }
 
 <h2>View Form</h2>
 <hr />
 
-@Html.Raw(TempData["FormHtml"])
+<!-- Page Containers -->
+<div id="page1" class="form-page">
+    @Html.Raw(TempData["FormHtml1"])
+</div>
 
-<form asp-action="DownloadPDF" method="post">
-	@Html.AntiForgeryToken()
-	<input type="hidden" name="id" value="@ViewBag.Id" />
-	<a class="btn btn-sm btn-success" asp-action="Edit" asp-route-id="@ViewBag.Id">Edit</a>
-	<button type="submit" class="btn btn-sm btn-primary">Download PDF</button>
+<div id="page2" class="form-page" style="display: none;">
+    @Html.Raw(TempData["FormHtml2"])
+</div>
+
+<!-- Navigation Buttons -->
+<div class="mt-3">
+    <button id="prevPage" class="btn btn-sm btn-secondary" style="display: none;" onclick="changePage(-1)">Previous Page</button>
+    <button id="nextPage" class="btn btn-sm btn-secondary" onclick="changePage(1)">Next Page</button>
+</div>
+
+<!-- Form for PDF Download -->
+<form asp-action="DownloadPDF" method="post" class="mt-3">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="@ViewBag.Id" />
+    <a class="btn btn-sm btn-success" asp-action="Edit" asp-route-id="@ViewBag.Id">Edit</a>
+    <button type="submit" class="btn btn-sm btn-primary">Download PDF</button>
 </form>
 
+<!-- Back to List -->
 <div class="mt-2">
-	<a class="btn btn-sm btn-outline-primary" asp-action="Index">Back to List</a>
+    <a class="btn btn-sm btn-outline-primary" asp-action="Index">Back to List</a>
 </div>
+
+@section Scripts {
+    <script>
+        let currentPage = 1;
+        const totalPages = 2; // Adjust based on total form pages
+
+        function changePage(step) {
+            document.getElementById(`page${currentPage}`).style.display = "none";
+            currentPage += step;
+            document.getElementById(`page${currentPage}`).style.display = "block";
+
+            // Show/hide navigation buttons
+            document.getElementById("prevPage").style.display = currentPage > 1 ? "inline-block" : "none";
+            document.getElementById("nextPage").style.display = currentPage < totalPages ? "inline-block" : "none";
+        }
+    </script>
+}

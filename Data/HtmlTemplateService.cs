@@ -630,10 +630,10 @@ namespace LittleArkFoundation.Data
                 return null;
             }
 
-            htmlContent = htmlContent.Replace("{FullName}", patient.FirstName)
-                                     .Replace("{Email}", patient.ContactNo)
-                                     .Replace("{Address}", patient.PermanentAddress)
-                                     .Replace("{Message}", patient.PhilhealthMembership);
+            //htmlContent = htmlContent.Replace("{FullName}", patient.FirstName)
+            //                         .Replace("{Email}", patient.ContactNo)
+            //                         .Replace("{Address}", patient.PermanentAddress)
+            //                         .Replace("{Message}", patient.PhilhealthMembership);
 
             return htmlContent;
         }

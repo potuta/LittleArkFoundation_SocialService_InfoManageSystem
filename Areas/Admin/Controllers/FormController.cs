@@ -118,6 +118,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         {
             // Load the HTML template
             string templatePath = Path.Combine(_environment.WebRootPath, "templates/page1_form_template.html");
+            string templatePath2 = Path.Combine(_environment.WebRootPath, "templates/page2_form_template.html");
 
             if (!System.IO.File.Exists(templatePath))
             {
@@ -127,8 +128,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             string htmlContent = await System.IO.File.ReadAllTextAsync(templatePath);
             htmlContent = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page1(htmlContent, id);
 
+            string htmlContent2 = await System.IO.File.ReadAllTextAsync(templatePath2);
+            htmlContent2 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page2(htmlContent2, id);
+
             // Pass the modified HTML to the view
-            TempData["FormHtml"] = htmlContent;
+            TempData["FormHtml1"] = htmlContent;
+            TempData["FormHtml2"] = htmlContent2;
             ViewBag.Id = id;
 
             return View();
@@ -208,7 +213,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             {
                 //// Load the HTML template
                 string templatePath = Path.Combine(_environment.WebRootPath, "templates/page1_form_template.html");
-                string templatePath2 = Path.Combine(_environment.WebRootPath, "templates/sample_form_template.html");
+                string templatePath2 = Path.Combine(_environment.WebRootPath, "templates/page2_form_template.html");
 
                 if (!System.IO.File.Exists(templatePath))
                 {
@@ -237,7 +242,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                 //byte[] pdfBytes = _pdfConverter.Convert(pdfDocument);
                 byte[] mergedPdf = await new PDFService(_pdfConverter).MergePdfsAsync(pdfList);
-                return File(mergedPdf, "application/pdf", "UserForm.pdf");
+                return File(mergedPdf, "application/pdf", $"{id}.pdf");
             }
             catch (Exception ex)
             {
