@@ -631,7 +631,7 @@
             <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('Are you sure you want to save changes?');">Save Changes</button>
         </div>
         <div class="mt-2" style="text-align: center;">
-            <a class="btn btn-sm btn-outline-primary" asp-action="Index">Back to List</a>
+            <a class="btn btn-sm btn-outline-primary" asp-action="ViewForm" asp-route-id="@Model.Patient.PatientID">Back to Form</a>
         </div>
     </div>
 
