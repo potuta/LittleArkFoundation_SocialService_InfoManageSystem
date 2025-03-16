@@ -100,13 +100,23 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 // MSWD CLASSIFICATION
                 formViewModel.MSWDClassification.PatientID = patientID;
 
+                // MONTHLY EXPENSES & UTILITIES
+                formViewModel.MonthlyExpenses.PatientID = patientID;
+                formViewModel.Utilities.PatientID = patientID;
+
+                // Save Patient first to get the ID, avoids Forein Key constraint
+                await context.Patients.AddAsync(formViewModel.Patient);
+                await context.SaveChangesAsync();
+
+                // Update the rest of the form
                 await context.Assessments.AddAsync(formViewModel.Assessments);
                 await context.Referrals.AddAsync(formViewModel.Referrals);
                 await context.Informants.AddAsync(formViewModel.Informants);
-                await context.Patients.AddAsync(formViewModel.Patient);
                 await context.FamilyComposition.AddRangeAsync(formViewModel.FamilyMembers);
                 await context.Households.AddAsync(formViewModel.Household);
                 await context.MSWDClassification.AddAsync(formViewModel.MSWDClassification);
+                await context.MonthlyExpenses.AddAsync(formViewModel.MonthlyExpenses);
+                await context.Utilities.AddAsync(formViewModel.Utilities);
                 await context.SaveChangesAsync();
 
                 TempData["SuccessMessage"] = "Successfully created new form";
@@ -118,6 +128,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         {
             // Load the HTML template
             string templatePath = Path.Combine(_environment.WebRootPath, "templates/page1_form_template.html");
+            string templatePath2 = Path.Combine(_environment.WebRootPath, "templates/page2_form_template.html");
 
             if (!System.IO.File.Exists(templatePath))
             {
@@ -127,8 +138,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             string htmlContent = await System.IO.File.ReadAllTextAsync(templatePath);
             htmlContent = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page1(htmlContent, id);
 
+            string htmlContent2 = await System.IO.File.ReadAllTextAsync(templatePath2);
+            htmlContent2 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page2(htmlContent2, id);
+
             // Pass the modified HTML to the view
-            TempData["FormHtml"] = htmlContent;
+            TempData["FormHtml1"] = htmlContent;
+            TempData["FormHtml2"] = htmlContent2;
             ViewBag.Id = id;
 
             return View();
@@ -149,6 +164,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                                 .ToListAsync();
             var household = await context.Households.FirstOrDefaultAsync(h => h.PatientID == id);
             var mswdClassification = await context.MSWDClassification.FirstOrDefaultAsync(m => m.PatientID == id);
+            var monthlyExpenses = await context.MonthlyExpenses.FirstOrDefaultAsync(m => m.PatientID == id);
+            var utilities = await context.Utilities.FirstOrDefaultAsync(u => u.PatientID == id);
 
             var viewModel = new FormViewModel()
             {
@@ -158,7 +175,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 Patient = patient,
                 FamilyMembers = familymembers,
                 Household = household,
-                MSWDClassification = mswdClassification
+                MSWDClassification = mswdClassification,
+                MonthlyExpenses = monthlyExpenses,
+                Utilities = utilities
             };
 
             return View(viewModel);
@@ -188,15 +207,21 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 await context.FamilyComposition.AddRangeAsync(formViewModel.FamilyMembers);
             }
 
+            // Update Patient first, avoids Forein Key constraint
+            context.Patients.Update(formViewModel.Patient);
+            await context.SaveChangesAsync();
+
+            // Update the rest of the form
             context.Assessments.Update(formViewModel.Assessments);
             context.Referrals.Update(formViewModel.Referrals);
             context.Informants.Update(formViewModel.Informants);
-            context.Patients.Update(formViewModel.Patient);
             context.Households.Update(formViewModel.Household);
             context.MSWDClassification.Update(formViewModel.MSWDClassification);
+            context.MonthlyExpenses.Update(formViewModel.MonthlyExpenses);
+            context.Utilities.Update(formViewModel.Utilities);
+            await context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = $"Successfully edited PatientID: {id}";
-            await context.SaveChangesAsync();
             return RedirectToAction("Index");
         }
 
@@ -208,7 +233,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             {
                 //// Load the HTML template
                 string templatePath = Path.Combine(_environment.WebRootPath, "templates/page1_form_template.html");
-                string templatePath2 = Path.Combine(_environment.WebRootPath, "templates/sample_form_template.html");
+                string templatePath2 = Path.Combine(_environment.WebRootPath, "templates/page2_form_template.html");
 
                 if (!System.IO.File.Exists(templatePath))
                 {
@@ -237,7 +262,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                 //byte[] pdfBytes = _pdfConverter.Convert(pdfDocument);
                 byte[] mergedPdf = await new PDFService(_pdfConverter).MergePdfsAsync(pdfList);
-                return File(mergedPdf, "application/pdf", "UserForm.pdf");
+                return File(mergedPdf, "application/pdf", $"{id}.pdf");
             }
             catch (Exception ex)
             {

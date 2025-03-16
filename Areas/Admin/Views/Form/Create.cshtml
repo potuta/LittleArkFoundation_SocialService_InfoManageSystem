@@ -490,7 +490,7 @@
             </tr>
         </table>
 
-        @* <div class="section-title">III. Monthly Expenses</div>
+        <div class="section-title">III. Monthly Expenses</div>
         <table id="expenses-table">
             <tr>
                 <th>Particulars</th>
@@ -500,39 +500,39 @@
             </tr>
             <tr>
                 <td>House & Lot</td>
-                <td><input type="number" class="expense" required></td>
+                <td><input type="number" asp-for="MonthlyExpenses.HouseAndLot" class="expense" required></td>
                 <td>Communication</td>
-                <td><input type="number" class="expense" required></td>
+                <td><input type="number" asp-for="MonthlyExpenses.Communication" class="expense" required></td>
             </tr>
             <tr>
                 <td>Food & Water</td>
-                <td><input type="number" class="expense" required></td>
+                <td><input type="number" asp-for="MonthlyExpenses.FoodAndWater" class="expense" required></td>
                 <td>House Help</td>
-                <td><input type="number" class="expense" required></td>
+                <td><input type="number" asp-for="MonthlyExpenses.HouseHelp" class="expense" required></td>
             </tr>
             <tr>
                 <td>Education</td>
-                <td><input type="number" class="expense" required></td>
+                <td><input type="number" asp-for="MonthlyExpenses.Education" class="expense" required></td>
                 <td>Medical Expenses</td>
-                <td><input type="number" class="expense" required></td>
+                <td><input type="number" asp-for="MonthlyExpenses.MedicalExpenses" class="expense" required></td>
             </tr>
             <tr>
                 <td>Clothing</td>
-                <td><input type="number" class="expense" required></td>
+                <td><input type="number" asp-for="MonthlyExpenses.Clothing" class="expense" required></td>
                 <td>Others</td>
                 <td>
-                    <input type="text" placeholder="Specify">
-                    <input type="number" class="expense">
+                    <input type="text" asp-for="MonthlyExpenses.Others" placeholder="Specify">
+                    <input type="number" asp-for="MonthlyExpenses.OthersAmount" class="expense">
                 </td>
             </tr>
             <tr>
                 <td>Transportation</td>
-                <td colspan="3"><input type="number" class="expense" required></td>
+                <td colspan="3"><input type="number" asp-for="MonthlyExpenses.Transportation" class="expense" required></td>
 
             </tr>
             <tr>
                 <td><strong>Total</strong></td>
-                <td colspan="3"><input type="number" id="total-expenses" readonly></td>
+                <td colspan="3"><input type="number" asp-for="MonthlyExpenses.Total" id="total-expenses" readonly></td>
             </tr>
         </table>
 
@@ -546,57 +546,59 @@
             <tr>
                 <td>
                     <div class="radio-group">
-                        <input type="radio" name="light_source" value="Electric" data-target="electric-amount" onchange="toggleRequiredRadio(this)"> Electric
-                        <input type="number" id="electric-amount" placeholder="State amount" disabled>
+                        <input type="radio" asp-for="Utilities.LightSource" value="Electric" data-target="electric-amount" onchange="toggleRequiredRadio(this)"> Electric
+                        <input type="number" asp-for="Utilities.LightSourceAmount" id="electric-amount" placeholder="State amount" disabled>
                     </div>
 
                     <div class="radio-group">
-                        <input type="radio" name="light_source" value="Kerosene" data-target="kerosene-amount" onchange="toggleRequiredRadio(this)"> Kerosene
-                        <input type="number" id="kerosene-amount" placeholder="State amount" disabled>
+                        <input type="radio" asp-for="Utilities.LightSource" value="Kerosene" data-target="kerosene-amount" onchange="toggleRequiredRadio(this)"> Kerosene
+                        <input type="number" asp-for="Utilities.LightSourceAmount" id="kerosene-amount" placeholder="State amount" disabled>
                     </div>
 
                     <div class="radio-group">
-                        <input type="radio" name="light_source" value="Candle" data-target="candle-amount" onchange="toggleRequiredRadio(this)"> Candle
-                        <input type="number" id="candle-amount" placeholder="State amount" disabled>
+                        <input type="radio" asp-for="Utilities.LightSource" value="Candle" data-target="candle-amount" onchange="toggleRequiredRadio(this)"> Candle
+                        <input type="number" asp-for="Utilities.LightSourceAmount" id="candle-amount" placeholder="State amount" disabled>
                     </div>
 
                 </td>
                 <td>
                     <div class="radio-group">
-                        <input type="radio" name="fuel_source" value="Gas"> Gas
+                        <input type="radio" asp-for="Utilities.FuelSource" value="Gas" data-target="gas-amount" onchange="toggleRequiredRadio(this)"> Gas
+                        <input type="number" asp-for="Utilities.FuelSourceAmount" id="gas-amount" placeholder="State amount" disabled>
                     </div>
 
                     <div class="radio-group">
-                        <input type="radio" name="fuel_source" value="Firewood"> Firewood
+                        <input type="radio" asp-for="Utilities.FuelSource" value="Firewood" data-target="firewood-amount" onchange="toggleRequiredRadio(this)"> Firewood
+                        <input type="number" asp-for="Utilities.FuelSourceAmount" id="firewood-amount" placeholder="State amount" disabled>
                     </div>
 
                     <div class="radio-group">
-                        <input type="radio" name="fuel_source" value="Charcoal"> Charcoal
+                        <input type="radio" asp-for="Utilities.FuelSource" value="Charcoal" data-target="charcoal-amount" onchange="toggleRequiredRadio(this)"> Charcoal
+                        <input type="number" asp-for="Utilities.FuelSourceAmount" id="charcoal-amount" placeholder="State amount" disabled>
                     </div>
                 </td>
                 <td>
                     <div class="radio-group">
-                        <input type="radio" name="water_source" value="Artesian Well"> Artesian Well
+                        <input type="radio" asp-for="Utilities.WaterSource" value="Artesian Well"> Artesian Well
                     </div>
 
                     <div class="radio-group">
-                        <input type="radio" name="water_source" value="Public"> Public
+                        <input type="radio" asp-for="Utilities.WaterSource" value="Public"> Public
                     </div>
 
                     <div class="radio-group">
-                        <input type="radio" name="water_source" value="Private"> Private
+                        <input type="radio" asp-for="Utilities.WaterSource" value="Private"> Private
                     </div>
 
                     <div class="radio-group">
-                        <input type="radio" name="water_source" value="Water District"> Water District
+                        <input type="radio" asp-for="Utilities.WaterSource" value="Water District"> Water District
                     </div>
                 </td>
             </tr>
 
-        </table> *@
+        </table>
             
         @* --- Add new here --- *@
-
 
         <div class="mt-2" style="text-align: center;">
             <button type="submit" class="btn btn-sm btn-primary">Submit</button>
@@ -728,6 +730,10 @@
 
         // Enable the "Others" input field only when selected
         if (inputField && radio.value === "Others") {
+            inputField.disabled = false;
+            inputField.required = true;
+        }
+        else if (inputField) {
             inputField.disabled = false;
             inputField.required = true;
         }
