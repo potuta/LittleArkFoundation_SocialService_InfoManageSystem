@@ -1,20 +1,77 @@
 ﻿@{
-	ViewData["Title"] = "View Form";
-	Layout = "_AdminLayout";
+    ViewData["Title"] = "View Form";
+    Layout = "_AdminLayout";
 }
 
 <h2>View Form</h2>
 <hr />
 
-@Html.Raw(TempData["FormHtml"])
+<!-- Page Containers -->
+<div id="page1" class="form-page">
+    @Html.Raw(TempData["FormHtml1"])
+</div>
 
-<form asp-action="DownloadPDF" method="post">
-	@Html.AntiForgeryToken()
-	<input type="hidden" name="id" value="@ViewBag.Id" />
-	<a class="btn btn-sm btn-success" asp-action="Edit" asp-route-id="@ViewBag.Id">Edit</a>
-	<button type="submit" class="btn btn-sm btn-primary">Download PDF</button>
+<div id="page2" class="form-page" style="display: none;">
+    @Html.Raw(TempData["FormHtml2"])
+</div>
+
+<!-- Navigation Buttons -->
+<div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
+    <button type="button" id="prevPage" class="btn btn-outline-primary" onclick="changePage(-1)"><</button>
+    <button type="button" id="navPage1" class="btn btn-outline-primary active" onclick="jumpToPage(1)">1</button>
+    <button type="button" id="navPage2" class="btn btn-outline-primary" onclick="jumpToPage(2)">2</button>
+    <button type="button" id="nextPage" class="btn btn-outline-primary" onclick="changePage(1)">></button>
+</div>
+
+<!-- Form for PDF Download -->
+<form asp-action="DownloadPDF" method="post" class="mt-3">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="@ViewBag.Id" />
+    <a class="btn btn-sm btn-success" asp-action="Edit" asp-route-id="@ViewBag.Id">Edit</a>
+    <button type="submit" class="btn btn-sm btn-primary">Download PDF</button>
 </form>
 
+<!-- Back to List -->
 <div class="mt-2">
-	<a class="btn btn-sm btn-outline-primary" asp-action="Index">Back to List</a>
+    <a class="btn btn-sm btn-outline-primary" asp-action="Index">Back to List</a>
 </div>
+
+@section Scripts {
+    <script>
+        let currentPage = 1;
+        const totalPages = 2; // Adjust based on total form pages
+
+        function changePage(step) {
+            document.getElementById(`page${currentPage}`).style.display = "none";
+            currentPage += step;
+            document.getElementById(`page${currentPage}`).style.display = "block";
+
+            for (let i = 1; i <= totalPages; i++) {
+                document.getElementById(`navPage${i}`).classList.remove("active");
+            }
+
+            document.getElementById(`navPage${currentPage}`).classList.add("active");
+
+            // Show/hide navigation buttons
+            document.getElementById("prevPage").disabled = currentPage > 1 ? false : true;
+            document.getElementById("nextPage").disabled = currentPage < totalPages ? false : true;
+        }
+
+        function jumpToPage(step) {
+            document.getElementById(`page${currentPage}`).style.display = "none";
+            currentPage = step;
+            document.getElementById(`page${currentPage}`).style.display = "block";
+
+            for (let i = 1; i <= totalPages; i++) {
+                document.getElementById(`navPage${i}`).classList.remove("active");
+            }
+
+            document.getElementById(`navPage${currentPage}`).classList.add("active");
+
+            // Show/hide navigation buttons
+            document.getElementById("prevPage").disabled = currentPage > 1 ? false : true;
+            document.getElementById("nextPage").disabled = currentPage < totalPages ? false : true;
+        }
+
+    </script>
+}

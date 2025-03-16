@@ -9,6 +9,7 @@ using LittleArkFoundation.Areas.Admin.Models.FamilyComposition;
 using LittleArkFoundation.Areas.Admin.Models.Household;
 using LittleArkFoundation.Areas.Admin.Models.MSWDClassification;
 using LittleArkFoundation.Areas.Admin.Models.SystemLogs;
+using LittleArkFoundation.Areas.Admin.Models.MonthlyExpenses;
 
 namespace LittleArkFoundation.Data
 {
@@ -43,6 +44,8 @@ namespace LittleArkFoundation.Data
         public DbSet<FamilyCompositionModel> FamilyComposition { get; set; }
         public DbSet<HouseholdModel> Households { get; set; }
         public DbSet<MSWDClassificationModel> MSWDClassification { get; set; }
+        public DbSet<MonthlyExpensesModel> MonthlyExpenses { get; set; }
+        public DbSet<UtilitiesModel> Utilities { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -152,6 +155,24 @@ namespace LittleArkFoundation.Data
 
             modelBuilder.Entity<MSWDClassificationModel>()
                 .Property(m => m.ClassificationID)
+                .ValueGeneratedOnAdd();
+
+            // MonthlyExpenses
+            modelBuilder.Entity<MonthlyExpensesModel>()
+                .ToTable("MonthlyExpenses")
+                .HasKey(m => m.ExpenseID);
+
+            modelBuilder.Entity<MonthlyExpensesModel>()
+                .Property(m => m.ExpenseID)
+                .ValueGeneratedOnAdd();
+
+            // Utilities
+            modelBuilder.Entity<UtilitiesModel>()
+                .ToTable("Utilities")
+                .HasKey(u => u.UtilityID);
+
+            modelBuilder.Entity<UtilitiesModel>()
+                .Property(u => u.UtilityID)
                 .ValueGeneratedOnAdd();
         }
     }

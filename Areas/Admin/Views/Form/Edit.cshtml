@@ -76,6 +76,10 @@
     <input type="hidden" asp-for="Household.PatientID"/>
     <input type="hidden" asp-for="MSWDClassification.ClassificationID" />
     <input type="hidden" asp-for="MSWDClassification.PatientID" />
+    <input type="hidden" asp-for="MonthlyExpenses.ExpenseID" />
+    <input type="hidden" asp-for="MonthlyExpenses.PatientID" />
+    <input type="hidden" asp-for="Utilities.UtilityID" />
+    <input type="hidden" asp-for="Utilities.PatientID" />
 
     <div class="form-container">
         <h2 style="text-align: center;">Republic of the Philippines - Department of Health</h2>
@@ -375,18 +379,6 @@
             <tbody id="family-body">
                 @for (int i = 0; i < Model.FamilyMembers.Count; i++)
                 {
-                    @* <tr>
-                        <td><input type="text" name="family[0][name]" required></td>
-                        <td><input type="number" name="family[0][age]" required></td>
-                        <td><input type="date" name="family[0][dob]" required></td>
-                        <td><input type="text" name="family[0][civil_status]" required></td>
-                        <td><input type="text" name="family[0][relationship]" required></td>
-                        <td><select name="family[0][living]" required><option>Yes</option><option>No</option></select></td>
-                        <td><input type="text" name="family[0][education]" required></td>
-                        <td><input type="text" name="family[0][occupation]" required></td>
-                        <td><input type="number" name="family[0][income]" required></td>
-                        <td><button type="button" onclick="removeRow(this)">❌</button></td>
-                    </tr> *@
                     <tr>
                         <td><input type="text" asp-for="FamilyMembers[i].Name" required></td>
                         <td><input type="number" asp-for="FamilyMembers[i].Age" required></td>
@@ -509,29 +501,36 @@
                             @if (!(new[] { "Artisanal Fisher Folk", "Farmer And Landless Rural Worker", "Urban Poor",
                                 "Indigenous Peoples", "Senior Citizen", "Formal Labor and Migrant Workers",
                                 "Workers in Informal Sector", "PWD", "Victims Of Disaster and Calamity" })
-                                .Contains(Model.MSWDClassification.MembershipSector))
+                            .Contains(Model.MSWDClassification.MembershipSector))
                             {
                                 <input type="radio" asp-for="MSWDClassification.MembershipSector" value="@Model.MSWDClassification.MembershipSector"
-                                       id="others-radio" data-target="member-others-specify"
-                                       onchange="toggleRequiredRadio(this)" checked>
+                                id="others-radio" data-target="member-others-specify"
+                                onchange="toggleRequiredRadio(this)" checked>
+
+                                <label>Others</label>
+
+                                <input type="text" id="member-others-specify" placeholder="Specify" disabled
+                                asp-for="@Model.MSWDClassification.MembershipSector">
                             }
                             else
                             {
                                 <input type="radio" asp-for="MSWDClassification.MembershipSector" value="Others"
-                                       id="others-radio" data-target="member-others-specify"
-                                       onchange="toggleRequiredRadio(this)">
-                            }
-                            Others
+                                id="others-radio" data-target="member-others-specify"
+                                onchange="toggleRequiredRadio(this)">
 
-                            <input type="text" id="member-others-specify" placeholder="Specify" disabled
-                                   oninput="updateOthersValue(this)">
+                                <label>Others</label>
+
+                                <input type="text" id="member-others-specify" placeholder="Specify" disabled
+                                oninput="updateOthersValue(this)">
+                            }
+
                         </div>
                     </div>
                 </td>
             </tr>
         </table>
 
-        @* <div class="section-title">III. Monthly Expenses</div>
+        <div class="section-title">III. Monthly Expenses</div>
         <table id="expenses-table">
             <tr>
                 <th>Particulars</th>
@@ -541,39 +540,39 @@
             </tr>
             <tr>
                 <td>House & Lot</td>
-                <td><input type="number" class="expense" required></td>
+                <td><input type="number" asp-for="MonthlyExpenses.HouseAndLot" class="expense" required></td>
                 <td>Communication</td>
-                <td><input type="number" class="expense" required></td>
+                <td><input type="number" asp-for="MonthlyExpenses.Communication" class="expense" required></td>
             </tr>
             <tr>
                 <td>Food & Water</td>
-                <td><input type="number" class="expense" required></td>
+                <td><input type="number" asp-for="MonthlyExpenses.FoodAndWater" class="expense" required></td>
                 <td>House Help</td>
-                <td><input type="number" class="expense" required></td>
+                <td><input type="number" asp-for="MonthlyExpenses.HouseHelp" class="expense" required></td>
             </tr>
             <tr>
                 <td>Education</td>
-                <td><input type="number" class="expense" required></td>
+                <td><input type="number" asp-for="MonthlyExpenses.Education" class="expense" required></td>
                 <td>Medical Expenses</td>
-                <td><input type="number" class="expense" required></td>
+                <td><input type="number" asp-for="MonthlyExpenses.MedicalExpenses" class="expense" required></td>
             </tr>
             <tr>
                 <td>Clothing</td>
-                <td><input type="number" class="expense" required></td>
+                <td><input type="number" asp-for="MonthlyExpenses.Clothing" class="expense" required></td>
                 <td>Others</td>
                 <td>
-                    <input type="text" placeholder="Specify">
-                    <input type="number" class="expense">
+                    <input type="text" asp-for="MonthlyExpenses.Others" placeholder="Specify">
+                    <input type="number" asp-for="MonthlyExpenses.OthersAmount" class="expense">
                 </td>
             </tr>
             <tr>
                 <td>Transportation</td>
-                <td colspan="3"><input type="number" class="expense" required></td>
+                <td colspan="3"><input type="number" asp-for="MonthlyExpenses.Transportation" class="expense" required></td>
 
             </tr>
             <tr>
                 <td><strong>Total</strong></td>
-                <td colspan="3"><input type="number" id="total-expenses" readonly></td>
+                <td colspan="3"><input type="number" asp-for="MonthlyExpenses.Total" id="total-expenses" readonly></td>
             </tr>
         </table>
 
@@ -587,63 +586,137 @@
             <tr>
                 <td>
                     <div class="radio-group">
-                        <input type="radio" name="light_source" value="Electric" data-target="electric-amount" onchange="toggleRequiredRadio(this)"> Electric
-                        <input type="number" id="electric-amount" placeholder="State amount" disabled>
+                        @if (Model.Utilities.LightSource == "Electric")
+                        {
+                            <input type="radio" asp-for="Utilities.LightSource" value="Electric" data-target="electric-amount" onchange="toggleRequiredRadio(this)" checked>
+                            <label>Electric</label>
+                            <input type="number" asp-for="Utilities.LightSourceAmount" id="electric-amount" placeholder="State amount" disabled>
+                        }
+                        else
+                        {
+                            <input type="radio" asp-for="Utilities.LightSource" value="Electric" data-target="electric-amount" onchange="toggleRequiredRadio(this)">
+                            <label>Electric</label>
+                            <input type="number" id="electric-amount" placeholder="State amount" oninput="updateLightSourceValue(this)" disabled>
+                            <input type="hidden" asp-for="Utilities.LightSourceAmount" id="light-source-amount"/>
+                        }
+
                     </div>
 
                     <div class="radio-group">
-                        <input type="radio" name="light_source" value="Kerosene" data-target="kerosene-amount" onchange="toggleRequiredRadio(this)"> Kerosene
-                        <input type="number" id="kerosene-amount" placeholder="State amount" disabled>
+                        @if (Model.Utilities.LightSource == "Kerosene") 
+                        {
+                            <input type="radio" asp-for="Utilities.LightSource" value="Kerosene" data-target="kerosene-amount" onchange="toggleRequiredRadio(this)" checked>
+                            <label>Kerosene</label>
+                            <input type="number" asp-for="Utilities.LightSourceAmount" id="kerosene-amount" placeholder="State amount" disabled>
+                        }
+                        else 
+                        {
+                            <input type="radio" asp-for="Utilities.LightSource" value="Kerosene" data-target="kerosene-amount" onchange="toggleRequiredRadio(this)">
+                            <label>Kerosene</label>
+                            <input type="number" id="kerosene-amount" placeholder="State amount" oninput="updateLightSourceValue(this)" disabled>
+                            <input type="hidden" asp-for="Utilities.LightSourceAmount" id="light-source-amount" />
+
+                        }
                     </div>
 
                     <div class="radio-group">
-                        <input type="radio" name="light_source" value="Candle" data-target="candle-amount" onchange="toggleRequiredRadio(this)"> Candle
-                        <input type="number" id="candle-amount" placeholder="State amount" disabled>
-                    </div>
+                        @if (Model.Utilities.LightSource == "Candle")
+                        {
+                            <input type="radio" asp-for="Utilities.LightSource" value="Candle" data-target="candle-amount" onchange="toggleRequiredRadio(this)" checked>
+                            <label>Candle</label>
+                            <input type="number" asp-for="Utilities.LightSourceAmount" id="candle-amount" placeholder="State amount" disabled>
+                        }
+                        else
+                        {
+                            <input type="radio" asp-for="Utilities.LightSource" value="Candle" data-target="candle-amount" onchange="toggleRequiredRadio(this)">
+                            <label>Candle</label>
+                            <input type="number" id="candle-amount" placeholder="State amount" oninput="updateLightSourceValue(this)" disabled>
+                            <input type="hidden" asp-for="Utilities.LightSourceAmount" id="light-source-amount" />
 
+                        }
+
+                    </div>
                 </td>
                 <td>
                     <div class="radio-group">
-                        <input type="radio" name="fuel_source" value="Gas"> Gas
+                        @if (Model.Utilities.FuelSource == "Gas")
+                        {
+                            <input type="radio" asp-for="Utilities.FuelSource" value="Gas" data-target="gas-amount" onchange="toggleRequiredRadio(this)" checked>
+                            <label>Gas</label>
+                            <input type="number" asp-for="Utilities.FuelSourceAmount" id="gas-amount" placeholder="State amount" disabled>
+                        }
+                        else
+                        {
+                            <input type="radio" asp-for="Utilities.FuelSource" value="Gas" data-target="gas-amount" onchange="toggleRequiredRadio(this)">
+                            <label>Gas</label>
+                            <input type="number" id="gas-amount" placeholder="State amount" oninput="updateFuelSourceValue(this)" disabled>
+                            <input type="hidden" asp-for="Utilities.FuelSourceAmount" id="fuel-source-amount"/>
+                        }
+
                     </div>
 
                     <div class="radio-group">
-                        <input type="radio" name="fuel_source" value="Firewood"> Firewood
+                        @if (Model.Utilities.FuelSource == "Firewood")
+                        {
+                            <input type="radio" asp-for="Utilities.FuelSource" value="Firewood" data-target="firewood-amount" onchange="toggleRequiredRadio(this)" checked>
+                            <label>Firewood</label>
+                            <input type="number" asp-for="Utilities.FuelSourceAmount" id="firewood-amount" placeholder="State amount" disabled>
+                        }
+                        else
+                        {
+                            <input type="radio" asp-for="Utilities.FuelSource" value="Firewood" data-target="firewood-amount" onchange="toggleRequiredRadio(this)">
+                            <label>Firewood</label>
+                            <input type="number" id="firewood-amount" placeholder="State amount" oninput="updateFuelSourceValue(this)" disabled>
+                            <input type="hidden" asp-for="Utilities.FuelSourceAmount" id="fuel-source-amount" />
+
+                        }
                     </div>
 
                     <div class="radio-group">
-                        <input type="radio" name="fuel_source" value="Charcoal"> Charcoal
+                        @if (Model.Utilities.FuelSource == "Charcoal")
+                        {
+                            <input type="radio" asp-for="Utilities.FuelSource" value="Charcoal" data-target="charcoal-amount" onchange="toggleRequiredRadio(this)" checked>
+                            <label>Charcoal</label>
+                            <input type="number" asp-for="Utilities.FuelSourceAmount" id="charcoal-amount" placeholder="State amount" disabled>
+                        }
+                        else
+                        {
+                            <input type="radio" asp-for="Utilities.FuelSource" value="Charcoal" data-target="charcoal-amount" onchange="toggleRequiredRadio(this)">
+                            <label>Charcoal</label>
+                            <input type="number" id="charcoal-amount" placeholder="State amount" oninput="updateFuelSourceValue(this)" disabled>
+                            <input type="hidden" asp-for="Utilities.FuelSourceAmount" id="fuel-source-amount" />
+                        }
+
                     </div>
                 </td>
                 <td>
                     <div class="radio-group">
-                        <input type="radio" name="water_source" value="Artesian Well"> Artesian Well
+                        <input type="radio" asp-for="Utilities.WaterSource" value="Artesian Well"> Artesian Well
                     </div>
 
                     <div class="radio-group">
-                        <input type="radio" name="water_source" value="Public"> Public
+                        <input type="radio" asp-for="Utilities.WaterSource" value="Public"> Public
                     </div>
 
                     <div class="radio-group">
-                        <input type="radio" name="water_source" value="Private"> Private
+                        <input type="radio" asp-for="Utilities.WaterSource" value="Private"> Private
                     </div>
 
                     <div class="radio-group">
-                        <input type="radio" name="water_source" value="Water District"> Water District
+                        <input type="radio" asp-for="Utilities.WaterSource" value="Water District"> Water District
                     </div>
                 </td>
-            </tr> 
+            </tr>
 
-        </table> *@
+        </table>
 
         @* --- Add new here --- *@
-
 
         <div class="mt-2" style="text-align: center;">
             <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('Are you sure you want to save changes?');">Save Changes</button>
         </div>
         <div class="mt-2" style="text-align: center;">
-            <a class="btn btn-sm btn-outline-primary" asp-action="Index">Back to List</a>
+            <a class="btn btn-sm btn-outline-primary" asp-action="ViewForm" asp-route-id="@Model.Patient.PatientID">Back to Form</a>
         </div>
     </div>
 
@@ -735,13 +808,24 @@
         document.querySelectorAll('input[type="radio"][data-target]').forEach(radio => {
             let inputField = document.getElementById(radio.getAttribute("data-target"));
 
-            if (radio.checked && radio.value !== "Others" && inputField) {
+            if (radio.checked && inputField) {
                 inputField.disabled = false;
                 inputField.required = true;
-                inputField.value = radio.value; // Set stored value for "Others"
+				// let numberValue = Number(radio.value);
+				// if (radio.value !== "Others" && !isNaN(numberValue)) {
+				// 	inputField.value = radio.value; // Set stored value for "Others"
+				// }
             }
         });
     });
+
+    function updateOthersValue(input) {
+        let radio = document.querySelector(`input[data-target="${input.id}"]`);
+
+        if (radio.checked && input.value.trim() !== "") {
+            radio.value = input.value.trim(); // Update radio value dynamically
+        }
+    }
 
     function toggleRequiredRadio(radio) {
         let targetId = radio.getAttribute("data-target");
@@ -762,13 +846,29 @@
             inputField.disabled = false;
             inputField.required = true;
         }
+        else if (inputField && radio.value !== "Others") {
+            inputField.disabled = false;
+            inputField.required = true;
+        }
     }
 
-    function updateOthersValue(input) {
+    function updateLightSourceValue(input) {
         let radio = document.querySelector(`input[data-target="${input.id}"]`);
+        let hiddenInput = document.getElementById("light-source-amount");
 
-        if (radio.checked && input.value.trim() !== "") {
-            radio.value = input.value.trim(); // Update radio value dynamically
+        if (radio && radio.checked) {
+            // Ensure input value is a valid number before updating the hidden field
+            hiddenInput.value = input.value.trim() !== "" && !isNaN(input.value) ? input.value : "";
+        }
+    }
+
+    function updateFuelSourceValue(input) {
+        let radio = document.querySelector(`input[data-target="${input.id}"]`);
+        let hiddenInput = document.getElementById("fuel-source-amount");
+
+        if (radio && radio.checked) {
+            // Ensure input value is a valid number before updating the hidden field
+            hiddenInput.value = input.value.trim() !== "" && !isNaN(input.value) ? input.value : "";
         }
     }
 

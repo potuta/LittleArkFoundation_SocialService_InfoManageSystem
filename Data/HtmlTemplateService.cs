@@ -624,18 +624,210 @@ namespace LittleArkFoundation.Data
             await using var context = new ApplicationDbContext(connectionString);
 
             var patient = await context.Patients.FindAsync(id);
+            var monthlyexpenses = await context.MonthlyExpenses.FirstOrDefaultAsync(m => m.PatientID == id);
+            var utilities = await context.Utilities.FirstOrDefaultAsync(u => u.PatientID == id);
 
             if (patient == null)
             {
-                return null;
+                return string.Empty;
             }
 
-            htmlContent = htmlContent.Replace("{FullName}", patient.FirstName)
-                                     .Replace("{Email}", patient.ContactNo)
-                                     .Replace("{Address}", patient.PermanentAddress)
-                                     .Replace("{Message}", patient.PhilhealthMembership);
+            // USING HTMLAGILITYPACK
+            var htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(htmlContent);
 
-            return htmlContent;
+            // MONTHLY EXPENSES
+            var houseandlot = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Houseandlot']");
+            if (houseandlot != null)
+            {
+                houseandlot.InnerHtml = monthlyexpenses.HouseAndLot.ToString();
+            }
+
+            var foodandwater = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Foodandwater']");
+            if (foodandwater != null)
+            {
+                foodandwater.InnerHtml = monthlyexpenses.FoodAndWater.ToString();
+            }
+
+            var education = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Education']");
+            if (education != null)
+            {
+                education.InnerHtml = monthlyexpenses.Education.ToString();
+            }
+
+            var clothing = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Clothing']");
+            if (clothing != null)
+            {
+                clothing.InnerHtml = monthlyexpenses.Clothing.ToString();
+            }
+
+            var communication = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Communication']");
+            if (communication != null)
+            {
+                communication.InnerHtml = monthlyexpenses.Communication.ToString();
+            }
+
+            var househelp = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Househelp']");
+            if (househelp != null)
+            {
+                househelp.InnerHtml = monthlyexpenses.HouseHelp.ToString();
+            }
+
+            var medicalexpenses = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Medicalexpenses']");
+            if (medicalexpenses != null)
+            {
+                medicalexpenses.InnerHtml = monthlyexpenses.MedicalExpenses.ToString();
+            }
+
+            var others = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Others']");
+            if (others != null)
+            {
+                if (monthlyexpenses.Others != null || monthlyexpenses.OthersAmount != 0)
+                {
+                    others.InnerHtml = $"{monthlyexpenses.Others}, {monthlyexpenses.OthersAmount.ToString()}";
+                }
+                else
+                {
+                    others.InnerHtml = "";
+                }
+            }
+
+            var transportation = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Transportation']");
+            if (transportation != null)
+            {
+                transportation.InnerHtml = monthlyexpenses.Transportation.ToString();
+            }
+
+            var total = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Total']");
+            if (total != null)
+            {
+                total.InnerHtml = monthlyexpenses.Total.ToString();
+            }
+
+            // UTILITIES
+            switch (utilities.LightSource)
+            {
+                case "Electric":
+                    var electriccheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Electriccheckbox']");
+                    if (electriccheckbox != null)
+                    {
+                        string existingStyle = electriccheckbox.GetAttributeValue("style", "");
+                        electriccheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    var electrictext = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Electrictext']");
+                    if (electrictext != null)
+                    {
+                        electrictext.InnerHtml = utilities.LightSourceAmount.ToString();
+                    }
+                    break;
+                case "Kerosene":
+                    var kerosenecheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Kerosenecheckbox']");
+                    if (kerosenecheckbox != null)
+                    {
+                        string existingStyle = kerosenecheckbox.GetAttributeValue("style", "");
+                        kerosenecheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    var kerosenetext = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Kerosenetext']");
+                    if (kerosenetext != null)
+                    {
+                        kerosenetext.InnerHtml = utilities.LightSourceAmount.ToString();
+                    }
+                    break;
+                case "Candle":
+                    var candlecheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Candlecheckbox']");
+                    if (candlecheckbox != null)
+                    {
+                        string existingStyle = candlecheckbox.GetAttributeValue("style", "");
+                        candlecheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    var candletext = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Candletext']");
+                    if (candletext != null)
+                    {
+                        candletext.InnerHtml = utilities.LightSourceAmount.ToString();
+                    }
+                    break;
+            }
+
+            switch (utilities.FuelSource)
+            {
+                case "Gas":
+                    var gascheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Gascheckbox']");
+                    if (gascheckbox != null)
+                    {
+                        string existingStyle = gascheckbox.GetAttributeValue("style", "");
+                        gascheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    var gastext = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Gastext']");
+                    if (gastext != null)
+                    {
+                        gastext.InnerHtml = utilities.FuelSourceAmount.ToString();
+                    }
+                    break;
+                case "Firewood":
+                    var firewoodcheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Firewoodcheckbox']");
+                    if (firewoodcheckbox != null)
+                    {
+                        string existingStyle = firewoodcheckbox.GetAttributeValue("style", "");
+                        firewoodcheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    var firewoodtext = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Firewoodtext']");
+                    if (firewoodtext != null)
+                    {
+                        firewoodtext.InnerHtml = utilities.FuelSourceAmount.ToString();
+                    }
+                    break;
+                case "Charcoal":
+                    var charcoalcheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Charcoalcheckbox']");
+                    if (charcoalcheckbox != null)
+                    {
+                        string existingStyle = charcoalcheckbox.GetAttributeValue("style", "");
+                        charcoalcheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    var charcoaltext = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Charcoaltext']");
+                    if (charcoaltext != null)
+                    {
+                        charcoaltext.InnerHtml = utilities.FuelSourceAmount.ToString();
+                    }
+                    break;
+            }
+
+            switch (utilities.WaterSource)
+            {
+                case "Artesian Well":
+                    var artesianwell = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='ArtesianWell']");
+                    if (artesianwell != null)
+                    {
+                        string existingStyle = artesianwell.GetAttributeValue("style", "");
+                        artesianwell.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case "Public":
+                    var publiccheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Publiccheckbox']");
+                    if (publiccheckbox != null)
+                    {
+                        string existingStyle = publiccheckbox.GetAttributeValue("style", "");
+                        publiccheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case "Private":
+                    var privatecheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Privatecheckbox']");
+                    if (privatecheckbox != null)
+                    {
+                        string existingStyle = privatecheckbox.GetAttributeValue("style", "");
+                        privatecheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case "Water District":
+                    var waterdistrictcheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Waterdistrictcheckbox']");
+                    if (waterdistrictcheckbox != null)
+                    {
+                        string existingStyle = waterdistrictcheckbox.GetAttributeValue("style", "");
+                        waterdistrictcheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+            }
+
+            return htmlDoc.DocumentNode.OuterHtml; // Return updated HTML
         }
     }
 }
