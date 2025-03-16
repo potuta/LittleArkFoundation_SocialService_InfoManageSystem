@@ -2,6 +2,7 @@
 using LittleArkFoundation.Areas.Admin.Models.FamilyComposition;
 using LittleArkFoundation.Areas.Admin.Models.Household;
 using LittleArkFoundation.Areas.Admin.Models.Informants;
+using LittleArkFoundation.Areas.Admin.Models.MonthlyExpenses;
 using LittleArkFoundation.Areas.Admin.Models.MSWDClassification;
 using LittleArkFoundation.Areas.Admin.Models.Patients;
 using LittleArkFoundation.Areas.Admin.Models.Referrals;
@@ -19,5 +20,7 @@ namespace LittleArkFoundation.Areas.Admin.Models.Form
         public FamilyCompositionModel? FamilyComposition { get; set; }
         public HouseholdModel? Household { get; set; }
         public MSWDClassificationModel? MSWDClassification { get; set; }
+        public MonthlyExpensesModel? MonthlyExpenses { get; set; }
+        public UtilitiesModel? Utilities { get; set; }
     }
 }

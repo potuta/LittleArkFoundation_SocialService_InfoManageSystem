@@ -100,6 +100,10 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 // MSWD CLASSIFICATION
                 formViewModel.MSWDClassification.PatientID = patientID;
 
+                // MONTHLY EXPENSES & UTILITIES
+                formViewModel.MonthlyExpenses.PatientID = patientID;
+                formViewModel.Utilities.PatientID = patientID;
+
                 await context.Assessments.AddAsync(formViewModel.Assessments);
                 await context.Referrals.AddAsync(formViewModel.Referrals);
                 await context.Informants.AddAsync(formViewModel.Informants);
@@ -107,6 +111,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 await context.FamilyComposition.AddRangeAsync(formViewModel.FamilyMembers);
                 await context.Households.AddAsync(formViewModel.Household);
                 await context.MSWDClassification.AddAsync(formViewModel.MSWDClassification);
+                await context.MonthlyExpenses.AddAsync(formViewModel.MonthlyExpenses);
+                await context.Utilities.AddAsync(formViewModel.Utilities);
                 await context.SaveChangesAsync();
 
                 TempData["SuccessMessage"] = "Successfully created new form";
@@ -154,6 +160,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                                 .ToListAsync();
             var household = await context.Households.FirstOrDefaultAsync(h => h.PatientID == id);
             var mswdClassification = await context.MSWDClassification.FirstOrDefaultAsync(m => m.PatientID == id);
+            var monthlyExpenses = await context.MonthlyExpenses.FirstOrDefaultAsync(m => m.PatientID == id);
+            var utilities = await context.Utilities.FirstOrDefaultAsync(u => u.PatientID == id);
 
             var viewModel = new FormViewModel()
             {
@@ -163,7 +171,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 Patient = patient,
                 FamilyMembers = familymembers,
                 Household = household,
-                MSWDClassification = mswdClassification
+                MSWDClassification = mswdClassification,
+                MonthlyExpenses = monthlyExpenses,
+                Utilities = utilities
             };
 
             return View(viewModel);
@@ -199,6 +209,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             context.Patients.Update(formViewModel.Patient);
             context.Households.Update(formViewModel.Household);
             context.MSWDClassification.Update(formViewModel.MSWDClassification);
+            context.MonthlyExpenses.Update(formViewModel.MonthlyExpenses);
+            context.Utilities.Update(formViewModel.Utilities);
 
             TempData["SuccessMessage"] = $"Successfully edited PatientID: {id}";
             await context.SaveChangesAsync();
