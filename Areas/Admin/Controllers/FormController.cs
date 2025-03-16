@@ -104,10 +104,14 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 formViewModel.MonthlyExpenses.PatientID = patientID;
                 formViewModel.Utilities.PatientID = patientID;
 
+                // Save Patient first to get the ID, avoids Forein Key constraint
+                await context.Patients.AddAsync(formViewModel.Patient);
+                await context.SaveChangesAsync();
+
+                // Update the rest of the form
                 await context.Assessments.AddAsync(formViewModel.Assessments);
                 await context.Referrals.AddAsync(formViewModel.Referrals);
                 await context.Informants.AddAsync(formViewModel.Informants);
-                await context.Patients.AddAsync(formViewModel.Patient);
                 await context.FamilyComposition.AddRangeAsync(formViewModel.FamilyMembers);
                 await context.Households.AddAsync(formViewModel.Household);
                 await context.MSWDClassification.AddAsync(formViewModel.MSWDClassification);
@@ -203,17 +207,21 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 await context.FamilyComposition.AddRangeAsync(formViewModel.FamilyMembers);
             }
 
+            // Update Patient first, avoids Forein Key constraint
+            context.Patients.Update(formViewModel.Patient);
+            await context.SaveChangesAsync();
+
+            // Update the rest of the form
             context.Assessments.Update(formViewModel.Assessments);
             context.Referrals.Update(formViewModel.Referrals);
             context.Informants.Update(formViewModel.Informants);
-            context.Patients.Update(formViewModel.Patient);
             context.Households.Update(formViewModel.Household);
             context.MSWDClassification.Update(formViewModel.MSWDClassification);
             context.MonthlyExpenses.Update(formViewModel.MonthlyExpenses);
             context.Utilities.Update(formViewModel.Utilities);
+            await context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = $"Successfully edited PatientID: {id}";
-            await context.SaveChangesAsync();
             return RedirectToAction("Index");
         }
 
