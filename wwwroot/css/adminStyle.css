@@ -27,7 +27,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 0.625rem; /* 10px */
-    background-color: #39B8EA;
+    background-color: #44ac5c;
     height: var(--navbar-top-height);
     width: 100%;
     box-sizing: border-box;
@@ -160,14 +160,14 @@ body.sidebar-collapsed .navbar-left {
     .btn-main:hover,
     .btn-left:hover,
     .btn-navbar:hover {
-        background-color: #00ccff;
+        background-color: #44ac5c;
         color: white;
         text-decoration: none;
     }
 
 .btn-left-sub.active,
 .btn-left.active {
-    background-color: #00ccff;
+    background-color: #44ac5c;
     color: white;
     text-decoration: none;
 }

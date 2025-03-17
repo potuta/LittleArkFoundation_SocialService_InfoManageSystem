@@ -24,6 +24,7 @@
 <div class="form-box">
     <!-- Login Form -->
     <div id="loginForm">
+        <img src="~/resources/NCH-Logo.png" style="width: 100px; display: block; margin: 0 auto; margin-bottom: 20px;">
         <h2>Login</h2>
         @if (TempData["LoginError"] != null)
         {
@@ -48,7 +49,7 @@
                 <input type="password" class="form-control" id="adminPassword" name="password" placeholder="Enter your password" required>
                 <a onclick="showForgotPassword()">Forgot password?</a>
             </div>
-            <button type="submit" class="btn btn-primary">Login</button>
+            <button type="submit" class="btn btn-success">Login</button>
         </form>
     </div>
 
@@ -73,7 +74,7 @@
                 <input type="hidden" id="hiddenUserID" name="userID" />
                 <input type="text" class="form-control" id="code" name="code" placeholder="Enter code" required>
             </div>
-            <button type="button" class="btn btn-primary" onclick="verifyCode()" id="verifyCodeButton">Verify</button>
+            <button type="button" class="btn btn-success" onclick="verifyCode()" id="verifyCodeButton">Verify</button>
             <p id="verifyCodeMessage"></p> <!-- Success/Error message -->
 
             <a onclick="showLogin()">Back to Login</a>
@@ -92,7 +93,7 @@
             </div>
             <div class="modal-body" id="modalMessage">This is an alert message.</div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal">OK</button>
             </div>
         </div>
     </div>
