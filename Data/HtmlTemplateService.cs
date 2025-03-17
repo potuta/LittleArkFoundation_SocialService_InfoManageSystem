@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using System.Configuration;
 
@@ -30,7 +31,7 @@ namespace LittleArkFoundation.Data
                                 .ToListAsync();
             var household = await context.Households.FirstOrDefaultAsync(h => h.PatientID == id);
             var mswdclassification = await context.MSWDClassification.FirstOrDefaultAsync(m => m.PatientID == id);
-
+            
             if (patient == null)
             {
                 return string.Empty;
@@ -626,6 +627,8 @@ namespace LittleArkFoundation.Data
             var patient = await context.Patients.FindAsync(id);
             var monthlyexpenses = await context.MonthlyExpenses.FirstOrDefaultAsync(m => m.PatientID == id);
             var utilities = await context.Utilities.FirstOrDefaultAsync(u => u.PatientID == id);
+            var medicalhistory = await context.MedicalHistory.FirstOrDefaultAsync(m => m.PatientID == id);
+            var childhealth = await context.ChildHealth.FirstOrDefaultAsync(c => c.PatientID == id);
 
             if (patient == null)
             {
@@ -823,6 +826,120 @@ namespace LittleArkFoundation.Data
                     {
                         string existingStyle = waterdistrictcheckbox.GetAttributeValue("style", "");
                         waterdistrictcheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+            }
+
+            // MEDICAL HISTORY
+            var admittingdiagnosis = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Admittingdiagnosis']");
+            if (admittingdiagnosis != null)
+            {
+                admittingdiagnosis.InnerHtml = medicalhistory.AdmittingDiagnosis;
+            }
+
+            var finaldiagnosis = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Finaldiagnosisupondischarge']");
+            if (finaldiagnosis != null)
+            {
+                finaldiagnosis.InnerHtml = medicalhistory.FinalDiagnosis;
+            }
+
+            var durationofsymptoms = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Durationofthesymptoms']");
+            if (durationofsymptoms != null)
+            {
+                durationofsymptoms.InnerHtml = medicalhistory.DurationSymptomsPriorAdmission;
+            }
+
+            var previoustreatment = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Previoustreatment']");
+            if (previoustreatment != null)
+            {
+                previoustreatment.InnerHtml = medicalhistory.PreviousTreatmentDuration;
+            }
+
+            var treatmentplan = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Treatmentplan']");
+            if (treatmentplan != null)
+            {
+                treatmentplan.InnerHtml = medicalhistory.TreatmentPlan;
+            }
+
+            var healthaccessibilityproblem = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Healthaccessibilityproblem']");
+            if (healthaccessibilityproblem != null)
+            {
+                healthaccessibilityproblem.InnerHtml = medicalhistory.HealthAccessibilityProblems;
+            }
+
+            // CHILD HEALTH
+            var num1 = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Num1']");
+            if (num1 != null)
+            {
+                num1.InnerHtml = childhealth.OverallHealth;
+            }
+
+            switch(childhealth.HasHealthIssues)
+            {
+                case true:
+                    var yescheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Yesnum2checkbox']");
+                    if (yescheckbox != null)
+                    {
+                        string existingStyle = yescheckbox.GetAttributeValue("style", "");
+                        yescheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case false:
+                    var nocheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Nonum2checkbox']");
+                    if (nocheckbox != null)
+                    {
+                        string existingStyle = nocheckbox.GetAttributeValue("style", "");
+                        nocheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+            }
+            var num2 = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Num2']");
+            if (num2 != null)
+            {
+                num2.InnerHtml = childhealth.DescribeHealthIssues;
+            }
+
+            switch (childhealth.HasRecurrentConditions)
+            {
+                case true:
+                    var yescheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Yesnum3checkbox']");
+                    if (yescheckbox != null)
+                    {
+                        string existingStyle = yescheckbox.GetAttributeValue("style", "");
+                        yescheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case false:
+                    var nocheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Nonum3checkbox']");
+                    if (nocheckbox != null)
+                    {
+                        string existingStyle = nocheckbox.GetAttributeValue("style", "");
+                        nocheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+            }
+            var num3 = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Num3']");
+            if (num3 != null)
+            {
+                num3.InnerHtml = childhealth.DescribeRecurrentConditions;
+            }
+
+            switch (childhealth.HasEarTubes)
+            {
+                case true:
+                    var yescheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Yesnum4checkbox']");
+                    if (yescheckbox != null)
+                    {
+                        string existingStyle = yescheckbox.GetAttributeValue("style", "");
+                        yescheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case false:
+                    var nocheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Nonum4checkbox']");
+                    if (nocheckbox != null)
+                    {
+                        string existingStyle = nocheckbox.GetAttributeValue("style", "");
+                        nocheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
                     }
                     break;
             }

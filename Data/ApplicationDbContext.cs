@@ -10,6 +10,8 @@ using LittleArkFoundation.Areas.Admin.Models.Household;
 using LittleArkFoundation.Areas.Admin.Models.MSWDClassification;
 using LittleArkFoundation.Areas.Admin.Models.SystemLogs;
 using LittleArkFoundation.Areas.Admin.Models.MonthlyExpenses;
+using LittleArkFoundation.Areas.Admin.Models.MedicalHistory;
+using LittleArkFoundation.Areas.Admin.Models.ChildHealth;
 
 namespace LittleArkFoundation.Data
 {
@@ -46,6 +48,8 @@ namespace LittleArkFoundation.Data
         public DbSet<MSWDClassificationModel> MSWDClassification { get; set; }
         public DbSet<MonthlyExpensesModel> MonthlyExpenses { get; set; }
         public DbSet<UtilitiesModel> Utilities { get; set; }
+        public DbSet<MedicalHistoryModel> MedicalHistory { get; set; }
+        public DbSet<ChildHealthModel> ChildHealth { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -173,6 +177,24 @@ namespace LittleArkFoundation.Data
 
             modelBuilder.Entity<UtilitiesModel>()
                 .Property(u => u.UtilityID)
+                .ValueGeneratedOnAdd();
+
+            // MedicalHistory
+            modelBuilder.Entity<MedicalHistoryModel>()
+                .ToTable("MedicalHistory")
+                .HasKey(m => m.HistoryID);
+
+            modelBuilder.Entity<MedicalHistoryModel>()
+                .Property(m => m.HistoryID)
+                .ValueGeneratedOnAdd();
+
+            // ChildHealth
+            modelBuilder.Entity<ChildHealthModel>()
+                .ToTable("ChildHealth")
+                .HasKey(c => c.ChildHealthID);
+
+            modelBuilder.Entity<ChildHealthModel>()
+                .Property(c => c.ChildHealthID)
                 .ValueGeneratedOnAdd();
         }
     }

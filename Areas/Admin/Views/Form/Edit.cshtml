@@ -9,54 +9,69 @@
 
 <style>
     .form-container {
-    width: 100%;
-    max-width: 900px;
-    margin: auto;
-    border: 1px solid #000;
-    padding: 20px;
+        width: 100%;
+        max-width: 900px;
+        margin: auto;
+        border: 1px solid #000;
+        padding: 20px;
     }
 
     table {
-    width: 100%;
-    border-collapse: collapse;
+        width: 100%;
+        border-collapse: collapse;
     }
 
     th, td {
-    border: 1px solid black;
-    padding: 5px;
-    text-align: left;
+        border: 1px solid black;
+        padding: 5px;
+        text-align: left;
     }
 
     .section-title {
-    background-color: #f2f2f2;
-    font-weight: bold;
-    padding: 5px;
-    text-align: center;
+        background-color: #f2f2f2;
+        font-weight: bold;
+        padding: 5px;
+        text-align: center;
     }
 
     input, select {
-    width: 98%;
-    font-size: large;
+        width: 98%;
+        font-size: large;
+        padding: 5px;
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     }
 
     .required {
-    color: red;
-    font-weight: bold;
+        color: red;
+        font-weight: bold;
     }
 
     .checkbox-group, .radio-group {
-    display: flex;
-    align-items: center;
-    gap: 10px; /* Adjust spacing between checkbox/radio and text */
-    margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+        gap: 10px; /* Adjust spacing between checkbox/radio and text */
+        margin-bottom: 5px;
     }
 
     .checkbox-group input[type="checkbox"],
     .radio-group input[type="radio"] {
-    transform: scale(1.2); /* Slightly increase size for better visibility */
-    padding: 0;
-    margin: 0;
-    width: 2rem;
+        transform: scale(1.2); /* Slightly increase size for better visibility */
+        padding: 0;
+        margin: 0;
+        width: 2rem;
+    }
+
+    .family-input input:hover, .family-input input:focus,
+    .family-input select:hover, .family-input select:focus {
+        transform: scale(1.2); /* Slightly enlarges the input field */
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.2); /* Adds a subtle glow */
+        z-index: 10; /* Ensures it appears above other elements */
+        position: relative;
+        width: 10rem;
+    }
+
+    textarea {
+        width: 100%;
     }
 
 </style>
@@ -80,6 +95,10 @@
     <input type="hidden" asp-for="MonthlyExpenses.PatientID" />
     <input type="hidden" asp-for="Utilities.UtilityID" />
     <input type="hidden" asp-for="Utilities.PatientID" />
+    <input type="hidden" asp-for="MedicalHistory.HistoryID" />
+    <input type="hidden" asp-for="MedicalHistory.PatientID" />
+    <input type="hidden" asp-for="ChildHealth.ChildHealthID" />
+    <input type="hidden" asp-for="ChildHealth.PatientID" />
 
     <div class="form-container">
         <h2 style="text-align: center;">Republic of the Philippines - Department of Health</h2>
@@ -376,7 +395,7 @@
                 <th>Monthly Income <span class="required">*</span></th>
                 <th>Action</th>
             </tr>
-            <tbody id="family-body">
+            <tbody id="family-body" class="family-input">
                 @for (int i = 0; i < Model.FamilyMembers.Count; i++)
                 {
                     <tr>
@@ -579,9 +598,9 @@
         <div class="section-title">Utilities</div>
         <table>
             <tr>
-                <td>Light Source (Check and state amount)</td>
-                <td>Fuel Source (Check one)</td>
-                <td>Water Source (Check one)</td>
+                <th>Light Source (Check and state amount)</th>
+                <th>Fuel Source (Check one)</th>
+                <th>Water Source (Check one)</th>
             </tr>
             <tr>
                 <td>
@@ -710,6 +729,126 @@
 
         </table>
 
+        <div class="section-title">IV. MEDICAL HISTORY</div>
+        <table>
+            <tr>
+                <th>Admitting Diagnosis</th>
+                <th>Final Diagnosis Upon Discharge</th>
+            </tr>
+            <tr>
+                <td>
+                    <div>
+                        <textarea asp-for="MedicalHistory.AdmittingDiagnosis" rows="6" cols="60" required></textarea>
+                    </div>
+
+                </td>
+                <td>
+                    <div>
+                        <textarea asp-for="MedicalHistory.FinalDiagnosis" rows="6" cols="60" required></textarea>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <th>Duration of the Sysmptoms/Treatment prior to Admission</th>
+                <th>Previous Treatment and Duration</th>
+            </tr>
+            <tr>
+                <td>
+                    <div>
+                        <textarea asp-for="MedicalHistory.DurationSymptomsPriorAdmission" rows="6" cols="60" required></textarea>
+                    </div>
+
+                </td>
+                <td>
+                    <div>
+                        <textarea asp-for="MedicalHistory.PreviousTreatmentDuration" rows="6" cols="60" required></textarea>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <th>Treatment Plan</th>
+                <th>Health Accessibility Problem</th>
+            </tr>
+            <tr>
+                <td>
+                    <div>
+                        <textarea asp-for="MedicalHistory.TreatmentPlan" rows="6" cols="60" required></textarea>
+                    </div>
+
+                </td>
+                <td>
+                    <div>
+                        <textarea asp-for="MedicalHistory.HealthAccessibilityProblems" rows="6" cols="60" required></textarea>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <th colspan="2">1. How would you describe your child's overall health?</th>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div>
+                        <textarea asp-for="ChildHealth.OverallHealth" rows="6" cols="120" required></textarea>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <th colspan="2">
+                    2. Does your child have any other health issues?
+
+                    <div class="radio-group">
+                        <input type="radio" asp-for="ChildHealth.HasHealthIssues" value="True"> Yes
+                        <input type="radio" asp-for="ChildHealth.HasHealthIssues" value="False"> No
+                    </div>
+
+                    If yes, please explain
+                </th>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div>
+                        <textarea asp-for="ChildHealth.DescribeHealthIssues" rows="6" cols="120" required></textarea>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <th colspan="2">
+                    3. Does your child have any recurrent medical conditions such as ear infections, asthma or allergies?
+
+                    <div class="radio-group">
+                        <input type="radio" asp-for="ChildHealth.HasRecurrentConditions" value="True"> Yes
+                        <input type="radio" asp-for="ChildHealth.HasRecurrentConditions" value="False"> No
+                    </div>
+
+                    If yes, please explain
+                </th>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div>
+                        <textarea asp-for="ChildHealth.DescribeRecurrentConditions" rows="6" cols="120" required></textarea>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <th colspan="3">
+                    4. Does your child have tubes in his/her ears?
+
+                    <div class="radio-group">
+                        <input type="radio" asp-for="ChildHealth.HasEarTubes" value="True"> Yes
+                        <input type="radio" asp-for="ChildHealth.HasEarTubes" value="False"> No
+                    </div>
+                </th>
+            </tr>
+
+        </table>
+
         @* --- Add new here --- *@
 
         <div class="mt-2" style="text-align: center;">
@@ -722,158 +861,160 @@
 
 </form>
 
-<script>
-    function addRow() {
-        let table = document.getElementById("family-table");
+@section Scripts {
 
-        if (table.rows.length - 1 == 12){
-            alert("Only 12 rows allowed");
-            return;
+    <script>
+        function addRow() {
+            let table = document.getElementById("family-table");
+
+            if (table.rows.length - 1 == 12){
+                alert("Only 12 rows allowed");
+                return;
+            }
+
+            let rowCount = table.rows.length - 1; // Exclude header row
+            //let rowCount = table.rows.length; // Includes header, so first row starts at 1
+            let newRow = table.insertRow(-1); // Insert at the end
+
+            let cols = `
+                <td><input type="text" name="FamilyMembers[${rowCount}].Name" required></td>
+                <td><input type="number" name="FamilyMembers[${rowCount}].Age" required></td>
+                <td><input type="date" name="FamilyMembers[${rowCount}].DateOfBirth" required></td>
+                <td><input type="text" name="FamilyMembers[${rowCount}].CivilStatus" required></td>
+                <td><input type="text" name="FamilyMembers[${rowCount}].RelationshipToPatient" required></td>
+                <td>
+                    <select name="FamilyMembers[${rowCount}].LivingWithChild" required>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </td>
+                <td><input type="text" name="FamilyMembers[${rowCount}].EducationalAttainment" required></td>
+                <td><input type="text" name="FamilyMembers[${rowCount}].Occupation" required></td>
+                <td><input type="number" name="FamilyMembers[${rowCount}].MonthlyIncome" required></td>
+                <td><button type="button" onclick="removeRow(this)">❌</button></td>
+            `;
+            newRow.innerHTML = cols;
         }
 
-        let rowCount = table.rows.length - 1; // Exclude header row
-        //let rowCount = table.rows.length; // Includes header, so first row starts at 1
-        let newRow = table.insertRow(-1); // Insert at the end
+        function removeRow(button) {
+            let row = button.parentNode.parentNode;
+            let table = document.getElementById("family-table");
 
-        let cols = `
-            <td><input type="text" name="FamilyMembers[${rowCount}].Name" required></td>
-            <td><input type="number" name="FamilyMembers[${rowCount}].Age" required></td>
-            <td><input type="date" name="FamilyMembers[${rowCount}].DateOfBirth" required></td>
-            <td><input type="text" name="FamilyMembers[${rowCount}].CivilStatus" required></td>
-            <td><input type="text" name="FamilyMembers[${rowCount}].RelationshipToPatient" required></td>
-            <td>
-                <select name="FamilyMembers[${rowCount}].LivingWithChild" required>
-                    <option value="true">Yes</option>
-                    <option value="false">No</option>
-                </select>
-            </td>
-            <td><input type="text" name="FamilyMembers[${rowCount}].EducationalAttainment" required></td>
-            <td><input type="text" name="FamilyMembers[${rowCount}].Occupation" required></td>
-            <td><input type="number" name="FamilyMembers[${rowCount}].MonthlyIncome" required></td>
-            <td><button type="button" onclick="removeRow(this)">❌</button></td>
-        `;
-        newRow.innerHTML = cols;
-    }
-
-    function removeRow(button) {
-        let row = button.parentNode.parentNode;
-        let table = document.getElementById("family-table");
-
-        if (table.rows.length > 2) { // Keep at least one row
-            row.remove();
-            updateNames();
-        } else {
-            alert("At least one row is required!");
+            if (table.rows.length > 2) { // Keep at least one row
+                row.remove();
+                updateNames();
+            } else {
+                alert("At least one row is required!");
+            }
         }
-    }
 
-    function updateNames() {
-        let table = document.getElementById("family-table");
-        for (let i = 1; i < table.rows.length; i++) { // Skip header row
-            let row = table.rows[i];
-            row.cells[0].querySelector("input").name = `FamilyMembers[${i - 1}].Name`;
-            row.cells[1].querySelector("input").name = `FamilyMembers[${i - 1}].Age`;
-            row.cells[2].querySelector("input").name = `FamilyMembers[${i - 1}].DateOfBirth`;
-            row.cells[3].querySelector("input").name = `FamilyMembers[${i - 1}].CivilStatus`;
-            row.cells[4].querySelector("input").name = `FamilyMembers[${i - 1}].RelationshipToPatient`;
-            row.cells[5].querySelector("select").name = `FamilyMembers[${i - 1}].LivingWithChild`;
-            row.cells[6].querySelector("input").name = `FamilyMembers[${i - 1}].EducationalAttainment`;
-            row.cells[7].querySelector("input").name = `FamilyMembers[${i - 1}].Occupation`;
-            row.cells[8].querySelector("input").name = `FamilyMembers[${i - 1}].MonthlyIncome`;
+        function updateNames() {
+            let table = document.getElementById("family-table");
+            for (let i = 1; i < table.rows.length; i++) { // Skip header row
+                let row = table.rows[i];
+                row.cells[0].querySelector("input").name = `FamilyMembers[${i - 1}].Name`;
+                row.cells[1].querySelector("input").name = `FamilyMembers[${i - 1}].Age`;
+                row.cells[2].querySelector("input").name = `FamilyMembers[${i - 1}].DateOfBirth`;
+                row.cells[3].querySelector("input").name = `FamilyMembers[${i - 1}].CivilStatus`;
+                row.cells[4].querySelector("input").name = `FamilyMembers[${i - 1}].RelationshipToPatient`;
+                row.cells[5].querySelector("select").name = `FamilyMembers[${i - 1}].LivingWithChild`;
+                row.cells[6].querySelector("input").name = `FamilyMembers[${i - 1}].EducationalAttainment`;
+                row.cells[7].querySelector("input").name = `FamilyMembers[${i - 1}].Occupation`;
+                row.cells[8].querySelector("input").name = `FamilyMembers[${i - 1}].MonthlyIncome`;
+            }
         }
-    }
 
-    document.addEventListener("input", function() {
-        let total = 0;
-        document.querySelectorAll(".expense").forEach(input => {
-            total += Number(input.value) || 0;
+        document.addEventListener("input", function() {
+            let total = 0;
+            document.querySelectorAll(".expense").forEach(input => {
+                total += Number(input.value) || 0;
+            });
+            document.getElementById("total-expenses").value = total;
         });
-        document.getElementById("total-expenses").value = total;
-    });
 
-    function toggleRequired(checkbox) {
-        let inputField = checkbox.nextElementSibling; // The input field next to the checkbox
+        function toggleRequired(checkbox) {
+            let inputField = checkbox.nextElementSibling; // The input field next to the checkbox
 
-        if (checkbox.checked) {
-            inputField.required = true;
-            inputField.disabled = false;
-        } else {
-            inputField.required = false;
-            inputField.disabled = true;
-            inputField.value = ""; // Clear value when unchecked
+            if (checkbox.checked) {
+                inputField.required = true;
+                inputField.disabled = false;
+            } else {
+                inputField.required = false;
+                inputField.disabled = true;
+                inputField.value = ""; // Clear value when unchecked
+            }
         }
-    }
 
-    document.addEventListener("DOMContentLoaded", function () {
-        document.querySelectorAll('input[type="radio"][data-target]').forEach(radio => {
-            let inputField = document.getElementById(radio.getAttribute("data-target"));
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll('input[type="radio"][data-target]').forEach(radio => {
+                let inputField = document.getElementById(radio.getAttribute("data-target"));
 
-            if (radio.checked && inputField) {
+                if (radio.checked && inputField) {
+                    inputField.disabled = false;
+                    inputField.required = true;
+				    // let numberValue = Number(radio.value);
+				    // if (radio.value !== "Others" && !isNaN(numberValue)) {
+				    // 	inputField.value = radio.value; // Set stored value for "Others"
+				    // }
+                }
+            });
+        });
+
+        function updateOthersValue(input) {
+            let radio = document.querySelector(`input[data-target="${input.id}"]`);
+
+            if (radio.checked && input.value.trim() !== "") {
+                radio.value = input.value.trim(); // Update radio value dynamically
+            }
+        }
+
+        function toggleRequiredRadio(radio) {
+            let targetId = radio.getAttribute("data-target");
+            let inputField = document.getElementById(targetId);
+
+            // Disable all "Others" input fields within the same radio group
+            document.getElementsByName(radio.name).forEach(r => {
+                let field = document.getElementById(r.getAttribute("data-target"));
+                if (field) {
+                    field.disabled = true;
+                    field.required = false;
+                    field.value = ""; // Clear value when another radio is selected
+                }
+            });
+
+            // Enable the "Others" input field only when selected
+            if (inputField && radio.value === "Others") {
                 inputField.disabled = false;
                 inputField.required = true;
-				// let numberValue = Number(radio.value);
-				// if (radio.value !== "Others" && !isNaN(numberValue)) {
-				// 	inputField.value = radio.value; // Set stored value for "Others"
-				// }
             }
-        });
-    });
-
-    function updateOthersValue(input) {
-        let radio = document.querySelector(`input[data-target="${input.id}"]`);
-
-        if (radio.checked && input.value.trim() !== "") {
-            radio.value = input.value.trim(); // Update radio value dynamically
-        }
-    }
-
-    function toggleRequiredRadio(radio) {
-        let targetId = radio.getAttribute("data-target");
-        let inputField = document.getElementById(targetId);
-
-        // Disable all "Others" input fields within the same radio group
-        document.getElementsByName(radio.name).forEach(r => {
-            let field = document.getElementById(r.getAttribute("data-target"));
-            if (field) {
-                field.disabled = true;
-                field.required = false;
-                field.value = ""; // Clear value when another radio is selected
+            else if (inputField && radio.value !== "Others") {
+                inputField.disabled = false;
+                inputField.required = true;
             }
-        });
-
-        // Enable the "Others" input field only when selected
-        if (inputField && radio.value === "Others") {
-            inputField.disabled = false;
-            inputField.required = true;
         }
-        else if (inputField && radio.value !== "Others") {
-            inputField.disabled = false;
-            inputField.required = true;
+
+        function updateLightSourceValue(input) {
+            let radio = document.querySelector(`input[data-target="${input.id}"]`);
+            let hiddenInput = document.getElementById("light-source-amount");
+
+            if (radio && radio.checked) {
+                // Ensure input value is a valid number before updating the hidden field
+                hiddenInput.value = input.value.trim() !== "" && !isNaN(input.value) ? input.value : "";
+            }
         }
-    }
 
-    function updateLightSourceValue(input) {
-        let radio = document.querySelector(`input[data-target="${input.id}"]`);
-        let hiddenInput = document.getElementById("light-source-amount");
+        function updateFuelSourceValue(input) {
+            let radio = document.querySelector(`input[data-target="${input.id}"]`);
+            let hiddenInput = document.getElementById("fuel-source-amount");
 
-        if (radio && radio.checked) {
-            // Ensure input value is a valid number before updating the hidden field
-            hiddenInput.value = input.value.trim() !== "" && !isNaN(input.value) ? input.value : "";
+            if (radio && radio.checked) {
+                // Ensure input value is a valid number before updating the hidden field
+                hiddenInput.value = input.value.trim() !== "" && !isNaN(input.value) ? input.value : "";
+            }
         }
-    }
 
-    function updateFuelSourceValue(input) {
-        let radio = document.querySelector(`input[data-target="${input.id}"]`);
-        let hiddenInput = document.getElementById("fuel-source-amount");
-
-        if (radio && radio.checked) {
-            // Ensure input value is a valid number before updating the hidden field
-            hiddenInput.value = input.value.trim() !== "" && !isNaN(input.value) ? input.value : "";
-        }
-    }
-
-</script>
-
+    </script>
+}
 
 
 
