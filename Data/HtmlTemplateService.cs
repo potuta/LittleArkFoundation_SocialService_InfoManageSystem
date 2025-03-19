@@ -153,7 +153,7 @@ namespace LittleArkFoundation.Data
                 patientdateofbirth.InnerHtml = patient.DateOfBirth.ToString();
             }
 
-            var patientage = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Patientage']");
+            var patientage = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Age']");
             if (patientage != null)
             {
                 patientage.InnerHtml = patient.Age.ToString();
@@ -219,13 +219,13 @@ namespace LittleArkFoundation.Data
                     break;
             }
 
-            var patientreligion = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Patientreligion']");
+            var patientreligion = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Religion']");
             if (patientreligion != null)
             {
                 patientreligion.InnerHtml = patient.Religion;
             }
 
-            var patientnationality = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Patientnationality']");
+            var patientnationality = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Nationality']");
             if (patientnationality != null)
             {
                 patientnationality.InnerHtml = patient.Nationality;
@@ -331,7 +331,7 @@ namespace LittleArkFoundation.Data
                     break;
             }
 
-            var patientoccupation = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Patientoccupation']");
+            var patientoccupation = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Occupation']");
             if (patientoccupation != null)
             {
                 patientoccupation.InnerHtml = patient.Occupation;
@@ -606,7 +606,7 @@ namespace LittleArkFoundation.Data
                         string existingStyle = others.GetAttributeValue("style", "");
                         others.SetAttributeValue("style", existingStyle + "; background-color: black;");
                     }
-                    var otherstext = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='mswdothers']");
+                    var otherstext = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Others']");
                     if (otherstext != null)
                     {
                         otherstext.InnerHtml = mswdclassification.MembershipSector;
