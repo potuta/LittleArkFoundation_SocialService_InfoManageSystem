@@ -8,13 +8,15 @@
 
 <!-- Page Containers -->
 <div id="page1" class="form-page">
-    @* @Html.Raw(TempData["FormHtml1"]) *@
 	@Html.Raw(ViewBag.FormHtml1)
 </div>
 
 <div id="page2" class="form-page" style="display: none;">
-    @* @Html.Raw(TempData["FormHtml2"]) *@
 	@Html.Raw(ViewBag.FormHtml2)
+</div>
+
+<div id="page3" class="form-page" style="display: none;">
+    @Html.Raw(ViewBag.FormHtml3)
 </div>
 
 <!-- Navigation Buttons -->
@@ -22,6 +24,7 @@
     <button type="button" id="prevPage" class="btn btn-outline-primary" onclick="changePage(-1)"><</button>
     <button type="button" id="navPage1" class="btn btn-outline-primary active" onclick="jumpToPage(1)">1</button>
     <button type="button" id="navPage2" class="btn btn-outline-primary" onclick="jumpToPage(2)">2</button>
+    <button type="button" id="navPage3" class="btn btn-outline-primary" onclick="jumpToPage(3)">3</button>
     <button type="button" id="nextPage" class="btn btn-outline-primary" onclick="changePage(1)">></button>
 </div>
 
@@ -41,7 +44,7 @@
 @section Scripts {
     <script>
         let currentPage = 1;
-        const totalPages = 2; // Adjust based on total form pages
+        const totalPages = 3; // Adjust based on total form pages
 
         function changePage(step) {
             document.getElementById(`page${currentPage}`).style.display = "none";
