@@ -8,11 +8,13 @@
 
 <!-- Page Containers -->
 <div id="page1" class="form-page">
-    @Html.Raw(TempData["FormHtml1"])
+    @* @Html.Raw(TempData["FormHtml1"]) *@
+	@Html.Raw(ViewBag.FormHtml1)
 </div>
 
 <div id="page2" class="form-page" style="display: none;">
-    @Html.Raw(TempData["FormHtml2"])
+    @* @Html.Raw(TempData["FormHtml2"]) *@
+	@Html.Raw(ViewBag.FormHtml2)
 </div>
 
 <!-- Navigation Buttons -->
