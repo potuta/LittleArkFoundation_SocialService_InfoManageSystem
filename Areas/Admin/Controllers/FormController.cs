@@ -150,8 +150,11 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             htmlContent2 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page2(htmlContent2, id);
 
             // Pass the modified HTML to the view
-            TempData["FormHtml1"] = htmlContent;
-            TempData["FormHtml2"] = htmlContent2;
+            //TempData["FormHtml1"] = htmlContent;
+            //TempData["FormHtml2"] = htmlContent2;
+            ViewBag.FormHtml1 = htmlContent;
+            ViewBag.FormHtml2 = htmlContent2;
+
             ViewBag.Id = id;
 
             return View();
