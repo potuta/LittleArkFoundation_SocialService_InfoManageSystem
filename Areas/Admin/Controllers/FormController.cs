@@ -137,6 +137,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             // Load the HTML template
             string templatePath = Path.Combine(_environment.WebRootPath, "templates/page1_form_template.html");
             string templatePath2 = Path.Combine(_environment.WebRootPath, "templates/page2_form_template.html");
+            string templatePath3 = Path.Combine(_environment.WebRootPath, "templates/page3_form_template.html");
 
             if (!System.IO.File.Exists(templatePath))
             {
@@ -149,11 +150,13 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             string htmlContent2 = await System.IO.File.ReadAllTextAsync(templatePath2);
             htmlContent2 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page2(htmlContent2, id);
 
+            string htmlContent3 = await System.IO.File.ReadAllTextAsync(templatePath3);
+            htmlContent3 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page3(htmlContent3, id);
+
             // Pass the modified HTML to the view
-            //TempData["FormHtml1"] = htmlContent;
-            //TempData["FormHtml2"] = htmlContent2;
             ViewBag.FormHtml1 = htmlContent;
             ViewBag.FormHtml2 = htmlContent2;
+            ViewBag.FormHtml3 = htmlContent3;
 
             ViewBag.Id = id;
 
@@ -251,6 +254,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 //// Load the HTML template
                 string templatePath = Path.Combine(_environment.WebRootPath, "templates/page1_form_template.html");
                 string templatePath2 = Path.Combine(_environment.WebRootPath, "templates/page2_form_template.html");
+                string templatePath3 = Path.Combine(_environment.WebRootPath, "templates/page3_form_template.html");
 
                 if (!System.IO.File.Exists(templatePath))
                 {
@@ -262,19 +266,29 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     return StatusCode(500, "Form template not found.");
                 }
 
+                if (!System.IO.File.Exists(templatePath3))
+                {
+                    return StatusCode(500, "Form template not found.");
+                }
+
                 string htmlContent = await System.IO.File.ReadAllTextAsync(templatePath);
                 htmlContent = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page1(htmlContent, id);
 
                 string htmlContent2 = await System.IO.File.ReadAllTextAsync(templatePath2);
                 htmlContent2 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page2(htmlContent2, id);
 
+                string htmlContent3 = await System.IO.File.ReadAllTextAsync(templatePath3);
+                htmlContent3 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page3(htmlContent3, id);
+
                 var pdf1 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent);
                 var pdf2 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent2);
+                var pdf3 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent3);
 
                 List<byte[]> pdfList = new List<byte[]>
                 {
                     pdf1,
-                    pdf2
+                    pdf2,
+                    pdf3
                 };
 
                 //byte[] pdfBytes = _pdfConverter.Convert(pdfDocument);
