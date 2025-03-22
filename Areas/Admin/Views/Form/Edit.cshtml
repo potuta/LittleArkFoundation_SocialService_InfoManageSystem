@@ -61,6 +61,12 @@
         width: 2rem;
     }
 
+    .hospitalizaiton-input input:hover, .hospitalizaiton-input input:focus,
+    .hospitalizaiton-input select:hover, .hospitalizaiton-input select:focus,
+    .medication-input input:hover, .medication-input input:focus,
+    .medication-input select:hover, .medication-input select:focus,
+    .diagnosis-input input:hover, .diagnosis-input input:focus,
+    .diagnosis-input select:hover, .diagnosis-input select:focus,
     .family-input input:hover, .family-input input:focus,
     .family-input select:hover, .family-input select:focus {
         transform: scale(1.2); /* Slightly enlarges the input field */
@@ -99,6 +105,12 @@
     <input type="hidden" asp-for="MedicalHistory.PatientID" />
     <input type="hidden" asp-for="ChildHealth.ChildHealthID" />
     <input type="hidden" asp-for="ChildHealth.PatientID" />
+    <input type="hidden" asp-for="MedicalScreenings.ScreeningsID" />
+    <input type="hidden" asp-for="MedicalScreenings.PatientID" />
+    <input type="hidden" asp-for="PrimaryCareDoctor.DoctorID" />
+    <input type="hidden" asp-for="PrimaryCareDoctor.PatientID" />
+    <input type="hidden" asp-for="PresentingProblems.ProblemID" />
+    <input type="hidden" asp-for="PresentingProblems.PatientID" />
 
     <div class="form-container">
         <h2 style="text-align: center;">Republic of the Philippines - Department of Health</h2>
@@ -413,13 +425,13 @@
                         <td><input type="text" asp-for="FamilyMembers[i].EducationalAttainment" required></td>
                         <td><input type="text" asp-for="FamilyMembers[i].Occupation" required></td>
                         <td><input type="number" asp-for="FamilyMembers[i].MonthlyIncome" required></td>
-                        <td><button type="button" onclick="removeRow(this)">❌</button></td>
+                        <td><button type="button" id="family-button-remove" onclick="removeRow(this)">❌</button></td>
                     </tr>
                 }
             </tbody>
         </table>
 
-        <button type="button" onclick="addRow()">➕ Add Row</button>
+        <button type="button" id="family-button-add" onclick="addRow(this)">➕ Add Row</button>
 
         <table>
             <tr>
@@ -710,7 +722,7 @@
                 </td>
                 <td>
                     <div class="radio-group">
-                        <input type="radio" asp-for="Utilities.WaterSource" value="Artesian Well"> Artesian Well
+                        <input type="radio" asp-for="Utilities.WaterSource" value="Artesian Well" required> Artesian Well
                     </div>
 
                     <div class="radio-group">
@@ -801,7 +813,7 @@
                     2. Does your child have any other health issues?
 
                     <div class="radio-group">
-                        <input type="radio" asp-for="ChildHealth.HasHealthIssues" value="True"> Yes
+                        <input type="radio" asp-for="ChildHealth.HasHealthIssues" value="True" required> Yes
                         <input type="radio" asp-for="ChildHealth.HasHealthIssues" value="False"> No
                     </div>
 
@@ -821,7 +833,7 @@
                     3. Does your child have any recurrent medical conditions such as ear infections, asthma or allergies?
 
                     <div class="radio-group">
-                        <input type="radio" asp-for="ChildHealth.HasRecurrentConditions" value="True"> Yes
+                        <input type="radio" asp-for="ChildHealth.HasRecurrentConditions" value="True" required> Yes
                         <input type="radio" asp-for="ChildHealth.HasRecurrentConditions" value="False"> No
                     </div>
 
@@ -841,12 +853,409 @@
                     4. Does your child have tubes in his/her ears?
 
                     <div class="radio-group">
-                        <input type="radio" asp-for="ChildHealth.HasEarTubes" value="True"> Yes
+                        <input type="radio" asp-for="ChildHealth.HasEarTubes" value="True" required> Yes
                         <input type="radio" asp-for="ChildHealth.HasEarTubes" value="False"> No
                     </div>
                 </th>
             </tr>
 
+        </table>
+
+        <table>
+            <th>
+                5. Include current significant medical problems, physical limitations, sleep problems, unusual eating habits, poor hygiene, overall physical fitness, head injuries, early
+                childhood infections, eating disorders, knee or back injuries, asthma and others
+            </th>
+        </table>
+        <table id="diagnosis-table">
+            <tr>
+                <th>
+                    Medical Conditions
+                </th>
+                <th>
+                    Currently receiving treatment?
+                </th>
+                <th>
+                    Provider
+                </th>
+                <th>
+                    Does this condition cause stress or impairment at this time?
+                </th>
+                <th>
+                    What have you found that helps?
+                </th>
+                <th>
+                    Action
+                </th>
+            </tr>
+            <tbody class="diagnosis-input">
+                @for (int i = 0; i < Model.Diagnoses.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            <input type="text" asp-for="Diagnoses[i].MedicalCondition" placeholder="Type N/A if no answer" required>
+                        </td>
+                        <td>
+                            <select asp-for="Diagnoses[i].ReceivingTreatment" required>
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" asp-for="Diagnoses[i].TreatmentProvider" placeholder="Type N/A if no answer" required>
+                        </td>
+                        <td>
+                            <select asp-for="Diagnoses[i].DoesCauseStressOrImpairment" required>
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" asp-for="Diagnoses[i].TreatmentHelp" placeholder="Type N/A if no answer" required>
+                        </td>
+                        <td><button type="button" id="diagnosis-button-remove" onclick="removeRow(this)">❌</button></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <button type="button" id="diagnosis-button-add" onclick="addRow(this)">➕ Add Row</button>
+
+        <table>
+            <th>
+                6. Does your child take any medications?
+                <div class="radio-group">
+                    <input type="radio" asp-for="Medications[0].DoesTakeAnyMedication" value="True" required> Yes
+                    <input type="radio" asp-for="Medications[0].DoesTakeAnyMedication" value="False"> No
+                </div>
+                Please list medications including psychotropic, over‐the‐counter, herbal remedies that you have taken in the past 6 months
+            </th>
+        </table>
+        <table id="medication-table">
+            <tr>
+                <th>
+                    Medication
+                </th>
+                <th>
+                    Dosage
+                </th>
+                <th>
+                    Frequency
+                </th>
+                <th>
+                    Prescribed by
+                </th>
+                <th>
+                    Reason for Medication
+                </th>
+                <th>
+                    Action
+                </th>
+            </tr>
+            <tbody class="medication-input">
+                @for (int i = 0; i < Model.Medications.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            <input type="text" asp-for="Medications[i].Medication" placeholder="Type N/A if no answer" required>
+                        </td>
+                        <td>
+                            <input type="text" asp-for="Medications[i].Dosage" placeholder="Type N/A if no answer" required>
+                        </td>
+                        <td>
+                            <input type="text" asp-for="Medications[i].Frequency" placeholder="Type N/A if no answer" required>
+                        </td>
+                        <td>
+                            <input type="text" asp-for="Medications[i].PrescribedBy" placeholder="Type N/A if no answer" required>
+                        </td>
+                        <td>
+                            <input type="text" asp-for="Medications[i].ReasonForMedication" placeholder="Type N/A if no answer" required>
+                        </td>
+                        <td><button type="button" id="medication-button-remove" onclick="removeRow(this)">❌</button></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <button type="button" id="medication-button-add" onclick="addRow(this)">➕ Add Row</button>
+
+        <table>
+            <tr>
+                <th>
+                    Is your child taking the medications as prescribed?
+                    <div class="radio-group">
+                        <input type="radio" asp-for="Medications[0].IsTakingMedicationAsPrescribed" value="True" required> Yes
+                        <input type="radio" asp-for="Medications[0].IsTakingMedicationAsPrescribed" value="False"> No
+                    </div>
+                </th>
+            </tr>
+            <tr>
+                <th>
+                    Additional Information (if needed):
+                    <textarea asp-for="Medications[0].AdditionalInfo" rows="6" cols="120" placeholder="Type N/A if no answer" required></textarea>
+                </th>
+            </tr>
+        </table>
+
+        <table>
+            <th>
+                7. Has your child ever had a serious accident/illness or hospitalization?
+                <div class="radio-group">
+                    <input type="radio" asp-for="HospitalizationHistory[0].HasSeriousAccidentOrIllness" value="True" required> Yes
+                    <input type="radio" asp-for="HospitalizationHistory[0].HasSeriousAccidentOrIllness" value="False"> No
+                </div>
+                Please list all past hospitalization, surgeries, accidents, or illnesses
+            </th>
+        </table>
+        <table id="hospitalization-table">
+            <tr>
+                <th>
+                    Reason for Previous Hospitalizations, Accident, Illness
+                </th>
+                <th>
+                    Date
+                </th>
+                <th>
+                    Location
+                </th>
+                <th>
+                    Action
+                </th>
+            </tr>
+            <tbody class="hospitalization-input">
+                @for (int i = 0; i < Model.HospitalizationHistory.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            <input type="text" asp-for="HospitalizationHistory[i].Reason" placeholder="Type N/A if no answer" required>
+                        </td>
+                        <td>
+                            <input type="date" asp-for="HospitalizationHistory[i].Date" required>
+                        </td>
+                        <td>
+                            <input type="text" asp-for="HospitalizationHistory[i].Location" placeholder="Type N/A if no answer" required>
+                        </td>
+                        <td><button type="button" id="hospitalization-button-remove" onclick="removeRow(this)">❌</button></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <button type="button" id="hospitalization-button-add" onclick="addRow(this)">➕ Add Row</button>
+
+        <table>
+            <tr>
+                <th colspan="3">
+                    8. Has your child had the following screening/test?
+                    <div class="radio-group">
+                        <input type="radio" asp-for="MedicalScreenings.HasScreeningDone" value="True" required> Yes
+                        <input type="radio" asp-for="MedicalScreenings.HasScreeningDone" value="False"> No
+                    </div>
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    Hearing screening/test:
+                </td>
+                <td>
+                    Date
+                    <input type="date" asp-for="MedicalScreenings.HearingTestDate" required>
+                </td>
+                <td>
+                    Outcome
+                    <input type="text" asp-for="MedicalScreenings.HearingTestOutcome" placeholder="Type N/A if no answer" required>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Vision screening/test:
+                </td>
+                <td>
+                    Date
+                    <input type="date" asp-for="MedicalScreenings.VisionTestDate" required>
+                </td>
+                <td>
+                    Outcome
+                    <input type="text" asp-for="MedicalScreenings.VisionTestOutcome" placeholder="Type N/A if no answer" required>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Speech screening/test:
+                </td>
+                <td>
+                    Date
+                    <input type="date" asp-for="MedicalScreenings.SpeechTestDate" required>
+                </td>
+                <td>
+                    Outcome
+                    <input type="text" asp-for="MedicalScreenings.SpeechTestOutcome" placeholder="Type N/A if no answer" required>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Primary Care Doctor:
+                    <input type="text" asp-for="PrimaryCareDoctor.DoctorName" placeholder="Type N/A if no answer" required>
+                </td>
+                <td>
+                    Facility
+                    <input type="text" asp-for="PrimaryCareDoctor.Facility" placeholder="Type N/A if no answer" required>
+                </td>
+                <td>
+                    PhoneNumber
+                    <input type="text" asp-for="PrimaryCareDoctor.PhoneNumber" placeholder="Type N/A if no answer" required>
+                </td>
+            </tr>
+        </table>
+
+        <table>
+            <tr>
+                <th colspan="3">
+                    A. Presenting Problem
+                    <textarea asp-for="PresentingProblems.PresentingProblem" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
+                </th>
+            </tr>
+            <tr>
+                <th colspan="3">
+                    B. How severe do you rate your child’s presenting problems, on a scale of 1‐10 with 1 being the most severe?
+                    <div class="radio-group">
+                        <input type="radio" asp-for="PresentingProblems.Severity" value="1" required> 1
+                        <input type="radio" asp-for="PresentingProblems.Severity" value="2"> 2
+                        <input type="radio" asp-for="PresentingProblems.Severity" value="3"> 3
+                        <input type="radio" asp-for="PresentingProblems.Severity" value="4"> 4
+                        <input type="radio" asp-for="PresentingProblems.Severity" value="5"> 5
+                        <input type="radio" asp-for="PresentingProblems.Severity" value="6"> 6
+                        <input type="radio" asp-for="PresentingProblems.Severity" value="7"> 7
+                        <input type="radio" asp-for="PresentingProblems.Severity" value="8"> 8
+                        <input type="radio" asp-for="PresentingProblems.Severity" value="9"> 9
+                        <input type="radio" asp-for="PresentingProblems.Severity" value="10"> 10
+                    </div>
+                </th>
+            </tr>
+            <tr>
+                <th colspan="3">
+                    C. Does the Presenting Problem cause symptoms causing concern, distress, or impairment?
+                </th>
+            </tr>
+            <tr>
+                <th colspan="3">
+                    1. Change in sleep patterns:
+                    <div class="radio-group">
+                        <input type="radio" asp-for="PresentingProblems.ChangeInSleepPattern" value="Sleeping more" required> a. Sleeping more
+                        <input type="radio" asp-for="PresentingProblems.ChangeInSleepPattern" value="Sleeping less"> b. Sleeping less
+                        <input type="radio" asp-for="PresentingProblems.ChangeInSleepPattern" value="Difficulty falling asleep"> c. Difficulty falling asleep
+                    </div>
+                    <div class="radio-group">
+                        <input type="radio" asp-for="PresentingProblems.ChangeInSleepPattern" value="Difficulty staying asleep"> d. Difficulty staying asleep
+                        <input type="radio" asp-for="PresentingProblems.ChangeInSleepPattern" value="Difficulty waking up"> e. Difficulty waking up
+                        <input type="radio" asp-for="PresentingProblems.ChangeInSleepPattern" value="Difficulty staying awake"> f. Difficulty staying awake
+                    </div>
+                </th>
+            </tr>
+            <tr>
+                <th colspan="3">
+                    2. Concentration:
+                    <div class="radio-group">
+                        <input type="radio" asp-for="PresentingProblems.Concentration" value="Decreased concentration" required> a. Decreased concentration
+                        <input type="radio" asp-for="PresentingProblems.Concentration" value="Increased or excessive concentration"> b. Increased or excessive concentration
+                    </div>
+                </th>
+            </tr>
+            <tr>
+                <th colspan="3">
+                    3. Change in appetite:
+                    <div class="radio-group">
+                        <input type="radio" asp-for="PresentingProblems.ChangeInAppetite" value="Increased appetite" required> a. Increased appetite
+                        <input type="radio" asp-for="PresentingProblems.ChangeInAppetite" value="Decreased appetite"> b. Decreased appetite
+                    </div>
+                </th>
+            </tr>
+            <tr>
+                <th colspan="3">
+                    4. Increased Anxiety (Please describe):
+                    <input type="text" asp-for="PresentingProblems.IncreasedAnxiety" placeholder="Type N/A if no answer" required>
+                </th>
+            </tr>
+            <tr>
+                <th colspan="3">
+                    5. Mood Swings (Please describe):
+                    <input type="text" asp-for="PresentingProblems.MoodSwings" placeholder="Type N/A if no answer" required>
+                    Behavioral Problems/Changes (describe):
+                    <input type="text" asp-for="PresentingProblems.BehavioralChanges" placeholder="Type N/A if no answer" required>
+                </th>
+            </tr>
+            <tr>
+                <th colspan="3">
+                    6. Victimization:
+                    <div class="radio-group">
+                        <input type="radio" asp-for="PresentingProblems.Victimization" value="Physical abuse" onchange="toggleRequiredRadio(this)" required> a. Physical abuse
+                        <input type="radio" asp-for="PresentingProblems.Victimization" value="Sexual abuse" onchange="toggleRequiredRadio(this)"> b. Sexual abuse
+                        <input type="radio" asp-for="PresentingProblems.Victimization" value="Psychological abuse" onchange="toggleRequiredRadio(this)"> c. Psychological abuse
+                        <input type="radio" asp-for="PresentingProblems.Victimization" value="Robbery victim" onchange="toggleRequiredRadio(this)"> d. Robbery victim
+                        <input type="radio" asp-for="PresentingProblems.Victimization" value="Assault victim" onchange="toggleRequiredRadio(this)"> e. Assault victim
+                    </div>
+                    <div class="radio-group">
+                        <input type="radio" asp-for="PresentingProblems.Victimization" value="Dating violence" onchange="toggleRequiredRadio(this)"> f. Dating violence
+                        <input type="radio" asp-for="PresentingProblems.Victimization" value="Domestic violence" onchange="toggleRequiredRadio(this)"> g. Domestic violence
+                        <input type="radio" asp-for="PresentingProblems.Victimization" value="Human trafficking" onchange="toggleRequiredRadio(this)"> h. Human trafficking
+                        <input type="radio" asp-for="PresentingProblems.Victimization" value="DUI/DWI crash" onchange="toggleRequiredRadio(this)"> i. DUI/DWI crash
+                        <input type="radio" asp-for="PresentingProblems.Victimization" value="Survivors of homicide victims" onchange="toggleRequiredRadio(this)"> j. Survivors of homicide victims
+                    </div>
+                    <div class="radio-group">
+                        @if (!(new[] { "Physical Abuse", "Sexual Abuse", "Psychological abuse",
+                        "Robbery victim", "Assault victim", "Dating violence",
+                        "Domestic violence", "Human trafficking", "DUI/DWI crash", "Survivors of homicide victims" })
+                        .Contains(Model.PresentingProblems.Victimization))
+                        {
+                            <input type="radio" asp-for="PresentingProblems.Victimization" value="@Model.PresentingProblems.Victimization" data-target="victimization-others-specify" 
+                            onchange="toggleRequiredRadio(this)" checked> 
+                            <label>k. Other</label>
+                            <input type="text" id="victimization-others-specify" placeholder="Specify" disabled
+                                asp-for="@Model.PresentingProblems.Victimization">
+                        }
+                        else 
+                        {
+                            <input type="radio" asp-for="PresentingProblems.Victimization" value="Others" data-target="victimization-others-specify" 
+                            onchange="toggleRequiredRadio(this)">
+                            <label>k. Other</label>
+                            <input type="text" id="victimization-others-specify" placeholder="Specify" disabled oninput="updateOthersValue(this)">
+                        }
+                            
+                    </div>
+                </th>
+            </tr>
+            <tr>
+                <th colspan="3">
+                    7. Please describe other concerns:
+                    <input type="text" asp-for="PresentingProblems.DescribeOtherConcern" placeholder="Type N/A if no answer" required>
+                </th>
+            </tr>
+            <tr>
+                <th colspan="3">
+                    D. How long has this problem been causing your child distress?
+                    <div class="radio-group">
+                        <input type="radio" asp-for="PresentingProblems.DurationOfStress" value="One week " required> a. One week
+                        <input type="radio" asp-for="PresentingProblems.DurationOfStress" value="One month "> b. One month
+                        <input type="radio" asp-for="PresentingProblems.DurationOfStress" value="1 – 6 Months"> c. 1 – 6 Months
+                        <input type="radio" asp-for="PresentingProblems.DurationOfStress" value="6 Months – 1 Year"> d. 6 Months – 1 Year
+                        <input type="radio" asp-for="PresentingProblems.DurationOfStress" value="Longer than one year"> e.  Longer than one year
+                    </div>
+                </th>
+            </tr>
+            <tr>
+                <th colspan="3">
+                    E. How do you rate your child’s current level of coping on a scale of 1 – 10 with 1 being unable to cope?
+                    <div class="radio-group">
+                        <input type="radio" asp-for="PresentingProblems.CopingLevel" value="1" required> 1
+                        <input type="radio" asp-for="PresentingProblems.CopingLevel" value="2"> 2
+                        <input type="radio" asp-for="PresentingProblems.CopingLevel" value="3"> 3
+                        <input type="radio" asp-for="PresentingProblems.CopingLevel" value="4"> 4
+                        <input type="radio" asp-for="PresentingProblems.CopingLevel" value="5"> 5
+                        <input type="radio" asp-for="PresentingProblems.CopingLevel" value="6"> 6
+                        <input type="radio" asp-for="PresentingProblems.CopingLevel" value="7"> 7
+                        <input type="radio" asp-for="PresentingProblems.CopingLevel" value="8"> 8
+                        <input type="radio" asp-for="PresentingProblems.CopingLevel" value="9"> 9
+                        <input type="radio" asp-for="PresentingProblems.CopingLevel" value="10"> 10
+                    </div>
+                </th>
+            </tr>
         </table>
 
         @* --- Add new here --- *@
@@ -864,63 +1273,213 @@
 @section Scripts {
 
     <script>
-        function addRow() {
-            let table = document.getElementById("family-table");
+        function addRow(button) {
+            if (button.id == "family-button-add") {
 
-            if (table.rows.length - 1 == 12){
-                alert("Only 12 rows allowed");
-                return;
+                let table = document.getElementById("family-table");
+
+                if (table.rows.length - 1 == 12){
+                    alert("Only 12 rows allowed");
+                    return;
+                }
+
+                let rowCount = table.rows.length - 1; // Exclude header row
+                //let rowCount = table.rows.length; // Includes header, so first row starts at 1
+                let newRow = table.insertRow(-1); // Insert at the end
+
+                let cols = `
+                    <td><input type="text" name="FamilyMembers[${rowCount}].Name" required></td>
+                    <td><input type="number" name="FamilyMembers[${rowCount}].Age" required></td>
+                    <td><input type="date" name="FamilyMembers[${rowCount}].DateOfBirth" required></td>
+                    <td><input type="text" name="FamilyMembers[${rowCount}].CivilStatus" required></td>
+                    <td><input type="text" name="FamilyMembers[${rowCount}].RelationshipToPatient" required></td>
+                    <td>
+                        <select name="FamilyMembers[${rowCount}].LivingWithChild" required>
+                            <option value="true">Yes</option>
+                            <option value="false">No</option>
+                        </select>
+                    </td>
+                    <td><input type="text" name="FamilyMembers[${rowCount}].EducationalAttainment" required></td>
+                    <td><input type="text" name="FamilyMembers[${rowCount}].Occupation" required></td>
+                    <td><input type="number" name="FamilyMembers[${rowCount}].MonthlyIncome" required></td>
+                    <td><button type="button" id="family-button-remove" onclick="removeRow(this)">❌</button></td>
+                `;
+                newRow.innerHTML = cols;
+
+            }
+            else if (button.id == "diagnosis-button-add") {
+
+                let table = document.getElementById("diagnosis-table");
+
+                if (table.rows.length - 1 == 3){
+                    alert("Only 3 rows allowed");
+                    return;
+                }
+
+                let rowCount = table.rows.length - 1; // Exclude header row
+                let newRow = table.insertRow(-1);
+
+                let cols = `
+                    <td><input type="text" name="Diagnoses[${rowCount}].MedicalCondition" required></td>
+                    <td>
+                        <select name="Diagnoses[${rowCount}].ReceivingTreatment" required>
+                            <option value="true">Yes</option>
+                            <option value="false">No</option>
+                        </select>
+                    </td>
+                    <td><input type="text" name="Diagnoses[${rowCount}].TreatmentProvider" required></td>
+                    <td>
+                        <select name="Diagnoses[${rowCount}].DoesCauseStressOrImpairment" required>
+                            <option value="true">Yes</option>
+                            <option value="false">No</option>
+                        </select>
+                    </td>
+                    <td><input type="text" name="Diagnoses[${rowCount}].TreatmentHelp" required></td>
+                    <td><button type="button" id="diagnosis-button-remove" onclick="removeRow(this)">❌</button></td>
+                `;
+
+                newRow.innerHTML = cols;
+            }
+            else if (button.id == "medication-button-add") {
+
+                let table = document.getElementById("medication-table");
+
+                if (table.rows.length - 1 == 3){
+                    alert("Only 3 rows allowed");
+                    return;
+                }
+
+                let rowCount = table.rows.length - 1; // Exclude header row
+                let newRow = table.insertRow(-1);
+
+                let cols = `
+                    <td><input type="text" name="Medications[${rowCount}].Medication" required></td>
+                    <td><input type="text" name="Medications[${rowCount}].Dosage" required></td>
+                    <td><input type="text" name="Medications[${rowCount}].Frequency" required></td>
+                    <td><input type="text" name="Medications[${rowCount}].PrescribedBy" required></td>
+                    <td><input type="text" name="Medications[${rowCount}].ReasonForMedication" required></td>
+                    <td><button type="button" id="medication-button-remove" onclick="removeRow(this)">❌</button></td>
+                `;
+
+                newRow.innerHTML = cols;
+            }
+            else if (button.id == "hospitalization-button-add") {
+                let table = document.getElementById("hospitalization-table");
+
+                if (table.rows.length - 1 == 3){
+                    alert("Only 3 rows allowed");
+                    return;
+                }
+
+                let rowCount = table.rows.length - 1; // Exclude header row
+                let newRow = table.insertRow(-1);
+
+                let cols = `
+                    <td><input type="text" name="HospitalizationHistory[${rowCount}].Reason" required></td>
+                    <td><input type="date" name="HospitalizationHistory[${rowCount}].Date" required></td>
+                    <td><input type="text" name="HospitalizationHistory[${rowCount}].Location" required></td>
+                    <td><button type="button" id="hospitalization-button-remove" onclick="removeRow(this)">❌</button></td>
+                `;
+
+                newRow.innerHTML = cols;
             }
 
-            let rowCount = table.rows.length - 1; // Exclude header row
-            //let rowCount = table.rows.length; // Includes header, so first row starts at 1
-            let newRow = table.insertRow(-1); // Insert at the end
 
-            let cols = `
-                <td><input type="text" name="FamilyMembers[${rowCount}].Name" required></td>
-                <td><input type="number" name="FamilyMembers[${rowCount}].Age" required></td>
-                <td><input type="date" name="FamilyMembers[${rowCount}].DateOfBirth" required></td>
-                <td><input type="text" name="FamilyMembers[${rowCount}].CivilStatus" required></td>
-                <td><input type="text" name="FamilyMembers[${rowCount}].RelationshipToPatient" required></td>
-                <td>
-                    <select name="FamilyMembers[${rowCount}].LivingWithChild" required>
-                        <option value="true">Yes</option>
-                        <option value="false">No</option>
-                    </select>
-                </td>
-                <td><input type="text" name="FamilyMembers[${rowCount}].EducationalAttainment" required></td>
-                <td><input type="text" name="FamilyMembers[${rowCount}].Occupation" required></td>
-                <td><input type="number" name="FamilyMembers[${rowCount}].MonthlyIncome" required></td>
-                <td><button type="button" onclick="removeRow(this)">❌</button></td>
-            `;
-            newRow.innerHTML = cols;
         }
 
         function removeRow(button) {
-            let row = button.parentNode.parentNode;
-            let table = document.getElementById("family-table");
+            if (button.id == "family-button-remove") {
+                let row = button.parentNode.parentNode;
+                let table = document.getElementById("family-table");
 
-            if (table.rows.length > 2) { // Keep at least one row
-                row.remove();
-                updateNames();
-            } else {
-                alert("At least one row is required!");
+                if (table.rows.length > 2) { // Keep at least one row
+                    row.remove();
+                    updateNames(button);
+                } else {
+                    alert("At least one row is required!");
+                }
+            }
+            else if (button.id == "diagnosis-button-remove") {
+                let row = button.parentNode.parentNode;
+                let table = document.getElementById("diagnosis-table");
+
+                if (table.rows.length > 2) { // Keep at least one row
+                    row.remove();
+                    updateNames(button);
+                } else {
+                    alert("At least one row is required!");
+                }
+            }
+            else if (button.id == "medication-button-remove") {
+                let row = button.parentNode.parentNode;
+                let table = document.getElementById("medication-table");
+
+                if (table.rows.length > 2) { // Keep at least one row
+                    row.remove();
+                    updateNames(button);
+                } else {
+                    alert("At least one row is required!");
+                }
+            }
+            else if (button.id == "hospitalization-button-remove") {
+                let row = button.parentNode.parentNode;
+                let table = document.getElementById("hospitalization-table");
+
+                if (table.rows.length > 2) { // Keep at least one row
+                    row.remove();
+                    updateNames(button);
+                } else {
+                    alert("At least one row is required!");
+                }
             }
         }
 
-        function updateNames() {
-            let table = document.getElementById("family-table");
-            for (let i = 1; i < table.rows.length; i++) { // Skip header row
-                let row = table.rows[i];
-                row.cells[0].querySelector("input").name = `FamilyMembers[${i - 1}].Name`;
-                row.cells[1].querySelector("input").name = `FamilyMembers[${i - 1}].Age`;
-                row.cells[2].querySelector("input").name = `FamilyMembers[${i - 1}].DateOfBirth`;
-                row.cells[3].querySelector("input").name = `FamilyMembers[${i - 1}].CivilStatus`;
-                row.cells[4].querySelector("input").name = `FamilyMembers[${i - 1}].RelationshipToPatient`;
-                row.cells[5].querySelector("select").name = `FamilyMembers[${i - 1}].LivingWithChild`;
-                row.cells[6].querySelector("input").name = `FamilyMembers[${i - 1}].EducationalAttainment`;
-                row.cells[7].querySelector("input").name = `FamilyMembers[${i - 1}].Occupation`;
-                row.cells[8].querySelector("input").name = `FamilyMembers[${i - 1}].MonthlyIncome`;
+        function updateNames(button) {
+            if (button.id == "family-button-remove") {
+                let table = document.getElementById("family-table");
+                for (let i = 1; i < table.rows.length; i++) { // Skip header row
+                    let row = table.rows[i];
+                    row.cells[0].querySelector("input").name = `FamilyMembers[${i - 1}].Name`;
+                    row.cells[1].querySelector("input").name = `FamilyMembers[${i - 1}].Age`;
+                    row.cells[2].querySelector("input").name = `FamilyMembers[${i - 1}].DateOfBirth`;
+                    row.cells[3].querySelector("input").name = `FamilyMembers[${i - 1}].CivilStatus`;
+                    row.cells[4].querySelector("input").name = `FamilyMembers[${i - 1}].RelationshipToPatient`;
+                    row.cells[5].querySelector("select").name = `FamilyMembers[${i - 1}].LivingWithChild`;
+                    row.cells[6].querySelector("input").name = `FamilyMembers[${i - 1}].EducationalAttainment`;
+                    row.cells[7].querySelector("input").name = `FamilyMembers[${i - 1}].Occupation`;
+                    row.cells[8].querySelector("input").name = `FamilyMembers[${i - 1}].MonthlyIncome`;
+                }
+            }
+            else if (button.id == "diagnosis-button-remove") {
+                let table = document.getElementById("diagnosis-table");
+                for (let i = 1; i < table.rows.length; i++) { // Skip header row
+                    let row = table.rows[i];
+                    row.cells[0].querySelector("input").name = `Diagnoses[${i - 1}].MedicalCondition`;
+                    row.cells[1].querySelector("select").name = `Diagnoses[${i - 1}].ReceivingTreatment`;
+                    row.cells[2].querySelector("input").name = `Diagnoses[${i - 1}].TreatmentProvider`;
+                    row.cells[3].querySelector("select").name = `Diagnoses[${i - 1}].DoesCauseStressOrImpairment`;
+                    row.cells[4].querySelector("input").name = `Diagnoses[${i - 1}].TreatmentHelp`;
+                }
+            }
+            else if (button.id == "medication-button-remove") {
+                let table = document.getElementById("medication-table");
+                for (let i = 1; i < table.rows.length; i++) { // Skip header row
+                    let row = table.rows[i];
+                    row.cells[0].querySelector("input").name = `Medications[${i - 1}].Medication`;
+                    row.cells[1].querySelector("input").name = `Medications[${i - 1}].Dosage`;
+                    row.cells[2].querySelector("input").name = `Medications[${i - 1}].Frequency`;
+                    row.cells[3].querySelector("input").name = `Medications[${i - 1}].PrescribedBy`;
+                    row.cells[4].querySelector("input").name = `Medications[${i - 1}].ReasonForMedication`;
+                }
+            }
+            else if (button.id == "hospitalization-button-remove") {
+                let table = document.getElementById("hospitalization-table");
+                for (let i = 1; i < table.rows.length; i++) { // Skip header row
+                    let row = table.rows[i];
+                    row.cells[0].querySelector("input").name = `HospitalizationHistory[${i - 1}].Reason`;
+                    row.cells[1].querySelector("input").name = `HospitalizationHistory[${i - 1}].Date`;
+                    row.cells[2].querySelector("input").name = `HospitalizationHistory[${i - 1}].Location`;
+                }
             }
         }
 

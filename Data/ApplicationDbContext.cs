@@ -12,6 +12,12 @@ using LittleArkFoundation.Areas.Admin.Models.SystemLogs;
 using LittleArkFoundation.Areas.Admin.Models.MonthlyExpenses;
 using LittleArkFoundation.Areas.Admin.Models.MedicalHistory;
 using LittleArkFoundation.Areas.Admin.Models.ChildHealth;
+using LittleArkFoundation.Areas.Admin.Models.Diagnoses;
+using LittleArkFoundation.Areas.Admin.Models.Medications;
+using LittleArkFoundation.Areas.Admin.Models.HospitalizationHistory;
+using LittleArkFoundation.Areas.Admin.Models.MedicalScreenings;
+using LittleArkFoundation.Areas.Admin.Models.PrimaryCareDoctor;
+using LittleArkFoundation.Areas.Admin.Models.PresentingProblems;
 
 namespace LittleArkFoundation.Data
 {
@@ -50,6 +56,12 @@ namespace LittleArkFoundation.Data
         public DbSet<UtilitiesModel> Utilities { get; set; }
         public DbSet<MedicalHistoryModel> MedicalHistory { get; set; }
         public DbSet<ChildHealthModel> ChildHealth { get; set; }
+        public DbSet<DiagnosesModel> Diagnoses { get; set; }
+        public DbSet<MedicationsModel> Medications { get; set; }
+        public DbSet<HospitalizationHistoryModel> HospitalizationHistory {  get; set; }
+        public DbSet<MedicalScreeningsModel> MedicalScreenings { get; set; }
+        public DbSet<PrimaryCareDoctorModel> PrimaryCareDoctor {  get; set; }
+        public DbSet<PresentingProblemsModel> PresentingProblems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -195,6 +207,60 @@ namespace LittleArkFoundation.Data
 
             modelBuilder.Entity<ChildHealthModel>()
                 .Property(c => c.ChildHealthID)
+                .ValueGeneratedOnAdd();
+
+            // Diagnoses
+            modelBuilder.Entity<DiagnosesModel>()
+                .ToTable("Diagnoses")
+                .HasKey(d => d.DiagnosisID);
+
+            modelBuilder.Entity<DiagnosesModel>()
+                .Property (d => d.DiagnosisID)
+                .ValueGeneratedOnAdd();
+
+            // Medications
+            modelBuilder.Entity<MedicationsModel>()
+                .ToTable("Medications")
+                .HasKey(m => m.MedicationID);
+
+            modelBuilder.Entity<MedicationsModel>()
+                .Property(m => m.MedicationID)
+                .ValueGeneratedOnAdd();
+
+            // HospitalizationHistory
+            modelBuilder.Entity<HospitalizationHistoryModel>()
+                .ToTable("HospitalizationHistory")
+                .HasKey(h => h.HospitalizationID);
+
+            modelBuilder.Entity<HospitalizationHistoryModel>()
+                .Property(h => h.HospitalizationID)
+                .ValueGeneratedOnAdd();
+
+            // MedicalScreenings
+            modelBuilder.Entity<MedicalScreeningsModel>()
+                .ToTable("MedicalScreenings")
+                .HasKey(s => s.ScreeningsID);
+
+            modelBuilder.Entity<MedicalScreeningsModel>()
+                .Property(s => s.ScreeningsID)
+                .ValueGeneratedOnAdd();
+
+            // PrimaryCareDoctor
+            modelBuilder.Entity<PrimaryCareDoctorModel>()
+                .ToTable("PrimaryCareDoctor")
+                .HasKey(d => d.DoctorID);
+
+            modelBuilder.Entity<PrimaryCareDoctorModel>()
+                .Property(d => d.DoctorID)
+                .ValueGeneratedOnAdd();
+
+            // PresentingProblems
+            modelBuilder.Entity<PresentingProblemsModel>()
+                .ToTable("PresentingProblems")
+                .HasKey(p => p.ProblemID);
+
+            modelBuilder.Entity<PresentingProblemsModel>()
+                .Property(p => p.ProblemID)
                 .ValueGeneratedOnAdd();
         }
     }

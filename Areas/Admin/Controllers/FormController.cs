@@ -11,6 +11,9 @@ using LittleArkFoundation.Areas.Admin.Data;
 using LittleArkFoundation.Areas.Admin.Models.Patients;
 using System.Data;
 using LittleArkFoundation.Areas.Admin.Models.FamilyComposition;
+using LittleArkFoundation.Areas.Admin.Models.Diagnoses;
+using LittleArkFoundation.Areas.Admin.Models.Medications;
+using LittleArkFoundation.Areas.Admin.Models.HospitalizationHistory;
 // TODO: Implement logging for forms
 namespace LittleArkFoundation.Areas.Admin.Controllers
 {
@@ -53,7 +56,10 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             var viewModel = new FormViewModel()
             {
-                FamilyMembers = new List<FamilyCompositionModel>() { new FamilyCompositionModel() }
+                FamilyMembers = new List<FamilyCompositionModel>() { new FamilyCompositionModel() },
+                Diagnoses = new List<DiagnosesModel>() { new DiagnosesModel() },
+                Medications = new List<MedicationsModel> { new MedicationsModel() },
+                HospitalizationHistory = new List<HospitalizationHistoryModel> { new HospitalizationHistoryModel() }
             };
 
             return View(viewModel);
@@ -110,6 +116,33 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 // CHILD HEALTH
                 formViewModel.ChildHealth.PatientID = patientID;
 
+                // DIAGNOSES
+                foreach (var diagnosis in formViewModel.Diagnoses)
+                {
+                    diagnosis.PatientID = patientID;
+                }
+
+                // MEDICATIONS
+                foreach (var medication in formViewModel.Medications)
+                {
+                    medication.PatientID = patientID;
+                }
+
+                // HOSPITALIZATION HISTORY
+                foreach (var hospitalization in formViewModel.HospitalizationHistory)
+                {
+                    hospitalization.PatientID = patientID;
+                }
+
+                // MEDICAL SCREENINGS
+                formViewModel.MedicalScreenings.PatientID = patientID;
+
+                // PRIMARY CARE DOCTOR
+                formViewModel.PrimaryCareDoctor.PatientID = patientID;
+
+                // PRESENTING PROBLEMS
+                formViewModel.PresentingProblems.PatientID = patientID;
+
                 // Save Patient first to get the ID, avoids Forein Key constraint
                 await context.Patients.AddAsync(formViewModel.Patient);
                 await context.SaveChangesAsync();
@@ -125,6 +158,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 await context.Utilities.AddAsync(formViewModel.Utilities);
                 await context.MedicalHistory.AddAsync(formViewModel.MedicalHistory);
                 await context.ChildHealth.AddAsync(formViewModel.ChildHealth);
+                await context.Diagnoses.AddRangeAsync(formViewModel.Diagnoses);
+                await context.Medications.AddRangeAsync(formViewModel.Medications);
+                await context.HospitalizationHistory.AddRangeAsync(formViewModel.HospitalizationHistory);
+                await context.MedicalScreenings.AddAsync(formViewModel.MedicalScreenings);
+                await context.PrimaryCareDoctor.AddAsync(formViewModel.PrimaryCareDoctor);
+                await context.PresentingProblems.AddAsync(formViewModel.PresentingProblems);
                 await context.SaveChangesAsync();
 
                 TempData["SuccessMessage"] = "Successfully created new form";
@@ -182,6 +221,18 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var utilities = await context.Utilities.FirstOrDefaultAsync(u => u.PatientID == id);
             var medicalHistory = await context.MedicalHistory.FirstOrDefaultAsync(m => m.PatientID == id);
             var childHealth = await context.ChildHealth.FirstOrDefaultAsync(c => c.PatientID == id);
+            var diagnoses = await context.Diagnoses
+                                .Where(d => d.PatientID == id)
+                                .ToListAsync();
+            var medications = await context.Medications
+                                .Where(m  => m.PatientID == id)
+                                .ToListAsync();
+            var hospitalization = await context.HospitalizationHistory
+                                .Where(h => h.PatientID == id)
+                                .ToListAsync();
+            var medicalscreenings = await context.MedicalScreenings.FirstOrDefaultAsync(m => m.PatientID == id);
+            var primarycaredoctor = await context.PrimaryCareDoctor.FirstOrDefaultAsync(m => m.PatientID == id);
+            var presentingproblems = await context.PresentingProblems.FirstOrDefaultAsync(m => m.PatientID == id);
 
             var viewModel = new FormViewModel()
             {
@@ -195,7 +246,13 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 MonthlyExpenses = monthlyExpenses,
                 Utilities = utilities,
                 MedicalHistory = medicalHistory,
-                ChildHealth = childHealth
+                ChildHealth = childHealth,
+                Diagnoses = diagnoses,
+                Medications = medications,
+                HospitalizationHistory = hospitalization,
+                MedicalScreenings = medicalscreenings,
+                PrimaryCareDoctor = primarycaredoctor,
+                PresentingProblems = presentingproblems
             };
 
             return View(viewModel);
@@ -210,10 +267,25 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             await using var context = new ApplicationDbContext(connectionString);
             int id = formViewModel.Patient.PatientID;
             var familyMembers = context.FamilyComposition.Where(f => f.PatientID == id);
+            var diagnoses = context.Diagnoses.Where(d => d.PatientID == id);
+            var medications = context.Medications.Where(m  => m.PatientID == id);
+            var hospitalization = context.HospitalizationHistory.Where(h => h.PatientID == id);
 
             if (familyMembers.Any())
             {
                 context.FamilyComposition.RemoveRange(familyMembers);
+            }
+            if (diagnoses.Any())
+            {
+                context.Diagnoses.RemoveRange(diagnoses);
+            }
+            if (medications.Any())
+            {
+                context.Medications.RemoveRange(medications);
+            }
+            if (hospitalization.Any())
+            {
+                context.HospitalizationHistory.RemoveRange(hospitalization);
             }
 
             if (formViewModel.FamilyMembers != null)
@@ -223,6 +295,30 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     familyMember.PatientID = id;
                 }
                 await context.FamilyComposition.AddRangeAsync(formViewModel.FamilyMembers);
+            }
+            if (formViewModel.Diagnoses != null)
+            {
+                foreach (var diagnosis in formViewModel.Diagnoses)
+                {
+                    diagnosis.PatientID = id;
+                }
+                await context.Diagnoses.AddRangeAsync(formViewModel.Diagnoses);
+            }
+            if (formViewModel.Medications != null)
+            {
+                foreach (var medication in formViewModel.Medications)
+                {
+                    medication.PatientID = id;
+                }
+                await context.Medications.AddRangeAsync(formViewModel.Medications);
+            }
+            if (formViewModel.HospitalizationHistory != null)
+            {
+                foreach (var hospitalizationhistory in formViewModel.HospitalizationHistory)
+                {
+                    hospitalizationhistory.PatientID = id;
+                }
+                await context.HospitalizationHistory.AddRangeAsync(formViewModel.HospitalizationHistory);
             }
 
             // Update Patient first, avoids Forein Key constraint
@@ -239,6 +335,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             context.Utilities.Update(formViewModel.Utilities);
             context.MedicalHistory.Update(formViewModel.MedicalHistory);
             context.ChildHealth.Update(formViewModel.ChildHealth);
+            context.MedicalScreenings.Update(formViewModel.MedicalScreenings);
+            context.PrimaryCareDoctor.Update(formViewModel.PrimaryCareDoctor);
+            context.PresentingProblems.Update(formViewModel.PresentingProblems);
             await context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = $"Successfully edited PatientID: {id}";
