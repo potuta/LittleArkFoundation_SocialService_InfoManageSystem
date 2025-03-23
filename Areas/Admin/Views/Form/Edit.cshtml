@@ -985,6 +985,8 @@
                         <input type="radio" asp-for="Medications[0].IsTakingMedicationAsPrescribed" value="True" required> Yes
                         <input type="radio" asp-for="Medications[0].IsTakingMedicationAsPrescribed" value="False"> No
                     </div>
+                    If no, please explain
+                    <input type="text" asp-for="Medications[0].DescribeTakingMedication" placeholder="Type N/A if no answer" required />
                 </th>
             </tr>
             <tr>
