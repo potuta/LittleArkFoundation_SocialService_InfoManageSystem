@@ -1550,6 +1550,13 @@ namespace LittleArkFoundation.Data
             await using var context = new ApplicationDbContext(connectionString);
 
             var patient = await context.Patients.FindAsync(id);
+            var presentingproblems = await context.PresentingProblems.FirstOrDefaultAsync(p => p.PatientID == id);
+            var recentlosses = await context.RecentLosses.FirstOrDefaultAsync(p => p.PatientID == id);
+            var pregnancybirthhistory = await context.PregnancyBirthHistory.FirstOrDefaultAsync(p => p.PatientID == id);
+            var developmentalhistory = await context.DevelopmentalHistory.FirstOrDefaultAsync(p => p.PatientID == id);
+            var mentalhealthhistory = await context.MentalHealthHistory.Where(p => p.PatientID == id).ToListAsync();
+            var familyhistory = await context.FamilyHistory.Where(p => p.PatientID == id).ToListAsync();
+            var safetyconcerns = await context.SafetyConcerns.FirstOrDefaultAsync(p => p.PatientID == id);
 
             if (patient == null)
             {
@@ -1559,6 +1566,784 @@ namespace LittleArkFoundation.Data
             // USING HTMLAGILITYPACK
             var htmlDoc = new HtmlDocument();
             htmlDoc.LoadHtml(htmlContent);
+
+            // PRESENTING PROBLEMS
+            switch (presentingproblems.DurationOfStress)
+            {
+                case "One week":
+                    var oneweek = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Oneweekcheckbox']");
+                    if (oneweek != null)
+                    {
+                        string existingStyle = oneweek.GetAttributeValue("style", "");
+                        oneweek.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case "One month":
+                    var onemonth = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Onemonthcheckbox']");
+                    if (onemonth != null)
+                    {
+                        string existingStyle = onemonth.GetAttributeValue("style", "");
+                        onemonth.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case "1-6 months":
+                    var onetosixmonths = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Onetosixmonthscheckbox']");
+                    if (onetosixmonths != null)
+                    {
+                        string existingStyle = onetosixmonths.GetAttributeValue("style", "");
+                        onetosixmonths.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case "6 months – 1 year":
+                    var sixmonthstoyear = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Sixmonthstooneyearcheckbox']");
+                    if (sixmonthstoyear != null)
+                    {
+                        string existingStyle = sixmonthstoyear.GetAttributeValue("style", "");
+                        sixmonthstoyear.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case "Longer than one year":
+                    var longerthanyear = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Longerthanoneyearcheckbox']");
+                    if (longerthanyear != null)
+                    {
+                        string existingStyle = longerthanyear.GetAttributeValue("style", "");
+                        longerthanyear.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+            }
+
+            switch (presentingproblems.CopingLevel)
+            {
+                case 1:
+                    var one = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Onecheckbox']");
+                    if (one != null)
+                    {
+                        string existingStyle = one.GetAttributeValue("style", "");
+                        one.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case 2:
+                    var two = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Twocheckbox']");
+                    if (two != null)
+                    {
+                        string existingStyle = two.GetAttributeValue("style", "");
+                        two.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case 3:
+                    var three = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Threecheckbox']");
+                    if (three != null)
+                    {
+                        string existingStyle = three.GetAttributeValue("style", "");
+                        three.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case 4:
+                    var four = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Fourcheckbox']");
+                    if (four != null)
+                    {
+                        string existingStyle = four.GetAttributeValue("style", "");
+                        four.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case 5:
+                    var five = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Fivecheckbox']");
+                    if (five != null)
+                    {
+                        string existingStyle = five.GetAttributeValue("style", "");
+                        five.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case 6:
+                    var six = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Sixcheckbox']");
+                    if (six != null)
+                    {
+                        string existingStyle = six.GetAttributeValue("style", "");
+                        six.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case 7:
+                    var seven = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Sevencheckbox']");
+                    if (seven != null)
+                    {
+                        string existingStyle = seven.GetAttributeValue("style", "");
+                        seven.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case 8:
+                    var eight = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Eightcheckbox']");
+                    if (eight != null)
+                    {
+                        string existingStyle = eight.GetAttributeValue("style", "");
+                        eight.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case 9:
+                    var nine = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Ninecheckbox']");
+                    if (nine != null)
+                    {
+                        string existingStyle = nine.GetAttributeValue("style", "");
+                        nine.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case 10:
+                    var ten = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Tencheckbox']");
+                    if (ten != null)
+                    {
+                        string existingStyle = ten.GetAttributeValue("style", "");
+                        ten.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+            }
+
+            var otherfamilysituation = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Otherfamilysituation']");
+            if (otherfamilysituation != null)
+            {
+                otherfamilysituation.InnerHtml = presentingproblems.OtherFamilySituation;
+            }
+
+            // RECENT LOSSES
+            if (recentlosses.FamilyMemberLoss)
+            {
+                var familymemberloss = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Familymembercheckbox']");
+                if (familymemberloss != null)
+                {
+                    string existingStyle = familymemberloss.GetAttributeValue("style", "");
+                    familymemberloss.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+
+            if (recentlosses.FriendLoss)
+            {
+                var friendloss = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Friendcheckbox']");
+                if (friendloss != null)
+                {
+                    string existingStyle = friendloss.GetAttributeValue("style", "");
+                    friendloss.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+
+            if (recentlosses.HealthLoss)
+            {
+                var healthloss = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Healthcheckbox']");
+                if (healthloss != null)
+                {
+                    string existingStyle = healthloss.GetAttributeValue("style", "");
+                    healthloss.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+
+            if (recentlosses.LifestyleLoss)
+            {
+                var lifestyleloss = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Lifestylecheckbox']");
+                if (lifestyleloss != null)
+                {
+                    string existingStyle = lifestyleloss.GetAttributeValue("style", "");
+                    lifestyleloss.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+
+            if (recentlosses.JobLoss)
+            {
+                var jobloss = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Jobcheckbox']");
+                if (jobloss != null)
+                {
+                    string existingStyle = jobloss.GetAttributeValue("style", "");
+                    jobloss.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+
+            if (recentlosses.IncomeLoss)
+            {
+                var incomeloss = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Incomecheckbox']");
+                if (incomeloss != null)
+                {
+                    string existingStyle = incomeloss.GetAttributeValue("style", "");
+                    incomeloss.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+
+            if (recentlosses.HousingLoss)
+            {
+                var housingloss = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Housingcheckbox']");
+                if (housingloss != null)
+                {
+                    string existingStyle = housingloss.GetAttributeValue("style", "");
+                    housingloss.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+
+            if (recentlosses.NoneLoss)
+            {
+                var noneloss = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Nonecheckbox']");
+                if (noneloss != null)
+                {
+                    string existingStyle = noneloss.GetAttributeValue("style", "");
+                    noneloss.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+
+            var who = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Whotext']");
+            if (who != null)
+            {
+                who.InnerHtml = recentlosses.Name;
+            }
+
+            var when = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Whentext']");
+            if (when != null)
+            {
+                when.InnerHtml = recentlosses.Date.ToString();
+            }
+
+            var natureofloss = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Naturetext']");
+            if (natureofloss != null)
+            {
+                natureofloss.InnerHtml = recentlosses.NatureOfLoss;
+            }
+
+            var otherlosses = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Otherlossestext']");
+            if (otherlosses != null)
+            {
+                otherlosses.InnerHtml = recentlosses.OtherLosses;
+            }
+
+            var additionalinforecentlosses = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Additionalinforecentlossestext']");
+            if (additionalinforecentlosses != null)
+            {
+                additionalinforecentlosses.InnerHtml = recentlosses.AdditionalInfo;
+            }
+
+            // PREGNANCY BIRTH HISTORY
+            switch (pregnancybirthhistory.HasPregnancyComplications)
+            {
+                case true:
+                    var yesonecheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Yesonecheckbox']");
+                    if (yesonecheckbox != null)
+                    {
+                        string existingStyle = yesonecheckbox.GetAttributeValue("style", "");
+                        yesonecheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case false:
+                    var noonecheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Noonecheckbox']");
+                    if (noonecheckbox != null)
+                    {
+                        string existingStyle = noonecheckbox.GetAttributeValue("style", "");
+                        noonecheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+            }
+
+            var describepregnancycomplications = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Describepregnancycomplications']");
+            if (describepregnancycomplications != null)
+            {
+                describepregnancycomplications.InnerHtml = pregnancybirthhistory.DescribePregnancyComplications;
+            }
+
+            switch (pregnancybirthhistory.IsFullTermBirth)
+            {
+                case true:
+                    var fulltermbirth = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Fulltermbirthcheckbox']");
+                    if (fulltermbirth != null)
+                    {
+                        string existingStyle = fulltermbirth.GetAttributeValue("style", "");
+                        fulltermbirth.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case false:
+                    var prematurebirth = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Prematurebirthcheckbox']");
+                    if (prematurebirth != null)
+                    {
+                        string existingStyle = prematurebirth.GetAttributeValue("style", "");
+                        prematurebirth.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+            }
+
+            switch (pregnancybirthhistory.HasBirthComplications)
+            {
+                case true:
+                    var yestwocheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Yestwocheckbox']");
+                    if (yestwocheckbox != null)
+                    {
+                        string existingStyle = yestwocheckbox.GetAttributeValue("style", "");
+                        yestwocheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case false:
+                    var notwocheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Notwocheckbox']");
+                    if (notwocheckbox != null)
+                    {
+                        string existingStyle = notwocheckbox.GetAttributeValue("style", "");
+                        notwocheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+            }
+
+            var describebirthcomplications = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Describebirthcomplications']");
+            if (describebirthcomplications != null)
+            {
+                describebirthcomplications.InnerHtml = pregnancybirthhistory.DescribeBirthComplications;
+            }
+
+            switch (pregnancybirthhistory.HasConsumedDrugs)
+            {
+                case true:
+                    var yesthreecheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Yesthreecheckbox']");
+                    if (yesthreecheckbox != null)
+                    {
+                        string existingStyle = yesthreecheckbox.GetAttributeValue("style", "");
+                        yesthreecheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case false:
+                    var nothreecheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Nothreecheckbox']");
+                    if (nothreecheckbox != null)
+                    {
+                        string existingStyle = nothreecheckbox.GetAttributeValue("style", "");
+                        nothreecheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+            }
+
+            var birthweightlbs = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Birthweightlbs']");
+            if (birthweightlbs != null)
+            {
+                birthweightlbs.InnerHtml = pregnancybirthhistory.BirthWeightLbs.ToString();
+            }
+
+            var birthweightoz = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Birthweightoz']");
+            if (birthweightoz != null)
+            {
+                birthweightoz.InnerHtml = pregnancybirthhistory.BirthWeightOz.ToString();
+            }
+
+            var childhealthatbirth = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Childhealthatbirthtext']");
+            if (childhealthatbirth != null)
+            {
+                childhealthatbirth.InnerHtml = pregnancybirthhistory.BirthHealth;
+            }
+
+            var lengthofhospitalstay = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Lengthofhospitalstaytext']");
+            if (lengthofhospitalstay != null)
+            {
+                lengthofhospitalstay.InnerHtml = pregnancybirthhistory.LengthOfHospitalStay;
+            }
+
+            switch (pregnancybirthhistory.PostpartumDepression)
+            {
+                case true:
+                    var yesfivecheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Yesfivecheckbox']");
+                    if (yesfivecheckbox != null)
+                    {
+                        string existingStyle = yesfivecheckbox.GetAttributeValue("style", "");
+                        yesfivecheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case false:
+                    var nofivecheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Nofivecheckbox']");
+                    if (nofivecheckbox != null)
+                    {
+                        string existingStyle = nofivecheckbox.GetAttributeValue("style", "");
+                        nofivecheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+            }
+
+            switch (pregnancybirthhistory.WasChildAdopted)
+            {
+                case true:
+                    var yessixcheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Yessixcheckbox']");
+                    if (yessixcheckbox != null)
+                    {
+                        string existingStyle = yessixcheckbox.GetAttributeValue("style", "");
+                        yessixcheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case false:
+                    var nosixcheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Nosixcheckbox']");
+                    if (nosixcheckbox != null)
+                    {
+                        string existingStyle = nosixcheckbox.GetAttributeValue("style", "");
+                        nosixcheckbox.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+            }
+
+            var adoptedage = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Adoptedagetext']");
+            if (adoptedage != null)
+            {
+                adoptedage.InnerHtml = pregnancybirthhistory.ChildAdoptedAge.ToString();
+            }
+
+            switch (pregnancybirthhistory.AdoptionType)
+            {
+                case "Domestic adoption":
+                    var domesticadoption = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Domesticadoptioncheckbox']");
+                    if (domesticadoption != null)
+                    {
+                        string existingStyle = domesticadoption.GetAttributeValue("style", "");
+                        domesticadoption.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case "International adoption":
+                    var internationaladoption = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Internationaladoptioncheckbox']");
+                    if (internationaladoption != null)
+                    {
+                        string existingStyle = internationaladoption.GetAttributeValue("style", "");
+                        internationaladoption.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case "Undocumented adoption":
+                    var undocumentedadoption = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Undocumentedadoptioncheckbox']");
+                    if (undocumentedadoption != null)
+                    {
+                        string existingStyle = undocumentedadoption.GetAttributeValue("style", "");
+                        undocumentedadoption.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+            }
+
+            var adoptioncountry = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Adoptioncountrytext']");
+            if (adoptioncountry != null)
+            {
+                adoptioncountry.InnerHtml = pregnancybirthhistory.AdoptionCountry;
+            }
+
+            // DEVELOPMENTAL HISTORY
+            var rolledover = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Rolledovertext']");
+            if (rolledover != null)
+            {
+                rolledover.InnerHtml = developmentalhistory.RolledOverAge.ToString();
+            }
+
+            var crawled = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Crawledtext']");
+            if (crawled != null)
+            {
+                crawled.InnerHtml = developmentalhistory.CrawledAge.ToString();
+            }
+
+            var walked = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Walkedtext']");
+            if (walked != null)
+            {
+                walked.InnerHtml = developmentalhistory.WalkedAge.ToString();
+            }
+
+            var talked = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Talkedtext']");
+            if (talked != null)
+            {
+                talked.InnerHtml = developmentalhistory.TalkedAge.ToString();
+            }
+
+            var toilettrained = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Toilettrainedtext']");
+            if (toilettrained != null)
+            {
+                toilettrained.InnerHtml = developmentalhistory.ToiletTrainedAge.ToString();
+            }
+
+            if (developmentalhistory.SpeechConcerns)
+            {
+                var speech = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Speechcheckbox']");
+                if (speech != null)
+                {
+                    string existingStyle = speech.GetAttributeValue("style", "");
+                    speech.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+
+            if (developmentalhistory.MotorSkillsConcerns)
+            {
+                var motorskills = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Motorskillscheckbox']");
+                if (motorskills != null)
+                {
+                    string existingStyle = motorskills.GetAttributeValue("style", "");
+                    motorskills.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+
+            if (developmentalhistory.CognitiveConcerns)
+            {
+                var cognitive = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Cognitivecheckbox']");
+                if (cognitive != null)
+                {
+                    string existingStyle = cognitive.GetAttributeValue("style", "");
+                    cognitive.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+
+            if (developmentalhistory.SensoryConcerns)
+            {
+                var sensory = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Sensorycheckbox']");
+                if (sensory != null)
+                {
+                    string existingStyle = sensory.GetAttributeValue("style", "");
+                    sensory.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+
+            if (developmentalhistory.BehavioralConcerns)
+            {
+                var behavioral = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Behavioralcheckbox']");
+                if (behavioral != null)
+                {
+                    string existingStyle = behavioral.GetAttributeValue("style", "");
+                    behavioral.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+
+            if (developmentalhistory.EmotionalConcerns)
+            {
+                var emotional = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Emotionalcheckbox']");
+                if (emotional != null)
+                {
+                    string existingStyle = emotional.GetAttributeValue("style", "");
+                    emotional.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+
+            if (developmentalhistory.SocialConcerns)
+            {
+                var social = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Socialcheckbox']");
+                if (social != null)
+                {
+                    string existingStyle = social.GetAttributeValue("style", "");
+                    social.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+
+            switch (developmentalhistory.HasSignificantDisturbance)
+            {
+                case true:
+                    var yessignificantissue = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Yessignificantissuecheckbox']");
+                    if (yessignificantissue != null)
+                    {
+                        string existingStyle = yessignificantissue.GetAttributeValue("style", "");
+                        yessignificantissue.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case false:
+                    var nosignificantissue = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Nosignificantissuecheckbox']");
+                    if (nosignificantissue != null)
+                    {
+                        string existingStyle = nosignificantissue.GetAttributeValue("style", "");
+                        nosignificantissue.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+            }
+
+            var describesignificantissue = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Describesignificantissue']");
+            if (describesignificantissue != null)
+            {
+                describesignificantissue.InnerHtml = developmentalhistory.DescribeSignificantDisturbance;
+            }
+
+            // MENTAL HEALTH HISTORY
+            switch (mentalhealthhistory[0].HasReceivedCounseling)
+            {
+                case true:
+                    var yesreceivedcounseling = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Yesreceivedcounselingcheckbox']");
+                    if (yesreceivedcounseling != null)
+                    {
+                        string existingStyle = yesreceivedcounseling.GetAttributeValue("style", "");
+                        yesreceivedcounseling.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case false:
+                    var noreceivedcounseling = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Noreceivedcounselingcheckbox']");
+                    if (noreceivedcounseling != null)
+                    {
+                        string existingStyle = noreceivedcounseling.GetAttributeValue("style", "");
+                        noreceivedcounseling.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+            }
+
+            int mentalCount = 1;
+            foreach (var mentalhealth in mentalhealthhistory)
+            {
+                var dateofservice = htmlDoc.DocumentNode.SelectSingleNode($"//div[@class='Dateofservice{mentalCount}']");
+                if (dateofservice != null)
+                {
+                    dateofservice.InnerHtml = mentalhealth.DateOfService.ToString();
+                }
+
+                var placeprovider = htmlDoc.DocumentNode.SelectSingleNode($"//div[@class='Placeprovider{mentalCount}']");
+                if (placeprovider != null)
+                {
+                    placeprovider.InnerHtml = mentalhealth.Provider;
+                }
+
+                var reasonfortreatment = htmlDoc.DocumentNode.SelectSingleNode($"//div[@class='Reasonfortreatment{mentalCount}']");
+                if (reasonfortreatment != null)
+                {
+                    reasonfortreatment.InnerHtml = mentalhealth.ReasonForTreatment;
+                }
+
+                string weretheserviceshelpfultext = mentalhealth.WereServicesHelpful ? "Yes" : "No";
+                var weretheserviceshelpful = htmlDoc.DocumentNode.SelectSingleNode($"//div[@class='Weretheserviceshelpful{mentalCount}']");
+                if (weretheserviceshelpful != null)
+                {
+                    weretheserviceshelpful.InnerHtml = weretheserviceshelpfultext;
+                }
+
+                mentalCount++;
+            }
+
+            // FAMILY HISTORY
+            foreach (var family in familyhistory)
+            {
+                int familyCount = family.IsSelf ? 1 : 2;
+
+                string depressiontext = family.HasDepression ? "Yes" : "No";
+                var depression = htmlDoc.DocumentNode.SelectSingleNode($"//div[@class='Depression{familyCount}']");
+                if (depression != null)
+                {
+                    depression.InnerHtml = depressiontext;
+                }
+
+                string anxietytext = family.HasAnxiety ? "Yes" : "No";
+                var anxiety = htmlDoc.DocumentNode.SelectSingleNode($"//div[@class='Anxiety{familyCount}']");
+                if (anxiety != null)
+                {
+                    anxiety.InnerHtml = anxietytext;
+                }
+
+                string bipolarDisordertext = family.HasBipolarDisorder ? "Yes" : "No";
+                var bipolarDisorder = htmlDoc.DocumentNode.SelectSingleNode($"//div[@class='Bipolardisorder{familyCount}']");
+                if (bipolarDisorder != null)
+                {
+                    bipolarDisorder.InnerHtml = bipolarDisordertext;
+                }
+
+                string schizophreniaText = family.HasSchizophrenia ? "Yes" : "No";
+                var schizophrenia = htmlDoc.DocumentNode.SelectSingleNode($"//div[@class='Schizophrenia{familyCount}']");
+                if (schizophrenia != null)
+                {
+                    schizophrenia.InnerHtml = schizophreniaText;
+                }
+
+                string adhdaddText = family.HasADHD_ADD ? "Yes" : "No";
+                var adhdadd = htmlDoc.DocumentNode.SelectSingleNode($"//div[@class='Adhdadd{familyCount}']");
+                if (adhdadd != null)
+                {
+                    adhdadd.InnerHtml = adhdaddText;
+                }
+
+                string traumahistoryText = family.HasTraumaHistory ? "Yes" : "No";
+                var traumahistory = htmlDoc.DocumentNode.SelectSingleNode($"//div[@class='Traumahistory{familyCount}']");
+                if (traumahistory != null)
+                {
+                    traumahistory.InnerHtml = traumahistoryText;
+                }
+
+                string abusivebehaviorText = family.HasAbusiveBehavior ? "Yes" : "No";
+                var abusivebehavior = htmlDoc.DocumentNode.SelectSingleNode($"//div[@class='Abusivebehavior{familyCount}']");
+                if (abusivebehavior != null)
+                {
+                    abusivebehavior.InnerHtml = abusivebehaviorText;
+                }
+
+                string alcoholabuseText = family.HasAlcoholAbuse ? "Yes" : "No";
+                var alcoholabuse = htmlDoc.DocumentNode.SelectSingleNode($"//div[@class='Alcoholabuse{familyCount}']");
+                if (alcoholabuse != null)
+                {
+                    alcoholabuse.InnerHtml = alcoholabuseText;
+                }
+
+                string drugabuseText = family.HasDrugAbuse ? "Yes" : "No";
+                var drugabuse = htmlDoc.DocumentNode.SelectSingleNode($"//div[@class='Drugabuse{familyCount}']");
+                if (drugabuse != null)
+                {
+                    drugabuse.InnerHtml = drugabuseText;
+                }
+
+                string incarcerationText = family.HasIncarceration ? "Yes" : "No";
+                var incarceration = htmlDoc.DocumentNode.SelectSingleNode($"//div[@class='Incarceration{familyCount}']");
+                if (incarceration != null)
+                {
+                    incarceration.InnerHtml = incarcerationText;
+                }
+
+            }
+
+            var additionalinfopatientfamily = htmlDoc.DocumentNode.SelectSingleNode($"//div[@class='Additionalinfopatientfamilytext']");
+            if (additionalinfopatientfamily != null)
+            {
+                additionalinfopatientfamily.InnerHtml = familyhistory[0].AdditionalInfo;
+            }
+
+            // SAFETY CONCERNS
+            switch (safetyconcerns.HasSelfHarm)
+            {
+                case true:
+                    var yesinflictedburns = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Yesinflictedburnscheckbox']");
+                    if (yesinflictedburns != null)
+                    {
+                        string existingStyle = yesinflictedburns.GetAttributeValue("style", "");
+                        yesinflictedburns.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case false:
+                    var noinflictedburns = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Noinflictedburnscheckbox']");
+                    if (noinflictedburns != null)
+                    {
+                        string existingStyle = noinflictedburns.GetAttributeValue("style", "");
+                        noinflictedburns.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+            }
+
+            switch (safetyconcerns.IsHomicidal)
+            {
+                case true:
+                    var yespresentlyhomicidal = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Yespresentlyhomicidalcheckbox']");
+                    if (yespresentlyhomicidal != null)
+                    {
+                        string existingStyle = yespresentlyhomicidal.GetAttributeValue("style", "");
+                        yespresentlyhomicidal.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case false:
+                    var nopresentlyhomicidal = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Nopresentlyhomicidalcheckbox']");
+                    if (nopresentlyhomicidal != null)
+                    {
+                        string existingStyle = nopresentlyhomicidal.GetAttributeValue("style", "");
+                        nopresentlyhomicidal.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+            }
+
+            var describehomicidal = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Describehomicidaltext']");
+            if (describehomicidal != null)
+            {
+                describehomicidal.InnerHtml = safetyconcerns.DescribeHomicidal;
+            }
+
+            switch (safetyconcerns.IsSuicidal)
+            {
+                case true:
+                    var yespresentlysuicidal = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Yespresentlysuicidalcheckbox']");
+                    if (yespresentlysuicidal != null)
+                    {
+                        string existingStyle = yespresentlysuicidal.GetAttributeValue("style", "");
+                        yespresentlysuicidal.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case false:
+                    var nopresentlysuicidal = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Nopresentlysuicidalcheckbox']");
+                    if (nopresentlysuicidal != null)
+                    {
+                        string existingStyle = nopresentlysuicidal.GetAttributeValue("style", "");
+                        nopresentlysuicidal.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+            }
+
+            var describesuicidal = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Describesuicidaltext']");
+            if (describesuicidal != null)
+            {
+                describesuicidal.InnerHtml = safetyconcerns.DescribeSuicidal;
+            }
 
             return htmlDoc.DocumentNode.OuterHtml;
         }
