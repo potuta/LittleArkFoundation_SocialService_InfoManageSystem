@@ -18,6 +18,12 @@ using LittleArkFoundation.Areas.Admin.Models.HospitalizationHistory;
 using LittleArkFoundation.Areas.Admin.Models.MedicalScreenings;
 using LittleArkFoundation.Areas.Admin.Models.PrimaryCareDoctor;
 using LittleArkFoundation.Areas.Admin.Models.PresentingProblems;
+using LittleArkFoundation.Areas.Admin.Models.RecentLosses;
+using LittleArkFoundation.Areas.Admin.Models.PregnancyBirthHistory;
+using LittleArkFoundation.Areas.Admin.Models.DevelopmentalHistory;
+using LittleArkFoundation.Areas.Admin.Models.MentalHealthHistory;
+using LittleArkFoundation.Areas.Admin.Models.FamilyHistory;
+using LittleArkFoundation.Areas.Admin.Models.SafetyConcerns;
 
 namespace LittleArkFoundation.Data
 {
@@ -62,6 +68,12 @@ namespace LittleArkFoundation.Data
         public DbSet<MedicalScreeningsModel> MedicalScreenings { get; set; }
         public DbSet<PrimaryCareDoctorModel> PrimaryCareDoctor {  get; set; }
         public DbSet<PresentingProblemsModel> PresentingProblems { get; set; }
+        public DbSet<RecentLossesModel> RecentLosses { get; set; }
+        public DbSet<PregnancyBirthHistoryModel> PregnancyBirthHistory { get; set; }
+        public DbSet<DevelopmentalHistoryModel> DevelopmentalHistory { get; set; }
+        public DbSet<MentalHealthHistoryModel> MentalHealthHistory { get; set; }
+        public DbSet<FamilyHistoryModel> FamilyHistory { get; set; }
+        public DbSet<SafetyConcernsModel> SafetyConcerns { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -261,6 +273,60 @@ namespace LittleArkFoundation.Data
 
             modelBuilder.Entity<PresentingProblemsModel>()
                 .Property(p => p.ProblemID)
+                .ValueGeneratedOnAdd();
+
+            // RecentLosses
+            modelBuilder.Entity<RecentLossesModel>()
+                .ToTable("RecentLosses")
+                .HasKey(r => r.RecentLossesID);
+
+            modelBuilder.Entity<RecentLossesModel>()
+                .Property(r => r.RecentLossesID)
+                .ValueGeneratedOnAdd();
+
+            // PregnancyBirthHistory
+            modelBuilder.Entity<PregnancyBirthHistoryModel>()
+                .ToTable("PregnancyBirthHistory")
+                .HasKey(p => p.BirthID);
+
+            modelBuilder.Entity<PregnancyBirthHistoryModel>()
+                .Property(p => p.BirthID)
+                .ValueGeneratedOnAdd();
+
+            // DevelopmentalHistory
+            modelBuilder.Entity<DevelopmentalHistoryModel>()
+                .ToTable("DevelopmentalHistory")
+                .HasKey(d => d.DevelopmentalHistoryID);
+
+            modelBuilder.Entity<DevelopmentalHistoryModel>()
+                .Property(d => d.DevelopmentalHistoryID)
+                .ValueGeneratedOnAdd();
+
+            // MentalHealthHistory
+            modelBuilder.Entity<MentalHealthHistoryModel>()
+                .ToTable("MentalHealthHistory")
+                .HasKey(m => m.MentalHealthID);
+
+            modelBuilder.Entity<MentalHealthHistoryModel>()
+                .Property(m => m.MentalHealthID)
+                .ValueGeneratedOnAdd();
+
+            // FamilyHistory
+            modelBuilder.Entity<FamilyHistoryModel>()
+                .ToTable("FamilyHistory")
+                .HasKey(f => f.FamilyHistoryID);
+
+            modelBuilder.Entity<FamilyHistoryModel>()
+                .Property(f => f.FamilyHistoryID)
+                .ValueGeneratedOnAdd();
+
+            // SafetyConcerns
+            modelBuilder.Entity<SafetyConcernsModel>()
+                .ToTable("SafetyConcerns")
+                .HasKey(s => s.SafetyConcernID);
+
+            modelBuilder.Entity<SafetyConcernsModel>()
+                .Property(s => s.SafetyConcernID)
                 .ValueGeneratedOnAdd();
         }
     }

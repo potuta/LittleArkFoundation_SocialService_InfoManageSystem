@@ -16,5 +16,6 @@
         public string? DescribeOtherConcern { get; set; }
         public string? DurationOfStress { get; set; }
         public int? CopingLevel { get; set; }
+        public string? OtherFamilySituation { get; set; }
     }
 }

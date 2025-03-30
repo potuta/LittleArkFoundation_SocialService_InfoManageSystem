@@ -14,6 +14,8 @@ using LittleArkFoundation.Areas.Admin.Models.FamilyComposition;
 using LittleArkFoundation.Areas.Admin.Models.Diagnoses;
 using LittleArkFoundation.Areas.Admin.Models.Medications;
 using LittleArkFoundation.Areas.Admin.Models.HospitalizationHistory;
+using LittleArkFoundation.Areas.Admin.Models.MentalHealthHistory;
+using LittleArkFoundation.Areas.Admin.Models.FamilyHistory;
 // TODO: Implement logging for forms
 namespace LittleArkFoundation.Areas.Admin.Controllers
 {
@@ -59,7 +61,10 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 FamilyMembers = new List<FamilyCompositionModel>() { new FamilyCompositionModel() },
                 Diagnoses = new List<DiagnosesModel>() { new DiagnosesModel() },
                 Medications = new List<MedicationsModel> { new MedicationsModel() },
-                HospitalizationHistory = new List<HospitalizationHistoryModel> { new HospitalizationHistoryModel() }
+                HospitalizationHistory = new List<HospitalizationHistoryModel> { new HospitalizationHistoryModel() },
+                MentalHealthHistory = new List<MentalHealthHistoryModel> { new MentalHealthHistoryModel() },
+                FamilyHistory = new List<FamilyHistoryModel> { new FamilyHistoryModel() }
+
             };
 
             return View(viewModel);
@@ -143,6 +148,30 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 // PRESENTING PROBLEMS
                 formViewModel.PresentingProblems.PatientID = patientID;
 
+                // RECENT LOSSES
+                formViewModel.RecentLosses.PatientID = patientID;
+
+                // PREGNANCY BIRTH HISTORY
+                formViewModel.PregnancyBirthHistory.PatientID = patientID;
+
+                // DEVELOPMENTAL HISTORY
+                formViewModel.DevelopmentalHistory.PatientID = patientID;
+
+                // MENTAL HEALTH HISTORY
+                foreach (var mentalHealthHistory in formViewModel.MentalHealthHistory)
+                {
+                    mentalHealthHistory.PatientID = patientID;
+                }
+
+                // FAMILY HISTORY   
+                foreach (var familyHistory in formViewModel.FamilyHistory)
+                {
+                    familyHistory.PatientID = patientID;
+                }
+
+                // SAFETY CONCERNS
+                formViewModel.SafetyConcerns.PatientID = patientID;
+
                 // Save Patient first to get the ID, avoids Forein Key constraint
                 await context.Patients.AddAsync(formViewModel.Patient);
                 await context.SaveChangesAsync();
@@ -164,6 +193,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 await context.MedicalScreenings.AddAsync(formViewModel.MedicalScreenings);
                 await context.PrimaryCareDoctor.AddAsync(formViewModel.PrimaryCareDoctor);
                 await context.PresentingProblems.AddAsync(formViewModel.PresentingProblems);
+                await context.RecentLosses.AddAsync(formViewModel.RecentLosses);
+                await context.PregnancyBirthHistory.AddAsync(formViewModel.PregnancyBirthHistory);
+                await context.DevelopmentalHistory.AddAsync(formViewModel.DevelopmentalHistory);
+                await context.MentalHealthHistory.AddRangeAsync(formViewModel.MentalHealthHistory);
+                await context.FamilyHistory.AddRangeAsync(formViewModel.FamilyHistory);
+                await context.SafetyConcerns.AddAsync(formViewModel.SafetyConcerns);
                 await context.SaveChangesAsync();
 
                 TempData["SuccessMessage"] = "Successfully created new form";
@@ -177,6 +212,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             string templatePath = Path.Combine(_environment.WebRootPath, "templates/page1_form_template.html");
             string templatePath2 = Path.Combine(_environment.WebRootPath, "templates/page2_form_template.html");
             string templatePath3 = Path.Combine(_environment.WebRootPath, "templates/page3_form_template.html");
+            string templatePath4 = Path.Combine(_environment.WebRootPath, "templates/page4_form_template.html");
 
             if (!System.IO.File.Exists(templatePath))
             {
@@ -192,10 +228,14 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             string htmlContent3 = await System.IO.File.ReadAllTextAsync(templatePath3);
             htmlContent3 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page3(htmlContent3, id);
 
+            string htmlContent4 = await System.IO.File.ReadAllTextAsync(templatePath4);
+            htmlContent4 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page4(htmlContent4, id);
+
             // Pass the modified HTML to the view
             ViewBag.FormHtml1 = htmlContent;
             ViewBag.FormHtml2 = htmlContent2;
             ViewBag.FormHtml3 = htmlContent3;
+            ViewBag.FormHtml4 = htmlContent4;
 
             ViewBag.Id = id;
 
@@ -233,6 +273,16 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var medicalscreenings = await context.MedicalScreenings.FirstOrDefaultAsync(m => m.PatientID == id);
             var primarycaredoctor = await context.PrimaryCareDoctor.FirstOrDefaultAsync(m => m.PatientID == id);
             var presentingproblems = await context.PresentingProblems.FirstOrDefaultAsync(m => m.PatientID == id);
+            var recentlosses = await context.RecentLosses.FirstOrDefaultAsync(m => m.PatientID == id);
+            var pregnancybirthhistory = await context.PregnancyBirthHistory.FirstOrDefaultAsync(m => m.PatientID == id);
+            var developmentalhistory = await context.DevelopmentalHistory.FirstOrDefaultAsync(m => m.PatientID == id);
+            var mentalhealthhistory = await context.MentalHealthHistory
+                                .Where(m => m.PatientID == id)
+                                .ToListAsync();
+            var familyhistory = await context.FamilyHistory
+                                .Where(f => f.PatientID == id)
+                                .ToListAsync();
+            var safetyconcerns = await context.SafetyConcerns.FirstOrDefaultAsync(s => s.PatientID == id);
 
             var viewModel = new FormViewModel()
             {
@@ -252,7 +302,13 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 HospitalizationHistory = hospitalization,
                 MedicalScreenings = medicalscreenings,
                 PrimaryCareDoctor = primarycaredoctor,
-                PresentingProblems = presentingproblems
+                PresentingProblems = presentingproblems,
+                RecentLosses = recentlosses,
+                PregnancyBirthHistory = pregnancybirthhistory,
+                DevelopmentalHistory = developmentalhistory,
+                MentalHealthHistory = mentalhealthhistory,
+                FamilyHistory = familyhistory,
+                SafetyConcerns = safetyconcerns
             };
 
             return View(viewModel);
@@ -270,6 +326,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var diagnoses = context.Diagnoses.Where(d => d.PatientID == id);
             var medications = context.Medications.Where(m  => m.PatientID == id);
             var hospitalization = context.HospitalizationHistory.Where(h => h.PatientID == id);
+            var mentalhealthhistory = context.MentalHealthHistory.Where(m => m.PatientID == id);
+            var familyhistory = context.FamilyHistory.Where(f => f.PatientID == id);
 
             if (familyMembers.Any())
             {
@@ -286,6 +344,14 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             if (hospitalization.Any())
             {
                 context.HospitalizationHistory.RemoveRange(hospitalization);
+            }
+            if (mentalhealthhistory.Any())
+            {
+                context.MentalHealthHistory.RemoveRange(mentalhealthhistory);
+            }
+            if (familyhistory.Any())
+            {
+                context.FamilyHistory.RemoveRange(familyhistory);
             }
 
             if (formViewModel.FamilyMembers != null)
@@ -320,6 +386,22 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
                 await context.HospitalizationHistory.AddRangeAsync(formViewModel.HospitalizationHistory);
             }
+            if (formViewModel.MentalHealthHistory != null)
+            {
+                foreach (var mentalHealthHistory in formViewModel.MentalHealthHistory)
+                {
+                    mentalHealthHistory.PatientID = id;
+                }
+                await context.MentalHealthHistory.AddRangeAsync(formViewModel.MentalHealthHistory);
+            }
+            if (formViewModel.FamilyHistory != null)
+            {
+                foreach (var familyHistory in formViewModel.FamilyHistory)
+                {
+                    familyHistory.PatientID = id;
+                }
+                await context.FamilyHistory.AddRangeAsync(formViewModel.FamilyHistory);
+            }
 
             // Update Patient first, avoids Forein Key constraint
             context.Patients.Update(formViewModel.Patient);
@@ -338,6 +420,10 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             context.MedicalScreenings.Update(formViewModel.MedicalScreenings);
             context.PrimaryCareDoctor.Update(formViewModel.PrimaryCareDoctor);
             context.PresentingProblems.Update(formViewModel.PresentingProblems);
+            context.RecentLosses.Update(formViewModel.RecentLosses);
+            context.PregnancyBirthHistory.Update(formViewModel.PregnancyBirthHistory);
+            context.DevelopmentalHistory.Update(formViewModel.DevelopmentalHistory);
+            context.SafetyConcerns.Update(formViewModel.SafetyConcerns);
             await context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = $"Successfully edited PatientID: {id}";
@@ -354,6 +440,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 string templatePath = Path.Combine(_environment.WebRootPath, "templates/page1_form_template.html");
                 string templatePath2 = Path.Combine(_environment.WebRootPath, "templates/page2_form_template.html");
                 string templatePath3 = Path.Combine(_environment.WebRootPath, "templates/page3_form_template.html");
+                string templatePath4 = Path.Combine(_environment.WebRootPath, "templates/page4_form_template.html");
 
                 if (!System.IO.File.Exists(templatePath))
                 {
@@ -379,15 +466,20 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 string htmlContent3 = await System.IO.File.ReadAllTextAsync(templatePath3);
                 htmlContent3 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page3(htmlContent3, id);
 
+                string htmlContent4 = await System.IO.File.ReadAllTextAsync(templatePath4);
+                htmlContent4 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page4(htmlContent4, id);
+
                 var pdf1 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent);
                 var pdf2 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent2);
                 var pdf3 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent3);
+                var pdf4 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent4);
 
                 List<byte[]> pdfList = new List<byte[]>
                 {
                     pdf1,
                     pdf2,
-                    pdf3
+                    pdf3,
+                    pdf4
                 };
 
                 //byte[] pdfBytes = _pdfConverter.Convert(pdfDocument);

@@ -19,12 +19,17 @@
     @Html.Raw(ViewBag.FormHtml3)
 </div>
 
+<div id="page4" class="form-page" style="display: none;">
+    @Html.Raw(ViewBag.FormHtml4)
+</div>
+
 <!-- Navigation Buttons -->
 <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
     <button type="button" id="prevPage" class="btn btn-outline-primary" onclick="changePage(-1)"><</button>
     <button type="button" id="navPage1" class="btn btn-outline-primary active" onclick="jumpToPage(1)">1</button>
     <button type="button" id="navPage2" class="btn btn-outline-primary" onclick="jumpToPage(2)">2</button>
     <button type="button" id="navPage3" class="btn btn-outline-primary" onclick="jumpToPage(3)">3</button>
+    <button type="button" id="navPage4" class="btn btn-outline-primary" onclick="jumpToPage(4)">4</button>
     <button type="button" id="nextPage" class="btn btn-outline-primary" onclick="changePage(1)">></button>
 </div>
 
@@ -44,7 +49,7 @@
 @section Scripts {
     <script>
         let currentPage = 1;
-        const totalPages = 3; // Adjust based on total form pages
+        const totalPages = 4; // Adjust based on total form pages
 
         function changePage(step) {
             document.getElementById(`page${currentPage}`).style.display = "none";

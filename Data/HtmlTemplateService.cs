@@ -1542,5 +1542,26 @@ namespace LittleArkFoundation.Data
 
             return htmlDoc.DocumentNode.OuterHtml; // Return updated HTML
         }
+
+        public async Task<string> ModifyHtmlTemplateAsync_Page4(string htmlContent, int id)
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var patient = await context.Patients.FindAsync(id);
+
+            if (patient == null)
+            {
+                return string.Empty;
+            }
+
+            // USING HTMLAGILITYPACK
+            var htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(htmlContent);
+
+            return htmlDoc.DocumentNode.OuterHtml;
+        }
+
     }
 }

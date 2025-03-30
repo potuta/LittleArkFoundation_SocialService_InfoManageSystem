@@ -4,12 +4,12 @@
     {
         public int ScreeningsID { get; set; }
         public int PatientID { get; set; }
-        public bool? HasScreeningDone { get; set; }
-        public DateOnly? HearingTestDate { get; set; }
-        public string? HearingTestOutcome { get; set; }
-        public DateOnly? VisionTestDate { get; set; }
-        public string? VisionTestOutcome { get; set; }
-        public DateOnly? SpeechTestDate { get; set; }
-        public string? SpeechTestOutcome { get; set; } 
+        public bool HasScreeningDone { get; set; } = false;
+        public DateOnly HearingTestDate { get; set; } = new DateOnly(1900, 1, 1);
+        public string HearingTestOutcome { get; set; } = "N/A";
+        public DateOnly VisionTestDate { get; set; } = new DateOnly(1900, 1, 1);
+        public string VisionTestOutcome { get; set; } = "N/A";
+        public DateOnly SpeechTestDate { get; set; } = new DateOnly(1900, 1, 1);
+        public string SpeechTestOutcome { get; set; } = "N/A"; 
     }
 }
