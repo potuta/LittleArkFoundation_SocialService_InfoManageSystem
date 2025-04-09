@@ -1606,7 +1606,43 @@
             </tr>
             <tr>
                 <th>
-                    1. Has your child ever inflicted burns or wound on his/herself?
+                    1. Is your child presently suicidal?
+                    <div class="radio-group">
+                        <input type="radio" asp-for="SafetyConcerns.IsSuicidal" value="True" required> Yes
+                        <input type="radio" asp-for="SafetyConcerns.IsSuicidal" value="False"> No
+                    </div>
+
+                    if yes, please explain:
+                    <input type="text" asp-for="SafetyConcerns.DescribeSuicidal" placeholder="Type N/A if no answer" required>
+                </th>
+            </tr>
+            <tr>
+                <th>
+                     2. Has your child ever attempted to commit suicide?
+                    <div class="radio-group">
+                        <input type="radio" asp-for="SafetyConcerns.HasAttemptedSuicide" value="True" required> Yes
+                        <input type="radio" asp-for="SafetyConcerns.HasAttemptedSuicide" value="False"> No
+                    </div>
+
+                    if yes, please explain:
+                    <input type="text" asp-for="SafetyConcerns.DescribeAttemptedSuicide" placeholder="Type N/A if no answer" required>
+                </th>
+            </tr>
+            <tr>
+                <th>
+                    3. Is there a history of suicide in your child’s immediate and/or extended family?
+                    <div class="radio-group">
+                        <input type="radio" asp-for="SafetyConcerns.IsThereHistoryOfSuicide" value="True" required> Yes
+                        <input type="radio" asp-for="SafetyConcerns.IsThereHistoryOfSuicide" value="False"> No
+                    </div>
+
+                    if yes, please explain:
+                    <input type="text" asp-for="SafetyConcerns.DescribeHistoryOfSuicide" placeholder="Type N/A if no answer" required>
+                </th>
+            </tr>
+            <tr>
+                <th>
+                    4. Has your child ever inflicted burns or wound on his/herself?
                     <div class="radio-group">
                         <input type="radio" asp-for="SafetyConcerns.HasSelfHarm" value="True" required> Yes
                         <input type="radio" asp-for="SafetyConcerns.HasSelfHarm" value="False"> No
@@ -1615,7 +1651,7 @@
             </tr>
             <tr>
                 <th>
-                    2. Is your child presently homicidal?
+                    5. Is your child presently homicidal?
                     <div class="radio-group">
                         <input type="radio" asp-for="SafetyConcerns.IsHomicidal" value="True" required> Yes
                         <input type="radio" asp-for="SafetyConcerns.IsHomicidal" value="False"> No
@@ -1627,14 +1663,8 @@
             </tr>
             <tr>
                 <th>
-                    3 Is your child presently suicidal?
-                    <div class="radio-group">
-                        <input type="radio" asp-for="SafetyConcerns.IsSuicidal" value="True" required> Yes
-                        <input type="radio" asp-for="SafetyConcerns.IsSuicidal" value="False"> No
-                    </div>
-
-                    if yes, please explain:
-                    <input type="text" asp-for="SafetyConcerns.DescribeSuicidal" placeholder="Type N/A if no answer" required>
+                    6. Additional Information (kindly list additional information as needed to address past and current safety issues):
+                    <textarea asp-for="SafetyConcerns.AdditionalInfo" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
                 </th>
             </tr>
         </table> 

@@ -2273,56 +2273,10 @@ namespace LittleArkFoundation.Data
             }
 
             // SAFETY CONCERNS
-            switch (safetyconcerns.HasSelfHarm)
-            {
-                case true:
-                    var yesinflictedburns = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Yesinflictedburnscheckbox']");
-                    if (yesinflictedburns != null)
-                    {
-                        string existingStyle = yesinflictedburns.GetAttributeValue("style", "");
-                        yesinflictedburns.SetAttributeValue("style", existingStyle + "; background-color: black;");
-                    }
-                    break;
-                case false:
-                    var noinflictedburns = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Noinflictedburnscheckbox']");
-                    if (noinflictedburns != null)
-                    {
-                        string existingStyle = noinflictedburns.GetAttributeValue("style", "");
-                        noinflictedburns.SetAttributeValue("style", existingStyle + "; background-color: black;");
-                    }
-                    break;
-            }
-
-            switch (safetyconcerns.IsHomicidal)
-            {
-                case true:
-                    var yespresentlyhomicidal = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Yespresentlyhomicidalcheckbox']");
-                    if (yespresentlyhomicidal != null)
-                    {
-                        string existingStyle = yespresentlyhomicidal.GetAttributeValue("style", "");
-                        yespresentlyhomicidal.SetAttributeValue("style", existingStyle + "; background-color: black;");
-                    }
-                    break;
-                case false:
-                    var nopresentlyhomicidal = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Nopresentlyhomicidalcheckbox']");
-                    if (nopresentlyhomicidal != null)
-                    {
-                        string existingStyle = nopresentlyhomicidal.GetAttributeValue("style", "");
-                        nopresentlyhomicidal.SetAttributeValue("style", existingStyle + "; background-color: black;");
-                    }
-                    break;
-            }
-
-            var describehomicidal = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Describehomicidaltext']");
-            if (describehomicidal != null)
-            {
-                describehomicidal.InnerHtml = safetyconcerns.DescribeHomicidal;
-            }
-
             switch (safetyconcerns.IsSuicidal)
             {
                 case true:
-                    var yespresentlysuicidal = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Yespresentlysuicidalcheckbox']");
+                    var yespresentlysuicidal = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='yespresentlysuicidalcheckbox']");
                     if (yespresentlysuicidal != null)
                     {
                         string existingStyle = yespresentlysuicidal.GetAttributeValue("style", "");
@@ -2330,7 +2284,7 @@ namespace LittleArkFoundation.Data
                     }
                     break;
                 case false:
-                    var nopresentlysuicidal = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Nopresentlysuicidalcheckbox']");
+                    var nopresentlysuicidal = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='nopresentlysuicidalcheckbox']");
                     if (nopresentlysuicidal != null)
                     {
                         string existingStyle = nopresentlysuicidal.GetAttributeValue("style", "");
@@ -2339,14 +2293,139 @@ namespace LittleArkFoundation.Data
                     break;
             }
 
-            var describesuicidal = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Describesuicidaltext']");
+            var describesuicidal = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='ifyesexplainpresentlysuicidal']");
             if (describesuicidal != null)
             {
                 describesuicidal.InnerHtml = safetyconcerns.DescribeSuicidal;
             }
 
+            switch (safetyconcerns.HasAttemptedSuicide)
+            {
+                case true:
+                    var yesattemptedsuicide = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='yeshasattemptedsuicidecheckbox']");
+                    if (yesattemptedsuicide != null)
+                    {
+                        string existingStyle = yesattemptedsuicide.GetAttributeValue("style", "");
+                        yesattemptedsuicide.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case false:
+                    var noattemptedsuicide = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='nohasattemptedsuicidecheckbox']");
+                    if (noattemptedsuicide != null)
+                    {
+                        string existingStyle = noattemptedsuicide.GetAttributeValue("style", "");
+                        noattemptedsuicide.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+            }
+
+            var attemptedsuicide = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='ifyesexplainattemptedsuicide']");
+            if (attemptedsuicide != null)
+            {
+                attemptedsuicide.InnerHtml = safetyconcerns.DescribeAttemptedSuicide;
+            }
+
+            switch (safetyconcerns.IsThereHistoryOfSuicide)
+            {
+                case true:
+                    var yessuicidehistory = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='yessuicidehistorycheckbox']");
+                    if (yessuicidehistory != null)
+                    {
+                        string existingStyle = yessuicidehistory.GetAttributeValue("style", "");
+                        yessuicidehistory.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case false:
+                    var nosuicidehistory = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='nosuicidehistorycheckbox']");
+                    if (nosuicidehistory != null)
+                    {
+                        string existingStyle = nosuicidehistory.GetAttributeValue("style", "");
+                        nosuicidehistory.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+            }
+
+            var describesuicidehistory = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='ifyesexplainsuicidehistory']");
+            if (describesuicidehistory != null)
+            {
+                describesuicidehistory.InnerHtml = safetyconcerns.DescribeHistoryOfSuicide;
+            }
+
+            switch (safetyconcerns.HasSelfHarm)
+            {
+                case true:
+                    var yesinflictedburns = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='yesinflictedburnscheckbox']");
+                    if (yesinflictedburns != null)
+                    {
+                        string existingStyle = yesinflictedburns.GetAttributeValue("style", "");
+                        yesinflictedburns.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case false:
+                    var noinflictedburns = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='noinflictedburnscheckbox']");
+                    if (noinflictedburns != null)
+                    {
+                        string existingStyle = noinflictedburns.GetAttributeValue("style", "");
+                        noinflictedburns.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+            }
+
             return htmlDoc.DocumentNode.OuterHtml;
         }
 
+        public async Task<string> ModifyHtmlTemplateAsync_Page5(string htmlContent, int id)
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var patient = await context.Patients.FindAsync(id);
+            var safetyconcerns = await context.SafetyConcerns.FirstOrDefaultAsync(p => p.PatientID == id);
+
+            if (patient == null)
+            {
+                return string.Empty;
+            }
+
+            // USING HTMLAGILITYPACK
+            var htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(htmlContent);
+
+            // SAFETY CONCERNS
+            switch (safetyconcerns.IsHomicidal)
+            {
+                case true:
+                    var yespresentlyhomicidal = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='yespresentlyhomicidalcheckbox']");
+                    if (yespresentlyhomicidal != null)
+                    {
+                        string existingStyle = yespresentlyhomicidal.GetAttributeValue("style", "");
+                        yespresentlyhomicidal.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+                case false:
+                    var nopresentlyhomicidal = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='nopresentlyhomicidalcheckbox']");
+                    if (nopresentlyhomicidal != null)
+                    {
+                        string existingStyle = nopresentlyhomicidal.GetAttributeValue("style", "");
+                        nopresentlyhomicidal.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                    }
+                    break;
+            }
+
+            var describehomicidal = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='ifyesexplainpresentlyhomicidal']");
+            if (describehomicidal != null)
+            {
+                describehomicidal.InnerHtml = safetyconcerns.DescribeHomicidal;
+            }
+
+            var safetyconcernsadditionalinfo = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='safetyconcernsadditionalinfo']");
+            if (safetyconcernsadditionalinfo != null)
+            {
+                safetyconcernsadditionalinfo.InnerHtml = safetyconcerns.AdditionalInfo;
+            }
+
+            return htmlDoc.DocumentNode.OuterHtml; // Return updated HTML
+        }
     }
 }

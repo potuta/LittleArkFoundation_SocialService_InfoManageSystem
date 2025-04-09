@@ -213,6 +213,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             string templatePath2 = Path.Combine(_environment.WebRootPath, "templates/page2_form_template.html");
             string templatePath3 = Path.Combine(_environment.WebRootPath, "templates/page3_form_template.html");
             string templatePath4 = Path.Combine(_environment.WebRootPath, "templates/page4_form_template.html");
+            string templatePath5 = Path.Combine(_environment.WebRootPath, "templates/page5_form_template.html");
 
             if (!System.IO.File.Exists(templatePath))
             {
@@ -231,11 +232,15 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             string htmlContent4 = await System.IO.File.ReadAllTextAsync(templatePath4);
             htmlContent4 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page4(htmlContent4, id);
 
+            string htmlContent5 = await System.IO.File.ReadAllTextAsync(templatePath5);
+            htmlContent5 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page5(htmlContent5, id);
+
             // Pass the modified HTML to the view
             ViewBag.FormHtml1 = htmlContent;
             ViewBag.FormHtml2 = htmlContent2;
             ViewBag.FormHtml3 = htmlContent3;
             ViewBag.FormHtml4 = htmlContent4;
+            ViewBag.FormHtml5 = htmlContent5;
 
             ViewBag.Id = id;
 
@@ -441,6 +446,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 string templatePath2 = Path.Combine(_environment.WebRootPath, "templates/page2_form_template.html");
                 string templatePath3 = Path.Combine(_environment.WebRootPath, "templates/page3_form_template.html");
                 string templatePath4 = Path.Combine(_environment.WebRootPath, "templates/page4_form_template.html");
+                string templatePath5 = Path.Combine(_environment.WebRootPath, "templates/page5_form_template.html");
 
                 if (!System.IO.File.Exists(templatePath))
                 {
@@ -457,6 +463,16 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     return StatusCode(500, "Form template not found.");
                 }
 
+                if (!System.IO.File.Exists(templatePath4))
+                {
+                    return StatusCode(500, "Form template not found.");
+                }
+
+                if (!System.IO.File.Exists(templatePath5))
+                {
+                    return StatusCode(500, "Form template not found.");
+                }
+
                 string htmlContent = await System.IO.File.ReadAllTextAsync(templatePath);
                 htmlContent = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page1(htmlContent, id);
 
@@ -469,17 +485,22 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 string htmlContent4 = await System.IO.File.ReadAllTextAsync(templatePath4);
                 htmlContent4 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page4(htmlContent4, id);
 
+                string htmlContent5 = await System.IO.File.ReadAllTextAsync(templatePath5);
+                htmlContent5 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page5(htmlContent5, id);
+
                 var pdf1 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent);
                 var pdf2 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent2);
                 var pdf3 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent3);
                 var pdf4 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent4);
+                var pdf5 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent5);
 
                 List<byte[]> pdfList = new List<byte[]>
                 {
                     pdf1,
                     pdf2,
                     pdf3,
-                    pdf4
+                    pdf4,
+                    pdf5
                 };
 
                 //byte[] pdfBytes = _pdfConverter.Convert(pdfDocument);
