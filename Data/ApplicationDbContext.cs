@@ -24,6 +24,8 @@ using LittleArkFoundation.Areas.Admin.Models.DevelopmentalHistory;
 using LittleArkFoundation.Areas.Admin.Models.MentalHealthHistory;
 using LittleArkFoundation.Areas.Admin.Models.FamilyHistory;
 using LittleArkFoundation.Areas.Admin.Models.SafetyConcerns;
+using LittleArkFoundation.Areas.Admin.Models.CurrentFunctioning;
+using LittleArkFoundation.Areas.Admin.Models.ParentChildRelationship;
 
 namespace LittleArkFoundation.Data
 {
@@ -74,6 +76,8 @@ namespace LittleArkFoundation.Data
         public DbSet<MentalHealthHistoryModel> MentalHealthHistory { get; set; }
         public DbSet<FamilyHistoryModel> FamilyHistory { get; set; }
         public DbSet<SafetyConcernsModel> SafetyConcerns { get; set; }
+        public DbSet<CurrentFunctioningModel> CurrentFunctioning { get; set; } 
+        public DbSet<ParentChildRelationshipModel> ParentChildRelationship { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -327,6 +331,24 @@ namespace LittleArkFoundation.Data
 
             modelBuilder.Entity<SafetyConcernsModel>()
                 .Property(s => s.SafetyConcernID)
+                .ValueGeneratedOnAdd();
+
+            // CurrentFunctioning
+            modelBuilder.Entity<CurrentFunctioningModel>()
+                .ToTable("CurrentFunctioning")
+                .HasKey(c => c.CurrentFunctioningID);
+
+            modelBuilder.Entity<CurrentFunctioningModel>()
+                .Property(c => c.CurrentFunctioningID)
+                .ValueGeneratedOnAdd();
+
+            // ParentChildRelationship
+            modelBuilder.Entity<ParentChildRelationshipModel>()
+                .ToTable("ParentChildRelationship")
+                .HasKey(p => p.ParentChildID);
+
+            modelBuilder.Entity<ParentChildRelationshipModel>()
+                .Property(p => p.ParentChildID)
                 .ValueGeneratedOnAdd();
         }
     }

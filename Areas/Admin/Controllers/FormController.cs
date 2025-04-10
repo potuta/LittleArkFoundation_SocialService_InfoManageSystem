@@ -172,6 +172,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 // SAFETY CONCERNS
                 formViewModel.SafetyConcerns.PatientID = patientID;
 
+                // CURRENT FUNCTIONING
+                formViewModel.CurrentFunctioning.PatientID = patientID;
+
+                // PARENT CHILD RELATIONSHIP
+                formViewModel.ParentChildRelationship.PatientID = patientID;
+
                 // Save Patient first to get the ID, avoids Forein Key constraint
                 await context.Patients.AddAsync(formViewModel.Patient);
                 await context.SaveChangesAsync();
@@ -199,6 +205,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 await context.MentalHealthHistory.AddRangeAsync(formViewModel.MentalHealthHistory);
                 await context.FamilyHistory.AddRangeAsync(formViewModel.FamilyHistory);
                 await context.SafetyConcerns.AddAsync(formViewModel.SafetyConcerns);
+                await context.CurrentFunctioning.AddAsync(formViewModel.CurrentFunctioning);
+                await context.ParentChildRelationship.AddAsync(formViewModel.ParentChildRelationship);
                 await context.SaveChangesAsync();
 
                 TempData["SuccessMessage"] = "Successfully created new form";
@@ -288,6 +296,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                                 .Where(f => f.PatientID == id)
                                 .ToListAsync();
             var safetyconcerns = await context.SafetyConcerns.FirstOrDefaultAsync(s => s.PatientID == id);
+            var currentfunctioning = await context.CurrentFunctioning.FirstOrDefaultAsync(c => c.PatientID == id);
+            var parentchildrelationship = await context.ParentChildRelationship.FirstOrDefaultAsync(p => p.PatientID == id);
 
             var viewModel = new FormViewModel()
             {
@@ -313,7 +323,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 DevelopmentalHistory = developmentalhistory,
                 MentalHealthHistory = mentalhealthhistory,
                 FamilyHistory = familyhistory,
-                SafetyConcerns = safetyconcerns
+                SafetyConcerns = safetyconcerns,
+                CurrentFunctioning = currentfunctioning,
+                ParentChildRelationship = parentchildrelationship
             };
 
             return View(viewModel);
@@ -429,6 +441,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             context.PregnancyBirthHistory.Update(formViewModel.PregnancyBirthHistory);
             context.DevelopmentalHistory.Update(formViewModel.DevelopmentalHistory);
             context.SafetyConcerns.Update(formViewModel.SafetyConcerns);
+            context.CurrentFunctioning.Update(formViewModel.CurrentFunctioning);
+            context.ParentChildRelationship.Update(formViewModel.ParentChildRelationship);
             await context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = $"Successfully edited PatientID: {id}";

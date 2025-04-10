@@ -1,5 +1,6 @@
 ﻿using LittleArkFoundation.Areas.Admin.Models.Assessments;
 using LittleArkFoundation.Areas.Admin.Models.ChildHealth;
+using LittleArkFoundation.Areas.Admin.Models.CurrentFunctioning;
 using LittleArkFoundation.Areas.Admin.Models.DevelopmentalHistory;
 using LittleArkFoundation.Areas.Admin.Models.Diagnoses;
 using LittleArkFoundation.Areas.Admin.Models.FamilyComposition;
@@ -13,6 +14,7 @@ using LittleArkFoundation.Areas.Admin.Models.Medications;
 using LittleArkFoundation.Areas.Admin.Models.MentalHealthHistory;
 using LittleArkFoundation.Areas.Admin.Models.MonthlyExpenses;
 using LittleArkFoundation.Areas.Admin.Models.MSWDClassification;
+using LittleArkFoundation.Areas.Admin.Models.ParentChildRelationship;
 using LittleArkFoundation.Areas.Admin.Models.Patients;
 using LittleArkFoundation.Areas.Admin.Models.PregnancyBirthHistory;
 using LittleArkFoundation.Areas.Admin.Models.PresentingProblems;
@@ -49,6 +51,8 @@ namespace LittleArkFoundation.Areas.Admin.Models.Form
         public List<MentalHealthHistoryModel>? MentalHealthHistory { get; set; }
         public List<FamilyHistoryModel>? FamilyHistory { get; set; }
         public SafetyConcernsModel? SafetyConcerns { get; set; }
+        public CurrentFunctioningModel? CurrentFunctioning { get; set; }
+        public ParentChildRelationshipModel? ParentChildRelationship { get; set; }
 
     }
 }

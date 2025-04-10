@@ -2382,6 +2382,8 @@ namespace LittleArkFoundation.Data
 
             var patient = await context.Patients.FindAsync(id);
             var safetyconcerns = await context.SafetyConcerns.FirstOrDefaultAsync(p => p.PatientID == id);
+            var currentfunctioning = await context.CurrentFunctioning.FirstOrDefaultAsync(p => p.PatientID == id);
+            var parentchildrelationship = await context.ParentChildRelationship.FirstOrDefaultAsync(p => p.PatientID == id);
 
             if (patient == null)
             {
@@ -2423,6 +2425,800 @@ namespace LittleArkFoundation.Data
             if (safetyconcernsadditionalinfo != null)
             {
                 safetyconcernsadditionalinfo.InnerHtml = safetyconcerns.AdditionalInfo;
+            }
+
+            // CURRENT FUNCTIONING
+
+            var describeconcerns = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='describeconcernscurrentfunctioning']");
+            if (describeconcerns != null)
+            {
+                describeconcerns.InnerHtml = currentfunctioning.DescribeConcerns;
+            }
+
+            if (currentfunctioning.EatingConcerns)
+            {
+                var eatingconcerns = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='eatingcheckbox']");
+                if (eatingconcerns != null)
+                {
+                    string existingStyle = eatingconcerns.GetAttributeValue("style", "");
+                    eatingconcerns.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+            if (currentfunctioning.HygieneConcerns)
+            {
+                var hygieneconcerns = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='hygienegroomingcheckbox']");
+                if (hygieneconcerns != null)
+                {
+                    string existingStyle = hygieneconcerns.GetAttributeValue("style", "");
+                    hygieneconcerns.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+            if (currentfunctioning.SleepingConcerns)
+            {
+                var sleepingconcerns = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='sleepingcheckbox']");
+                if (sleepingconcerns != null)
+                {
+                    string existingStyle = sleepingconcerns.GetAttributeValue("style", "");
+                    sleepingconcerns.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+            if (currentfunctioning.ActivitiesConcerns)
+            {
+                var concerns = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='activitiesplaycheckbox']");
+                if (concerns != null)
+                {
+                    string existingStyle = concerns.GetAttributeValue("style", "");
+                    concerns.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+            if (currentfunctioning.SocialRelationshipsConcerns)
+            {
+                var socialrelationshipsconcerns = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='socialrelationshipscheckbox']");
+                if (socialrelationshipsconcerns != null)
+                {
+                    string existingStyle = socialrelationshipsconcerns.GetAttributeValue("style", "");
+                    socialrelationshipsconcerns.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+
+            switch (currentfunctioning.EnergyLevel)
+            {
+                case 1:
+                    var one = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='oneA']");
+                    if (one != null)
+                    {
+                        string existingStyle = one.GetAttributeValue("style", "");
+                        one.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 2:
+                    var two = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='twoA']");
+                    if (two != null)
+                    {
+                        string existingStyle = two.GetAttributeValue("style", "");
+                        two.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 3:
+                    var three = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='threeA']");
+                    if (three != null)
+                    {
+                        string existingStyle = three.GetAttributeValue("style", "");
+                        three.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 4:
+                    var four = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='fourA']");
+                    if (four != null)
+                    {
+                        string existingStyle = four.GetAttributeValue("style", "");
+                        four.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 5:
+                    var five = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='fiveA']");
+                    if (five != null)
+                    {
+                        string existingStyle = five.GetAttributeValue("style", "");
+                        five.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 6:
+                    var six = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='sixA']");
+                    if (six != null)
+                    {
+                        string existingStyle = six.GetAttributeValue("style", "");
+                        six.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 7:
+                    var seven = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='sevenA']");
+                    if (seven != null)
+                    {
+                        string existingStyle = seven.GetAttributeValue("style", "");
+                        seven.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+
+            }
+
+            switch (currentfunctioning.PhysicalLevel)
+            {
+                case 1:
+                    var one = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='oneB']");
+                    if (one != null)
+                    {
+                        string existingStyle = one.GetAttributeValue("style", "");
+                        one.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 2:
+                    var two = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='twoB']");
+                    if (two != null)
+                    {
+                        string existingStyle = two.GetAttributeValue("style", "");
+                        two.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 3:
+                    var three = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='threeB']");
+                    if (three != null)
+                    {
+                        string existingStyle = three.GetAttributeValue("style", "");
+                        three.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 4:
+                    var four = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='fourB']");
+                    if (four != null)
+                    {
+                        string existingStyle = four.GetAttributeValue("style", "");
+                        four.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 5:
+                    var five = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='fiveB']");
+                    if (five != null)
+                    {
+                        string existingStyle = five.GetAttributeValue("style", "");
+                        five.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 6:
+                    var six = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='sixB']");
+                    if (six != null)
+                    {
+                        string existingStyle = six.GetAttributeValue("style", "");
+                        six.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 7:
+                    var seven = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='sevenB']");
+                    if (seven != null)
+                    {
+                        string existingStyle = seven.GetAttributeValue("style", "");
+                        seven.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+            }
+
+            switch (currentfunctioning.AnxiousLevel)
+            {
+                case 1:
+                    var one = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='oneC1']");
+                    if (one != null)
+                    {
+                        string existingStyle = one.GetAttributeValue("style", "");
+                        one.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 2:
+                    var two = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='twoC1']");
+                    if (two != null)
+                    {
+                        string existingStyle = two.GetAttributeValue("style", "");
+                        two.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 3:
+                    var three = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='threeC1']");
+                    if (three != null)
+                    {
+                        string existingStyle = three.GetAttributeValue("style", "");
+                        three.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 4:
+                    var four = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='fourC1']");
+                    if (four != null)
+                    {
+                        string existingStyle = four.GetAttributeValue("style", "");
+                        four.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 5:
+                    var five = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='fiveC1']");
+                    if (five != null)
+                    {
+                        string existingStyle = five.GetAttributeValue("style", "");
+                        five.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 6:
+                    var six = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='sixC1']");
+                    if (six != null)
+                    {
+                        string existingStyle = six.GetAttributeValue("style", "");
+                        six.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 7:
+                    var seven = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='sevenC1']");
+                    if (seven != null)
+                    {
+                        string existingStyle = seven.GetAttributeValue("style", "");
+                        seven.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+            }
+
+            switch (currentfunctioning.HappyLevel)
+            {
+                case 1:
+                    var one = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='oneC2']");
+                    if (one != null)
+                    {
+                        string existingStyle = one.GetAttributeValue("style", "");
+                        one.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 2:
+                    var two = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='twoC2']");
+                    if (two != null)
+                    {
+                        string existingStyle = two.GetAttributeValue("style", "");
+                        two.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 3:
+                    var three = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='threeC2']");
+                    if (three != null)
+                    {
+                        string existingStyle = three.GetAttributeValue("style", "");
+                        three.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 4:
+                    var four = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='fourC2']");
+                    if (four != null)
+                    {
+                        string existingStyle = four.GetAttributeValue("style", "");
+                        four.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 5:
+                    var five = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='fiveC2']");
+                    if (five != null)
+                    {
+                        string existingStyle = five.GetAttributeValue("style", "");
+                        five.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 6:
+                    var six = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='sixC2']");
+                    if (six != null)
+                    {
+                        string existingStyle = six.GetAttributeValue("style", "");
+                        six.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 7:
+                    var seven = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='sevenC2']");
+                    if (seven != null)
+                    {
+                        string existingStyle = seven.GetAttributeValue("style", "");
+                        seven.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+            }
+
+            switch (currentfunctioning.CuriousLevel)
+            {
+                case 1:
+                    var one = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='oneC3']");
+                    if (one != null)
+                    {
+                        string existingStyle = one.GetAttributeValue("style", "");
+                        one.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 2:
+                    var two = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='twoC3']");
+                    if (two != null)
+                    {
+                        string existingStyle = two.GetAttributeValue("style", "");
+                        two.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 3:
+                    var three = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='threeC3']");
+                    if (three != null)
+                    {
+                        string existingStyle = three.GetAttributeValue("style", "");
+                        three.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 4:
+                    var four = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='fourC3']");
+                    if (four != null)
+                    {
+                        string existingStyle = four.GetAttributeValue("style", "");
+                        four.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 5:
+                    var five = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='fiveC3']");
+                    if (five != null)
+                    {
+                        string existingStyle = five.GetAttributeValue("style", "");
+                        five.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 6:
+                    var six = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='sixC3']");
+                    if (six != null)
+                    {
+                        string existingStyle = six.GetAttributeValue("style", "");
+                        six.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 7:
+                    var seven = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='sevenC3']");
+                    if (seven != null)
+                    {
+                        string existingStyle = seven.GetAttributeValue("style", "");
+                        seven.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+            }
+
+            switch (currentfunctioning.AngryLevel)
+            {
+                case 1:
+                    var one = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='oneC4']");
+                    if (one != null)
+                    {
+                        string existingStyle = one.GetAttributeValue("style", "");
+                        one.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 2:
+                    var two = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='twoC4']");
+                    if (two != null)
+                    {
+                        string existingStyle = two.GetAttributeValue("style", "");
+                        two.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 3:
+                    var three = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='threeC4']");
+                    if (three != null)
+                    {
+                        string existingStyle = three.GetAttributeValue("style", "");
+                        three.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 4:
+                    var four = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='fourC4']");
+                    if (four != null)
+                    {
+                        string existingStyle = four.GetAttributeValue("style", "");
+                        four.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 5:
+                    var five = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='fiveC4']");
+                    if (five != null)
+                    {
+                        string existingStyle = five.GetAttributeValue("style", "");
+                        five.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 6:
+                    var six = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='sixC4']");
+                    if (six != null)
+                    {
+                        string existingStyle = six.GetAttributeValue("style", "");
+                        six.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 7:
+                    var seven = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='sevenC4']");
+                    if (seven != null)
+                    {
+                        string existingStyle = seven.GetAttributeValue("style", "");
+                        seven.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+            }
+
+            switch (currentfunctioning.IntensityLevel)
+            {
+                case 1:
+                    var one = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='oneD']");
+                    if (one != null)
+                    {
+                        string existingStyle = one.GetAttributeValue("style", "");
+                        one.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 2:
+                    var two = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='twoD']");
+                    if (two != null)
+                    {
+                        string existingStyle = two.GetAttributeValue("style", "");
+                        two.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 3:
+                    var three = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='threeD']");
+                    if (three != null)
+                    {
+                        string existingStyle = three.GetAttributeValue("style", "");
+                        three.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 4:
+                    var four = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='fourD']");
+                    if (four != null)
+                    {
+                        string existingStyle = four.GetAttributeValue("style", "");
+                        four.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 5:
+                    var five = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='fiveD']");
+                    if (five != null)
+                    {
+                        string existingStyle = five.GetAttributeValue("style", "");
+                        five.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 6:
+                    var six = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='sixD']");
+                    if (six != null)
+                    {
+                        string existingStyle = six.GetAttributeValue("style", "");
+                        six.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 7:
+                    var seven = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='sevenD']");
+                    if (seven != null)
+                    {
+                        string existingStyle = seven.GetAttributeValue("style", "");
+                        seven.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+            }
+
+            switch (currentfunctioning.PersistenceLevel)
+            {
+                case 1:
+                    var one = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='oneE']");
+                    if (one != null)
+                    {
+                        string existingStyle = one.GetAttributeValue("style", "");
+                        one.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 2:
+                    var two = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='twoE']");
+                    if (two != null)
+                    {
+                        string existingStyle = two.GetAttributeValue("style", "");
+                        two.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 3:
+                    var three = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='threeE']");
+                    if (three != null)
+                    {
+                        string existingStyle = three.GetAttributeValue("style", "");
+                        three.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 4:
+                    var four = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='fourE']");
+                    if (four != null)
+                    {
+                        string existingStyle = four.GetAttributeValue("style", "");
+                        four.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 5:
+                    var five = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='fiveE']");
+                    if (five != null)
+                    {
+                        string existingStyle = five.GetAttributeValue("style", "");
+                        five.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 6:
+                    var six = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='sixE']");
+                    if (six != null)
+                    {
+                        string existingStyle = six.GetAttributeValue("style", "");
+                        six.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 7:
+                    var seven = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='sevenE']");
+                    if (seven != null)
+                    {
+                        string existingStyle = seven.GetAttributeValue("style", "");
+                        seven.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+            }
+
+            switch (currentfunctioning.SensitivityLevel)
+            {
+                case 1:
+                    var one = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='oneF']");
+                    if (one != null)
+                    {
+                        string existingStyle = one.GetAttributeValue("style", "");
+                        one.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 2:
+                    var two = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='twoF']");
+                    if (two != null)
+                    {
+                        string existingStyle = two.GetAttributeValue("style", "");
+                        two.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 3:
+                    var three = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='threeF']");
+                    if (three != null)
+                    {
+                        string existingStyle = three.GetAttributeValue("style", "");
+                        three.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 4:
+                    var four = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='fourF']");
+                    if (four != null)
+                    {
+                        string existingStyle = four.GetAttributeValue("style", "");
+                        four.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 5:
+                    var five = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='fiveF']");
+                    if (five != null)
+                    {
+                        string existingStyle = five.GetAttributeValue("style", "");
+                        five.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 6:
+                    var six = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='sixF']");
+                    if (six != null)
+                    {
+                        string existingStyle = six.GetAttributeValue("style", "");
+                        six.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 7:
+                    var seven = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='sevenF']");
+                    if (seven != null)
+                    {
+                        string existingStyle = seven.GetAttributeValue("style", "");
+                        seven.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+            }
+
+            switch (currentfunctioning.PerceptivenessLevel)
+            {
+                case 1:
+                    var one = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='oneG']");
+                    if (one != null)
+                    {
+                        string existingStyle = one.GetAttributeValue("style", "");
+                        one.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 2:
+                    var two = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='twoG']");
+                    if (two != null)
+                    {
+                        string existingStyle = two.GetAttributeValue("style", "");
+                        two.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 3:
+                    var three = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='threeG']");
+                    if (three != null)
+                    {
+                        string existingStyle = three.GetAttributeValue("style", "");
+                        three.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 4:
+                    var four = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='fourG']");
+                    if (four != null)
+                    {
+                        string existingStyle = four.GetAttributeValue("style", "");
+                        four.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 5:
+                    var five = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='fiveG']");
+                    if (five != null)
+                    {
+                        string existingStyle = five.GetAttributeValue("style", "");
+                        five.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 6:
+                    var six = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='sixG']");
+                    if (six != null)
+                    {
+                        string existingStyle = six.GetAttributeValue("style", "");
+                        six.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 7:
+                    var seven = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='sevenG']");
+                    if (seven != null)
+                    {
+                        string existingStyle = seven.GetAttributeValue("style", "");
+                        seven.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+            }
+
+            switch (currentfunctioning.AdaptabilityLevel)
+            {
+                case 1:
+                    var one = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='oneH']");
+                    if (one != null)
+                    {
+                        string existingStyle = one.GetAttributeValue("style", "");
+                        one.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 2:
+                    var two = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='twoH']");
+                    if (two != null)
+                    {
+                        string existingStyle = two.GetAttributeValue("style", "");
+                        two.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 3:
+                    var three = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='threeH']");
+                    if (three != null)
+                    {
+                        string existingStyle = three.GetAttributeValue("style", "");
+                        three.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 4:
+                    var four = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='fourH']");
+                    if (four != null)
+                    {
+                        string existingStyle = four.GetAttributeValue("style", "");
+                        four.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 5:
+                    var five = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='fiveH']");
+                    if (five != null)
+                    {
+                        string existingStyle = five.GetAttributeValue("style", "");
+                        five.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 6:
+                    var six = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='sixH']");
+                    if (six != null)
+                    {
+                        string existingStyle = six.GetAttributeValue("style", "");
+                        six.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 7:
+                    var seven = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='sevenH']");
+                    if (seven != null)
+                    {
+                        string existingStyle = seven.GetAttributeValue("style", "");
+                        seven.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+            }
+
+            switch (currentfunctioning.AttentionSpanLevel)
+            {
+                case 1:
+                    var one = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='oneI']");
+                    if (one != null)
+                    {
+                        string existingStyle = one.GetAttributeValue("style", "");
+                        one.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 2:
+                    var two = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='twoI']");
+                    if (two != null)
+                    {
+                        string existingStyle = two.GetAttributeValue("style", "");
+                        two.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 3:
+                    var three = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='threeI']");
+                    if (three != null)
+                    {
+                        string existingStyle = three.GetAttributeValue("style", "");
+                        three.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 4:
+                    var four = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='fourI']");
+                    if (four != null)
+                    {
+                        string existingStyle = four.GetAttributeValue("style", "");
+                        four.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 5:
+                    var five = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='fiveI']");
+                    if (five != null)
+                    {
+                        string existingStyle = five.GetAttributeValue("style", "");
+                        five.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 6:
+                    var six = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='sixI']");
+                    if (six != null)
+                    {
+                        string existingStyle = six.GetAttributeValue("style", "");
+                        six.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+                case 7:
+                    var seven = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='sevenI']");
+                    if (seven != null)
+                    {
+                        string existingStyle = seven.GetAttributeValue("style", "");
+                        seven.SetAttributeValue("style", existingStyle + "; border: 1px solid black; border-radius: 50%;");
+                    }
+                    break;
+            }
+
+            // PARENT/CHILD RELATIONSHIP
+            var parentingexperience = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='describeparentingyourchild']");
+            if (parentingexperience != null)
+            {
+                parentingexperience.InnerHtml = parentchildrelationship.ParentingExperience;
+            }
+
+            var challenging = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='describemostchallenging']");
+            if (challenging != null)
+            {
+                challenging.InnerHtml = parentchildrelationship.Challenges;
+            }
+
+            var disciplinemethods = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='describewhatkindofdiscipline']");
+            if (disciplinemethods != null)
+            {
+                disciplinemethods.InnerHtml = parentchildrelationship.DisciplineMethods;
             }
 
             return htmlDoc.DocumentNode.OuterHtml; // Return updated HTML

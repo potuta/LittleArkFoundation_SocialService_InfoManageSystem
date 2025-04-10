@@ -1669,6 +1669,339 @@
             </tr>
         </table> 
 
+        <table>
+            <tr>
+                <th colspan="3">
+                    L. Current Functioning
+                    <div>
+                        1. Do you have concerns about your child in the following areas?
+
+                        <div class="checkbox-group">
+                            <input type="checkbox" asp-for="CurrentFunctioning.EatingConcerns" value="true"> Eating
+                            <input type="checkbox" asp-for="CurrentFunctioning.HygieneConcerns" value="true"> Hygiene/grooming
+                            <input type="checkbox" asp-for="CurrentFunctioning.SleepingConcerns" value="true"> Sleeping
+                            <input type="checkbox" asp-for="CurrentFunctioning.ActivitiesConcerns" value="true"> Activities/play
+                            <input type="checkbox" asp-for="CurrentFunctioning.SocialRelationshipsConcerns" value="true"> Social Relationships
+                        </div>
+                    </div>
+
+                    If so, please describe:
+                    <textarea asp-for="CurrentFunctioning.DescribeConcerns" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
+                </th>
+            </tr>
+
+            <tr>
+                <th colspan="3">
+                    2. Please rate your child’s personality/temperament how they behave the majority of the time in each of the following areas on a scale from 1 to 7 by placing a check above the number that best describes your child
+                </th>
+            </tr>
+
+            <tr>
+                <th colspan="3">
+                    a. Energy/Activity Level - how active is my child?
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    CAN sit still and listen for long periods of time
+                </td>
+                <td>
+                    <div class="radio-group">
+                        <input type="radio" asp-for="CurrentFunctioning.EnergyLevel" value="1" required> 1
+                        <input type="radio" asp-for="CurrentFunctioning.EnergyLevel" value="2" required> 2
+                        <input type="radio" asp-for="CurrentFunctioning.EnergyLevel" value="3" required> 3
+                        <input type="radio" asp-for="CurrentFunctioning.EnergyLevel" value="4" required> 4
+                        <input type="radio" asp-for="CurrentFunctioning.EnergyLevel" value="5" required> 5
+                        <input type="radio" asp-for="CurrentFunctioning.EnergyLevel" value="6" required> 6
+                        <input type="radio" asp-for="CurrentFunctioning.EnergyLevel" value="7" required> 7
+                    </div>
+                </td>
+                <td>
+                    CAN’T sit still and listen for long periods of time
+                </td>
+            </tr>
+
+            <tr>
+                <th colspan="3">
+                    b. Need for Physical Routine - how much routine does my child need?
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    Enjoys Routing; easily notice small changes in the day
+                </td>
+                <td>
+                    <div class="radio-group">
+                        <input type="radio" asp-for="CurrentFunctioning.PhysicalLevel" value="1" required> 1
+                        <input type="radio" asp-for="CurrentFunctioning.PhysicalLevel" value="2" required> 2
+                        <input type="radio" asp-for="CurrentFunctioning.PhysicalLevel" value="3" required> 3
+                        <input type="radio" asp-for="CurrentFunctioning.PhysicalLevel" value="4" required> 4
+                        <input type="radio" asp-for="CurrentFunctioning.PhysicalLevel" value="5" required> 5
+                        <input type="radio" asp-for="CurrentFunctioning.PhysicalLevel" value="6" required> 6
+                        <input type="radio" asp-for="CurrentFunctioning.PhysicalLevel" value="7" required> 7
+                    </div>
+                </td>
+                <td>
+                    Enjoys Doing Things Differently; may not upset when day doesn’t go as usual
+                </td>
+            </tr>
+
+            <tr>
+                <th colspan="3">
+                    c. Mood - what is my child’s mood most of the time?
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    1. Anxious - usually frustrated and worried
+                </td>
+                <td>
+                    <div class="radio-group">
+                        <input type="radio" asp-for="CurrentFunctioning.AnxiousLevel" value="1" required> 1
+                        <input type="radio" asp-for="CurrentFunctioning.AnxiousLevel" value="2" required> 2
+                        <input type="radio" asp-for="CurrentFunctioning.AnxiousLevel" value="3" required> 3
+                        <input type="radio" asp-for="CurrentFunctioning.AnxiousLevel" value="4" required> 4
+                        <input type="radio" asp-for="CurrentFunctioning.AnxiousLevel" value="5" required> 5
+                        <input type="radio" asp-for="CurrentFunctioning.AnxiousLevel" value="6" required> 6
+                        <input type="radio" asp-for="CurrentFunctioning.AnxiousLevel" value="7" required> 7
+                    </div>
+                </td>
+                <td>
+                    Calm - usually relaxed
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    2. Happy - usually enjoys what he/she is doing
+                </td>
+                <td>
+                    <div class="radio-group">
+                        <input type="radio" asp-for="CurrentFunctioning.HappyLevel" value="1" required> 1
+                        <input type="radio" asp-for="CurrentFunctioning.HappyLevel" value="2" required> 2
+                        <input type="radio" asp-for="CurrentFunctioning.HappyLevel" value="3" required> 3
+                        <input type="radio" asp-for="CurrentFunctioning.HappyLevel" value="4" required> 4
+                        <input type="radio" asp-for="CurrentFunctioning.HappyLevel" value="5" required> 5
+                        <input type="radio" asp-for="CurrentFunctioning.HappyLevel" value="6" required> 6
+                        <input type="radio" asp-for="CurrentFunctioning.HappyLevel" value="7" required> 7
+                    </div>
+                </td>
+                <td>
+                    Sad - usually unhappy; hard time having fun
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    3. Curious - usually eager to know something
+                </td>
+                <td>
+                    <div class="radio-group">
+                        <input type="radio" asp-for="CurrentFunctioning.CuriousLevel" value="1" required> 1
+                        <input type="radio" asp-for="CurrentFunctioning.CuriousLevel" value="2" required> 2
+                        <input type="radio" asp-for="CurrentFunctioning.CuriousLevel" value="3" required> 3
+                        <input type="radio" asp-for="CurrentFunctioning.CuriousLevel" value="4" required> 4
+                        <input type="radio" asp-for="CurrentFunctioning.CuriousLevel" value="5" required> 5
+                        <input type="radio" asp-for="CurrentFunctioning.CuriousLevel" value="6" required> 6
+                        <input type="radio" asp-for="CurrentFunctioning.CuriousLevel" value="7" required> 7
+                    </div>
+                </td>
+                <td>
+                    Timid - usually not interested
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    4. Angry - easily frustrated and annnoyed with others
+                </td>
+                <td>
+                    <div class="radio-group">
+                        <input type="radio" asp-for="CurrentFunctioning.AngryLevel" value="1" required> 1
+                        <input type="radio" asp-for="CurrentFunctioning.AngryLevel" value="2" required> 2
+                        <input type="radio" asp-for="CurrentFunctioning.AngryLevel" value="3" required> 3
+                        <input type="radio" asp-for="CurrentFunctioning.AngryLevel" value="4" required> 4
+                        <input type="radio" asp-for="CurrentFunctioning.AngryLevel" value="5" required> 5
+                        <input type="radio" asp-for="CurrentFunctioning.AngryLevel" value="6" required> 6
+                        <input type="radio" asp-for="CurrentFunctioning.AngryLevel" value="7" required> 7
+                    </div>
+                </td>
+                <td>
+                    Calm - usually composed and peaceful with others
+                </td>
+            </tr>
+
+            <tr>
+                <th colspan="3">
+                    d. Intensity - how strongly does my child express feelings, wants and opinions?
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    Mild Reaction - calm and cooperative; Easily pushed around by others
+                </td>
+                <td>
+                    <div class="radio-group">
+                        <input type="radio" asp-for="CurrentFunctioning.IntensityLevel" value="1" required> 1
+                        <input type="radio" asp-for="CurrentFunctioning.IntensityLevel" value="2" required> 2
+                        <input type="radio" asp-for="CurrentFunctioning.IntensityLevel" value="3" required> 3
+                        <input type="radio" asp-for="CurrentFunctioning.IntensityLevel" value="4" required> 4
+                        <input type="radio" asp-for="CurrentFunctioning.IntensityLevel" value="5" required> 5
+                        <input type="radio" asp-for="CurrentFunctioning.IntensityLevel" value="6" required> 6
+                        <input type="radio" asp-for="CurrentFunctioning.IntensityLevel" value="7" required> 7
+                    </div>
+                </td>
+                <td>
+                    Strong Reaction - may cry or yell over small things
+                </td>
+            </tr>
+
+            <tr>
+                <th colspan="3">
+                    e. Persistence - can my child stick with and complete tasks?
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    Will stick with something until it is done
+                </td>
+                <td>
+                    <div class="radio-group">
+                        <input type="radio" asp-for="CurrentFunctioning.PersistenceLevel" value="1" required> 1
+                        <input type="radio" asp-for="CurrentFunctioning.PersistenceLevel" value="2" required> 2
+                        <input type="radio" asp-for="CurrentFunctioning.PersistenceLevel" value="3" required> 3
+                        <input type="radio" asp-for="CurrentFunctioning.PersistenceLevel" value="4" required> 4
+                        <input type="radio" asp-for="CurrentFunctioning.PersistenceLevel" value="5" required> 5
+                        <input type="radio" asp-for="CurrentFunctioning.PersistenceLevel" value="6" required> 6
+                        <input type="radio" asp-for="CurrentFunctioning.PersistenceLevel" value="7" required> 7
+                    </div>
+                </td>
+                <td>
+                    Gives up on tasks, has trouble finishing things
+                </td>
+            </tr>
+
+            <tr>
+                <th colspan="3">
+                    f. Sensitivity to Senses - how sensitive is my child to light, smells, sounds, and touching?
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    Learns by seeing, touching and using all his/her senses
+                </td>
+                <td>
+                    <div class="radio-group">
+                        <input type="radio" asp-for="CurrentFunctioning.SensitivityLevel" value="1" required> 1
+                        <input type="radio" asp-for="CurrentFunctioning.SensitivityLevel" value="2" required> 2
+                        <input type="radio" asp-for="CurrentFunctioning.SensitivityLevel" value="3" required> 3
+                        <input type="radio" asp-for="CurrentFunctioning.SensitivityLevel" value="4" required> 4
+                        <input type="radio" asp-for="CurrentFunctioning.SensitivityLevel" value="5" required> 5
+                        <input type="radio" asp-for="CurrentFunctioning.SensitivityLevel" value="6" required> 6
+                        <input type="radio" asp-for="CurrentFunctioning.SensitivityLevel" value="7" required> 7
+                    </div>
+                </td>
+                <td>
+                    Has strong reaction to noise, lights, hugging or touching
+                </td>
+            </tr>
+
+            <tr>
+                <th colspan="3">
+                    g. Perceptiveness - how aware is my child of feelings and emotion?
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    Sympathetic to others; can use words to tell how he/she feels
+                </td>
+                <td>
+                    <div class="radio-group">
+                        <input type="radio" asp-for="CurrentFunctioning.PerceptivenessLevel" value="1" required> 1
+                        <input type="radio" asp-for="CurrentFunctioning.PerceptivenessLevel" value="2" required> 2
+                        <input type="radio" asp-for="CurrentFunctioning.PerceptivenessLevel" value="3" required> 3
+                        <input type="radio" asp-for="CurrentFunctioning.PerceptivenessLevel" value="4" required> 4
+                        <input type="radio" asp-for="CurrentFunctioning.PerceptivenessLevel" value="5" required> 5
+                        <input type="radio" asp-for="CurrentFunctioning.PerceptivenessLevel" value="6" required> 6
+                        <input type="radio" asp-for="CurrentFunctioning.PerceptivenessLevel" value="7" required> 7
+                    </div>
+                </td>
+                <td>
+                    Unaware of the feelings
+                </td>
+            </tr>
+
+            <tr>
+                <th colspan="3">
+                    h. Adaptability - how easily does my child accept changes?
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    Often fearful with new people and new situations
+                </td>
+                <td>
+                    <div class="radio-group">
+                        <input type="radio" asp-for="CurrentFunctioning.AdaptabilityLevel" value="1" required> 1
+                        <input type="radio" asp-for="CurrentFunctioning.AdaptabilityLevel" value="2" required> 2
+                        <input type="radio" asp-for="CurrentFunctioning.AdaptabilityLevel" value="3" required> 3
+                        <input type="radio" asp-for="CurrentFunctioning.AdaptabilityLevel" value="4" required> 4
+                        <input type="radio" asp-for="CurrentFunctioning.AdaptabilityLevel" value="5" required> 5
+                        <input type="radio" asp-for="CurrentFunctioning.AdaptabilityLevel" value="6" required> 6
+                        <input type="radio" asp-for="CurrentFunctioning.AdaptabilityLevel" value="7" required> 7
+                    </div>
+                </td>
+                <td>
+                    Will easily meet and accept new people and activities
+                </td>
+            </tr>
+
+            <tr>
+                <th colspan="3">
+                    i. Attention Span/Distractibility - how well does my child pay attention?
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    Stays focused on tasks until completed
+                </td>
+                <td>
+                    <div class="radio-group">
+                        <input type="radio" asp-for="CurrentFunctioning.AttentionSpanLevel" value="1" required> 1
+                        <input type="radio" asp-for="CurrentFunctioning.AttentionSpanLevel" value="2" required> 2
+                        <input type="radio" asp-for="CurrentFunctioning.AttentionSpanLevel" value="3" required> 3
+                        <input type="radio" asp-for="CurrentFunctioning.AttentionSpanLevel" value="4" required> 4
+                        <input type="radio" asp-for="CurrentFunctioning.AttentionSpanLevel" value="5" required> 5
+                        <input type="radio" asp-for="CurrentFunctioning.AttentionSpanLevel" value="6" required> 6
+                        <input type="radio" asp-for="CurrentFunctioning.AttentionSpanLevel" value="7" required> 7
+                    </div>
+                </td>
+                <td>
+                    Easily sidetracked; difficulty following directions
+                </td>
+            </tr>
+        </table>
+
+        <table>
+            <tr>
+                <th>
+                    M. Parent/Child Relationship
+
+                    <div>
+                        1. Describe parenting your child (e.g. challenging, easy):
+                        <textarea asp-for="ParentChildRelationship.ParentingExperience" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
+                    </div>
+
+                    <div>
+                        2. What do you find most challenging in parenting your child?
+                        <textarea asp-for="ParentChildRelationship.Challenges" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
+                    </div>
+
+                    <div>
+                        3. What kind of discipline works best with your child?
+                        <textarea asp-for="ParentChildRelationship.DisciplineMethods" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
+                    </div>
+                </th>
+            </tr>
+        </table>
+
         @* --- Add new here --- *@
 
         <div class="mt-2" style="text-align: center;">
