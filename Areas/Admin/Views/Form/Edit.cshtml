@@ -86,7 +86,7 @@
 
 </style>
 
-<form asp-action="Edit" method="post" onsubmit="return checkEmptyFields()" novalidate>
+<form asp-action="Edit" method="post" novalidate>
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="Assessments.AssessmentID" />
     <input type="hidden" asp-for="Assessments.PatientID" />
@@ -679,56 +679,145 @@
             }
         }
 
-        function checkEmptyFields() {
-            const sections = document.querySelectorAll(".accordion-item");
-            let isValid = true;
-            let firstInvalidInput = null;
+        // document.addEventListener("DOMContentLoaded", function () {
+        //     const form = document.querySelector("form");
 
-            // Validate only and expand sections with empty required fields
-            sections.forEach(section => {
-                let hasInvalidField = false;
-                const collapseEl = section.querySelector(".accordion-collapse");
-                const requiredInputs = section.querySelectorAll("input[required], select[required], textarea[required]");
+        //     form.addEventListener("submit", function (e) {
+        //         const collapses = document.querySelectorAll(".accordion-collapse");
 
-                requiredInputs.forEach(input => {
-                    if (!input.value || input.value.trim() === "") {
-                        input.classList.add("is-invalid");
-                        input.style.border = "2px solid red";  // Red border to highlight invalid field
-                        input.style.backgroundColor = "#f8d7da";  // Light red background for emphasis
+        //         // Force all sections to expand — skip hide to avoid glitching already-open ones
+        //         collapses.forEach(collapseEl => {
+        //             const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl, {
+        //                 toggle: false
+        //             });
+        //             bsCollapse.show(); // Show works regardless of current state
+        //         });
 
-                        if (!firstInvalidInput) {
-                            firstInvalidInput = input;
-                        }
-                        hasInvalidField = true;
-                        isValid = false;
-                    } else {
-                        input.classList.remove("is-invalid");
-                        input.style.border = "";  // Reset border if valid
-                        input.style.backgroundColor = "";  // Reset background if valid
-                    }
+        //         // If novalidate is present, intercept and re-submit after expanding
+        //         if (form.hasAttribute("novalidate")) {
+        //             e.preventDefault();
+
+        //             setTimeout(() => {
+        //                 form.removeAttribute("novalidate");
+        //                 form.requestSubmit();
+        //             }, 300);
+
+        //         } else {
+        //             // Let browser do its validation
+        //             if (!form.checkValidity()) {
+        //                 e.preventDefault();
+        //                 form.setAttribute("novalidate", "true");
+
+        //                 // Scroll to and focus the first invalid field
+        //                 const firstInvalid = form.querySelector(":invalid");
+        //                 if (firstInvalid) {
+        //                     firstInvalid.scrollIntoView({ behavior: "smooth", block: "center" });
+        //                     firstInvalid.focus();
+        //                 }
+
+        //                 // Re-show all just in case any got collapsed
+        //                 setTimeout(() => {
+        //                     collapses.forEach(collapseEl => {
+        //                         const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl, {
+        //                             toggle: false
+        //                         });
+        //                         bsCollapse.show();
+        //                     });
+        //                 }, 200);
+        //             }
+        //         }
+        //     });
+        // });
+
+        // document.addEventListener("DOMContentLoaded", function () {
+        //     const form = document.querySelector("form");
+
+        //     form.addEventListener("submit", function (e) {
+        //         const collapses = document.querySelectorAll(".accordion-collapse");
+
+        //         // Expand only if not already expanded
+        //         collapses.forEach(collapseEl => {
+        //             if (!collapseEl.classList.contains("show")) {
+        //                 const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl, {
+        //                     toggle: false
+        //                 });
+        //                 bsCollapse.show();
+        //             }
+        //         });
+
+        //         if (form.hasAttribute("novalidate")) {
+        //             e.preventDefault();
+
+        //             setTimeout(() => {
+        //                 form.removeAttribute("novalidate");
+        //                 form.requestSubmit();
+        //             }, 350); // a bit more time for animation sync
+        //         } else {
+        //             if (!form.checkValidity()) {
+        //                 e.preventDefault();
+        //                 form.setAttribute("novalidate", "true");
+
+        //                 // Scroll to first invalid field
+        //                 const firstInvalid = form.querySelector(":invalid");
+        //                 if (firstInvalid) {
+        //                     firstInvalid.scrollIntoView({ behavior: "smooth", block: "center" });
+        //                     firstInvalid.focus();
+        //                 }
+
+        //                 // Retry opening all (in case something collapsed again)
+        //                 setTimeout(() => {
+        //                     collapses.forEach(collapseEl => {
+        //                         if (!collapseEl.classList.contains("show")) {
+        //                             const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl, {
+        //                                 toggle: false
+        //                             });
+        //                             bsCollapse.show();
+        //                         }
+        //                     });
+        //                 }, 250);
+        //             }
+        //         }
+        //     });
+        // });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.querySelector("form");
+
+            form.addEventListener("submit", function (e) {
+                const collapses = document.querySelectorAll(".accordion-collapse");
+
+                // Forcefully show all collapsible sections (ignore Bootstrap JS)
+                collapses.forEach(collapseEl => {
+                    collapseEl.classList.add("show");
+                    collapseEl.classList.remove("collapsing"); // in case it's stuck
                 });
 
-                // Only show section if it has invalid input
-                if (hasInvalidField) {
-                    const collapse = new bootstrap.Collapse(collapseEl, {
-                        toggle: true
-                    });
+                // If novalidate is present, we're in "first pass"
+                if (form.hasAttribute("novalidate")) {
+                    e.preventDefault();
+
+                    // Give DOM time to visually update
+                    setTimeout(() => {
+                        form.removeAttribute("novalidate");
+                        form.requestSubmit();
+                    }, 100);
+                } else {
+                    // Let browser handle native validation
+                    if (!form.checkValidity()) {
+                        e.preventDefault();
+                        form.setAttribute("novalidate", "true");
+
+                        // Focus on first invalid input
+                        const firstInvalid = form.querySelector(":invalid");
+                        if (firstInvalid) {
+                            firstInvalid.scrollIntoView({ behavior: "smooth", block: "center" });
+                            firstInvalid.focus();
+                        }
+                    }
                 }
             });
+        });
 
-            if (!isValid) {
-                if (firstInvalidInput) {
-                    setTimeout(() => {
-                        firstInvalidInput.scrollIntoView({ behavior: "smooth", block: "center" });
-                        firstInvalidInput.focus();
-                    }, 300);
-                }
-                alert("Please fill in all required fields.");
-                return false;
-            }
-
-            return true;
-        }
 
     </script>
 }
