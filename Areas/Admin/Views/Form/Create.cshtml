@@ -83,6 +83,18 @@
         width: 100%;
     }
 
+    .invalid-highlight {
+        outline: 2px solid red;
+        background-color: #ffe6e6;
+        border-radius: 4px;
+    }
+
+    input[type="radio"].invalid-highlight,
+    input[type="checkbox"].invalid-highlight {
+        outline: 2px solid red;
+        box-shadow: 0 0 0 2px red;
+    }
+
 </style>
 
 <form asp-action="Create" method="post" novalidate>
@@ -626,6 +638,7 @@
             const form = document.querySelector("form");
 
             form.addEventListener("submit", function (e) {
+
                 const collapses = document.querySelectorAll(".accordion-collapse");
 
                 // Forcefully show all collapsible sections (ignore Bootstrap JS)
@@ -634,29 +647,43 @@
                     collapseEl.classList.remove("collapsing"); // in case it's stuck
                 });
 
+                // Count the number of invalid fields
+                const invalidFields = form.querySelectorAll(":invalid");
+                const errorCount = invalidFields.length;
+
                 // If novalidate is present, we're in "first pass"
                 if (form.hasAttribute("novalidate")) {
-                    e.preventDefault();
-
-                    // Give DOM time to visually update
-                    setTimeout(() => {
-                        form.removeAttribute("novalidate");
-                        form.requestSubmit();
-                    }, 100);
-                } else {
-                    // Let browser handle native validation
-                    if (!form.checkValidity()) {
+                    if (errorCount > 0) {
                         e.preventDefault();
-                        form.setAttribute("novalidate", "true");
+                        alert(`You have ${errorCount} field(s) that need attention.`);
 
-                        // Focus on first invalid input
-                        const firstInvalid = form.querySelector(":invalid");
-                        if (firstInvalid) {
-                            firstInvalid.scrollIntoView({ behavior: "smooth", block: "center" });
-                            firstInvalid.focus();
-                        }
+                        setTimeout(() => {
+                            invalidFields.forEach(field => {
+                                if ((field.type === "radio" || field.type === "checkbox") && field.name) {
+                                    const group = form.querySelectorAll(`input[name="${field.name}"]`);
+                                    group.forEach(input => {
+                                        input.classList.add("invalid-highlight");
+                                        const label = input.closest("label");
+                                        if (label) label.classList.add("invalid-highlight");
+                                    });
+                                } else {
+                                    field.classList.add("invalid-highlight");
+                                }
+                                  field.scrollIntoView({ behavior: "smooth", block: "center" });
+                                  field.focus();
+                              });
+                        }, 100);
+
+
+                        // Give DOM time to visually update
+                        // setTimeout(() => {
+                        //     form.removeAttribute("novalidate");
+                        //     form.requestSubmit();
+                        // }, 100);
+
                     }
                 }
+
             });
         });
 
