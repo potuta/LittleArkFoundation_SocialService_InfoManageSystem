@@ -1,0 +1,303 @@
+﻿@using LittleArkFoundation.Areas.Admin.Models.Form
+@using LittleArkFoundation.Areas.Admin.Models.FamilyComposition
+@model FormViewModel
+
+<div class="section-title">III. Monthly Expenses</div>
+<table id="expenses-table">
+    <tr>
+        <th>Particulars</th>
+        <th>Estimated Monthly Cost (PHP)</th>
+        <th>Particulars</th>
+        <th>Estimated Monthly Cost (PHP)</th>
+    </tr>
+    <tr>
+        <td>House & Lot</td>
+        <td><input type="number" asp-for="MonthlyExpenses.HouseAndLot" class="expense" required></td>
+        <td>Communication</td>
+        <td><input type="number" asp-for="MonthlyExpenses.Communication" class="expense" required></td>
+    </tr>
+    <tr>
+        <td>Food & Water</td>
+        <td><input type="number" asp-for="MonthlyExpenses.FoodAndWater" class="expense" required></td>
+        <td>House Help</td>
+        <td><input type="number" asp-for="MonthlyExpenses.HouseHelp" class="expense" required></td>
+    </tr>
+    <tr>
+        <td>Education</td>
+        <td><input type="number" asp-for="MonthlyExpenses.Education" class="expense" required></td>
+        <td>Medical Expenses</td>
+        <td><input type="number" asp-for="MonthlyExpenses.MedicalExpenses" class="expense" required></td>
+    </tr>
+    <tr>
+        <td>Clothing</td>
+        <td><input type="number" asp-for="MonthlyExpenses.Clothing" class="expense" required></td>
+        <td>Others</td>
+        <td>
+            <input type="text" asp-for="MonthlyExpenses.Others" placeholder="Specify">
+            <input type="number" asp-for="MonthlyExpenses.OthersAmount" class="expense">
+        </td>
+    </tr>
+    <tr>
+        <td>Transportation</td>
+        <td colspan="3"><input type="number" asp-for="MonthlyExpenses.Transportation" class="expense" required></td>
+
+    </tr>
+    <tr>
+        <td><strong>Total</strong></td>
+        <td colspan="3"><input type="number" asp-for="MonthlyExpenses.Total" id="total-expenses" readonly></td>
+    </tr>
+</table>
+
+<div class="section-title">Utilities</div>
+<table>
+    <tr>
+        <th>Light Source (Check and state amount)</th>
+        <th>Fuel Source (Check one)</th>
+        <th>Water Source (Check one)</th>
+    </tr>
+    <tr>
+        <td>
+            <div class="radio-group">
+                @if (Model.Utilities.LightSource == "Electric")
+                {
+                    <input type="radio" asp-for="Utilities.LightSource" value="Electric" data-target="electric-amount" onchange="toggleRequiredRadio(this)" checked>
+                    <label>Electric</label>
+                    <input type="number" asp-for="Utilities.LightSourceAmount" id="electric-amount" placeholder="State amount" disabled>
+                }
+                else
+                {
+                    <input type="radio" asp-for="Utilities.LightSource" value="Electric" data-target="electric-amount" onchange="toggleRequiredRadio(this)">
+                    <label>Electric</label>
+                    <input type="number" id="electric-amount" placeholder="State amount" oninput="updateLightSourceValue(this)" disabled>
+                    <input type="hidden" asp-for="Utilities.LightSourceAmount" id="light-source-amount" />
+                }
+
+            </div>
+
+            <div class="radio-group">
+                @if (Model.Utilities.LightSource == "Kerosene")
+                {
+                    <input type="radio" asp-for="Utilities.LightSource" value="Kerosene" data-target="kerosene-amount" onchange="toggleRequiredRadio(this)" checked>
+                    <label>Kerosene</label>
+                    <input type="number" asp-for="Utilities.LightSourceAmount" id="kerosene-amount" placeholder="State amount" disabled>
+                }
+                else
+                {
+                    <input type="radio" asp-for="Utilities.LightSource" value="Kerosene" data-target="kerosene-amount" onchange="toggleRequiredRadio(this)">
+                    <label>Kerosene</label>
+                    <input type="number" id="kerosene-amount" placeholder="State amount" oninput="updateLightSourceValue(this)" disabled>
+                    <input type="hidden" asp-for="Utilities.LightSourceAmount" id="light-source-amount" />
+
+                }
+            </div>
+
+            <div class="radio-group">
+                @if (Model.Utilities.LightSource == "Candle")
+                {
+                    <input type="radio" asp-for="Utilities.LightSource" value="Candle" data-target="candle-amount" onchange="toggleRequiredRadio(this)" checked>
+                    <label>Candle</label>
+                    <input type="number" asp-for="Utilities.LightSourceAmount" id="candle-amount" placeholder="State amount" disabled>
+                }
+                else
+                {
+                    <input type="radio" asp-for="Utilities.LightSource" value="Candle" data-target="candle-amount" onchange="toggleRequiredRadio(this)">
+                    <label>Candle</label>
+                    <input type="number" id="candle-amount" placeholder="State amount" oninput="updateLightSourceValue(this)" disabled>
+                    <input type="hidden" asp-for="Utilities.LightSourceAmount" id="light-source-amount" />
+
+                }
+
+            </div>
+        </td>
+        <td>
+            <div class="radio-group">
+                @if (Model.Utilities.FuelSource == "Gas")
+                {
+                    <input type="radio" asp-for="Utilities.FuelSource" value="Gas" data-target="gas-amount" onchange="toggleRequiredRadio(this)" checked>
+                    <label>Gas</label>
+                    <input type="number" asp-for="Utilities.FuelSourceAmount" id="gas-amount" placeholder="State amount" disabled>
+                }
+                else
+                {
+                    <input type="radio" asp-for="Utilities.FuelSource" value="Gas" data-target="gas-amount" onchange="toggleRequiredRadio(this)">
+                    <label>Gas</label>
+                    <input type="number" id="gas-amount" placeholder="State amount" oninput="updateFuelSourceValue(this)" disabled>
+                    <input type="hidden" asp-for="Utilities.FuelSourceAmount" id="fuel-source-amount" />
+                }
+
+            </div>
+
+            <div class="radio-group">
+                @if (Model.Utilities.FuelSource == "Firewood")
+                {
+                    <input type="radio" asp-for="Utilities.FuelSource" value="Firewood" data-target="firewood-amount" onchange="toggleRequiredRadio(this)" checked>
+                    <label>Firewood</label>
+                    <input type="number" asp-for="Utilities.FuelSourceAmount" id="firewood-amount" placeholder="State amount" disabled>
+                }
+                else
+                {
+                    <input type="radio" asp-for="Utilities.FuelSource" value="Firewood" data-target="firewood-amount" onchange="toggleRequiredRadio(this)">
+                    <label>Firewood</label>
+                    <input type="number" id="firewood-amount" placeholder="State amount" oninput="updateFuelSourceValue(this)" disabled>
+                    <input type="hidden" asp-for="Utilities.FuelSourceAmount" id="fuel-source-amount" />
+
+                }
+            </div>
+
+            <div class="radio-group">
+                @if (Model.Utilities.FuelSource == "Charcoal")
+                {
+                    <input type="radio" asp-for="Utilities.FuelSource" value="Charcoal" data-target="charcoal-amount" onchange="toggleRequiredRadio(this)" checked>
+                    <label>Charcoal</label>
+                    <input type="number" asp-for="Utilities.FuelSourceAmount" id="charcoal-amount" placeholder="State amount" disabled>
+                }
+                else
+                {
+                    <input type="radio" asp-for="Utilities.FuelSource" value="Charcoal" data-target="charcoal-amount" onchange="toggleRequiredRadio(this)">
+                    <label>Charcoal</label>
+                    <input type="number" id="charcoal-amount" placeholder="State amount" oninput="updateFuelSourceValue(this)" disabled>
+                    <input type="hidden" asp-for="Utilities.FuelSourceAmount" id="fuel-source-amount" />
+                }
+
+            </div>
+        </td>
+        <td>
+            <div class="radio-group">
+                <input type="radio" asp-for="Utilities.WaterSource" value="Artesian Well" required> Artesian Well
+            </div>
+
+            <div class="radio-group">
+                <input type="radio" asp-for="Utilities.WaterSource" value="Public"> Public
+            </div>
+
+            <div class="radio-group">
+                <input type="radio" asp-for="Utilities.WaterSource" value="Private"> Private
+            </div>
+
+            <div class="radio-group">
+                <input type="radio" asp-for="Utilities.WaterSource" value="Water District"> Water District
+            </div>
+        </td>
+    </tr>
+
+</table>
+
+<div class="section-title">IV. MEDICAL HISTORY</div>
+<table>
+    <tr>
+        <th>Admitting Diagnosis</th>
+        <th>Final Diagnosis Upon Discharge</th>
+    </tr>
+    <tr>
+        <td>
+            <div>
+                <textarea asp-for="MedicalHistory.AdmittingDiagnosis" rows="6" cols="60" placeholder="Type N/A if no answer" required></textarea>
+            </div>
+
+        </td>
+        <td>
+            <div>
+                <textarea asp-for="MedicalHistory.FinalDiagnosis" rows="6" cols="60" placeholder="Type N/A if no answer" required></textarea>
+            </div>
+        </td>
+    </tr>
+
+    <tr>
+        <th>Duration of the Sysmptoms/Treatment prior to Admission</th>
+        <th>Previous Treatment and Duration</th>
+    </tr>
+    <tr>
+        <td>
+            <div>
+                <textarea asp-for="MedicalHistory.DurationSymptomsPriorAdmission" rows="6" cols="60" placeholder="Type N/A if no answer" required></textarea>
+            </div>
+
+        </td>
+        <td>
+            <div>
+                <textarea asp-for="MedicalHistory.PreviousTreatmentDuration" rows="6" cols="60" placeholder="Type N/A if no answer" required></textarea>
+            </div>
+        </td>
+    </tr>
+
+    <tr>
+        <th>Treatment Plan</th>
+        <th>Health Accessibility Problem</th>
+    </tr>
+    <tr>
+        <td>
+            <div>
+                <textarea asp-for="MedicalHistory.TreatmentPlan" rows="6" cols="60" placeholder="Type N/A if no answer" required></textarea>
+            </div>
+
+        </td>
+        <td>
+            <div>
+                <textarea asp-for="MedicalHistory.HealthAccessibilityProblems" rows="6" cols="60" placeholder="Type N/A if no answer" required></textarea>
+            </div>
+        </td>
+    </tr>
+
+    <tr>
+        <th colspan="2">1. How would you describe your child's overall health?</th>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <div>
+                <textarea asp-for="ChildHealth.OverallHealth" rows="6" cols="120" placeholder="Type N/A if no answer" required></textarea>
+            </div>
+        </td>
+    </tr>
+
+    <tr>
+        <th colspan="2">
+            2. Does your child have any other health issues?
+
+            <div class="radio-group">
+                <input type="radio" asp-for="ChildHealth.HasHealthIssues" value="True" required> Yes
+                <input type="radio" asp-for="ChildHealth.HasHealthIssues" value="False"> No
+            </div>
+
+            If yes, please explain
+        </th>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <div>
+                <textarea asp-for="ChildHealth.DescribeHealthIssues" rows="6" cols="120" placeholder="Type N/A if no answer" required></textarea>
+            </div>
+        </td>
+    </tr>
+
+    <tr>
+        <th colspan="2">
+            3. Does your child have any recurrent medical conditions such as ear infections, asthma or allergies?
+
+            <div class="radio-group">
+                <input type="radio" asp-for="ChildHealth.HasRecurrentConditions" value="True" required> Yes
+                <input type="radio" asp-for="ChildHealth.HasRecurrentConditions" value="False"> No
+            </div>
+
+            If yes, please explain
+        </th>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <div>
+                <textarea asp-for="ChildHealth.DescribeRecurrentConditions" rows="6" cols="120" placeholder="Type N/A if no answer" required></textarea>
+            </div>
+        </td>
+    </tr>
+
+    <tr>
+        <th colspan="3">
+            4. Does your child have tubes in his/her ears?
+
+            <div class="radio-group">
+                <input type="radio" asp-for="ChildHealth.HasEarTubes" value="True" required> Yes
+                <input type="radio" asp-for="ChildHealth.HasEarTubes" value="False"> No
+            </div>
+        </th>
+    </tr>
+
+</table>
