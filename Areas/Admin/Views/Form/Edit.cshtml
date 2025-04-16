@@ -84,9 +84,22 @@
         width: 100%;
     }
 
+    .invalid-highlight {
+        outline: 2px solid red;
+        background-color: #ffe6e6;
+        border-radius: 4px;
+    }
+
+    input[type="radio"].invalid-highlight,
+    input[type="checkbox"].invalid-highlight {
+        outline: 2px solid red;
+        box-shadow: 0 0 0 2px red;
+    }
+
+
 </style>
 
-<form asp-action="Edit" method="post">
+<form asp-action="Edit" method="post" novalidate>
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="Assessments.AssessmentID" />
     <input type="hidden" asp-for="Assessments.PatientID" />
@@ -123,1670 +136,104 @@
     <input type="hidden" asp-for="DevelopmentalHistory.PatientID" />
     <input type="hidden" asp-for="SafetyConcerns.SafetyConcernID" />
 	<input type="hidden" asp-for="SafetyConcerns.PatientID" />
+    <input type="hidden" asp-for="CurrentFunctioning.CurrentFunctioningID" />
+	<input type="hidden" asp-for="CurrentFunctioning.PatientID" />
+	<input type="hidden" asp-for="ParentChildRelationship.ParentChildID" />
+	<input type="hidden" asp-for="ParentChildRelationship.PatientID" />
+    <input type="hidden" asp-for="Education.EducationID"/>
+    <input type="hidden" asp-for="Education.PatientID" />
+	<input type="hidden" asp-for="Employment.EmploymentID" />
+    <input type="hidden" asp-for="Employment.PatientID" />
+    <input type="hidden" asp-for="Housing.HousingID" />
+    <input type="hidden" asp-for="Housing.PatientID" />
+    <input type="hidden" asp-for="FosterCare.FosterCareID" />
+    <input type="hidden" asp-for="FosterCare.PatientID" />
+    <input type="hidden" asp-for="AlcoholDrugAssessment.AlcoholDrugID" />
+    <input type="hidden" asp-for="AlcoholDrugAssessment.PatientID" />
 
     <div class="form-container">
-        <h2 style="text-align: center;">Republic of the Philippines - Department of Health</h2>
-        <h3 style="text-align: center;">MSWD Assessment Tool for Children/Adolescent</h3>
 
-        <table>
-            <tr>
-                <td>
-                    Date of Interview: <span class="required">*</span>
-                    <input type="date" asp-for="Assessments.DateOfInterview" id="dateInput" readonly required>
-                    <span asp-validation-for="Assessments.DateOfInterview" class="text-danger"></span>
+        <div class="accordion" id="formAccordion">
 
-                </td>
-                <td>
-                    Time of Interview: <span class="required">*</span>
-                    <input type="time" asp-for="Assessments.TimeOfInterview" id="timeInput" readonly required>
-                    <span asp-validation-for="Assessments.TimeOfInterview" class="text-danger"></span>
-
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    Basic Ward: <span class="required">*</span>
-                    <input type="text" asp-for="Assessments.BasicWard" required>
-                    <span asp-validation-for="Assessments.BasicWard" class="text-danger"></span>
-
-                </td>
-                <td>
-                    Non-Basic Ward: <span class="required">*</span>
-                    <input type="text" asp-for="Assessments.NonBasicWard" required>
-                    <span asp-validation-for="Assessments.NonBasicWard" class="text-danger"></span>
-
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    Health Record No: <span class="required">*</span>
-                    <input type="text" asp-for="Assessments.HealthRecordNo" required>
-                    <span asp-validation-for="Assessments.HealthRecordNo" class="text-danger"></span>
-
-                </td>
-                <td>
-                    MSWD No: <span class="required">*</span>
-                    <input type="text" asp-for="Assessments.MSWDNo" required>
-                    <span asp-validation-for="Assessments.MSWDNo" class="text-danger"></span>
-
-                </td>
-            </tr>
-        </table>
-
-        <div class="section-title">Source of Referral</div>
-        <table>
-            <tr>
-                <td>
-                    Referral Name: <span class="required">*</span>
-                    <input type="text" asp-for="Referrals.Name" required>
-                    <span asp-validation-for="Referrals.Name" class="text-danger"></span>
-
-                </td>
-                <td>
-                    Address: <span class="required">*</span>
-                    <input type="text" asp-for="Referrals.Address" required>
-                    <span asp-validation-for="Referrals.Address" class="text-danger"></span>
-
-                </td>
-                <td>
-                    Contact No: <span class="required">*</span>
-                    <input type="text" asp-for="Referrals.ContactNo" required>
-                    <span asp-validation-for="Referrals.ContactNo" class="text-danger"></span>
-
-                </td>
-            </tr>
-
-        </table>
-
-        <div class="section-title">Source of Informant</div>
-        <table>
-            <tr>
-                <td>
-                    Informant Name: <span class="required">*</span>
-                    <input type="text" asp-for="Informants.Name" required>
-                    <span asp-validation-for="Informants.Name" class="text-danger"></span>
-
-                </td>
-                <td>
-                    Relation to Patient: <span class="required">*</span>
-                    <input type="text" asp-for="Informants.RelationToPatient" required>
-                    <span asp-validation-for="Informants.RelationToPatient" class="text-danger"></span>
-
-                </td>
-                <td>
-                    Contact No: <span class="required">*</span>
-                    <input type="text" asp-for="Informants.ContactNo" required>
-                    <span asp-validation-for="Informants.ContactNo" class="text-danger"></span>
-
-                </td>
-                <td>
-                    Address: <span class="required">*</span>
-                    <input type="text" asp-for="Informants.Address" required>
-                    <span asp-validation-for="Informants.Address" class="text-danger"></span>
-
-                </td>
-            </tr>
-        </table>
-
-        <div class="section-title">I. Demographic Data </div>
-        <table>
-            <tr>
-                <td>
-                    Patient's Last Name: <span class="required">*</span>
-                    <input type="text" asp-for="Patient.LastName" required>
-                    <span asp-validation-for="Patient.LastName" class="text-danger"></span>
-                </td>
-                <td>
-                    Patient's First Name: <span class="required">*</span>
-                    <input type="text" asp-for="Patient.FirstName" required>
-                    <span asp-validation-for="Patient.FirstName" class="text-danger"></span>
-                </td>
-                <td>
-                    Patient's Middle Name: <span class="required">*</span>
-                    <input type="text" asp-for="Patient.MiddleName" required>
-                    <span asp-validation-for="Patient.MiddleName" class="text-danger"></span>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    Date of Birth: <span class="required">*</span>
-                    <input type="date" asp-for="Patient.DateOfBirth" required>
-                    <span asp-validation-for="Patient.DateOfBirth" class="text-danger"></span>
-                </td>
-                <td>
-                    Age: <span class="required">*</span>
-                    <input type="number" asp-for="Patient.Age" required>
-                    <span asp-validation-for="Patient.Age" class="text-danger"></span>
-                </td>
-                <td>
-                    Sex: <span class="required">*</span>
-                    <select asp-for="Patient.Sex" required>
-                        <option>Male</option>
-                        <option>Female</option>
-                    </select>
-                    <span asp-validation-for="Patient.Sex" class="text-danger"></span>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    Contact No: <span class="required">*</span>
-                    <input type="text" asp-for="Patient.ContactNo" required>
-                    <span asp-validation-for="Patient.ContactNo" class="text-danger"></span>
-
-                </td>
-                <td>
-                    Place of Birth: <span class="required">*</span>
-                    <input type="text" asp-for="Patient.PlaceOfBirth" required>
-                    <span asp-validation-for="Patient.PlaceOfBirth" class="text-danger"></span>
-
-                </td>
-                <td>
-                    Gender: <span class="required">*</span>
-                    <select asp-for="Patient.Gender" required>
-                        <option>Male</option>
-                        <option>Female</option>
-                        <option>LGBTQIA+</option>
-                    </select>
-                    <span asp-validation-for="Patient.Gender" class="text-danger"></span>
-
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    Religion: <span class="required">*</span>
-                    <input type="text" asp-for="Patient.Religion" required>
-                    <span asp-validation-for="Patient.Religion" class="text-danger"></span>
-
-                </td>
-                <td colspan="2">
-                    Nationality: <span class="required">*</span>
-                    <input type="text" asp-for="Patient.Nationality" required>
-                    <span asp-validation-for="Patient.Nationality" class="text-danger"></span>
-
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    Permanent Address: <span class="required">*</span>
-                    <input type="text" asp-for="Patient.PermanentAddress" required>
-                    <span asp-validation-for="Patient.PermanentAddress" class="text-danger"></span>
-
-                </td>
-                <td colspan="2">
-                    Temporary Address: <span class="required">*</span>
-                    <input type="text" asp-for="Patient.TemporaryAddress" required>
-                    <span asp-validation-for="Patient.TemporaryAddress" class="text-danger"></span>
-
-                </td>
-            </tr>
-
-            <tr>
-                <td>
-                    Civil Status (Check) <span class="required">*</span>
-                </td>
-                <td colspan="2">
-                    <div class="radio-group">
-                        <div class="radio-group">
-                            <input type="radio" asp-for="Patient.CivilStatus" value="Legitimate" required> Legitimate
-                        </div>
-
-                        <div class="radio-group">
-                            <input type="radio" asp-for="Patient.CivilStatus" value="Illegitimate"> Illegitimate
-                        </div>
-
-                        <div class="radio-group">
-                            <input type="radio" asp-for="Patient.CivilStatus" value="Married"> Married
-                        </div>
-
-                        <div class="radio-group">
-                            <input type="radio" asp-for="Patient.CivilStatus" value="Common Law"> Common Law
-                        </div>
-
-                        <div class="radio-group">
-                            <input type="radio" asp-for="Patient.CivilStatus" value="Widowed"> Widowed
-                        </div>
-                        <span asp-validation-for="Patient.CivilStatus" class="text-danger"></span>
+            <div class="accordion-item" id="page1">
+                <h2 class="accordion-header" id="headingPage1">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePage1" aria-expanded="true" aria-controls="collapsePage1">
+                        Page 1
+                    </button>
+                </h2>
+                <div id="collapsePage1" class="accordion-collapse collapse show" aria-labelledby="headingPage1">
+                    <div class="accordion-body">
+                        @await Html.PartialAsync("Partials/_Page1Edit", Model)
                     </div>
-                </td>
-
-            </tr>
-
-            <tr>
-                <td>
-                    Highest Educational Attainment <span class="required">*</span>
-                </td>
-                <td colspan="2">
-                    <div class="radio-group">
-                        <input type="radio" asp-for="Patient.EducationLevel" value="Primary" required> Primary
-                        <input type="radio" asp-for="Patient.EducationLevel" value="Secondary"> Secondary
-                        <input type="radio" asp-for="Patient.EducationLevel" value="Vocational"> Vocational
-                        <input type="radio" asp-for="Patient.EducationLevel" value="Tertiary"> Tertiary
-                        <input type="radio" asp-for="Patient.EducationLevel" value="No Educational Attainment"> No Educational Attainment
-                        <span asp-validation-for="Patient.EducationLevel" class="text-danger"></span>
-
-                    </div>
-                </td>
-            </tr>
-
-            <tr>
-                <td>
-                    Occupation: <span class="required">*</span>
-                    <input type="text" asp-for="Patient.Occupation" required>
-                    <span asp-validation-for="Patient.Occupation" class="text-danger"></span>
-
-                </td>
-                <td colspan="2">
-                    Patient's Monthly Income: <span class="required">*</span>
-                    <input type="number" asp-for="Patient.MonthlyIncome" required>
-                    <span asp-validation-for="Patient.MonthlyIncome" class="text-danger"></span>
-
-                </td>
-            </tr>
-
-            <tr>
-                <td>
-                    PhilHealth Identification Number (PIN): <span class="required">*</span>
-                    <input type="number" asp-for="Patient.PhilhealthPIN" required>
-                    <span asp-validation-for="Patient.PhilhealthPIN" class="text-danger"></span>
-
-                </td>
-
-                <td colspan="2">
-                    <div class="radio-group">
-                        PhilHealth Membership (Check): <span class="required">*</span>
-                        <div class="radio-group">
-                            <input type="radio" asp-for="Patient.PhilhealthMembership" value="Direct Contributor" required> Direct Contributor
-                            <input type="radio" asp-for="Patient.PhilhealthMembership" value="Indirect Contributor"> Indirect Contributor
-                            <span asp-validation-for="Patient.PhilhealthMembership" class="text-danger"></span>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-
-        </table>
-
-        <div class="section-title">Family Composition</div>
-        <table id="family-table">
-            <tr>
-                <th>Name <span class="required">*</span></th>
-                <th>Age <span class="required">*</span></th>
-                <th>Date of Birth <span class="required">*</span></th>
-                <th>Civil Status <span class="required">*</span></th>
-                <th>Relationship to Patient <span class="required">*</span></th>
-                <th>Living with Child <span class="required">*</span></th>
-                <th>Educational Attainment <span class="required">*</span></th>
-                <th>Occupation <span class="required">*</span></th>
-                <th>Monthly Income <span class="required">*</span></th>
-                <th>Action</th>
-            </tr>
-            <tbody id="family-body" class="family-input">
-                @for (int i = 0; i < Model.FamilyMembers.Count; i++)
-                {
-                    <tr>
-                        <td><input type="text" asp-for="FamilyMembers[i].Name" required></td>
-                        <td><input type="number" asp-for="FamilyMembers[i].Age" required></td>
-                        <td><input type="date" asp-for="FamilyMembers[i].DateOfBirth" required></td>
-                        <td><input type="text" asp-for="FamilyMembers[i].CivilStatus" required></td>
-                        <td><input type="text" asp-for="FamilyMembers[i].RelationshipToPatient" required></td>
-                        <td>
-                            <select asp-for="FamilyMembers[i].LivingWithChild" required>
-                                <option value="true">Yes</option>
-                                <option value="false">No</option>
-                            </select>
-                        </td>
-                        <td><input type="text" asp-for="FamilyMembers[i].EducationalAttainment" required></td>
-                        <td><input type="text" asp-for="FamilyMembers[i].Occupation" required></td>
-                        <td><input type="number" asp-for="FamilyMembers[i].MonthlyIncome" required></td>
-                        <td><button type="button" id="family-button-remove" onclick="removeRow(this)">❌</button></td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-
-        <button type="button" id="family-button-add" onclick="addRow(this)">➕ Add Row</button>
-
-        <table>
-            <tr>
-                <td>
-                    Other Sources of Income: <span class="required">*</span>
-                    <input type="text" asp-for="Household.OtherSourcesOfIncome" required>
-                </td>
-                <td>
-                    Household Size: <span class="required">*</span>
-                    <input type="number" asp-for="Household.HouseholdSize" required>
-                </td>
-                <td>
-                    Total Household Income: <span class="required">*</span>
-                    <input type="number" asp-for="Household.TotalHouseholdIncome" required>
-                </td>
-                <td>
-                    Per Capita Income: <span class="required">*</span>
-                    <input type="number" asp-for="Household.PerCapitaIncome" required>
-                </td>
-            </tr>
-        </table>
-
-        <div class="section-title">II. MSWD Classification</div>
-        <table>
-            <tr>
-                <td>Main Classification:</td>
-                <td>
-                    <div class="radio-group">
-                        <input type="radio" asp-for="MSWDClassification.MainClassification" value="Financially Capable/Capacitated" required> Financially Capable/Capacitated
-                    </div>
-
-                    <div class="radio-group">
-                        <input type="radio" asp-for="MSWDClassification.MainClassification" value="Financially Incapable/Incapacitated"> Financially Incapable/Incapacitated
-                    </div>
-
-                    <div class="radio-group">
-                        <input type="radio" asp-for="MSWDClassification.MainClassification" value="Indigent"> Indigent
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td>Sub Classification:</td>
-                <td>
-                    <div class="radio-group">
-                        <input type="radio" asp-for="MSWDClassification.SubClassification" value="C1" required> C1
-                    </div>
-
-                    <div class="radio-group">
-                        <input type="radio" asp-for="MSWDClassification.SubClassification" value="C2"> C2
-                    </div>
-
-                    <div class="radio-group">
-                        <input type="radio" asp-for="MSWDClassification.SubClassification" value="C3"> C3
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td>Membership to Marginalized Sector (Check)</td>
-                <td>
-                    <div class="radio-group">
-                        <input type="radio" asp-for="MSWDClassification.MembershipSector" value="Artisanal Fisher Folk" onchange="toggleRequiredRadio(this)" required> Artisanal Fisher Folk
-                    </div>
-
-                    <div class="radio-group">
-                        <input type="radio" asp-for="MSWDClassification.MembershipSector" value="Farmer And Landless Rural Worker" onchange="toggleRequiredRadio(this)"> Farmer And Landless Rural Worker
-                    </div>
-
-                    <div class="radio-group">
-                        <input type="radio" asp-for="MSWDClassification.MembershipSector" value="Urban Poor" onchange="toggleRequiredRadio(this)"> Urban Poor
-                    </div>
-
-                    <div class="radio-group">
-                        <input type="radio" asp-for="MSWDClassification.MembershipSector" value="Indigenous Peoples" onchange="toggleRequiredRadio(this)"> Indigenous Peoples
-                    </div>
-
-                    <div class="radio-group">
-                        <input type="radio" asp-for="MSWDClassification.MembershipSector" value="Senior Citizen" onchange="toggleRequiredRadio(this)"> Senior Citizen
-                    </div>
-
-                    <div class="radio-group">
-                        <input type="radio" asp-for="MSWDClassification.MembershipSector" value="Formal Labor and Migrant Workers" onchange="toggleRequiredRadio(this)"> Formal Labor and Migrant Workers
-                    </div>
-
-                    <div class="radio-group">
-                        <input type="radio" asp-for="MSWDClassification.MembershipSector" value="Workers in Informal Sector" onchange="toggleRequiredRadio(this)"> Workers in Informal Sector
-                    </div>
-
-                    <div class="radio-group">
-                        <input type="radio" asp-for="MSWDClassification.MembershipSector" value="PWD" onchange="toggleRequiredRadio(this)"> PWD
-                    </div>
-
-                    <div class="radio-group">
-                        <input type="radio" asp-for="MSWDClassification.MembershipSector" value="Victims Of Disaster and Calamity" onchange="toggleRequiredRadio(this)"> Victims Of Disaster and Calamity
-                    </div>
-
-                    <div class="radio-group">
-                        <div class="radio-group">
-                            @if (!(new[] { "Artisanal Fisher Folk", "Farmer And Landless Rural Worker", "Urban Poor",
-                                "Indigenous Peoples", "Senior Citizen", "Formal Labor and Migrant Workers",
-                                "Workers in Informal Sector", "PWD", "Victims Of Disaster and Calamity" })
-                            .Contains(Model.MSWDClassification.MembershipSector))
-                            {
-                                <input type="radio" asp-for="MSWDClassification.MembershipSector" value="@Model.MSWDClassification.MembershipSector"
-                                id="others-radio" data-target="member-others-specify"
-                                onchange="toggleRequiredRadio(this)" checked>
-
-                                <label>Others</label>
-
-                                <input type="text" id="member-others-specify" placeholder="Specify" disabled
-                                asp-for="@Model.MSWDClassification.MembershipSector">
-                            }
-                            else
-                            {
-                                <input type="radio" asp-for="MSWDClassification.MembershipSector" value="Others"
-                                id="others-radio" data-target="member-others-specify"
-                                onchange="toggleRequiredRadio(this)">
-
-                                <label>Others</label>
-
-                                <input type="text" id="member-others-specify" placeholder="Specify" disabled
-                                oninput="updateOthersValue(this)">
-                            }
-
-                        </div>
-                    </div>
-                </td>
-            </tr>
-        </table>
-
-        <div class="section-title">III. Monthly Expenses</div>
-        <table id="expenses-table">
-            <tr>
-                <th>Particulars</th>
-                <th>Estimated Monthly Cost (PHP)</th>
-                <th>Particulars</th>
-                <th>Estimated Monthly Cost (PHP)</th>
-            </tr>
-            <tr>
-                <td>House & Lot</td>
-                <td><input type="number" asp-for="MonthlyExpenses.HouseAndLot" class="expense" required></td>
-                <td>Communication</td>
-                <td><input type="number" asp-for="MonthlyExpenses.Communication" class="expense" required></td>
-            </tr>
-            <tr>
-                <td>Food & Water</td>
-                <td><input type="number" asp-for="MonthlyExpenses.FoodAndWater" class="expense" required></td>
-                <td>House Help</td>
-                <td><input type="number" asp-for="MonthlyExpenses.HouseHelp" class="expense" required></td>
-            </tr>
-            <tr>
-                <td>Education</td>
-                <td><input type="number" asp-for="MonthlyExpenses.Education" class="expense" required></td>
-                <td>Medical Expenses</td>
-                <td><input type="number" asp-for="MonthlyExpenses.MedicalExpenses" class="expense" required></td>
-            </tr>
-            <tr>
-                <td>Clothing</td>
-                <td><input type="number" asp-for="MonthlyExpenses.Clothing" class="expense" required></td>
-                <td>Others</td>
-                <td>
-                    <input type="text" asp-for="MonthlyExpenses.Others" placeholder="Specify">
-                    <input type="number" asp-for="MonthlyExpenses.OthersAmount" class="expense">
-                </td>
-            </tr>
-            <tr>
-                <td>Transportation</td>
-                <td colspan="3"><input type="number" asp-for="MonthlyExpenses.Transportation" class="expense" required></td>
-
-            </tr>
-            <tr>
-                <td><strong>Total</strong></td>
-                <td colspan="3"><input type="number" asp-for="MonthlyExpenses.Total" id="total-expenses" readonly></td>
-            </tr>
-        </table>
-
-        <div class="section-title">Utilities</div>
-        <table>
-            <tr>
-                <th>Light Source (Check and state amount)</th>
-                <th>Fuel Source (Check one)</th>
-                <th>Water Source (Check one)</th>
-            </tr>
-            <tr>
-                <td>
-                    <div class="radio-group">
-                        @if (Model.Utilities.LightSource == "Electric")
-                        {
-                            <input type="radio" asp-for="Utilities.LightSource" value="Electric" data-target="electric-amount" onchange="toggleRequiredRadio(this)" checked>
-                            <label>Electric</label>
-                            <input type="number" asp-for="Utilities.LightSourceAmount" id="electric-amount" placeholder="State amount" disabled>
-                        }
-                        else
-                        {
-                            <input type="radio" asp-for="Utilities.LightSource" value="Electric" data-target="electric-amount" onchange="toggleRequiredRadio(this)">
-                            <label>Electric</label>
-                            <input type="number" id="electric-amount" placeholder="State amount" oninput="updateLightSourceValue(this)" disabled>
-                            <input type="hidden" asp-for="Utilities.LightSourceAmount" id="light-source-amount"/>
-                        }
-
-                    </div>
-
-                    <div class="radio-group">
-                        @if (Model.Utilities.LightSource == "Kerosene") 
-                        {
-                            <input type="radio" asp-for="Utilities.LightSource" value="Kerosene" data-target="kerosene-amount" onchange="toggleRequiredRadio(this)" checked>
-                            <label>Kerosene</label>
-                            <input type="number" asp-for="Utilities.LightSourceAmount" id="kerosene-amount" placeholder="State amount" disabled>
-                        }
-                        else 
-                        {
-                            <input type="radio" asp-for="Utilities.LightSource" value="Kerosene" data-target="kerosene-amount" onchange="toggleRequiredRadio(this)">
-                            <label>Kerosene</label>
-                            <input type="number" id="kerosene-amount" placeholder="State amount" oninput="updateLightSourceValue(this)" disabled>
-                            <input type="hidden" asp-for="Utilities.LightSourceAmount" id="light-source-amount" />
-
-                        }
-                    </div>
-
-                    <div class="radio-group">
-                        @if (Model.Utilities.LightSource == "Candle")
-                        {
-                            <input type="radio" asp-for="Utilities.LightSource" value="Candle" data-target="candle-amount" onchange="toggleRequiredRadio(this)" checked>
-                            <label>Candle</label>
-                            <input type="number" asp-for="Utilities.LightSourceAmount" id="candle-amount" placeholder="State amount" disabled>
-                        }
-                        else
-                        {
-                            <input type="radio" asp-for="Utilities.LightSource" value="Candle" data-target="candle-amount" onchange="toggleRequiredRadio(this)">
-                            <label>Candle</label>
-                            <input type="number" id="candle-amount" placeholder="State amount" oninput="updateLightSourceValue(this)" disabled>
-                            <input type="hidden" asp-for="Utilities.LightSourceAmount" id="light-source-amount" />
-
-                        }
-
-                    </div>
-                </td>
-                <td>
-                    <div class="radio-group">
-                        @if (Model.Utilities.FuelSource == "Gas")
-                        {
-                            <input type="radio" asp-for="Utilities.FuelSource" value="Gas" data-target="gas-amount" onchange="toggleRequiredRadio(this)" checked>
-                            <label>Gas</label>
-                            <input type="number" asp-for="Utilities.FuelSourceAmount" id="gas-amount" placeholder="State amount" disabled>
-                        }
-                        else
-                        {
-                            <input type="radio" asp-for="Utilities.FuelSource" value="Gas" data-target="gas-amount" onchange="toggleRequiredRadio(this)">
-                            <label>Gas</label>
-                            <input type="number" id="gas-amount" placeholder="State amount" oninput="updateFuelSourceValue(this)" disabled>
-                            <input type="hidden" asp-for="Utilities.FuelSourceAmount" id="fuel-source-amount"/>
-                        }
-
-                    </div>
-
-                    <div class="radio-group">
-                        @if (Model.Utilities.FuelSource == "Firewood")
-                        {
-                            <input type="radio" asp-for="Utilities.FuelSource" value="Firewood" data-target="firewood-amount" onchange="toggleRequiredRadio(this)" checked>
-                            <label>Firewood</label>
-                            <input type="number" asp-for="Utilities.FuelSourceAmount" id="firewood-amount" placeholder="State amount" disabled>
-                        }
-                        else
-                        {
-                            <input type="radio" asp-for="Utilities.FuelSource" value="Firewood" data-target="firewood-amount" onchange="toggleRequiredRadio(this)">
-                            <label>Firewood</label>
-                            <input type="number" id="firewood-amount" placeholder="State amount" oninput="updateFuelSourceValue(this)" disabled>
-                            <input type="hidden" asp-for="Utilities.FuelSourceAmount" id="fuel-source-amount" />
-
-                        }
-                    </div>
-
-                    <div class="radio-group">
-                        @if (Model.Utilities.FuelSource == "Charcoal")
-                        {
-                            <input type="radio" asp-for="Utilities.FuelSource" value="Charcoal" data-target="charcoal-amount" onchange="toggleRequiredRadio(this)" checked>
-                            <label>Charcoal</label>
-                            <input type="number" asp-for="Utilities.FuelSourceAmount" id="charcoal-amount" placeholder="State amount" disabled>
-                        }
-                        else
-                        {
-                            <input type="radio" asp-for="Utilities.FuelSource" value="Charcoal" data-target="charcoal-amount" onchange="toggleRequiredRadio(this)">
-                            <label>Charcoal</label>
-                            <input type="number" id="charcoal-amount" placeholder="State amount" oninput="updateFuelSourceValue(this)" disabled>
-                            <input type="hidden" asp-for="Utilities.FuelSourceAmount" id="fuel-source-amount" />
-                        }
-
-                    </div>
-                </td>
-                <td>
-                    <div class="radio-group">
-                        <input type="radio" asp-for="Utilities.WaterSource" value="Artesian Well" required> Artesian Well
-                    </div>
-
-                    <div class="radio-group">
-                        <input type="radio" asp-for="Utilities.WaterSource" value="Public"> Public
-                    </div>
-
-                    <div class="radio-group">
-                        <input type="radio" asp-for="Utilities.WaterSource" value="Private"> Private
-                    </div>
-
-                    <div class="radio-group">
-                        <input type="radio" asp-for="Utilities.WaterSource" value="Water District"> Water District
-                    </div>
-                </td>
-            </tr>
-
-        </table>
-
-        <div class="section-title">IV. MEDICAL HISTORY</div>
-        <table>
-            <tr>
-                <th>Admitting Diagnosis</th>
-                <th>Final Diagnosis Upon Discharge</th>
-            </tr>
-            <tr>
-                <td>
-                    <div>
-                        <textarea asp-for="MedicalHistory.AdmittingDiagnosis" rows="6" cols="60" placeholder="Type N/A if no answer" required></textarea>
-                    </div>
-
-                </td>
-                <td>
-                    <div>
-                        <textarea asp-for="MedicalHistory.FinalDiagnosis" rows="6" cols="60" placeholder="Type N/A if no answer" required></textarea>
-                    </div>
-                </td>
-            </tr>
-
-            <tr>
-                <th>Duration of the Sysmptoms/Treatment prior to Admission</th>
-                <th>Previous Treatment and Duration</th>
-            </tr>
-            <tr>
-                <td>
-                    <div>
-                        <textarea asp-for="MedicalHistory.DurationSymptomsPriorAdmission" rows="6" cols="60" placeholder="Type N/A if no answer" required></textarea>
-                    </div>
-
-                </td>
-                <td>
-                    <div>
-                        <textarea asp-for="MedicalHistory.PreviousTreatmentDuration" rows="6" cols="60" placeholder="Type N/A if no answer" required></textarea>
-                    </div>
-                </td>
-            </tr>
-
-            <tr>
-                <th>Treatment Plan</th>
-                <th>Health Accessibility Problem</th>
-            </tr>
-            <tr>
-                <td>
-                    <div>
-                        <textarea asp-for="MedicalHistory.TreatmentPlan" rows="6" cols="60" placeholder="Type N/A if no answer" required></textarea>
-                    </div>
-
-                </td>
-                <td>
-                    <div>
-                        <textarea asp-for="MedicalHistory.HealthAccessibilityProblems" rows="6" cols="60" placeholder="Type N/A if no answer" required></textarea>
-                    </div>
-                </td>
-            </tr>
-
-            <tr>
-                <th colspan="2">1. How would you describe your child's overall health?</th>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <div>
-                        <textarea asp-for="ChildHealth.OverallHealth" rows="6" cols="120" placeholder="Type N/A if no answer" required></textarea>
-                    </div>
-                </td>
-            </tr>
-
-            <tr>
-                <th colspan="2">
-                    2. Does your child have any other health issues?
-
-                    <div class="radio-group">
-                        <input type="radio" asp-for="ChildHealth.HasHealthIssues" value="True" required> Yes
-                        <input type="radio" asp-for="ChildHealth.HasHealthIssues" value="False"> No
-                    </div>
-
-                    If yes, please explain
-                </th>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <div>
-                        <textarea asp-for="ChildHealth.DescribeHealthIssues" rows="6" cols="120" placeholder="Type N/A if no answer" required></textarea>
-                    </div>
-                </td>
-            </tr>
-
-            <tr>
-                <th colspan="2">
-                    3. Does your child have any recurrent medical conditions such as ear infections, asthma or allergies?
-
-                    <div class="radio-group">
-                        <input type="radio" asp-for="ChildHealth.HasRecurrentConditions" value="True" required> Yes
-                        <input type="radio" asp-for="ChildHealth.HasRecurrentConditions" value="False"> No
-                    </div>
-
-                    If yes, please explain
-                </th>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <div>
-                        <textarea asp-for="ChildHealth.DescribeRecurrentConditions" rows="6" cols="120" placeholder="Type N/A if no answer" required></textarea>
-                    </div>
-                </td>
-            </tr>
-
-            <tr>
-                <th colspan="3">
-                    4. Does your child have tubes in his/her ears?
-
-                    <div class="radio-group">
-                        <input type="radio" asp-for="ChildHealth.HasEarTubes" value="True" required> Yes
-                        <input type="radio" asp-for="ChildHealth.HasEarTubes" value="False"> No
-                    </div>
-                </th>
-            </tr>
-
-        </table>
-
-        <table>
-            <th>
-                5. Include current significant medical problems, physical limitations, sleep problems, unusual eating habits, poor hygiene, overall physical fitness, head injuries, early
-                childhood infections, eating disorders, knee or back injuries, asthma and others
-            </th>
-        </table>
-        <table id="diagnosis-table">
-            <tr>
-                <th>
-                    Medical Conditions
-                </th>
-                <th>
-                    Currently receiving treatment?
-                </th>
-                <th>
-                    Provider
-                </th>
-                <th>
-                    Does this condition cause stress or impairment at this time?
-                </th>
-                <th>
-                    What have you found that helps?
-                </th>
-                <th>
-                    Action
-                </th>
-            </tr>
-            <tbody class="diagnosis-input">
-                @for (int i = 0; i < Model.Diagnoses.Count; i++)
-                {
-                    <tr>
-                        <td>
-                            <input type="text" asp-for="Diagnoses[i].MedicalCondition" placeholder="Type N/A if no answer" required>
-                        </td>
-                        <td>
-                            <select asp-for="Diagnoses[i].ReceivingTreatment" required>
-                                <option value="true">Yes</option>
-                                <option value="false">No</option>
-                            </select>
-                        </td>
-                        <td>
-                            <input type="text" asp-for="Diagnoses[i].TreatmentProvider" placeholder="Type N/A if no answer" required>
-                        </td>
-                        <td>
-                            <select asp-for="Diagnoses[i].DoesCauseStressOrImpairment" required>
-                                <option value="true">Yes</option>
-                                <option value="false">No</option>
-                            </select>
-                        </td>
-                        <td>
-                            <input type="text" asp-for="Diagnoses[i].TreatmentHelp" placeholder="Type N/A if no answer" required>
-                        </td>
-                        <td><button type="button" id="diagnosis-button-remove" onclick="removeRow(this)">❌</button></td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-        <button type="button" id="diagnosis-button-add" onclick="addRow(this)">➕ Add Row</button>
-
-        <table>
-            <th>
-                6. Does your child take any medications?
-                <div class="radio-group">
-                    <input type="radio" asp-for="Medications[0].DoesTakeAnyMedication" value="True" required> Yes
-                    <input type="radio" asp-for="Medications[0].DoesTakeAnyMedication" value="False"> No
                 </div>
-                Please list medications including psychotropic, over‐the‐counter, herbal remedies that you have taken in the past 6 months
-            </th>
-        </table>
-        <table id="medication-table">
-            <tr>
-                <th>
-                    Medication
-                </th>
-                <th>
-                    Dosage
-                </th>
-                <th>
-                    Frequency
-                </th>
-                <th>
-                    Prescribed by
-                </th>
-                <th>
-                    Reason for Medication
-                </th>
-                <th>
-                    Action
-                </th>
-            </tr>
-            <tbody class="medication-input">
-                @for (int i = 0; i < Model.Medications.Count; i++)
-                {
-                    <tr>
-                        <td>
-                            <input type="text" asp-for="Medications[i].Medication" placeholder="Type N/A if no answer" required>
-                        </td>
-                        <td>
-                            <input type="text" asp-for="Medications[i].Dosage" placeholder="Type N/A if no answer" required>
-                        </td>
-                        <td>
-                            <input type="text" asp-for="Medications[i].Frequency" placeholder="Type N/A if no answer" required>
-                        </td>
-                        <td>
-                            <input type="text" asp-for="Medications[i].PrescribedBy" placeholder="Type N/A if no answer" required>
-                        </td>
-                        <td>
-                            <input type="text" asp-for="Medications[i].ReasonForMedication" placeholder="Type N/A if no answer" required>
-                        </td>
-                        <td><button type="button" id="medication-button-remove" onclick="removeRow(this)">❌</button></td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-        <button type="button" id="medication-button-add" onclick="addRow(this)">➕ Add Row</button>
+            </div>
 
-        <table>
-            <tr>
-                <th>
-                    Is your child taking the medications as prescribed?
-                    <div class="radio-group">
-                        <input type="radio" asp-for="Medications[0].IsTakingMedicationAsPrescribed" value="True" required> Yes
-                        <input type="radio" asp-for="Medications[0].IsTakingMedicationAsPrescribed" value="False"> No
+            <div class="accordion-item" id="page2">
+                <h2 class="accordion-header" id="headingPage2">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePage2" aria-expanded="false" aria-controls="collapsePage2">
+                        Page 2
+                    </button>
+                </h2>
+                <div id="collapsePage2" class="accordion-collapse collapse" aria-labelledby="headingPage2">
+                    <div class="accordion-body">
+                        @await Html.PartialAsync("Partials/_Page2Edit", Model)
                     </div>
-                    If no, please explain
-                    <input type="text" asp-for="Medications[0].DescribeTakingMedication" placeholder="Type N/A if no answer" required />
-                </th>
-            </tr>
-            <tr>
-                <th>
-                    Additional Information (if needed):
-                    <textarea asp-for="Medications[0].AdditionalInfo" rows="6" cols="120" placeholder="Type N/A if no answer" required></textarea>
-                </th>
-            </tr>
-        </table>
-
-        <table>
-            <th>
-                7. Has your child ever had a serious accident/illness or hospitalization?
-                <div class="radio-group">
-                    <input type="radio" asp-for="HospitalizationHistory[0].HasSeriousAccidentOrIllness" value="True" required> Yes
-                    <input type="radio" asp-for="HospitalizationHistory[0].HasSeriousAccidentOrIllness" value="False"> No
                 </div>
-                Please list all past hospitalization, surgeries, accidents, or illnesses
-            </th>
-        </table>
-        <table id="hospitalization-table">
-            <tr>
-                <th>
-                    Reason for Previous Hospitalizations, Accident, Illness
-                </th>
-                <th>
-                    Date
-                </th>
-                <th>
-                    Location
-                </th>
-                <th>
-                    Action
-                </th>
-            </tr>
-            <tbody class="hospitalization-input">
-                @for (int i = 0; i < Model.HospitalizationHistory.Count; i++)
-                {
-                    <tr>
-                        <td>
-                            <input type="text" asp-for="HospitalizationHistory[i].Reason" placeholder="Type N/A if no answer" required>
-                        </td>
-                        <td>
-                            <input type="date" asp-for="HospitalizationHistory[i].Date" required>
-                        </td>
-                        <td>
-                            <input type="text" asp-for="HospitalizationHistory[i].Location" placeholder="Type N/A if no answer" required>
-                        </td>
-                        <td><button type="button" id="hospitalization-button-remove" onclick="removeRow(this)">❌</button></td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-        <button type="button" id="hospitalization-button-add" onclick="addRow(this)">➕ Add Row</button>
+            </div>
 
-        <table>
-            <tr>
-                <th colspan="3">
-                    8. Has your child had the following screening/test?
-                    <div class="radio-group">
-                        <input type="radio" asp-for="MedicalScreenings.HasScreeningDone" value="True" required> Yes
-                        <input type="radio" asp-for="MedicalScreenings.HasScreeningDone" value="False"> No
+            <div class="accordion-item" id="page3">
+                <h2 class="accordion-header" id="headingPage3">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePage3" aria-expanded="false" aria-controls="collapsePage3">
+                        Page 3
+                    </button>
+                </h2>
+                <div id="collapsePage3" class="accordion-collapse collapse" aria-labelledby="headingPage3">
+                    <div class="accordion-body">
+                        @await Html.PartialAsync("Partials/_Page3Edit", Model)
                     </div>
-                </th>
-            </tr>
-            <tr>
-                <td>
-                    Hearing screening/test:
-                </td>
-                <td>
-                    Date
-                    <input type="date" asp-for="MedicalScreenings.HearingTestDate" required>
-                </td>
-                <td>
-                    Outcome
-                    <input type="text" asp-for="MedicalScreenings.HearingTestOutcome" placeholder="Type N/A if no answer" required>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    Vision screening/test:
-                </td>
-                <td>
-                    Date
-                    <input type="date" asp-for="MedicalScreenings.VisionTestDate" required>
-                </td>
-                <td>
-                    Outcome
-                    <input type="text" asp-for="MedicalScreenings.VisionTestOutcome" placeholder="Type N/A if no answer" required>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    Speech screening/test:
-                </td>
-                <td>
-                    Date
-                    <input type="date" asp-for="MedicalScreenings.SpeechTestDate" required>
-                </td>
-                <td>
-                    Outcome
-                    <input type="text" asp-for="MedicalScreenings.SpeechTestOutcome" placeholder="Type N/A if no answer" required>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    Primary Care Doctor:
-                    <input type="text" asp-for="PrimaryCareDoctor.DoctorName" placeholder="Type N/A if no answer" required>
-                </td>
-                <td>
-                    Facility
-                    <input type="text" asp-for="PrimaryCareDoctor.Facility" placeholder="Type N/A if no answer" required>
-                </td>
-                <td>
-                    PhoneNumber
-                    <input type="text" asp-for="PrimaryCareDoctor.PhoneNumber" placeholder="Type N/A if no answer" required>
-                </td>
-            </tr>
-        </table>
+                </div>
+            </div>
 
-        <table>
-            <tr>
-                <th colspan="3">
-                    A. Presenting Problem
-                    <textarea asp-for="PresentingProblems.PresentingProblem" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
-                </th>
-            </tr>
-            <tr>
-                <th colspan="3">
-                    B. How severe do you rate your child’s presenting problems, on a scale of 1‐10 with 1 being the most severe?
-                    <div class="radio-group">
-                        <input type="radio" asp-for="PresentingProblems.Severity" value="1" required> 1
-                        <input type="radio" asp-for="PresentingProblems.Severity" value="2"> 2
-                        <input type="radio" asp-for="PresentingProblems.Severity" value="3"> 3
-                        <input type="radio" asp-for="PresentingProblems.Severity" value="4"> 4
-                        <input type="radio" asp-for="PresentingProblems.Severity" value="5"> 5
-                        <input type="radio" asp-for="PresentingProblems.Severity" value="6"> 6
-                        <input type="radio" asp-for="PresentingProblems.Severity" value="7"> 7
-                        <input type="radio" asp-for="PresentingProblems.Severity" value="8"> 8
-                        <input type="radio" asp-for="PresentingProblems.Severity" value="9"> 9
-                        <input type="radio" asp-for="PresentingProblems.Severity" value="10"> 10
+            <div class="accordion-item" id="page4">
+                <h2 class="accordion-header" id="headingPage4">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePage4" aria-expanded="false" aria-controls="collapsePage4">
+                        Page 4
+                    </button>
+                </h2>
+                <div id="collapsePage4" class="accordion-collapse collapse" aria-labelledby="headingPage4">
+                    <div class="accordion-body">
+                        @await Html.PartialAsync("Partials/_Page4Edit", Model)
                     </div>
-                </th>
-            </tr>
-            <tr>
-                <th colspan="3">
-                    C. Does the Presenting Problem cause symptoms causing concern, distress, or impairment?
-                </th>
-            </tr>
-            <tr>
-                <th colspan="3">
-                    1. Change in sleep patterns:
-                    <div class="radio-group">
-                        <input type="radio" asp-for="PresentingProblems.ChangeInSleepPattern" value="Sleeping more" required> a. Sleeping more
-                        <input type="radio" asp-for="PresentingProblems.ChangeInSleepPattern" value="Sleeping less"> b. Sleeping less
-                        <input type="radio" asp-for="PresentingProblems.ChangeInSleepPattern" value="Difficulty falling asleep"> c. Difficulty falling asleep
+                </div>
+            </div>
+
+            <div class="accordion-item" id="page5">
+                <h2 class="accordion-header" id="headingPage5">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePage5" aria-expanded="false" aria-controls="collapsePage5">
+                        Page 5
+                    </button>
+                </h2>
+                <div id="collapsePage5" class="accordion-collapse collapse" aria-labelledby="headingPage5">
+                    <div class="accordion-body">
+                        @await Html.PartialAsync("Partials/_Page5Edit", Model)
                     </div>
-                    <div class="radio-group">
-                        <input type="radio" asp-for="PresentingProblems.ChangeInSleepPattern" value="Difficulty staying asleep"> d. Difficulty staying asleep
-                        <input type="radio" asp-for="PresentingProblems.ChangeInSleepPattern" value="Difficulty waking up"> e. Difficulty waking up
-                        <input type="radio" asp-for="PresentingProblems.ChangeInSleepPattern" value="Difficulty staying awake"> f. Difficulty staying awake
+                </div>
+            </div>
+
+            <div class="accordion-item" id="page6">
+                <h2 class="accordion-header" id="headingPage6">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePage6" aria-expanded="false" aria-controls="collapsePage6">
+                        Page 6
+                    </button>
+                </h2>
+                <div id="collapsePage6" class="accordion-collapse collapse" aria-labelledby="headingPage6">
+                    <div class="accordion-body">
+                        @await Html.PartialAsync("Partials/_Page6Edit", Model)
                     </div>
-                </th>
-            </tr>
-            <tr>
-                <th colspan="3">
-                    2. Concentration:
-                    <div class="radio-group">
-                        <input type="radio" asp-for="PresentingProblems.Concentration" value="Decreased concentration" required> a. Decreased concentration
-                        <input type="radio" asp-for="PresentingProblems.Concentration" value="Increased or excessive concentration"> b. Increased or excessive concentration
-                    </div>
-                </th>
-            </tr>
-            <tr>
-                <th colspan="3">
-                    3. Change in appetite:
-                    <div class="radio-group">
-                        <input type="radio" asp-for="PresentingProblems.ChangeInAppetite" value="Increased appetite" required> a. Increased appetite
-                        <input type="radio" asp-for="PresentingProblems.ChangeInAppetite" value="Decreased appetite"> b. Decreased appetite
-                    </div>
-                </th>
-            </tr>
-            <tr>
-                <th colspan="3">
-                    4. Increased Anxiety (Please describe):
-                    <input type="text" asp-for="PresentingProblems.IncreasedAnxiety" placeholder="Type N/A if no answer" required>
-                </th>
-            </tr>
-            <tr>
-                <th colspan="3">
-                    5. Mood Swings (Please describe):
-                    <input type="text" asp-for="PresentingProblems.MoodSwings" placeholder="Type N/A if no answer" required>
-                    Behavioral Problems/Changes (describe):
-                    <input type="text" asp-for="PresentingProblems.BehavioralChanges" placeholder="Type N/A if no answer" required>
-                </th>
-            </tr>
-            <tr>
-                <th colspan="3">
-                    6. Victimization:
-                    <div class="radio-group">
-                        <input type="radio" asp-for="PresentingProblems.Victimization" value="Physical abuse" onchange="toggleRequiredRadio(this)" required> a. Physical abuse
-                        <input type="radio" asp-for="PresentingProblems.Victimization" value="Sexual abuse" onchange="toggleRequiredRadio(this)"> b. Sexual abuse
-                        <input type="radio" asp-for="PresentingProblems.Victimization" value="Psychological abuse" onchange="toggleRequiredRadio(this)"> c. Psychological abuse
-                        <input type="radio" asp-for="PresentingProblems.Victimization" value="Robbery victim" onchange="toggleRequiredRadio(this)"> d. Robbery victim
-                        <input type="radio" asp-for="PresentingProblems.Victimization" value="Assault victim" onchange="toggleRequiredRadio(this)"> e. Assault victim
-                    </div>
-                    <div class="radio-group">
-                        <input type="radio" asp-for="PresentingProblems.Victimization" value="Dating violence" onchange="toggleRequiredRadio(this)"> f. Dating violence
-                        <input type="radio" asp-for="PresentingProblems.Victimization" value="Domestic violence" onchange="toggleRequiredRadio(this)"> g. Domestic violence
-                        <input type="radio" asp-for="PresentingProblems.Victimization" value="Human trafficking" onchange="toggleRequiredRadio(this)"> h. Human trafficking
-                        <input type="radio" asp-for="PresentingProblems.Victimization" value="DUI/DWI crash" onchange="toggleRequiredRadio(this)"> i. DUI/DWI crash
-                        <input type="radio" asp-for="PresentingProblems.Victimization" value="Survivors of homicide victims" onchange="toggleRequiredRadio(this)"> j. Survivors of homicide victims
-                    </div>
-                    <div class="radio-group">
-                        @if (!(new[] { "Physical abuse", "Sexual abuse", "Psychological abuse",
-                        "Robbery victim", "Assault victim", "Dating violence",
-                        "Domestic violence", "Human trafficking", "DUI/DWI crash", "Survivors of homicide victims" })
-                        .Contains(Model.PresentingProblems.Victimization))
-                        {
-                            <input type="radio" asp-for="PresentingProblems.Victimization" value="@Model.PresentingProblems.Victimization" data-target="victimization-others-specify" 
-                            onchange="toggleRequiredRadio(this)" checked> 
-                            <label>k. Other</label>
-                            <input type="text" id="victimization-others-specify" placeholder="Specify" disabled
-                                asp-for="@Model.PresentingProblems.Victimization">
-                        }
-                        else 
-                        {
-                            <input type="radio" asp-for="PresentingProblems.Victimization" value="Others" data-target="victimization-others-specify" 
-                            onchange="toggleRequiredRadio(this)">
-                            <label>k. Other</label>
-                            <input type="text" id="victimization-others-specify" placeholder="Specify" disabled oninput="updateOthersValue(this)">
-                        }
-                            
-                    </div>
-                </th>
-            </tr>
-            <tr>
-                <th colspan="3">
-                    7. Please describe other concerns:
-                    <input type="text" asp-for="PresentingProblems.DescribeOtherConcern" placeholder="Type N/A if no answer" required>
-                </th>
-            </tr>
-            <tr>
-                <th colspan="3">
-                    D. How long has this problem been causing your child distress?
-                    <div class="radio-group">
-                        <input type="radio" asp-for="PresentingProblems.DurationOfStress" value="One week" required> a. One week
-                        <input type="radio" asp-for="PresentingProblems.DurationOfStress" value="One month"> b. One month
-                        <input type="radio" asp-for="PresentingProblems.DurationOfStress" value="1 – 6 months"> c. 1 – 6 months
-                        <input type="radio" asp-for="PresentingProblems.DurationOfStress" value="6 months – 1 year"> d. 6 months – 1 year
-                        <input type="radio" asp-for="PresentingProblems.DurationOfStress" value="Longer than one year"> e.  Longer than one year
-                    </div>
-                </th>
-            </tr>
-            <tr>
-                <th colspan="3">
-                    E. How do you rate your child’s current level of coping on a scale of 1 – 10 with 1 being unable to cope?
-                    <div class="radio-group">
-                        <input type="radio" asp-for="PresentingProblems.CopingLevel" value="1" required> 1
-                        <input type="radio" asp-for="PresentingProblems.CopingLevel" value="2"> 2
-                        <input type="radio" asp-for="PresentingProblems.CopingLevel" value="3"> 3
-                        <input type="radio" asp-for="PresentingProblems.CopingLevel" value="4"> 4
-                        <input type="radio" asp-for="PresentingProblems.CopingLevel" value="5"> 5
-                        <input type="radio" asp-for="PresentingProblems.CopingLevel" value="6"> 6
-                        <input type="radio" asp-for="PresentingProblems.CopingLevel" value="7"> 7
-                        <input type="radio" asp-for="PresentingProblems.CopingLevel" value="8"> 8
-                        <input type="radio" asp-for="PresentingProblems.CopingLevel" value="9"> 9
-                        <input type="radio" asp-for="PresentingProblems.CopingLevel" value="10"> 10
-                    </div>
-                </th>
-            </tr>
-            <tr>
-                <th colspan="3">
-                    F. Are there other situations that you think or believe we should know about to understand the relationship within your family?
-                    <textarea asp-for="PresentingProblems.OtherFamilySituation" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
-                </th>
-            </tr>
-        </table>
+                </div>
+            </div>
 
-        <table>
-            <tr>
-                <th colspan="6">
-                    G. Recent Losses
-                    <div class="checkbox-group">
-                        <input type="checkbox" asp-for="RecentLosses.FamilyMemberLoss" value="true"> Family Member
-                        <input type="checkbox" asp-for="RecentLosses.FriendLoss" value="true"> Friend
-                        <input type="checkbox" asp-for="RecentLosses.HealthLoss" value="true"> Health
-                        <input type="checkbox" asp-for="RecentLosses.LifestyleLoss" value="true"> Lifestyle
-                        <input type="checkbox" asp-for="RecentLosses.JobLoss" value="true"> Job
-                        <input type="checkbox" asp-for="RecentLosses.IncomeLoss" value="true"> Income
-                        <input type="checkbox" asp-for="RecentLosses.HousingLoss" value="true"> Housing
-                        <input type="checkbox" asp-for="RecentLosses.NoneLoss" value="true"> None
-
-                    </div>
-
-                </th>
-
-            </tr>
-
-            <tr>
-                <th>
-                    Who?
-                </th>
-                <td>
-                    <input type="text" asp-for="RecentLosses.Name" placeholder="Type N/A if no answer" required>
-                </td>
-
-                <th>
-                    When?
-                </th>
-                <td>
-                    <input type="date" asp-for="RecentLosses.Date" required>
-                </td>
-
-                <th>
-                    Nature Of Loss?
-                </th>
-                <td>
-                    <input type="text" asp-for="RecentLosses.NatureOfLoss" required>
-                </td>
-            </tr>
-
-            <tr>
-                <th colspan="3">
-                    Other Losses:
-                </th>
-                <td>
-                    <input type="text" asp-for="RecentLosses.OtherLosses" placeholder="Type N/A if no answer" required>
-                </td>
-
-                <th>
-                    Additional information if needed:
-                </th>
-                <td>
-                    <textarea asp-for="RecentLosses.AdditionalInfo" rows="2" cols="35" placeholder="Type N/A if no answer" required></textarea>
-                </td>
-            </tr>
-        </table>
-
-        <table>
-            <tr>
-                <th colspan="7">
-                    H. Pregnancy and Birth History
-                </th>
-            </tr>
-
-            <tr>
-                <th colspan="7">
-                    1. Where there any complications during pregnancy?
-                    <div class="radio-group">
-                        <input type="radio" asp-for="PregnancyBirthHistory.HasPregnancyComplications" value="True" required> Yes
-                        <input type="radio" asp-for="PregnancyBirthHistory.HasPregnancyComplications" value="False"> No
-                    </div>
-
-                    if yes, please explain
-                    <input type="text" asp-for="PregnancyBirthHistory.DescribePregnancyComplications" placeholder="Type N/A if no answer" required>
-
-                    <div class="radio-group">
-                        <input type="radio" asp-for="PregnancyBirthHistory.IsFullTermBirth" value="True" required> Full-Term Birth
-                        <input type="radio" asp-for="PregnancyBirthHistory.IsFullTermBirth" value="False"> Premature Birth
-                    </div>
-                </th>
-            </tr>
-
-            <tr>
-                <th colspan="7">
-                    2. Were there any complications during birth?
-                    <div class="radio-group">
-                        <input type="radio" asp-for="PregnancyBirthHistory.HasBirthComplications" value="True" required> Yes
-                        <input type="radio" asp-for="PregnancyBirthHistory.HasBirthComplications" value="False"> No
-                    </div>
-
-                    if yes, please explain
-                    <input type="text" asp-for="PregnancyBirthHistory.DescribeBirthComplications" placeholder="Type N/A if no answer" required>
-                </th>
-            </tr>
-
-            <tr>
-                <th colspan="7">
-                    3. Were drugs or alcohol consumed during pregnancy?
-                    <div class="radio-group">
-                        <input type="radio" asp-for="PregnancyBirthHistory.HasConsumedDrugs" value="True" required> Yes
-                        <input type="radio" asp-for="PregnancyBirthHistory.HasConsumedDrugs" value="False"> No
-                    </div>
-                </th>
-            </tr>
-
-            <tr>
-                <th>
-                    4. Child’s weight at birth
-                </th>
-                <th>
-                    Lbs
-                </th>
-                <th>
-                    <input type="number" asp-for="PregnancyBirthHistory.BirthWeightLbs" placeholder="Type 0 if no answer" required>
-                </th>
-
-                <th>
-                    Oz
-                </th>
-                <th>
-                    <input type="number" asp-for="PregnancyBirthHistory.BirthWeightOz" placeholder="Type 0 if no answer" required>
-                </th>
-
-                <th>
-                    Child’s health at birth
-                </th>
-                <th>
-                    <input type="text" asp-for="PregnancyBirthHistory.BirthHealth" placeholder="Type N/A if no answer" required>
-                </th>
-            </tr>
-
-            <tr>
-                <th>
-                    5. Length of hospital stay
-                </th>
-                <th colspan="4">
-                    <input type="text" asp-for="PregnancyBirthHistory.LengthOfHospitalStay" placeholder="Type N/A if no answer" required>
-                </th>
-
-                <th colspan="2">
-                    Post-partum depression
-                    <div class="radio-group">
-                        <input type="radio" asp-for="PregnancyBirthHistory.PostpartumDepression" value="True" required> Yes
-                        <input type="radio" asp-for="PregnancyBirthHistory.PostpartumDepression" value="False"> No
-                    </div>
-                </th>
-            </tr>
-
-            <tr>
-                <th colspan="7">
-                    6 Was your child adopted?
-                    <div class="radio-group">
-                        <input type="radio" asp-for="PregnancyBirthHistory.WasChildAdopted" value="True" required> Yes
-                        <input type="radio" asp-for="PregnancyBirthHistory.WasChildAdopted" value="False"> No
-                    </div>
-
-                    if yes, at what age?
-                    <input type="number" asp-for="PregnancyBirthHistory.ChildAdoptedAge" placeholder="Type 0 if no answer" required>
-
-                    <div class="radio-group">
-                        <input type="radio" asp-for="PregnancyBirthHistory.AdoptionType" value="Domestic adoption" required> Domestic adoption
-                        <input type="radio" asp-for="PregnancyBirthHistory.AdoptionType" value="International adoption"> International adoption
-                        <input type="radio" asp-for="PregnancyBirthHistory.AdoptionType" value="Undocumented adoption"> Undocumented adoption
-                    </div>
-
-                    Country (if International adoption):
-                    <input type="text" asp-for="PregnancyBirthHistory.AdoptionCountry" placeholder="Type N/A if no answer" required>
-                </th>
-            </tr>
-        </table>
-
-        <table>
-            <tr>
-                <th colspan="11">
-                    I. Developmental History
-                </th>
-            </tr>
-
-            <tr>
-                <th>
-                    1. As accurately as you can remember, how old was your child when she/he
-                </th>
-
-                <th>
-                    Rolled over?
-                </th>
-                <th>
-                    <input type="number" asp-for="DevelopmentalHistory.RolledOverAge" placeholder="Type 0 if no answer" required>
-                </th>
-
-                <th>
-                    Crawled?
-                </th>
-                <th>
-                    <input type="number" asp-for="DevelopmentalHistory.CrawledAge" placeholder="Type 0 if no answer" required>
-                </th>
-
-                <th>
-                    Walked?
-                </th>
-                <th>
-                    <input type="number" asp-for="DevelopmentalHistory.WalkedAge" placeholder="Type 0 if no answer" required>
-                </th>
-
-                <th>
-                    Talked (two words)?
-                </th>
-                <th>
-                    <input type="number" asp-for="DevelopmentalHistory.TalkedAge" placeholder="Type 0 if no answer" required>
-                </th>
-
-                <th>
-                    Toilet trained?
-                </th>
-                <th>
-                    <input type="number" asp-for="DevelopmentalHistory.ToiletTrainedAge" placeholder="Type 0 if no answer" required>
-                </th>
-            </tr>
-
-            <tr>
-                <th colspan="11">
-                    2. Do/did you have concerns about your child’s development in any of these areas?
-                    <div class="checkbox-group">
-                        <input type="checkbox" asp-for="DevelopmentalHistory.SpeechConcerns" value="true"> Speech/Language
-                        <input type="checkbox" asp-for="DevelopmentalHistory.MotorSkillsConcerns" value="true"> Motor Skills
-                        <input type="checkbox" asp-for="DevelopmentalHistory.CognitiveConcerns" value="true"> Cognitive/Intellectual
-                        <input type="checkbox" asp-for="DevelopmentalHistory.SensoryConcerns" value="true"> Sensory
-                        <input type="checkbox" asp-for="DevelopmentalHistory.BehavioralConcerns" value="true"> Behavioral
-                        <input type="checkbox" asp-for="DevelopmentalHistory.EmotionalConcerns" value="true"> Emotional
-                        <input type="checkbox" asp-for="DevelopmentalHistory.SocialConcerns" value="true"> Social
-
-                    </div>
-                </th>
-            </tr>
-
-            <tr>
-                <th colspan="11">
-                    3. Were there any significant disturbances/changes during your child’s childhood?
-                    <div class="radio-group">
-                        <input type="radio" asp-for="DevelopmentalHistory.HasSignificantDisturbance" value="True" required> Yes
-                        <input type="radio" asp-for="DevelopmentalHistory.HasSignificantDisturbance" value="False"> No
-                    </div>
-
-                    if yes, please explain
-                    <input type="text" asp-for="DevelopmentalHistory.DescribeSignificantDisturbance" placeholder="Type N/A if no answer" required>
-                </th>
-            </tr>
-        </table>
-
-        <table>
-            <tr>
-                <th>
-                    J. Patient and Family Mental History
-                </th>
-            </tr>
-
-            <tr>
-                <th>
-                    1 Has your child received counseling services or been hospitalized for mental health or drug and alcohol concerns in the past?
-
-                    <div class="radio-group">
-                        <input type="radio" asp-for="MentalHealthHistory[0].HasReceivedCounseling" value="True" required> Yes
-                        <input type="radio" asp-for="MentalHealthHistory[0].HasReceivedCounseling" value="False"> No
-                    </div>
-
-                    If yes, please list previous counseling/hospitalizations for mental health/drug and alcohol concerns
-                </th>
-            </tr>
-        </table>
-        <table id="mentalhealth-table">
-            <tr>
-                <th>
-                    Date of Service
-                </th>
-                <th>
-                    Place/Provider
-                </th>
-                <th>
-                    Reason for treatment
-                </th>
-                <th>
-                    Were the services helpful
-                </th>
-                <th>
-                    Action
-                </th>
-            </tr>
-            <tbody class="mentalhealth-input">
-                @for (int i = 0; i < Model.MentalHealthHistory.Count; i++)
-                {
-                    <tr>
-                        <td>
-                            <input type="date" asp-for="MentalHealthHistory[@i].DateOfService" required>
-                        </td>
-
-                        <td>
-                            <input type="text" asp-for="MentalHealthHistory[@i].Provider" placeholder="Type N/A if no answer" required>
-                        </td>
-
-                        <td>
-                            <textarea asp-for="MentalHealthHistory[@i].ReasonForTreatment" rows="2" cols="30" placeholder="Type N/A if no answer" required></textarea>
-                        </td>
-
-                        <td>
-                            <select asp-for="MentalHealthHistory[@i].WereServicesHelpful" required>
-                                <option value="True">Yes</option>
-                                <option value="False">No</option>
-                            </select>
-                        </td>
-
-                        <td><button type="button" id="mentalhealth-button-remove" onclick="removeRow(this)">❌</button></td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-        <button type="button" id="mentalhealth-button-add" onclick="addRow(this)">➕ Add Row</button>
-
-        <table>
-            <tr>
-                <th>
-                    2. Please Identify if any members of your family have had a history of any of the following mental health/drug abuse/legal concerns.
-                </th>
-            </tr>
-        </table>
-        <table id="familyhistory-table">
-            <tr>
-                <th>
-                    Family History
-                </th>
-                <th>
-                    Depression
-                </th>
-                <th>
-                    Anxiety
-                </th>
-                <th>
-                    Bipolar Disorder
-                </th>
-                <th>
-                    Schizophrenia
-                </th>
-                <th>
-                    ADHD/ADHD
-                </th>
-                <th>
-                    Trauma History
-                </th>
-
-                <th>
-                    Abusive Behavior
-                </th>
-
-                <th>
-                    Alcohol Abuse
-                </th>
-
-                <th>
-                    Drug Abuse
-                </th>
-
-                <th>
-                    Incarceration
-                </th>
-
-                <th>
-                    Action
-                </th>
-
-            </tr>
-            <tbody class="familyhistory-input">
-                @for (int i = 0; i < Model.FamilyHistory.Count; i++)
-                {
-                    <tr>
-                        <td>
-                            <select asp-for="FamilyHistory[@i].IsSelf" required>
-                                <option value="True">Self</option>
-                                <option value="False">Others</option>
-                            </select>
-                        </td>
-
-                        <td>
-                            <select asp-for="FamilyHistory[@i].HasDepression" required>
-                                <option value="True">Yes</option>
-                                <option value="False">No</option>
-                            </select>
-                        </td>
-
-                        <td>
-                            <select asp-for="FamilyHistory[@i].HasAnxiety" required>
-                                <option value="True">Yes</option>
-                                <option value="False">No</option>
-                            </select>
-                        </td>
-
-                        <td>
-                            <select asp-for="FamilyHistory[@i].HasBipolarDisorder" required>
-                                <option value="True">Yes</option>
-                                <option value="False">No</option>
-                            </select>
-                        </td>
-
-                        <td>
-                            <select asp-for="FamilyHistory[@i].HasSchizophrenia" required>
-                                <option value="True">Yes</option>
-                                <option value="False">No</option>
-                            </select>
-                        </td>
-
-                        <td>
-                            <select asp-for="FamilyHistory[@i].HasADHD_ADD" required>
-                                <option value="True">Yes</option>
-                                <option value="False">No</option>
-                            </select>
-                        </td>
-
-                        <td>
-                            <select asp-for="FamilyHistory[@i].HasTraumaHistory" required>
-                                <option value="True">Yes</option>
-                                <option value="False">No</option>
-                            </select>
-                        </td>
-
-                        <td>
-                            <select asp-for="FamilyHistory[@i].HasAbusiveBehavior" required>
-                                <option value="True">Yes</option>
-                                <option value="False">No</option>
-                            </select>
-                        </td>
-
-                        <td>
-                            <select asp-for="FamilyHistory[@i].HasAlcoholAbuse" required>
-                                <option value="True">Yes</option>
-                                <option value="False">No</option>
-                            </select>
-                        </td>
-
-                        <td>
-                            <select asp-for="FamilyHistory[@i].HasDrugAbuse" required>
-                                <option value="True">Yes</option>
-                                <option value="False">No</option>
-                            </select>
-                        </td>
-
-                        <td>
-                            <select asp-for="FamilyHistory[@i].HasIncarceration" required>
-                                <option value="True">Yes</option>
-                                <option value="False">No</option>
-                            </select>
-                        </td>
-
-                        <td><button type="button" id="familyhistory-button-remove" onclick="removeRow(this)">❌</button></td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-        <button type="button" id="familyhistory-button-add" onclick="addRow(this)">➕ Add Row</button>
-
-        <table>
-            <tr>
-                <th>
-                    3. Additional Information:
-                    <textarea asp-for="FamilyHistory[0].AdditionalInfo" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
-                </th>
-            </tr>
-        </table>
-
-        <table>
-            <tr>
-                <th>
-                    K. Safety Concerns
-                </th>
-            </tr>
-            <tr>
-                <th>
-                    1. Has your child ever inflicted burns or wound on his/herself?
-                    <div class="radio-group">
-                        <input type="radio" asp-for="SafetyConcerns.HasSelfHarm" value="True" required> Yes
-                        <input type="radio" asp-for="SafetyConcerns.HasSelfHarm" value="False"> No
-                    </div>
-                </th>
-            </tr>
-            <tr>
-                <th>
-                    2. Is your child presently homicidal?
-                    <div class="radio-group">
-                        <input type="radio" asp-for="SafetyConcerns.IsHomicidal" value="True" required> Yes
-                        <input type="radio" asp-for="SafetyConcerns.IsHomicidal" value="False"> No
-                    </div>
-
-                    if yes, please explain:
-                    <input type="text" asp-for="SafetyConcerns.DescribeHomicidal" placeholder="Type N/A if no answer" required>
-                </th>
-            </tr>
-            <tr>
-                <th>
-                    3 Is your child presently suicidal?
-                    <div class="radio-group">
-                        <input type="radio" asp-for="SafetyConcerns.IsSuicidal" value="True" required> Yes
-                        <input type="radio" asp-for="SafetyConcerns.IsSuicidal" value="False"> No
-                    </div>
-
-                    if yes, please explain:
-                    <input type="text" asp-for="SafetyConcerns.DescribeSuicidal" placeholder="Type N/A if no answer" required>
-                </th>
-            </tr>
-        </table> 
+        </div>
 
         @* --- Add new here --- *@
 
@@ -2248,6 +695,21 @@
             }
         }
 
+        function toggleRequiredCheckbox(checkbox) {
+            let targetId = checkbox.getAttribute("data-target");
+            let inputField = document.getElementById(targetId);
+
+            if (checkbox.checked) {
+                inputField.disabled = false;
+                inputField.required = true;
+            }
+            else {
+                inputField.disabled = true;
+                inputField.required = false;
+                inputField.value = ""; // Clear value when unchecked
+            }
+        }
+
         function updateLightSourceValue(input) {
             let radio = document.querySelector(`input[data-target="${input.id}"]`);
             let hiddenInput = document.getElementById("light-source-amount");
@@ -2267,6 +729,160 @@
                 hiddenInput.value = input.value.trim() !== "" && !isNaN(input.value) ? input.value : "";
             }
         }
+
+        // document.addEventListener("DOMContentLoaded", function () {
+        //     const form = document.querySelector("form");
+
+        //     form.addEventListener("submit", function (e) {
+        //         const collapses = document.querySelectorAll(".accordion-collapse");
+
+        //         // Force all sections to expand — skip hide to avoid glitching already-open ones
+        //         collapses.forEach(collapseEl => {
+        //             const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl, {
+        //                 toggle: false
+        //             });
+        //             bsCollapse.show(); // Show works regardless of current state
+        //         });
+
+        //         // If novalidate is present, intercept and re-submit after expanding
+        //         if (form.hasAttribute("novalidate")) {
+        //             e.preventDefault();
+
+        //             setTimeout(() => {
+        //                 form.removeAttribute("novalidate");
+        //                 form.requestSubmit();
+        //             }, 300);
+
+        //         } else {
+        //             // Let browser do its validation
+        //             if (!form.checkValidity()) {
+        //                 e.preventDefault();
+        //                 form.setAttribute("novalidate", "true");
+
+        //                 // Scroll to and focus the first invalid field
+        //                 const firstInvalid = form.querySelector(":invalid");
+        //                 if (firstInvalid) {
+        //                     firstInvalid.scrollIntoView({ behavior: "smooth", block: "center" });
+        //                     firstInvalid.focus();
+        //                 }
+
+        //                 // Re-show all just in case any got collapsed
+        //                 setTimeout(() => {
+        //                     collapses.forEach(collapseEl => {
+        //                         const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl, {
+        //                             toggle: false
+        //                         });
+        //                         bsCollapse.show();
+        //                     });
+        //                 }, 200);
+        //             }
+        //         }
+        //     });
+        // });
+
+        // document.addEventListener("DOMContentLoaded", function () {
+        //     const form = document.querySelector("form");
+
+        //     form.addEventListener("submit", function (e) {
+        //         const collapses = document.querySelectorAll(".accordion-collapse");
+
+        //         // Expand only if not already expanded
+        //         collapses.forEach(collapseEl => {
+        //             if (!collapseEl.classList.contains("show")) {
+        //                 const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl, {
+        //                     toggle: false
+        //                 });
+        //                 bsCollapse.show();
+        //             }
+        //         });
+
+        //         if (form.hasAttribute("novalidate")) {
+        //             e.preventDefault();
+
+        //             setTimeout(() => {
+        //                 form.removeAttribute("novalidate");
+        //                 form.requestSubmit();
+        //             }, 350); // a bit more time for animation sync
+        //         } else {
+        //             if (!form.checkValidity()) {
+        //                 e.preventDefault();
+        //                 form.setAttribute("novalidate", "true");
+
+        //                 // Scroll to first invalid field
+        //                 const firstInvalid = form.querySelector(":invalid");
+        //                 if (firstInvalid) {
+        //                     firstInvalid.scrollIntoView({ behavior: "smooth", block: "center" });
+        //                     firstInvalid.focus();
+        //                 }
+
+        //                 // Retry opening all (in case something collapsed again)
+        //                 setTimeout(() => {
+        //                     collapses.forEach(collapseEl => {
+        //                         if (!collapseEl.classList.contains("show")) {
+        //                             const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl, {
+        //                                 toggle: false
+        //                             });
+        //                             bsCollapse.show();
+        //                         }
+        //                     });
+        //                 }, 250);
+        //             }
+        //         }
+        //     });
+        // });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.querySelector("form");
+
+            form.addEventListener("submit", function (e) {
+
+                const collapses = document.querySelectorAll(".accordion-collapse");
+
+                // Forcefully show all collapsible sections (ignore Bootstrap JS)
+                collapses.forEach(collapseEl => {
+                    collapseEl.classList.add("show");
+                    collapseEl.classList.remove("collapsing"); // in case it's stuck
+                });
+
+                // Count the number of invalid fields
+                const invalidFields = form.querySelectorAll(":invalid");
+                const errorCount = invalidFields.length;
+
+                // If novalidate is present, we're in "first pass"
+                if (form.hasAttribute("novalidate")) {
+                    if (errorCount > 0) {
+                        e.preventDefault();
+                        alert(`You have ${errorCount} field(s) that need attention.`);
+
+                        setTimeout(() => {
+                            invalidFields.forEach(field => {
+                                if ((field.type === "radio" || field.type === "checkbox") && field.name) {
+                                    const group = form.querySelectorAll(`input[name="${field.name}"]`);
+                                    group.forEach(input => {
+                                        input.classList.add("invalid-highlight");
+                                        const label = input.closest("label");
+                                        if (label) label.classList.add("invalid-highlight");
+                                    });
+                                } else {
+                                    field.classList.add("invalid-highlight");
+                                }
+                                  field.scrollIntoView({ behavior: "smooth", block: "center" });
+                                  field.focus();
+                              });
+                        }, 100);
+
+
+                        // Give DOM time to visually update
+                        // setTimeout(() => {
+                        //     form.removeAttribute("novalidate");
+                        //     form.requestSubmit();
+                        // }, 100);
+
+                    }
+                }
+                     
+            });
+        });
 
     </script>
 }

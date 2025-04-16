@@ -1,11 +1,17 @@
-﻿using LittleArkFoundation.Areas.Admin.Models.Assessments;
+﻿using LittleArkFoundation.Areas.Admin.Models.AlcoholDrugAssessment;
+using LittleArkFoundation.Areas.Admin.Models.Assessments;
 using LittleArkFoundation.Areas.Admin.Models.ChildHealth;
+using LittleArkFoundation.Areas.Admin.Models.CurrentFunctioning;
 using LittleArkFoundation.Areas.Admin.Models.DevelopmentalHistory;
 using LittleArkFoundation.Areas.Admin.Models.Diagnoses;
+using LittleArkFoundation.Areas.Admin.Models.Education;
+using LittleArkFoundation.Areas.Admin.Models.Employment;
 using LittleArkFoundation.Areas.Admin.Models.FamilyComposition;
 using LittleArkFoundation.Areas.Admin.Models.FamilyHistory;
+using LittleArkFoundation.Areas.Admin.Models.FosterCare;
 using LittleArkFoundation.Areas.Admin.Models.HospitalizationHistory;
 using LittleArkFoundation.Areas.Admin.Models.Household;
+using LittleArkFoundation.Areas.Admin.Models.Housing;
 using LittleArkFoundation.Areas.Admin.Models.Informants;
 using LittleArkFoundation.Areas.Admin.Models.MedicalHistory;
 using LittleArkFoundation.Areas.Admin.Models.MedicalScreenings;
@@ -13,6 +19,7 @@ using LittleArkFoundation.Areas.Admin.Models.Medications;
 using LittleArkFoundation.Areas.Admin.Models.MentalHealthHistory;
 using LittleArkFoundation.Areas.Admin.Models.MonthlyExpenses;
 using LittleArkFoundation.Areas.Admin.Models.MSWDClassification;
+using LittleArkFoundation.Areas.Admin.Models.ParentChildRelationship;
 using LittleArkFoundation.Areas.Admin.Models.Patients;
 using LittleArkFoundation.Areas.Admin.Models.PregnancyBirthHistory;
 using LittleArkFoundation.Areas.Admin.Models.PresentingProblems;
@@ -49,6 +56,13 @@ namespace LittleArkFoundation.Areas.Admin.Models.Form
         public List<MentalHealthHistoryModel>? MentalHealthHistory { get; set; }
         public List<FamilyHistoryModel>? FamilyHistory { get; set; }
         public SafetyConcernsModel? SafetyConcerns { get; set; }
+        public CurrentFunctioningModel? CurrentFunctioning { get; set; }
+        public ParentChildRelationshipModel? ParentChildRelationship { get; set; }
+        public EducationModel? Education { get; set; }
+        public EmploymentModel? Employment { get; set; }
+        public HousingModel? Housing { get; set; }
+        public FosterCareModel? FosterCare { get; set; }
+        public AlcoholDrugAssessmentModel? AlcoholDrugAssessment { get; set; }
 
     }
 }

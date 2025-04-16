@@ -1,0 +1,543 @@
+﻿@using LittleArkFoundation.Areas.Admin.Models.Form
+@using LittleArkFoundation.Areas.Admin.Models.FamilyComposition
+@model FormViewModel
+
+<table>
+    <tr>
+        <th colspan="6">
+            G. Recent Losses
+            <div class="checkbox-group">
+                <input type="checkbox" asp-for="RecentLosses.FamilyMemberLoss" value="true"> Family Member
+                <input type="checkbox" asp-for="RecentLosses.FriendLoss" value="true"> Friend
+                <input type="checkbox" asp-for="RecentLosses.HealthLoss" value="true"> Health
+                <input type="checkbox" asp-for="RecentLosses.LifestyleLoss" value="true"> Lifestyle
+                <input type="checkbox" asp-for="RecentLosses.JobLoss" value="true"> Job
+                <input type="checkbox" asp-for="RecentLosses.IncomeLoss" value="true"> Income
+                <input type="checkbox" asp-for="RecentLosses.HousingLoss" value="true"> Housing
+                <input type="checkbox" asp-for="RecentLosses.NoneLoss" value="true"> None
+
+            </div>
+
+        </th>
+
+    </tr>
+
+    <tr>
+        <th>
+            Who?
+        </th>
+        <td>
+            <input type="text" asp-for="RecentLosses.Name" placeholder="Type N/A if no answer" required>
+        </td>
+
+        <th>
+            When?
+        </th>
+        <td>
+            <input type="date" asp-for="RecentLosses.Date" required>
+        </td>
+
+        <th>
+            Nature Of Loss?
+        </th>
+        <td>
+            <input type="text" asp-for="RecentLosses.NatureOfLoss" required>
+        </td>
+    </tr>
+
+    <tr>
+        <th colspan="3">
+            Other Losses:
+        </th>
+        <td>
+            <input type="text" asp-for="RecentLosses.OtherLosses" placeholder="Type N/A if no answer" required>
+        </td>
+
+        <th>
+            Additional information if needed:
+        </th>
+        <td>
+            <textarea asp-for="RecentLosses.AdditionalInfo" rows="2" cols="35" placeholder="Type N/A if no answer" required></textarea>
+        </td>
+    </tr>
+</table>
+
+<table>
+    <tr>
+        <th colspan="7">
+            H. Pregnancy and Birth History
+        </th>
+    </tr>
+
+    <tr>
+        <th colspan="7">
+            1. Where there any complications during pregnancy?
+            <div class="radio-group">
+                <input type="radio" asp-for="PregnancyBirthHistory.HasPregnancyComplications" value="True" required> Yes
+                <input type="radio" asp-for="PregnancyBirthHistory.HasPregnancyComplications" value="False"> No
+            </div>
+
+            if yes, please explain
+            <input type="text" asp-for="PregnancyBirthHistory.DescribePregnancyComplications" placeholder="Type N/A if no answer" required>
+
+            <div class="radio-group">
+                <input type="radio" asp-for="PregnancyBirthHistory.IsFullTermBirth" value="True" required> Full-Term Birth
+                <input type="radio" asp-for="PregnancyBirthHistory.IsFullTermBirth" value="False"> Premature Birth
+            </div>
+        </th>
+    </tr>
+
+    <tr>
+        <th colspan="7">
+            2. Were there any complications during birth?
+            <div class="radio-group">
+                <input type="radio" asp-for="PregnancyBirthHistory.HasBirthComplications" value="True" required> Yes
+                <input type="radio" asp-for="PregnancyBirthHistory.HasBirthComplications" value="False"> No
+            </div>
+
+            if yes, please explain
+            <input type="text" asp-for="PregnancyBirthHistory.DescribeBirthComplications" placeholder="Type N/A if no answer" required>
+        </th>
+    </tr>
+
+    <tr>
+        <th colspan="7">
+            3. Were drugs or alcohol consumed during pregnancy?
+            <div class="radio-group">
+                <input type="radio" asp-for="PregnancyBirthHistory.HasConsumedDrugs" value="True" required> Yes
+                <input type="radio" asp-for="PregnancyBirthHistory.HasConsumedDrugs" value="False"> No
+            </div>
+        </th>
+    </tr>
+
+    <tr>
+        <th>
+            4. Child’s weight at birth
+        </th>
+        <th>
+            Lbs
+        </th>
+        <th>
+            <input type="number" asp-for="PregnancyBirthHistory.BirthWeightLbs" placeholder="Type 0 if no answer" required>
+        </th>
+
+        <th>
+            Oz
+        </th>
+        <th>
+            <input type="number" asp-for="PregnancyBirthHistory.BirthWeightOz" placeholder="Type 0 if no answer" required>
+        </th>
+
+        <th>
+            Child’s health at birth
+        </th>
+        <th>
+            <input type="text" asp-for="PregnancyBirthHistory.BirthHealth" placeholder="Type N/A if no answer" required>
+        </th>
+    </tr>
+
+    <tr>
+        <th>
+            5. Length of hospital stay
+        </th>
+        <th colspan="4">
+            <input type="text" asp-for="PregnancyBirthHistory.LengthOfHospitalStay" placeholder="Type N/A if no answer" required>
+        </th>
+
+        <th colspan="2">
+            Post-partum depression
+            <div class="radio-group">
+                <input type="radio" asp-for="PregnancyBirthHistory.PostpartumDepression" value="True" required> Yes
+                <input type="radio" asp-for="PregnancyBirthHistory.PostpartumDepression" value="False"> No
+            </div>
+        </th>
+    </tr>
+
+    <tr>
+        <th colspan="7">
+            6 Was your child adopted?
+            <div class="radio-group">
+                <input type="radio" asp-for="PregnancyBirthHistory.WasChildAdopted" value="True" required> Yes
+                <input type="radio" asp-for="PregnancyBirthHistory.WasChildAdopted" value="False"> No
+            </div>
+
+            if yes, at what age?
+            <input type="number" asp-for="PregnancyBirthHistory.ChildAdoptedAge" placeholder="Type 0 if no answer" required>
+
+            <div class="radio-group">
+                <input type="radio" asp-for="PregnancyBirthHistory.AdoptionType" value="Domestic adoption" required> Domestic adoption
+                <input type="radio" asp-for="PregnancyBirthHistory.AdoptionType" value="International adoption"> International adoption
+                <input type="radio" asp-for="PregnancyBirthHistory.AdoptionType" value="Undocumented adoption"> Undocumented adoption
+            </div>
+
+            Country (if International adoption):
+            <input type="text" asp-for="PregnancyBirthHistory.AdoptionCountry" placeholder="Type N/A if no answer" required>
+        </th>
+    </tr>
+</table>
+
+<table>
+    <tr>
+        <th colspan="11">
+            I. Developmental History
+        </th>
+    </tr>
+
+    <tr>
+        <th>
+            1. As accurately as you can remember, how old was your child when she/he
+        </th>
+
+        <th>
+            Rolled over?
+        </th>
+        <th>
+            <input type="number" asp-for="DevelopmentalHistory.RolledOverAge" placeholder="Type 0 if no answer" required>
+        </th>
+
+        <th>
+            Crawled?
+        </th>
+        <th>
+            <input type="number" asp-for="DevelopmentalHistory.CrawledAge" placeholder="Type 0 if no answer" required>
+        </th>
+
+        <th>
+            Walked?
+        </th>
+        <th>
+            <input type="number" asp-for="DevelopmentalHistory.WalkedAge" placeholder="Type 0 if no answer" required>
+        </th>
+
+        <th>
+            Talked (two words)?
+        </th>
+        <th>
+            <input type="number" asp-for="DevelopmentalHistory.TalkedAge" placeholder="Type 0 if no answer" required>
+        </th>
+
+        <th>
+            Toilet trained?
+        </th>
+        <th>
+            <input type="number" asp-for="DevelopmentalHistory.ToiletTrainedAge" placeholder="Type 0 if no answer" required>
+        </th>
+    </tr>
+
+    <tr>
+        <th colspan="11">
+            2. Do/did you have concerns about your child’s development in any of these areas?
+            <div class="checkbox-group">
+                <input type="checkbox" asp-for="DevelopmentalHistory.SpeechConcerns" value="true"> Speech/Language
+                <input type="checkbox" asp-for="DevelopmentalHistory.MotorSkillsConcerns" value="true"> Motor Skills
+                <input type="checkbox" asp-for="DevelopmentalHistory.CognitiveConcerns" value="true"> Cognitive/Intellectual
+                <input type="checkbox" asp-for="DevelopmentalHistory.SensoryConcerns" value="true"> Sensory
+                <input type="checkbox" asp-for="DevelopmentalHistory.BehavioralConcerns" value="true"> Behavioral
+                <input type="checkbox" asp-for="DevelopmentalHistory.EmotionalConcerns" value="true"> Emotional
+                <input type="checkbox" asp-for="DevelopmentalHistory.SocialConcerns" value="true"> Social
+
+            </div>
+        </th>
+    </tr>
+
+    <tr>
+        <th colspan="11">
+            3. Were there any significant disturbances/changes during your child’s childhood?
+            <div class="radio-group">
+                <input type="radio" asp-for="DevelopmentalHistory.HasSignificantDisturbance" value="True" required> Yes
+                <input type="radio" asp-for="DevelopmentalHistory.HasSignificantDisturbance" value="False"> No
+            </div>
+
+            if yes, please explain
+            <input type="text" asp-for="DevelopmentalHistory.DescribeSignificantDisturbance" placeholder="Type N/A if no answer" required>
+        </th>
+    </tr>
+</table>
+
+<table>
+    <tr>
+        <th>
+            J. Patient and Family Mental History
+        </th>
+    </tr>
+
+    <tr>
+        <th>
+            1 Has your child received counseling services or been hospitalized for mental health or drug and alcohol concerns in the past?
+
+            <div class="radio-group">
+                <input type="radio" asp-for="MentalHealthHistory[0].HasReceivedCounseling" value="True" required> Yes
+                <input type="radio" asp-for="MentalHealthHistory[0].HasReceivedCounseling" value="False"> No
+            </div>
+
+            If yes, please list previous counseling/hospitalizations for mental health/drug and alcohol concerns
+        </th>
+    </tr>
+</table>
+<table id="mentalhealth-table">
+    <tr>
+        <th>
+            Date of Service
+        </th>
+        <th>
+            Place/Provider
+        </th>
+        <th>
+            Reason for treatment
+        </th>
+        <th>
+            Were the services helpful
+        </th>
+        <th>
+            Action
+        </th>
+    </tr>
+    <tbody class="mentalhealth-input">
+        @for (int i = 0; i < Model.MentalHealthHistory.Count; i++)
+        {
+            <tr>
+                <td>
+                    <input type="date" name="MentalHealthHistory[@i].DateOfService" required>
+                </td>
+
+                <td>
+                    <input type="text" name="MentalHealthHistory[@i].Provider" placeholder="Type N/A if no answer" required>
+                </td>
+
+                <td>
+                    <textarea name="MentalHealthHistory[@i].ReasonForTreatment" rows="2" cols="30" placeholder="Type N/A if no answer" required></textarea>
+                </td>
+
+                <td>
+                    <select name="MentalHealthHistory[@i].WereServicesHelpful" required>
+                        <option value="True">Yes</option>
+                        <option value="False">No</option>
+                    </select>
+                </td>
+
+                <td><button type="button" id="mentalhealth-button-remove" onclick="removeRow(this)">❌</button></td>
+            </tr>
+        }
+    </tbody>
+</table>
+<button type="button" id="mentalhealth-button-add" onclick="addRow(this)">➕ Add Row</button>
+
+<table>
+    <tr>
+        <th>
+            2. Please Identify if any members of your family have had a history of any of the following mental health/drug abuse/legal concerns.
+        </th>
+    </tr>
+</table>
+<table id="familyhistory-table">
+    <tr>
+        <th>
+            Family History
+        </th>
+        <th>
+            Depression
+        </th>
+        <th>
+            Anxiety
+        </th>
+        <th>
+            Bipolar Disorder
+        </th>
+        <th>
+            Schizophrenia
+        </th>
+        <th>
+            ADHD/ADHD
+        </th>
+        <th>
+            Trauma History
+        </th>
+
+        <th>
+            Abusive Behavior
+        </th>
+
+        <th>
+            Alcohol Abuse
+        </th>
+
+        <th>
+            Drug Abuse
+        </th>
+
+        <th>
+            Incarceration
+        </th>
+
+        <th>
+            Action
+        </th>
+
+    </tr>
+    <tbody class="familyhistory-input">
+        @for (int i = 0; i < Model.FamilyHistory.Count; i++)
+        {
+            <tr>
+                <td>
+                    <select name="FamilyHistory[@i].IsSelf" required>
+                        <option value="True">Self</option>
+                        <option value="False">Others</option>
+                    </select>
+                </td>
+
+                <td>
+                    <select name="FamilyHistory[@i].HasDepression" required>
+                        <option value="True">Yes</option>
+                        <option value="False">No</option>
+                    </select>
+                </td>
+
+                <td>
+                    <select name="FamilyHistory[@i].HasAnxiety" required>
+                        <option value="True">Yes</option>
+                        <option value="False">No</option>
+                    </select>
+                </td>
+
+                <td>
+                    <select name="FamilyHistory[@i].HasBipolarDisorder" required>
+                        <option value="True">Yes</option>
+                        <option value="False">No</option>
+                    </select>
+                </td>
+
+                <td>
+                    <select name="FamilyHistory[@i].HasSchizophrenia" required>
+                        <option value="True">Yes</option>
+                        <option value="False">No</option>
+                    </select>
+                </td>
+
+                <td>
+                    <select name="FamilyHistory[@i].HasADHD_ADD" required>
+                        <option value="True">Yes</option>
+                        <option value="False">No</option>
+                    </select>
+                </td>
+
+                <td>
+                    <select name="FamilyHistory[@i].HasTraumaHistory" required>
+                        <option value="True">Yes</option>
+                        <option value="False">No</option>
+                    </select>
+                </td>
+
+                <td>
+                    <select name="FamilyHistory[@i].HasAbusiveBehavior" required>
+                        <option value="True">Yes</option>
+                        <option value="False">No</option>
+                    </select>
+                </td>
+
+                <td>
+                    <select name="FamilyHistory[@i].HasAlcoholAbuse" required>
+                        <option value="True">Yes</option>
+                        <option value="False">No</option>
+                    </select>
+                </td>
+
+                <td>
+                    <select name="FamilyHistory[@i].HasDrugAbuse" required>
+                        <option value="True">Yes</option>
+                        <option value="False">No</option>
+                    </select>
+                </td>
+
+                <td>
+                    <select name="FamilyHistory[@i].HasIncarceration" required>
+                        <option value="True">Yes</option>
+                        <option value="False">No</option>
+                    </select>
+                </td>
+
+                <td><button type="button" id="familyhistory-button-remove" onclick="removeRow(this)">❌</button></td>
+            </tr>
+        }
+    </tbody>
+</table>
+<button type="button" id="familyhistory-button-add" onclick="addRow(this)">➕ Add Row</button>
+
+<table>
+    <tr>
+        <th>
+            3. Additional Information:
+            <textarea asp-for="FamilyHistory[0].AdditionalInfo" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
+        </th>
+    </tr>
+</table>
+
+<table>
+    <tr>
+        <th>
+            K. Safety Concerns
+        </th>
+    </tr>
+    <tr>
+        <th>
+            1. Is your child presently suicidal?
+            <div class="radio-group">
+                <input type="radio" asp-for="SafetyConcerns.IsSuicidal" value="True" required> Yes
+                <input type="radio" asp-for="SafetyConcerns.IsSuicidal" value="False"> No
+            </div>
+
+            if yes, please explain:
+            <input type="text" asp-for="SafetyConcerns.DescribeSuicidal" placeholder="Type N/A if no answer" required>
+        </th>
+    </tr>
+    <tr>
+        <th>
+            2. Has your child ever attempted to commit suicide?
+            <div class="radio-group">
+                <input type="radio" asp-for="SafetyConcerns.HasAttemptedSuicide" value="True" required> Yes
+                <input type="radio" asp-for="SafetyConcerns.HasAttemptedSuicide" value="False"> No
+            </div>
+
+            if yes, please explain:
+            <input type="text" asp-for="SafetyConcerns.DescribeAttemptedSuicide" placeholder="Type N/A if no answer" required>
+        </th>
+    </tr>
+    <tr>
+        <th>
+            3. Is there a history of suicide in your child’s immediate and/or extended family?
+            <div class="radio-group">
+                <input type="radio" asp-for="SafetyConcerns.IsThereHistoryOfSuicide" value="True" required> Yes
+                <input type="radio" asp-for="SafetyConcerns.IsThereHistoryOfSuicide" value="False"> No
+            </div>
+
+            if yes, please explain:
+            <input type="text" asp-for="SafetyConcerns.DescribeHistoryOfSuicide" placeholder="Type N/A if no answer" required>
+        </th>
+    </tr>
+    <tr>
+        <th>
+            4. Has your child ever inflicted burns or wound on his/herself?
+            <div class="radio-group">
+                <input type="radio" asp-for="SafetyConcerns.HasSelfHarm" value="True" required> Yes
+                <input type="radio" asp-for="SafetyConcerns.HasSelfHarm" value="False"> No
+            </div>
+        </th>
+    </tr>
+    <tr>
+        <th>
+            5. Is your child presently homicidal?
+            <div class="radio-group">
+                <input type="radio" asp-for="SafetyConcerns.IsHomicidal" value="True" required> Yes
+                <input type="radio" asp-for="SafetyConcerns.IsHomicidal" value="False"> No
+            </div>
+
+            if yes, please explain:
+            <input type="text" asp-for="SafetyConcerns.DescribeHomicidal" placeholder="Type N/A if no answer" required>
+        </th>
+    </tr>
+    <tr>
+        <th>
+            6. Additional Information (kindly list additional information as needed to address past and current safety issues):
+            <textarea asp-for="SafetyConcerns.AdditionalInfo" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
+        </th>
+    </tr>
+</table>
