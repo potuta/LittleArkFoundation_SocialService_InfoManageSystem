@@ -24,6 +24,13 @@ using LittleArkFoundation.Areas.Admin.Models.DevelopmentalHistory;
 using LittleArkFoundation.Areas.Admin.Models.MentalHealthHistory;
 using LittleArkFoundation.Areas.Admin.Models.FamilyHistory;
 using LittleArkFoundation.Areas.Admin.Models.SafetyConcerns;
+using LittleArkFoundation.Areas.Admin.Models.CurrentFunctioning;
+using LittleArkFoundation.Areas.Admin.Models.ParentChildRelationship;
+using LittleArkFoundation.Areas.Admin.Models.Education;
+using LittleArkFoundation.Areas.Admin.Models.Employment;
+using LittleArkFoundation.Areas.Admin.Models.Housing;
+using LittleArkFoundation.Areas.Admin.Models.FosterCare;
+using LittleArkFoundation.Areas.Admin.Models.AlcoholDrugAssessment;
 
 namespace LittleArkFoundation.Data
 {
@@ -74,6 +81,13 @@ namespace LittleArkFoundation.Data
         public DbSet<MentalHealthHistoryModel> MentalHealthHistory { get; set; }
         public DbSet<FamilyHistoryModel> FamilyHistory { get; set; }
         public DbSet<SafetyConcernsModel> SafetyConcerns { get; set; }
+        public DbSet<CurrentFunctioningModel> CurrentFunctioning { get; set; } 
+        public DbSet<ParentChildRelationshipModel> ParentChildRelationship { get; set; }
+        public DbSet<EducationModel> Education { get; set; }
+        public DbSet<EmploymentModel> Employment { get; set; }
+        public DbSet<HousingModel> Housing { get; set; }
+        public DbSet<FosterCareModel> FosterCare { get; set; }
+        public DbSet<AlcoholDrugAssessmentModel> AlcoholDrugAssessment { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -327,6 +341,69 @@ namespace LittleArkFoundation.Data
 
             modelBuilder.Entity<SafetyConcernsModel>()
                 .Property(s => s.SafetyConcernID)
+                .ValueGeneratedOnAdd();
+
+            // CurrentFunctioning
+            modelBuilder.Entity<CurrentFunctioningModel>()
+                .ToTable("CurrentFunctioning")
+                .HasKey(c => c.CurrentFunctioningID);
+
+            modelBuilder.Entity<CurrentFunctioningModel>()
+                .Property(c => c.CurrentFunctioningID)
+                .ValueGeneratedOnAdd();
+
+            // ParentChildRelationship
+            modelBuilder.Entity<ParentChildRelationshipModel>()
+                .ToTable("ParentChildRelationship")
+                .HasKey(p => p.ParentChildID);
+
+            modelBuilder.Entity<ParentChildRelationshipModel>()
+                .Property(p => p.ParentChildID)
+                .ValueGeneratedOnAdd();
+
+            // Education
+            modelBuilder.Entity<EducationModel>()
+                .ToTable("Education")
+                .HasKey(e => e.EducationID);
+
+            modelBuilder.Entity<EducationModel>()
+                .Property(e => e.EducationID)
+                .ValueGeneratedOnAdd();
+
+            // Employment
+            modelBuilder.Entity<EmploymentModel>()
+                .ToTable("Employment")
+                .HasKey(e => e.EmploymentID);
+
+            modelBuilder.Entity<EmploymentModel>()
+                .Property(e => e.EmploymentID)
+                .ValueGeneratedOnAdd();
+
+            // Housing
+            modelBuilder.Entity<HousingModel>()
+                .ToTable("Housing")
+                .HasKey(h => h.HousingID);
+
+            modelBuilder.Entity<HousingModel>()
+                .Property(h => h.HousingID)
+                .ValueGeneratedOnAdd();
+
+            // FosterCare
+            modelBuilder.Entity<FosterCareModel>()
+                .ToTable("FosterCare")
+                .HasKey(f => f.FosterCareID);
+
+            modelBuilder.Entity<FosterCareModel>()
+                .Property(f => f.FosterCareID)
+                .ValueGeneratedOnAdd();
+
+            // AlcoholDrugAssessment
+            modelBuilder.Entity<AlcoholDrugAssessmentModel>()
+                .ToTable("AlcoholDrugAssessment")
+                .HasKey(a => a.AlcoholDrugID);
+
+            modelBuilder.Entity<AlcoholDrugAssessmentModel>()
+                .Property(a => a.AlcoholDrugID)
                 .ValueGeneratedOnAdd();
         }
     }
