@@ -140,6 +140,16 @@
 	<input type="hidden" asp-for="CurrentFunctioning.PatientID" />
 	<input type="hidden" asp-for="ParentChildRelationship.ParentChildID" />
 	<input type="hidden" asp-for="ParentChildRelationship.PatientID" />
+    <input type="hidden" asp-for="Education.EducationID"/>
+    <input type="hidden" asp-for="Education.PatientID" />
+	<input type="hidden" asp-for="Employment.EmploymentID" />
+    <input type="hidden" asp-for="Employment.PatientID" />
+    <input type="hidden" asp-for="Housing.HousingID" />
+    <input type="hidden" asp-for="Housing.PatientID" />
+    <input type="hidden" asp-for="FosterCare.FosterCareID" />
+    <input type="hidden" asp-for="FosterCare.PatientID" />
+    <input type="hidden" asp-for="AlcoholDrugAssessment.AlcoholDrugID" />
+    <input type="hidden" asp-for="AlcoholDrugAssessment.PatientID" />
 
     <div class="form-container">
 
@@ -206,6 +216,19 @@
                 <div id="collapsePage5" class="accordion-collapse collapse" aria-labelledby="headingPage5">
                     <div class="accordion-body">
                         @await Html.PartialAsync("Partials/_Page5Edit", Model)
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item" id="page6">
+                <h2 class="accordion-header" id="headingPage6">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePage6" aria-expanded="false" aria-controls="collapsePage6">
+                        Page 6
+                    </button>
+                </h2>
+                <div id="collapsePage6" class="accordion-collapse collapse" aria-labelledby="headingPage6">
+                    <div class="accordion-body">
+                        @await Html.PartialAsync("Partials/_Page6Edit", Model)
                     </div>
                 </div>
             </div>
@@ -669,6 +692,21 @@
             else if (inputField && radio.value !== "Others") {
                 inputField.disabled = false;
                 inputField.required = true;
+            }
+        }
+
+        function toggleRequiredCheckbox(checkbox) {
+            let targetId = checkbox.getAttribute("data-target");
+            let inputField = document.getElementById(targetId);
+
+            if (checkbox.checked) {
+                inputField.disabled = false;
+                inputField.required = true;
+            }
+            else {
+                inputField.disabled = true;
+                inputField.required = false;
+                inputField.value = ""; // Clear value when unchecked
             }
         }
 

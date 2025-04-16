@@ -1,0 +1,342 @@
+﻿@using LittleArkFoundation.Areas.Admin.Models.Form
+@using LittleArkFoundation.Areas.Admin.Models.FamilyComposition
+@model FormViewModel
+
+<table>
+    <tr>
+        <th colspan="3">
+            N. Education
+
+            <div style="display: flex;">
+                1. Is your child currently enrolled in school?
+                <div class="radio-group">
+                    <input type="radio" asp-for="Education.IsCurrentlyEnrolled" value="True" required> Yes
+                    <input type="radio" asp-for="Education.IsCurrentlyEnrolled" value="False"> No
+                </div>
+            </div>
+            <div style="display: flex; width: 100%;">
+                Name of School:
+                <input type="text" asp-for="Education.SchoolName" placeholder="Type N/A if no answer" required>
+            </div>
+
+            <hr />
+            <div style="display: flex;">
+                2. What grade is your child currently in?
+                <input type="text" asp-for="Education.ChildGradeLevel" placeholder="Type N/A if no answer" required>
+            </div>
+            <div style="display: flex; width: 100%;">
+                If summer, what grade is your child going into?
+                <input type="text" asp-for="Education.SummerGradeLevel" placeholder="Type N/A if no answer" required>
+            </div>
+
+            <hr />
+            <div style="display: flex;">
+                3. How would you describe your child’s attendance?
+                <textarea asp-for="Education.DescribeChildAttendance" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
+            </div>
+            <div class="radio-group">
+                <input type="radio" asp-for="Education.ChildAttendance" value="Attending regularly" required> Attending regularly
+                <input type="radio" asp-for="Education.ChildAttendance" value="Home-schooled" required> Home-schooled
+                <input type="radio" asp-for="Education.ChildAttendance" value="Some truancy" required> Some truancy
+                <input type="radio" asp-for="Education.ChildAttendance" value="Alternative school" required> Alternative school
+            </div>
+            <div class="radio-group">
+                <input type="radio" asp-for="Education.ChildAttendance" value="Suspended" required> Suspended
+                <input type="radio" asp-for="Education.ChildAttendance" value="Expelled" required> Expelled
+                <input type="radio" asp-for="Education.ChildAttendance" value="Dropped Out" required> Dropped Out
+                <input type="radio" asp-for="Education.ChildAttendance" value="Alternative Learning System (ALS)" required> Alternative Learning System (ALS)
+            </div>
+
+            <hr />
+            <div style="display: flex;">
+                4. How would you describe your child’s achievement/grades in school?
+                <textarea asp-for="Education.DescribeChildAchievements" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
+            </div>
+
+            <hr />
+            <div style="display: flex;">
+                5. How would you describe your child’s attitude towards school/education?
+                <textarea asp-for="Education.DescribeChildAttitude" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
+            </div>
+
+            <hr />
+            <div style="display: flex;">
+                6. Disciplinary or behavioral issues at school?
+                <div class="radio-group">
+                    <input type="radio" asp-for="Education.HasDisciplinaryIssues" value="True" required> Yes
+                    <input type="radio" asp-for="Education.HasDisciplinaryIssues" value="False"> No
+                </div>
+            </div>
+            <div style="display: flex; width: 100%;">
+                If yes, describe:
+                <textarea asp-for="Education.DescribeDisciplinaryIssues" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
+            </div>
+
+            <hr />
+            <div>
+                7. Please check if your child has any of the following?
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" asp-for="Education.HasSpecialEducation" value="true" data-target="special-education" onchange="toggleRequiredCheckbox(this)"> Special Education Accomodations or educational assistance?
+            </div>
+            <div style="display: flex; width: 100%;">
+                Please, describe:
+                <textarea asp-for="Education.DescribeSpecialEducation" id="special-education" rows="2" cols="120" placeholder="Type N/A if no answer" disabled></textarea>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" asp-for="Education.HasHomeStudy" value="true" data-target="home-study" onchange="toggleRequiredCheckbox(this)"> Home study?
+            </div>
+            <div style="display: flex; width: 100%;">
+                Please, describe:
+                <textarea asp-for="Education.DescribeHomeStudy" id="home-study" rows="2" cols="120" placeholder="Type N/A if no answer" disabled></textarea>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" asp-for="Education.HasDiagnosedLearningDisability" value="true" data-target="diagnosed-learning" onchange="toggleRequiredCheckbox(this)"> Diagnosed Learning Disability?
+            </div>
+            <div style="display: flex; width: 100%;">
+                Please, describe:
+                <textarea asp-for="Education.DescribeDiagnosedLearningDisability" id="diagnosed-learning" rows="2" cols="120" placeholder="Type N/A if no answer" disabled></textarea>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" asp-for="Education.HasSpecialServices" value="true" data-target="receiving-special" onchange="toggleRequiredCheckbox(this)"> Receiving special services at school?
+            </div>
+            <div style="display: flex; width: 100%;">
+                Please, describe:
+                <textarea asp-for="Education.DescribeSpecialServices" id="receiving-special" rows="2" cols="120" placeholder="Type N/A if no answer" disabled></textarea>
+            </div>
+
+        </th>
+    </tr>
+</table>
+
+<table>
+    <tr>
+        <th>
+            O. Employment
+
+            <div style="display: flex;">
+                1. Is your child currently enrolled employed?
+                <div class="radio-group">
+                    <input type="radio" asp-for="Employment.IsCurrentlyEmployed" value="True" required> Yes
+                    <input type="radio" asp-for="Employment.IsCurrentlyEmployed" value="False"> No
+                </div>
+            </div>
+            <div style="display: flex; width: 100%;">
+                If employed, where are they working?
+                <input type="text" asp-for="Employment.Location" placeholder="Type N/A if no answer" required>
+            </div>
+            <div style="display: flex; width: 100%;">
+                How long?
+                <input type="text" asp-for="Employment.JobDuration" placeholder="Type N/A if no answer" required>
+            </div>
+            <div style="display: flex; width: 100%;">
+                Does your child enjoy their current job?
+                <div class="radio-group">
+                    <input type="radio" asp-for="Employment.IsEnjoyingJob" value="True" required> Yes
+                    <input type="radio" asp-for="Employment.IsEnjoyingJob" value="False"> No
+                </div>
+            </div>
+        </th>
+    </tr>
+</table>
+
+<table>
+    <tr>
+        <th>
+            P. Housing
+
+            <div style="display: flex;">
+                1. Would your consider your housing to be
+                <div class="radio-group">
+                    <input type="radio" asp-for="Housing.IsStable" value="True" required> Stable
+                    <input type="radio" asp-for="Housing.IsStable" value="False"> Unstable
+                </div>
+            </div>
+            <div style="display: flex; width: 100%;">
+                If unstable, please describe
+                <input type="text" asp-for="Housing.DescribeIfUnstable" placeholder="Type N/A if no answer" required>
+            </div>
+
+            <hr />
+            <div style="display: flex;">
+                2. Please choose the one that best describes the current housing arrangement for this child
+            </div>
+            <div class="radio-group">
+                <input type="radio" asp-for="Housing.HousingType" value="Parent/Guardian owns home" required> Parent/Guardian owns home
+                <input type="radio" asp-for="Housing.HousingType" value="Parent/Guardian rents home" required> Parent/Guardian rents home
+            </div>
+            <div class="radio-group">
+                <input type="radio" asp-for="Housing.HousingType" value="Child and family live with relatives/friends (temporary)" required> Child and family live with relatives/friends (temporary)
+                <input type="radio" asp-for="Housing.HousingType" value="Child and family live with relatives/friends (permanent)" required> Child and family live with relatives/friends (permanent)
+            </div>
+            <div class="radio-group">
+                <input type="radio" asp-for="Housing.HousingType" value="Homeless" required> Homeless
+                <input type="radio" asp-for="Housing.HousingType" value="Transitional Housing" required> Transitional Housing
+                <input type="radio" asp-for="Housing.HousingType" value="Emergency Shelter" required> Emergency Shelter
+            </div>
+
+            <hr />
+            <div style="display: flex;">
+                3. How long has this child lived in the current living situation?
+                <input type="text" asp-for="Housing.DurationLivedInHouse" placeholder="Type N/A if no answer" required>
+            </div>
+
+            <hr />
+            <div style="display: flex;">
+                4. How many times has the child moved in the past two years?
+                <input type="text" asp-for="Housing.TimesMoved" placeholder="Type N/A if no answer" required>
+            </div>
+
+            <hr />
+            <div>
+                5. What else do you think is important for us to understand about your housing/living situation?
+                <textarea asp-for="Housing.AdditionalInfo" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
+            </div>
+
+        </th>
+    </tr>
+</table>
+
+<table>
+    <tr>
+        <th>
+            Q. Institutional or Foster Care Involvement
+
+            <div style="display: flex;">
+                1. Has your child ever been in foster care?
+                <div class="radio-group">
+                    <input type="radio" asp-for="FosterCare.HasBeenFosterCared" value="Yes" required> Yes
+                    <input type="radio" asp-for="FosterCare.HasBeenFosterCared" value="No"> No
+                    <input type="radio" asp-for="FosterCare.HasBeenFosterCared" value="Unknown"> Unknown
+                </div>
+            </div>
+
+            <div style="display: flex;">
+                From
+                <input type="number" asp-for="FosterCare.FosterAgeStart" style="width: 10%; margin-left: 10px; margin-right: 10px;" required>
+                Age
+                To
+                <input type="number" asp-for="FosterCare.FosterAgeEnd" style="width: 10%; margin-left: 10px; margin-right: 10px;" required>
+                Age
+            </div>
+            <div style="display: flex;">
+                Reason
+                <textarea asp-for="FosterCare.Reason" rows="2" cols="120" placeholder="Type N/A if no answer" style="margin-left: 10px; margin-right: 10px;" required></textarea>
+            </div>
+
+            <hr />
+            <div style="display: flex;">
+                2. Type of Placement:
+                <div class="radio-group">
+                    <input type="radio" asp-for="FosterCare.PlacementType" value="Familial Placement" required> Familial Placement
+                    <input type="radio" asp-for="FosterCare.PlacementType" value="Non-Familial Placement"> Non-Familial Placement
+                </div>
+            </div>
+
+            <hr />
+            <div style="display: flex;">
+                3. Current Status:
+                <div class="radio-group">
+                    <input type="radio" asp-for="FosterCare.CurrentStatus" value="In-Care" required> In-Care
+                    <input type="radio" asp-for="FosterCare.CurrentStatus" value="Out of Care"> Out of Care
+                </div>
+            </div>
+
+            <hr />
+            <div style="display: flex;">
+                4. If Out of Care, reason for leaving:
+                <div class="radio-group">
+                    <input type="radio" asp-for="FosterCare.OutOfCareReason" value="Adopted" onchange="toggleRequiredRadio(this)" required> Adopted
+                    <input type="radio" asp-for="FosterCare.OutOfCareReason" value="Returned to Home" onchange="toggleRequiredRadio(this)"> Returned to Home
+                    <input type="radio" asp-for="FosterCare.OutOfCareReason" value="Emancipated" onchange="toggleRequiredRadio(this)"> Emancipated
+                    <input type="radio" asp-for="FosterCare.OutOfCareReason" value="Ran away from care" onchange="toggleRequiredRadio(this)"> Ran away from care
+                </div>
+                <div class="radio-group">
+                    <input type="radio" asp-for="FosterCare.OutOfCareReason" value="Others" data-target="fostercare-others-specify" onchange="toggleRequiredRadio(this)"> Others:
+                    <input type="text" id="fostercare-others-specify" placeholder="Specify" disabled oninput="updateOthersValue(this)">
+                </div>
+            </div>
+        </th>
+    </tr>
+</table>
+
+<table>
+    <tr>
+        <th>
+            R. Alcohol/Drug Assessment
+
+            <div style="display: flex;">
+                1. Does your child use tobacco or smokeless tobacco?
+                <div class="radio-group">
+                    <input type="radio" asp-for="AlcoholDrugAssessment.TobaccoUse" value="Yes" required> Yes
+                    <input type="radio" asp-for="AlcoholDrugAssessment.TobaccoUse" value="No"> No
+                    <input type="radio" asp-for="AlcoholDrugAssessment.TobaccoUse" value="Do not Know"> Do not Know
+                </div>
+            </div>
+
+            <hr />
+            <div style="display: flex;">
+                2. Does your child use alcohol/illegal substance?
+                <div class="radio-group">
+                    <input type="radio" asp-for="AlcoholDrugAssessment.AlcoholUse" value="Yes" required> Yes
+                    <input type="radio" asp-for="AlcoholDrugAssessment.AlcoholUse" value="No"> No
+                    <input type="radio" asp-for="AlcoholDrugAssessment.AlcoholUse" value="Do not Know"> Do not Know
+                </div>
+            </div>
+
+            <hr />
+            <div style="display: flex;">
+                3. To your knowledge, has your child ever used medications (prescriptions drugs or over the counter medication) recreationally?
+                <div class="radio-group">
+                    <input type="radio" asp-for="AlcoholDrugAssessment.RecreationalMedicationUse" value="Yes" required> Yes
+                    <input type="radio" asp-for="AlcoholDrugAssessment.RecreationalMedicationUse" value="No"> No
+                    <input type="radio" asp-for="AlcoholDrugAssessment.RecreationalMedicationUse" value="Do not Know"> Do not Know
+                </div>
+            </div>
+
+            <hr />
+            <div style="display: flex;">
+                4. To your knowledge, has your child ever overdosed or passed out on alcohol or other drugs?
+                <div class="radio-group">
+                    <input type="radio" asp-for="AlcoholDrugAssessment.HasOverdosed" value="True" required> Yes
+                    <input type="radio" asp-for="AlcoholDrugAssessment.HasOverdosed" value="False"> No
+                </div>
+            </div>
+            <div style="display: flex; width: 100%;">
+                If yes, when was the last overdose?
+                <textarea asp-for="AlcoholDrugAssessment.OverdoseDate" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
+            </div>
+
+            <hr />
+            <div style="display: flex;">
+                5. Has your child ever experienced problems related to their alcohol use?
+                <div class="radio-group">
+                    <input type="radio" asp-for="AlcoholDrugAssessment.HasAlcoholProblems" value="True" required> Yes
+                    <input type="radio" asp-for="AlcoholDrugAssessment.HasAlcoholProblems" value="False"> No
+                </div>
+            </div>
+            <div>
+                If yes, please check area and describe problems
+                <div class="checkbox-group">
+                    <input type="checkbox" asp-for="AlcoholDrugAssessment.LegalProblems" value="true"> Legal
+                    <input type="checkbox" asp-for="AlcoholDrugAssessment.SocialPeerProblems" value="true"> Social/Peer
+                    <input type="checkbox" asp-for="AlcoholDrugAssessment.WorkProblems" value="true"> Work
+                    <input type="checkbox" asp-for="AlcoholDrugAssessment.FamilyProblems" value="true"> Family
+                    <input type="checkbox" asp-for="AlcoholDrugAssessment.FriendsProblems" value="true"> Friends
+                    <input type="checkbox" asp-for="AlcoholDrugAssessment.FinancialProblems" value="true"> Financial
+                </div>
+            </div>
+            <div style="display: flex; width: 100%;">
+                Please describe:
+                <textarea asp-for="AlcoholDrugAssessment.DescribeProblems" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
+            </div>
+            <div style="display: flex; width: 100%;">
+                If yes, have they continued to drink/use drugs?
+                <div class="radio-group">
+                    <input type="radio" asp-for="AlcoholDrugAssessment.ContinuedUse" value="True" required> Yes
+                    <input type="radio" asp-for="AlcoholDrugAssessment.ContinuedUse" value="False"> No
+                </div>
+            </div>
+        </th>
+    </tr>
+</table>

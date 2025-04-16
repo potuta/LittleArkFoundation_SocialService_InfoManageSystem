@@ -1,7 +1,9 @@
 ﻿using HtmlAgilityPack;
+using Microsoft.AspNetCore.Html;
 using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using System.Configuration;
+using System.Net.Http;
 
 namespace LittleArkFoundation.Data
 {
@@ -3222,6 +3224,31 @@ namespace LittleArkFoundation.Data
             }
 
             return htmlDoc.DocumentNode.OuterHtml; // Return updated HTML
+        }
+
+        public async Task<string> ModifyHtmlTemplateAsync_Page6(string htmlContent, int id)
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var patient = await context.Patients.FindAsync(id);
+
+            if (patient == null)
+            {
+                return string.Empty;
+            }
+
+            // USING HTMLAGILITYPACK
+            var htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(htmlContent);
+
+
+
+
+
+            return htmlDoc.DocumentNode.OuterHtml; // Return updated HTML
+
         }
     }
 }

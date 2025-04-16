@@ -178,6 +178,21 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 // PARENT CHILD RELATIONSHIP
                 formViewModel.ParentChildRelationship.PatientID = patientID;
 
+                // EDUCATION
+                formViewModel.Education.PatientID = patientID;
+
+                // EMPLOYMENT
+                formViewModel.Employment.PatientID = patientID;
+
+                // HOUSING
+                formViewModel.Housing.PatientID = patientID;
+
+                // FOSTER CARE
+                formViewModel.FosterCare.PatientID = patientID;
+
+                // ALCOHOL DRUG ASSESSMENT
+                formViewModel.AlcoholDrugAssessment.PatientID = patientID;
+
                 // Save Patient first to get the ID, avoids Forein Key constraint
                 await context.Patients.AddAsync(formViewModel.Patient);
                 await context.SaveChangesAsync();
@@ -207,6 +222,11 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 await context.SafetyConcerns.AddAsync(formViewModel.SafetyConcerns);
                 await context.CurrentFunctioning.AddAsync(formViewModel.CurrentFunctioning);
                 await context.ParentChildRelationship.AddAsync(formViewModel.ParentChildRelationship);
+                await context.Education.AddAsync(formViewModel.Education);
+                await context.Employment.AddAsync(formViewModel.Employment);
+                await context.Housing.AddAsync(formViewModel.Housing);
+                await context.FosterCare.AddAsync(formViewModel.FosterCare);
+                await context.AlcoholDrugAssessment.AddAsync(formViewModel.AlcoholDrugAssessment);
                 await context.SaveChangesAsync();
 
                 TempData["SuccessMessage"] = "Successfully created new form";
@@ -222,6 +242,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             string templatePath3 = Path.Combine(_environment.WebRootPath, "templates/page3_form_template.html");
             string templatePath4 = Path.Combine(_environment.WebRootPath, "templates/page4_form_template.html");
             string templatePath5 = Path.Combine(_environment.WebRootPath, "templates/page5_form_template.html");
+            string templatePath6 = Path.Combine(_environment.WebRootPath, "templates/page6_form_template.html");
 
             if (!System.IO.File.Exists(templatePath))
             {
@@ -243,12 +264,16 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             string htmlContent5 = await System.IO.File.ReadAllTextAsync(templatePath5);
             htmlContent5 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page5(htmlContent5, id);
 
+            string htmlContent6 = await System.IO.File.ReadAllTextAsync(templatePath6);
+            htmlContent6 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page6(htmlContent6, id);
+
             // Pass the modified HTML to the view
             ViewBag.FormHtml1 = htmlContent;
             ViewBag.FormHtml2 = htmlContent2;
             ViewBag.FormHtml3 = htmlContent3;
             ViewBag.FormHtml4 = htmlContent4;
             ViewBag.FormHtml5 = htmlContent5;
+            ViewBag.FormHtml6 = htmlContent6;
 
             ViewBag.Id = id;
 
@@ -298,6 +323,11 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var safetyconcerns = await context.SafetyConcerns.FirstOrDefaultAsync(s => s.PatientID == id);
             var currentfunctioning = await context.CurrentFunctioning.FirstOrDefaultAsync(c => c.PatientID == id);
             var parentchildrelationship = await context.ParentChildRelationship.FirstOrDefaultAsync(p => p.PatientID == id);
+            var education = await context.Education.FirstOrDefaultAsync(e => e.PatientID == id);
+            var employment = await context.Employment.FirstOrDefaultAsync(e => e.PatientID == id);
+            var housing = await context.Housing.FirstOrDefaultAsync(h => h.PatientID == id);
+            var fostercare = await context.FosterCare.FirstOrDefaultAsync(f => f.PatientID == id);
+            var alcoholdrugassessment = await context.AlcoholDrugAssessment.FirstOrDefaultAsync(a => a.PatientID == id);
 
             var viewModel = new FormViewModel()
             {
@@ -325,7 +355,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 FamilyHistory = familyhistory,
                 SafetyConcerns = safetyconcerns,
                 CurrentFunctioning = currentfunctioning,
-                ParentChildRelationship = parentchildrelationship
+                ParentChildRelationship = parentchildrelationship,
+                Education = education,
+                Employment = employment,
+                Housing = housing,
+                FosterCare = fostercare,
+                AlcoholDrugAssessment = alcoholdrugassessment
             };
 
             return View(viewModel);
@@ -443,6 +478,11 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             context.SafetyConcerns.Update(formViewModel.SafetyConcerns);
             context.CurrentFunctioning.Update(formViewModel.CurrentFunctioning);
             context.ParentChildRelationship.Update(formViewModel.ParentChildRelationship);
+            context.Education.Update(formViewModel.Education);
+            context.Employment.Update(formViewModel.Employment);
+            context.Housing.Update(formViewModel.Housing);
+            context.FosterCare.Update(formViewModel.FosterCare);
+            context.AlcoholDrugAssessment.Update(formViewModel.AlcoholDrugAssessment);
             await context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = $"Successfully edited PatientID: {id}";
@@ -461,6 +501,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 string templatePath3 = Path.Combine(_environment.WebRootPath, "templates/page3_form_template.html");
                 string templatePath4 = Path.Combine(_environment.WebRootPath, "templates/page4_form_template.html");
                 string templatePath5 = Path.Combine(_environment.WebRootPath, "templates/page5_form_template.html");
+                string templatePath6 = Path.Combine(_environment.WebRootPath, "templates/page6_form_template.html");
 
                 if (!System.IO.File.Exists(templatePath))
                 {
@@ -487,6 +528,11 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     return StatusCode(500, "Form template not found.");
                 }
 
+                if (!System.IO.File.Exists(templatePath6))
+                {
+                    return StatusCode(500, "Form template not found.");
+                }
+
                 string htmlContent = await System.IO.File.ReadAllTextAsync(templatePath);
                 htmlContent = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page1(htmlContent, id);
 
@@ -502,11 +548,15 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 string htmlContent5 = await System.IO.File.ReadAllTextAsync(templatePath5);
                 htmlContent5 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page5(htmlContent5, id);
 
+                string htmlContent6 = await System.IO.File.ReadAllTextAsync(templatePath6);
+                htmlContent6 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page6(htmlContent6, id);
+
                 var pdf1 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent);
                 var pdf2 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent2);
                 var pdf3 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent3);
                 var pdf4 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent4);
                 var pdf5 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent5);
+                var pdf6 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent6);
 
                 List<byte[]> pdfList = new List<byte[]>
                 {
@@ -514,7 +564,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     pdf2,
                     pdf3,
                     pdf4,
-                    pdf5
+                    pdf5,
+                    pdf6
                 };
 
                 //byte[] pdfBytes = _pdfConverter.Convert(pdfDocument);
