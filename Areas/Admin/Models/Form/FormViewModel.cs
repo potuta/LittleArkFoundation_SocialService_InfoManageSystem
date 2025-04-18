@@ -9,6 +9,7 @@ using LittleArkFoundation.Areas.Admin.Models.Employment;
 using LittleArkFoundation.Areas.Admin.Models.FamilyComposition;
 using LittleArkFoundation.Areas.Admin.Models.FamilyHistory;
 using LittleArkFoundation.Areas.Admin.Models.FosterCare;
+using LittleArkFoundation.Areas.Admin.Models.Goals;
 using LittleArkFoundation.Areas.Admin.Models.HistoryOfAbuse;
 using LittleArkFoundation.Areas.Admin.Models.HistoryOfViolence;
 using LittleArkFoundation.Areas.Admin.Models.HospitalizationHistory;
@@ -30,6 +31,7 @@ using LittleArkFoundation.Areas.Admin.Models.PrimaryCareDoctor;
 using LittleArkFoundation.Areas.Admin.Models.RecentLosses;
 using LittleArkFoundation.Areas.Admin.Models.Referrals;
 using LittleArkFoundation.Areas.Admin.Models.SafetyConcerns;
+using LittleArkFoundation.Areas.Admin.Models.StrengthsResources;
 
 
 namespace LittleArkFoundation.Areas.Admin.Models.Form
@@ -69,6 +71,8 @@ namespace LittleArkFoundation.Areas.Admin.Models.Form
         public LegalInvolvementModel? LegalInvolvement { get; set; }
         public HistoryOfAbuseModel? HistoryOfAbuse { get; set; }
         public HistoryOfViolenceModel? HistoryOfViolence { get; set; }
+        public StrengthsResourcesModel? StrengthsResources { get; set; }
+        public GoalsModel? Goals { get; set; }
 
     }
 }

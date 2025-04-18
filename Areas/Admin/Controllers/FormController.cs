@@ -202,6 +202,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 // HISTORY OF VIOLENCE
                 formViewModel.HistoryOfViolence.PatientID = patientID;
 
+                // STRENGTHS RESOURCES
+                formViewModel.StrengthsResources.PatientID = patientID;
+
+                // GOALS
+                formViewModel.Goals.PatientID = patientID;
+
                 // Save Patient first to get the ID, avoids Forein Key constraint
                 await context.Patients.AddAsync(formViewModel.Patient);
                 await context.SaveChangesAsync();
@@ -239,6 +245,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 await context.LegalInvolvement.AddAsync(formViewModel.LegalInvolvement);
                 await context.HistoryOfAbuse.AddAsync(formViewModel.HistoryOfAbuse);
                 await context.HistoryOfViolence.AddAsync(formViewModel.HistoryOfViolence);
+                await context.StrengthsResources.AddAsync(formViewModel.StrengthsResources);
+                await context.Goals.AddAsync(formViewModel.Goals);
                 await context.SaveChangesAsync();
 
                 TempData["SuccessMessage"] = "Successfully created new form";
@@ -256,8 +264,44 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             string templatePath5 = Path.Combine(_environment.WebRootPath, "templates/page5_form_template.html");
             string templatePath6 = Path.Combine(_environment.WebRootPath, "templates/page6_form_template.html");
             string templatePath7 = Path.Combine(_environment.WebRootPath, "templates/page7_form_template.html");
+            string templatePath8 = Path.Combine(_environment.WebRootPath, "templates/page8_form_template.html");
 
             if (!System.IO.File.Exists(templatePath))
+            {
+                return StatusCode(500, "Form template not found.");
+            }
+
+            if (!System.IO.File.Exists(templatePath2))
+            {
+                return StatusCode(500, "Form template not found.");
+            }
+
+            if (!System.IO.File.Exists(templatePath3))
+            {
+                return StatusCode(500, "Form template not found.");
+            }
+
+            if (!System.IO.File.Exists(templatePath4))
+            {
+                return StatusCode(500, "Form template not found.");
+            }
+
+            if (!System.IO.File.Exists(templatePath5))
+            {
+                return StatusCode(500, "Form template not found.");
+            }
+
+            if (!System.IO.File.Exists(templatePath6))
+            {
+                return StatusCode(500, "Form template not found.");
+            }
+
+            if (!System.IO.File.Exists(templatePath7))
+            {
+                return StatusCode(500, "Form template not found.");
+            }
+
+            if (!System.IO.File.Exists(templatePath8))
             {
                 return StatusCode(500, "Form template not found.");
             }
@@ -283,6 +327,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             string htmlContent7 = await System.IO.File.ReadAllTextAsync(templatePath7);
             htmlContent7 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page7(htmlContent7, id);
 
+            string htmlContent8 = await System.IO.File.ReadAllTextAsync(templatePath8);
+            htmlContent8 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page8(htmlContent8, id);
+
             // Pass the modified HTML to the view
             ViewBag.FormHtml1 = htmlContent;
             ViewBag.FormHtml2 = htmlContent2;
@@ -291,6 +338,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             ViewBag.FormHtml5 = htmlContent5;
             ViewBag.FormHtml6 = htmlContent6;
             ViewBag.FormHtml7 = htmlContent7;
+            ViewBag.FormHtml8 = htmlContent8;
 
             ViewBag.Id = id;
 
@@ -348,6 +396,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var legalinvolvement = await context.LegalInvolvement.FirstOrDefaultAsync(l => l.PatientID == id);
             var historyofabuse = await context.HistoryOfAbuse.FirstOrDefaultAsync(h => h.PatientID == id);
             var historyofviolence = await context.HistoryOfViolence.FirstOrDefaultAsync(h => h.PatientID == id);
+            var strengthsresources = await context.StrengthsResources.FirstOrDefaultAsync(s => s.PatientID == id);
+            var goals = await context.Goals.FirstOrDefaultAsync(g => g.PatientID == id);
 
             var viewModel = new FormViewModel()
             {
@@ -383,7 +433,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 AlcoholDrugAssessment = alcoholdrugassessment,
                 LegalInvolvement = legalinvolvement,
                 HistoryOfAbuse = historyofabuse,
-                HistoryOfViolence = historyofviolence
+                HistoryOfViolence = historyofviolence,
+                StrengthsResources = strengthsresources,
+                Goals = goals
             };
 
             return View(viewModel);
@@ -509,6 +561,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             context.LegalInvolvement.Update(formViewModel.LegalInvolvement);
             context.HistoryOfAbuse.Update(formViewModel.HistoryOfAbuse);
             context.HistoryOfViolence.Update(formViewModel.HistoryOfViolence);
+            context.StrengthsResources.Update(formViewModel.StrengthsResources);
+            context.Goals.Update(formViewModel.Goals);
             await context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = $"Successfully edited PatientID: {id}";
@@ -529,6 +583,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 string templatePath5 = Path.Combine(_environment.WebRootPath, "templates/page5_form_template.html");
                 string templatePath6 = Path.Combine(_environment.WebRootPath, "templates/page6_form_template.html");
                 string templatePath7 = Path.Combine(_environment.WebRootPath, "templates/page7_form_template.html");
+                string templatePath8 = Path.Combine(_environment.WebRootPath, "templates/page8_form_template.html");
 
                 if (!System.IO.File.Exists(templatePath))
                 {
@@ -565,6 +620,11 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     return StatusCode(500, "Form template not found.");
                 }
 
+                if (!System.IO.File.Exists(templatePath8))
+                {
+                    return StatusCode(500, "Form template not found.");
+                }
+
                 string htmlContent = await System.IO.File.ReadAllTextAsync(templatePath);
                 htmlContent = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page1(htmlContent, id);
 
@@ -586,6 +646,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 string htmlContent7 = await System.IO.File.ReadAllTextAsync(templatePath7);
                 htmlContent7 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page7(htmlContent7, id);
 
+                string htmlContent8 = await System.IO.File.ReadAllTextAsync(templatePath8);
+                htmlContent8 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page8(htmlContent8, id);
+
                 var pdf1 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent);
                 var pdf2 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent2);
                 var pdf3 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent3);
@@ -593,6 +656,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 var pdf5 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent5);
                 var pdf6 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent6);
                 var pdf7 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent7);
+                var pdf8 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent8);
 
                 List<byte[]> pdfList = new List<byte[]>
                 {
@@ -602,7 +666,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     pdf4,
                     pdf5,
                     pdf6,
-                    pdf7
+                    pdf7,
+                    pdf8
                 };
 
                 //byte[] pdfBytes = _pdfConverter.Convert(pdfDocument);

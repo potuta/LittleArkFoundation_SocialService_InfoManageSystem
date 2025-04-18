@@ -4666,5 +4666,250 @@ namespace LittleArkFoundation.Data
 
             return htmlDoc.DocumentNode.OuterHtml; // Return updated HTML
         }
+
+        public async Task<string> ModifyHtmlTemplateAsync_Page8(string htmlContent, int id)
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var patient = await context.Patients.FindAsync(id);
+            var strengthsresources = await context.StrengthsResources.FirstOrDefaultAsync(p => p.PatientID == id);
+            var goals = await context.Goals.FirstOrDefaultAsync(p => p.PatientID == id);
+            var assessments = await context.Assessments.FirstOrDefaultAsync(p => p.PatientID == id);
+
+            if (patient == null)
+            {
+                return string.Empty;
+            }
+
+            // USING HTMLAGILITYPACK
+            var htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(htmlContent);
+
+            // STRENGTHS AND RESOURCES
+            var strengths = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Strengths']");
+            if (strengths != null)
+            {
+                strengths.InnerHtml = strengthsresources.Strengths;
+            }
+
+            var limitations = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Limitations']");
+            if (limitations != null)
+            {
+                limitations.InnerHtml = strengthsresources.Limitations;
+            }
+
+            var resources = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Resources']");
+            if (resources != null)
+            {
+                resources.InnerHtml = strengthsresources.Resources;
+            }
+
+            var experiences = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Experiences']");
+            if (experiences != null)
+            {
+                experiences.InnerHtml = strengthsresources.Experiences;
+            }
+
+            var alreadydoing = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Alreadydoing']");
+            if (alreadydoing != null)
+            {
+                alreadydoing.InnerHtml = strengthsresources.AlreadyDoing;
+            }
+
+            if (strengthsresources.ParentsSupport)
+            {
+                var parentsupport = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Parentscheckbox']");
+                if (parentsupport != null)
+                {
+                    string existingStyle = parentsupport.GetAttributeValue("style", "");
+                    parentsupport.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+
+            if (strengthsresources.PartnerSupport)
+            {
+                var partnersupport = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Boyfriendgirlfriendcheckbox']");
+                if (partnersupport != null)
+                {
+                    string existingStyle = partnersupport.GetAttributeValue("style", "");
+                    partnersupport.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+
+            if (strengthsresources.SiblingsSupport)
+            {
+                var siblingsupport = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Siblingscheckbox']");
+                if (siblingsupport != null)
+                {
+                    string existingStyle = siblingsupport.GetAttributeValue("style", "");
+                    siblingsupport.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+
+            if (strengthsresources.ExtendedFamilySupport)
+            {
+                var extendedfamilysupport = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Extendedfamilycheckbox']");
+                if (extendedfamilysupport != null)
+                {
+                    string existingStyle = extendedfamilysupport.GetAttributeValue("style", "");
+                    extendedfamilysupport.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+
+            if (strengthsresources.FriendsSupport)
+            {
+                var friendssupport = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Friendscheckbox']");
+                if (friendssupport != null)
+                {
+                    string existingStyle = friendssupport.GetAttributeValue("style", "");
+                    friendssupport.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+
+            if (strengthsresources.NeighborsSupport)
+            {
+                var neighborssupport = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Neighborscheckbox']");
+                if (neighborssupport != null)
+                {
+                    string existingStyle = neighborssupport.GetAttributeValue("style", "");
+                    neighborssupport.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+
+            if (strengthsresources.SchoolStaffSupport)
+            {
+                var schoolstaffsupport = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Schoolstaffcheckbox']");
+                if (schoolstaffsupport != null)
+                {
+                    string existingStyle = schoolstaffsupport.GetAttributeValue("style", "");
+                    schoolstaffsupport.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+
+            if (strengthsresources.ChurchSupport)
+            {
+                var churchsupport = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Churchcheckbox']");
+                if (churchsupport != null)
+                {
+                    string existingStyle = churchsupport.GetAttributeValue("style", "");
+                    churchsupport.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+
+            if (strengthsresources.PastorSupport)
+            {
+                var pastorsupport = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Pastorcheckbox']");
+                if (pastorsupport != null)
+                {
+                    string existingStyle = pastorsupport.GetAttributeValue("style", "");
+                    pastorsupport.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+
+            if (strengthsresources.TherapistSupport)
+            {
+                var therapistsupport = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Therapistcheckbox']");
+                if (therapistsupport != null)
+                {
+                    string existingStyle = therapistsupport.GetAttributeValue("style", "");
+                    therapistsupport.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+
+            if (strengthsresources.GroupSupport)
+            {
+                var groupsupport = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Groupcheckbox']");
+                if (groupsupport != null)
+                {
+                    string existingStyle = groupsupport.GetAttributeValue("style", "");
+                    groupsupport.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+
+            if (strengthsresources.CommunityServiceSupport)
+            {
+                var communityservice = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Communityservicecheckbox']");
+                if (communityservice != null)
+                {
+                    string existingStyle = communityservice.GetAttributeValue("style", "");
+                    communityservice.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+
+            if (strengthsresources.DoctorSupport)
+            {
+                var doctor = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Doctorcheckbox']");
+                if (doctor != null)
+                {
+                    string existingStyle = doctor.GetAttributeValue("style", "");
+                    doctor.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+            }
+
+            if (strengthsresources.OthersSupport)
+            {
+                var otherssupport = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Othercheckbox']");
+                if (otherssupport != null)
+                {
+                    string existingStyle = otherssupport.GetAttributeValue("style", "");
+                    otherssupport.SetAttributeValue("style", existingStyle + "; background-color: black;");
+                }
+
+                var others = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Otherssix']");
+                if (others != null)
+                {
+                    others.InnerHtml = strengthsresources.Others;
+                }
+            }
+
+            // GOALS
+            var currentneeds = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Biggestneedrightnow']");
+            if (currentneeds != null)
+            {
+                currentneeds.InnerHtml = goals.CurrentNeeds;
+            }
+
+            var hopetogain = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Hopetogain']");
+            if (hopetogain != null)
+            {
+                hopetogain.InnerHtml = goals.HopeToGain;
+            }
+
+            var goal1 = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Goal1text']");
+            if (goal1 != null)
+            {
+                goal1.InnerHtml = goals.Goal1;
+            }
+
+            var goal2 = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Goal2text']");
+            if (goal2 != null)
+            {
+                goal2.InnerHtml = goals.Goal2;
+            }
+
+            var goal3 = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Goal3text']");
+            if (goal3 != null)
+            {
+                goal3.InnerHtml = goals.Goal3;
+            }
+
+            var additionalinfo = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Goalsadditionalinfo']");
+            if (additionalinfo != null)
+            {
+                additionalinfo.InnerHtml = goals.AdditionalInfo;
+            }
+
+            // ASSESSMENTS
+            var assessmentstatement = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Assessmentstatement']");
+            if (assessmentstatement != null)
+            {
+                assessmentstatement.InnerHtml = assessments.AssessmentStatement;
+            }
+
+
+            return htmlDoc.DocumentNode.OuterHtml; // Return updated HTML
+        }
     }
 }
