@@ -9,10 +9,13 @@ using LittleArkFoundation.Areas.Admin.Models.Employment;
 using LittleArkFoundation.Areas.Admin.Models.FamilyComposition;
 using LittleArkFoundation.Areas.Admin.Models.FamilyHistory;
 using LittleArkFoundation.Areas.Admin.Models.FosterCare;
+using LittleArkFoundation.Areas.Admin.Models.HistoryOfAbuse;
+using LittleArkFoundation.Areas.Admin.Models.HistoryOfViolence;
 using LittleArkFoundation.Areas.Admin.Models.HospitalizationHistory;
 using LittleArkFoundation.Areas.Admin.Models.Household;
 using LittleArkFoundation.Areas.Admin.Models.Housing;
 using LittleArkFoundation.Areas.Admin.Models.Informants;
+using LittleArkFoundation.Areas.Admin.Models.LegalInvolvement;
 using LittleArkFoundation.Areas.Admin.Models.MedicalHistory;
 using LittleArkFoundation.Areas.Admin.Models.MedicalScreenings;
 using LittleArkFoundation.Areas.Admin.Models.Medications;
@@ -63,6 +66,9 @@ namespace LittleArkFoundation.Areas.Admin.Models.Form
         public HousingModel? Housing { get; set; }
         public FosterCareModel? FosterCare { get; set; }
         public AlcoholDrugAssessmentModel? AlcoholDrugAssessment { get; set; }
+        public LegalInvolvementModel? LegalInvolvement { get; set; }
+        public HistoryOfAbuseModel? HistoryOfAbuse { get; set; }
+        public HistoryOfViolenceModel? HistoryOfViolence { get; set; }
 
     }
 }

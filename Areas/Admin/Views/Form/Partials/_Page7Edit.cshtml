@@ -1,0 +1,681 @@
+﻿@using LittleArkFoundation.Areas.Admin.Models.Form
+@using LittleArkFoundation.Areas.Admin.Models.FamilyComposition
+@model FormViewModel
+
+<table>
+    <tr>
+        <th>
+            S. Legal Involvement
+
+            <div style="display: flex;">
+                1. Is there current custody case involving your child?
+                <div class="radio-group">
+                    <input type="radio" asp-for="LegalInvolvement.HasCustodyCase" value="True" required> Yes
+                    <input type="radio" asp-for="LegalInvolvement.HasCustodyCase" value="False"> No
+                </div>
+            </div>
+            <div style="display: flex; width: 100%;">
+                If yes, please describe:
+                <textarea asp-for="LegalInvolvement.DescribeCustodyCase" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
+            </div>
+
+            <hr />
+            <div style="display: flex;">
+                2. History of Child Protective Services involvement (Family Court or DSWD)
+                <div class="radio-group">
+                    <input type="radio" asp-for="LegalInvolvement.HasCPSInvolvement" value="None" required> None
+                    <input type="radio" asp-for="LegalInvolvement.HasCPSInvolvement" value="Past"> Past
+                    <input type="radio" asp-for="LegalInvolvement.HasCPSInvolvement" value="Current"> Current
+                </div>
+            </div>
+            <div style="display: flex; width: 100%;">
+                Please describe:
+                <textarea asp-for="LegalInvolvement.DescribeCPSInvolvement" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
+            </div>
+
+            <hr />
+            <div>
+                3. Please indicate by checking your child’s legal status
+            </div>
+            <div style="display: flex;">
+                <div class="radio-group">
+                    <input type="radio" asp-for="LegalInvolvement.LegalStatus" value="No Involvement" onchange="toggleRequiredRadio(this)" required> No Involvement
+                </div>
+                <div class="radio-group">
+                    <input type="radio" asp-for="LegalInvolvement.LegalStatus" value="Probation" data-target="legalinvolvement-probation" onchange="toggleRequiredRadio(this)"> Probation/Length:
+                    @if (Model.LegalInvolvement.LegalStatus == "Probation")
+                    {
+                        <input type="text" asp-for="LegalInvolvement.ProbationParoleLength" id="legalinvolvement-probation" placeholder="Length" disabled>
+                    }
+                    else
+                    {
+                        <input type="text" asp-for="LegalInvolvement.ProbationParoleLength" id="legalinvolvement-probation" placeholder="Length" value="N/A" disabled>
+                    }
+                </div>
+                <div class="radio-group">
+                    <input type="radio" asp-for="LegalInvolvement.LegalStatus" value="Parole" onchange="toggleRequiredRadio(this)" data-target="legalinvolvement-parole" onchange="toggleRequiredRadio(this)"> Parole/Length:
+                    @if (Model.LegalInvolvement.LegalStatus == "Parole")
+                    {
+                        <input type="text" asp-for="LegalInvolvement.ProbationParoleLength" id="legalinvolvement-parole" placeholder="Length" disabled>
+                    }
+                    else
+                    {
+                        <input type="text" asp-for="LegalInvolvement.ProbationParoleLength" id="legalinvolvement-parole" placeholder="Length" value="N/A" disabled>
+                    }
+                </div>
+                <div class="radio-group">
+                    <input type="radio" asp-for="LegalInvolvement.LegalStatus" value="Pending Charges" onchange="toggleRequiredRadio(this)"> Charges Pending
+                    <input type="radio" asp-for="LegalInvolvement.LegalStatus" value="Prior Incarceration" onchange="toggleRequiredRadio(this)"> Prior Incarceration
+                    <input type="radio" asp-for="LegalInvolvement.LegalStatus" value="Law Suit or other Court Proceeding" onchange="toggleRequiredRadio(this)"> Law Suit or other Court Proceeding
+                </div>
+            </div>
+            <div style="display: flex;">
+                Charges:
+                <input type="text" asp-for="LegalInvolvement.Charges" placeholder="Type N/A if no answer" required>
+            </div>
+            <div style="display: flex;">
+                Probation/Parole Officer's Name:
+                <input type="text" asp-for="LegalInvolvement.OfficerName" placeholder="Type N/A if no answer" required>
+            </div>
+            <div style="display: flex;">
+                Contact #:
+                <input type="text" asp-for="LegalInvolvement.OfficerContactNum" placeholder="Type N/A if no answer" required>
+            </div>
+
+            <hr />
+            <div>
+                4. Additional Information
+                <textarea asp-for="LegalInvolvement.AdditionalInfo" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
+            </div>
+
+        </th>
+    </tr>
+</table>
+
+<table>
+    <tr>
+        <th>
+            T. History of Abuse/Neglect (Child in Need of Special Protection - CNSP)
+
+            <div style="display: flex;">
+                1. Has your child ever been abused or assaulted?
+                <div class="radio-group" style="margin-right: 50px;">
+                    <input type="radio" asp-for="HistoryOfAbuse.HasBeenAbused" value="True" required> Yes
+                    <input type="radio" asp-for="HistoryOfAbuse.HasBeenAbused" value="False"> No
+                </div>
+                If Yes, please complete the details below
+            </div>
+        </th>
+    </tr>
+</table>
+<table>
+    <tr>
+        <th>
+            Type of Abuse
+        </th>
+        <th>
+            By Whom? (relation to child if any)
+        </th>
+        <th>
+            At What Age?
+        </th>
+        <th>
+            Was it Reported?
+        </th>
+    </tr>
+    <tbody>
+        <tr>
+            <td>
+                <div class="checkbox-group">
+                    <input type="checkbox" asp-for="HistoryOfAbuse.SexualAbuse" data-target="historyofabuse-sexual" value="true" onchange="toggleRequiredGroupCheckbox(this)"> Sexual
+                </div>
+
+                <hr />
+                <div class="checkbox-group">
+                    <input type="checkbox" asp-for="HistoryOfAbuse.PhysicalAbuse" data-target="historyofabuse-physical" value="true" onchange="toggleRequiredGroupCheckbox(this)"> Physical
+                </div>
+
+                <hr />
+                <div class="checkbox-group">
+                    <input type="checkbox" asp-for="HistoryOfAbuse.EmotionalAbuse" data-target="historyofabuse-emotional" value="true" onchange="toggleRequiredGroupCheckbox(this)"> Emotional
+                </div>
+
+                <hr />
+                <div class="checkbox-group">
+                    <input type="checkbox" asp-for="HistoryOfAbuse.VerbalAbuse" data-target="historyofabuse-verbal" value="true" onchange="toggleRequiredGroupCheckbox(this)"> Verbal
+                </div>
+
+                <hr />
+                <div class="checkbox-group">
+                    <input type="checkbox" asp-for="HistoryOfAbuse.AbandonedAbuse" data-target="historyofabuse-abandoned" value="true" onchange="toggleRequiredGroupCheckbox(this)"> Abandoned
+                </div>
+
+                <hr />
+                <div class="checkbox-group">
+                    <input type="checkbox" asp-for="HistoryOfAbuse.PsychologicalAbuse" data-target="historyofabuse-psychological" value="true" onchange="toggleRequiredGroupCheckbox(this)"> Psychological
+                </div>
+            </td>
+
+            <td>
+                @if (Model.HistoryOfAbuse.SexualAbuse)
+                {
+                    <input type="text" asp-for="HistoryOfAbuse.SexualAbuseByWhom" class="historyofabuse-sexual" placeholder="Type N/A if no answer" required>
+                }
+                else
+                {
+                    <input type="text" asp-for="HistoryOfAbuse.SexualAbuseByWhom" class="historyofabuse-sexual" placeholder="Type N/A if no answer" disabled>
+                }
+
+                <hr />
+                @if (Model.HistoryOfAbuse.PhysicalAbuse)
+                {
+                    <input type="text" asp-for="HistoryOfAbuse.PhysicalAbuseByWhom" class="historyofabuse-physical" placeholder="Type N/A if no answer" required>
+                }
+                else
+                {
+                    <input type="text" asp-for="HistoryOfAbuse.PhysicalAbuseByWhom" class="historyofabuse-physical" placeholder="Type N/A if no answer" disabled>
+                }
+
+                <hr />
+                @if (Model.HistoryOfAbuse.EmotionalAbuse)
+                {
+                    <input type="text" asp-for="HistoryOfAbuse.EmotionalAbuseByWhom" class="historyofabuse-emotional" placeholder="Type N/A if no answer" required>
+                }
+                else
+                {
+                    <input type="text" asp-for="HistoryOfAbuse.EmotionalAbuseByWhom" class="historyofabuse-emotional" placeholder="Type N/A if no answer" disabled>
+                }
+
+                <hr />
+                @if (Model.HistoryOfAbuse.VerbalAbuse)
+                {
+                    <input type="text" asp-for="HistoryOfAbuse.VerbalAbuseByWhom" class="historyofabuse-verbal" placeholder="Type N/A if no answer" required>
+                }
+                else
+                {
+                    <input type="text" asp-for="HistoryOfAbuse.VerbalAbuseByWhom" class="historyofabuse-verbal" placeholder="Type N/A if no answer" disabled>
+                }
+
+                <hr />
+                @if (Model.HistoryOfAbuse.AbandonedAbuse)
+                {
+                    <input type="text" asp-for="HistoryOfAbuse.AbandonedAbuseByWhom" class="historyofabuse-abandoned" placeholder="Type N/A if no answer" required>
+                }
+                else
+                {
+                    <input type="text" asp-for="HistoryOfAbuse.AbandonedAbuseByWhom" class="historyofabuse-abandoned" placeholder="Type N/A if no answer" disabled>
+                }
+
+                <hr />
+                @if (Model.HistoryOfAbuse.PsychologicalAbuse)
+                {
+                    <input type="text" asp-for="HistoryOfAbuse.PsychologicalAbuseByWhom" class="historyofabuse-psychological" placeholder="Type N/A if no answer" required>
+                }
+                else
+                {
+                    <input type="text" asp-for="HistoryOfAbuse.PsychologicalAbuseByWhom" class="historyofabuse-psychological" placeholder="Type N/A if no answer" disabled>
+                }
+            </td>
+
+            <td>
+                @if (Model.HistoryOfAbuse.SexualAbuse)
+                {
+                    <input type="number" asp-for="HistoryOfAbuse.SexualAbuseAgeOfChild" class="historyofabuse-sexual" placeholder="Type 0 if no answer" required>
+                }
+                else
+                {
+                    <input type="number" asp-for="HistoryOfAbuse.SexualAbuseAgeOfChild" class="historyofabuse-sexual" placeholder="Type 0 if no answer" disabled>
+                }
+
+                <hr />
+                @if (Model.HistoryOfAbuse.PhysicalAbuse)
+                {
+                    <input type="number" asp-for="HistoryOfAbuse.PhysicalAbuseAgeOfChild" class="historyofabuse-physical" placeholder="Type 0 if no answer" required>
+                }
+                else
+                {
+                    <input type="number" asp-for="HistoryOfAbuse.PhysicalAbuseAgeOfChild" class="historyofabuse-physical" placeholder="Type 0 if no answer" disabled>
+                }
+
+                <hr />
+                @if (Model.HistoryOfAbuse.EmotionalAbuse)
+                {
+                    <input type="number" asp-for="HistoryOfAbuse.EmotionalAbuseAgeOfChild" class="historyofabuse-emotional" placeholder="Type 0 if no answer" required>
+                }
+                else
+                {
+                    <input type="number" asp-for="HistoryOfAbuse.EmotionalAbuseAgeOfChild" class="historyofabuse-emotional" placeholder="Type 0 if no answer" disabled>
+                }
+
+                <hr />
+                @if (Model.HistoryOfAbuse.VerbalAbuse)
+                {
+                    <input type="number" asp-for="HistoryOfAbuse.VerbalAbuseAgeOfChild" class="historyofabuse-verbal" placeholder="Type 0 if no answer" required>
+
+                }else
+                {
+                    <input type="number" asp-for="HistoryOfAbuse.VerbalAbuseAgeOfChild" class="historyofabuse-verbal" placeholder="Type 0 if no answer" disabled>
+                }
+
+                <hr />
+                @if (Model.HistoryOfAbuse.AbandonedAbuse)
+                {
+                    <input type="number" asp-for="HistoryOfAbuse.AbandonedAbuseAgeOfChild" class="historyofabuse-abandoned" placeholder="Type 0 if no answer" required>
+                }
+                else
+                {
+                    <input type="number" asp-for="HistoryOfAbuse.AbandonedAbuseAgeOfChild" class="historyofabuse-abandoned" placeholder="Type 0 if no answer" disabled>
+                }
+
+                <hr />
+                @if (Model.HistoryOfAbuse.PsychologicalAbuse)
+                {
+                    <input type="number" asp-for="HistoryOfAbuse.PsychologicalAbuseAgeOfChild" class="historyofabuse-psychological" placeholder="Type 0 if no answer" required>
+                }
+                else
+                {
+                    <input type="number" asp-for="HistoryOfAbuse.PsychologicalAbuseAgeOfChild" class="historyofabuse-psychological" placeholder="Type 0 if no answer" disabled>
+                }
+            </td>
+
+            <td>
+                @if (Model.HistoryOfAbuse.SexualAbuse)
+                {
+                    <select asp-for="HistoryOfAbuse.SexualAbuseReported" class="historyofabuse-sexual" required>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                }
+                else
+                {
+                    <select asp-for="HistoryOfAbuse.SexualAbuseReported" class="historyofabuse-sexual" disabled>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                }
+
+                <hr />
+                @if (Model.HistoryOfAbuse.PhysicalAbuse)
+                {
+                    <select asp-for="HistoryOfAbuse.PhysicalAbuseReported" class="historyofabuse-physical" required>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                }
+                else
+                {
+                    <select asp-for="HistoryOfAbuse.PhysicalAbuseReported" class="historyofabuse-physical" disabled>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                }
+
+                <hr />
+                @if (Model.HistoryOfAbuse.EmotionalAbuse)
+                {
+                    <select asp-for="HistoryOfAbuse.EmotionalAbuseReported" class="historyofabuse-emotional" required>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                }
+                else
+                {
+                    <select asp-for="HistoryOfAbuse.EmotionalAbuseReported" class="historyofabuse-emotional" disabled>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                }
+
+                <hr />
+                @if (Model.HistoryOfAbuse.VerbalAbuse)
+                {
+                    <select asp-for="HistoryOfAbuse.VerbalAbuseReported" class="historyofabuse-verbal" required>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                }
+                else
+                {
+                    <select asp-for="HistoryOfAbuse.VerbalAbuseReported" class="historyofabuse-verbal" disabled>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                }
+
+                <hr />
+                @if (Model.HistoryOfAbuse.AbandonedAbuse)
+                {
+                    <select asp-for="HistoryOfAbuse.AbandonedAbuseReported" class="historyofabuse-abandoned" required>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                }
+                else
+                {
+                    <select asp-for="HistoryOfAbuse.AbandonedAbuseReported" class="historyofabuse-abandoned" disabled>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                }
+
+                <hr />
+                @if (Model.HistoryOfAbuse.PsychologicalAbuse)
+                {
+                    <select asp-for="HistoryOfAbuse.PsychologicalAbuseReported" class="historyofabuse-psychological" required>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                }
+                else
+                {
+                    <select asp-for="HistoryOfAbuse.PsychologicalAbuseReported" class="historyofabuse-psychological" disabled>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                }
+
+            </td>
+        </tr>
+    </tbody>
+</table>
+<table>
+    <tr>
+        <th>
+            2. Has your child ever been a victim of bullying?
+
+            <div style="display: flex;">
+                <div class="radio-group">
+                    <input type="radio" asp-for="HistoryOfAbuse.VictimOfBullying" value="True" required> Yes
+                    <input type="radio" asp-for="HistoryOfAbuse.VictimOfBullying" value="False"> No
+                </div>
+            </div>
+
+            <hr />
+            3. Do you worry about your child’s safety now?
+            <div style="display: flex;">
+                <div class="radio-group">
+                    <input type="radio" asp-for="HistoryOfAbuse.SafetyConcerns" value="True" required> Yes
+                    <input type="radio" asp-for="HistoryOfAbuse.SafetyConcerns" value="False"> No
+                </div>
+            </div>
+            <div style="display: flex;">
+                If yes, please describe:
+                <textarea asp-for="HistoryOfAbuse.DescribeSafetyConcerns" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
+            </div>
+
+            <hr />
+            4. What else do you feel is important for us to know?
+            <textarea asp-for="HistoryOfAbuse.AdditionalInfo" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
+
+        </th>
+    </tr>
+</table>
+
+<table>
+    <tr>
+        <th>
+            U. History of Violence (Child in Conflict with the Law - CICL)
+
+            <div style="display: flex;">
+                1. Has your child ever been accused of abusing or assaulting someone?
+                <div class="radio-group" style="margin-right: 50px;">
+                    <input type="radio" asp-for="HistoryOfViolence.HasBeenAccused" value="True" required> Yes
+                    <input type="radio" asp-for="HistoryOfViolence.HasBeenAccused" value="False"> No
+                </div>
+                If Yes, please complete the details below
+            </div>
+        </th>
+    </tr>
+</table>
+<table>
+    <tr>
+        <th>
+            Type of Abuse
+        </th>
+        <th>
+            To Whom? (relation to child if any)
+        </th>
+        <th>
+            At What Age?
+        </th>
+        <th>
+            Was it Reported?
+        </th>
+    </tr>
+    <tbody>
+        <tr>
+            <td>
+                <div class="checkbox-group">
+                    <input type="checkbox" asp-for="HistoryOfViolence.SexualAbuse" data-target="historyofviolence-sexual" value="true" onchange="toggleRequiredGroupCheckbox(this)"> Sexual
+                </div>
+
+                <hr />
+                <div class="checkbox-group">
+                    <input type="checkbox" asp-for="HistoryOfViolence.PhysicalAbuse" data-target="historyofviolence-physical" value="true" onchange="toggleRequiredGroupCheckbox(this)"> Physical
+                </div>
+
+                <hr />
+                <div class="checkbox-group">
+                    <input type="checkbox" asp-for="HistoryOfViolence.EmotionalAbuse" data-target="historyofviolence-emotional" value="true" onchange="toggleRequiredGroupCheckbox(this)"> Emotional
+                </div>
+
+                <hr />
+                <div class="checkbox-group">
+                    <input type="checkbox" asp-for="HistoryOfViolence.VerbalAbuse" data-target="historyofviolence-verbal" value="true" onchange="toggleRequiredGroupCheckbox(this)"> Verbal
+                </div>
+
+                <hr />
+                <div class="checkbox-group">
+                    <input type="checkbox" asp-for="HistoryOfViolence.AbandonedAbuse" data-target="historyofviolence-abandoned" value="true" onchange="toggleRequiredGroupCheckbox(this)"> Abandoned
+                </div>
+
+            </td>
+
+            <td>
+                @if (Model.HistoryOfViolence.SexualAbuse)
+                {
+                    <input type="text" asp-for="HistoryOfViolence.SexualAbuseToWhom" class="historyofviolence-sexual" placeholder="Type N/A if no answer" required>
+                }
+                else
+                {
+                    <input type="text" asp-for="HistoryOfViolence.SexualAbuseToWhom" class="historyofviolence-sexual" placeholder="Type N/A if no answer" disabled>
+                }
+
+                <hr />
+                @if (Model.HistoryOfViolence.PhysicalAbuse)
+                {
+                    <input type="text" asp-for="HistoryOfViolence.PhysicalAbuseToWhom" class="historyofviolence-physical" placeholder="Type N/A if no answer" required>
+                }
+                else
+                {
+                    <input type="text" asp-for="HistoryOfViolence.PhysicalAbuseToWhom" class="historyofviolence-physical" placeholder="Type N/A if no answer" disabled>
+                }
+
+                <hr />
+                @if (Model.HistoryOfViolence.EmotionalAbuse)
+                {
+                    <input type="text" asp-for="HistoryOfViolence.EmotionalAbuseToWhom" class="historyofviolence-emotional" placeholder="Type N/A if no answer" required>
+                }
+                else
+                {
+                    <input type="text" asp-for="HistoryOfViolence.EmotionalAbuseToWhom" class="historyofviolence-emotional" placeholder="Type N/A if no answer" disabled>
+                }
+
+                <hr />
+                @if (Model.HistoryOfViolence.VerbalAbuse)
+                {
+                    <input type="text" asp-for="HistoryOfViolence.VerbalAbuseToWhom" class="historyofviolence-verbal" placeholder="Type N/A if no answer" required>
+                }
+                else
+                {
+                    <input type="text" asp-for="HistoryOfViolence.VerbalAbuseToWhom" class="historyofviolence-verbal" placeholder="Type N/A if no answer" disabled>
+                }
+
+                <hr />
+                @if (Model.HistoryOfViolence.AbandonedAbuse)
+                {
+                    <input type="text" asp-for="HistoryOfViolence.AbandonedAbuseToWhom" class="historyofviolence-abandoned" placeholder="Type N/A if no answer" required>
+                }
+                else
+                {
+                    <input type="text" asp-for="HistoryOfViolence.AbandonedAbuseToWhom" class="historyofviolence-abandoned" placeholder="Type N/A if no answer" disabled>
+                }
+
+            </td>
+
+            <td>
+                @if (Model.HistoryOfViolence.SexualAbuse)
+                {
+                    <input type="number" asp-for="HistoryOfViolence.SexualAbuseAgeOfChild" class="historyofviolence-sexual" placeholder="Type 0 if no answer" required>
+                }
+                else
+                {
+                    <input type="number" asp-for="HistoryOfViolence.SexualAbuseAgeOfChild" class="historyofviolence-sexual" placeholder="Type 0 if no answer" disabled>
+                }
+
+                <hr />
+                @if (Model.HistoryOfViolence.PhysicalAbuse)
+                {
+                    <input type="number" asp-for="HistoryOfViolence.PhysicalAbuseAgeOfChild" class="historyofviolence-physical" placeholder="Type 0 if no answer" required>
+                }
+                else
+                {
+                    <input type="number" asp-for="HistoryOfViolence.PhysicalAbuseAgeOfChild" class="historyofviolence-physical" placeholder="Type 0 if no answer" disabled>
+                }
+
+                <hr />
+                @if (Model.HistoryOfViolence.EmotionalAbuse)
+                {
+                    <input type="number" asp-for="HistoryOfViolence.EmotionalAbuseAgeOfChild" class="historyofviolence-emotional" placeholder="Type 0 if no answer" required>
+                }
+                else
+                {
+                    <input type="number" asp-for="HistoryOfViolence.EmotionalAbuseAgeOfChild" class="historyofviolence-emotional" placeholder="Type 0 if no answer" disabled>
+                }
+
+                <hr />
+                @if (Model.HistoryOfViolence.VerbalAbuse)
+                {
+                    <input type="number" asp-for="HistoryOfViolence.VerbalAbuseAgeOfChild" class="historyofviolence-verbal" placeholder="Type 0 if no answer" required>
+                }
+                else
+                {
+                    <input type="number" asp-for="HistoryOfViolence.VerbalAbuseAgeOfChild" class="historyofviolence-verbal" placeholder="Type 0 if no answer" disabled>
+                }
+
+                <hr />
+                @if (Model.HistoryOfViolence.AbandonedAbuse)
+                {
+                    <input type="number" asp-for="HistoryOfViolence.AbandonedAbuseAgeOfChild" class="historyofviolence-abandoned" placeholder="Type 0 if no answer" required>
+                }
+                else
+                {
+                    <input type="number" asp-for="HistoryOfViolence.AbandonedAbuseAgeOfChild" class="historyofviolence-abandoned" placeholder="Type 0 if no answer" disabled>
+                }
+
+            </td>
+
+            <td>
+                @if (Model.HistoryOfViolence.SexualAbuse)
+                {
+                    <select asp-for="HistoryOfViolence.SexualAbuseReported" class="historyofviolence-sexual" required>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                }
+                else
+                {
+                    <select asp-for="HistoryOfViolence.SexualAbuseReported" class="historyofviolence-sexual" disabled>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                }
+
+                <hr />
+                @if (Model.HistoryOfViolence.PhysicalAbuse)
+                {
+                    <select asp-for="HistoryOfViolence.PhysicalAbuseReported" class="historyofviolence-physical" required>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                }
+                else
+                {
+                    <select asp-for="HistoryOfViolence.PhysicalAbuseReported" class="historyofviolence-physical" disabled>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                }
+
+                <hr />
+                @if (Model.HistoryOfViolence.EmotionalAbuse)
+                {
+                    <select asp-for="HistoryOfViolence.EmotionalAbuseReported" class="historyofviolence-emotional" required>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                }
+                else
+                {
+                    <select asp-for="HistoryOfViolence.EmotionalAbuseReported" class="historyofviolence-emotional" disabled>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                }
+
+                <hr />
+                @if (Model.HistoryOfViolence.VerbalAbuse)
+                {
+                    <select asp-for="HistoryOfViolence.VerbalAbuseReported" class="historyofviolence-verbal" required>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                }
+                else
+                {
+                    <select asp-for="HistoryOfViolence.VerbalAbuseReported" class="historyofviolence-verbal" disabled>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                }
+
+                <hr />
+				@if (Model.HistoryOfViolence.AbandonedAbuse)
+				{
+					<select asp-for="HistoryOfViolence.AbandonedAbuseReported" class="historyofviolence-abandoned" required>
+						<option value="true">Yes</option>
+						<option value="false">No</option>
+					</select>
+				}
+				else
+				{
+					<select asp-for="HistoryOfViolence.AbandonedAbuseReported" class="historyofviolence-abandoned" disabled>
+						<option value="true">Yes</option>
+						<option value="false">No</option>
+					</select>
+				}
+
+            </td>
+        </tr>
+    </tbody>
+</table>
+<table>
+    <tr>
+        <th>
+            2. Has your child ever been known to bully other children?
+
+            <div style="display: flex;">
+                <div class="radio-group">
+                    <input type="radio" asp-for="HistoryOfViolence.Bullying" value="True" required> Yes
+                    <input type="radio" asp-for="HistoryOfViolence.Bullying" value="False"> No
+                </div>
+            </div>
+
+            <hr />
+            3. What else do you feel is important for us to know?
+            <textarea asp-for="HistoryOfViolence.AdditionalInfo" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
+
+        </th>
+    </tr>
+</table>
+

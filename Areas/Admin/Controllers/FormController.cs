@@ -193,6 +193,15 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 // ALCOHOL DRUG ASSESSMENT
                 formViewModel.AlcoholDrugAssessment.PatientID = patientID;
 
+                // LEGAL INVOLVEMENT
+                formViewModel.LegalInvolvement.PatientID = patientID;
+
+                // HISTORY OF ABUSE
+                formViewModel.HistoryOfAbuse.PatientID = patientID;
+
+                // HISTORY OF VIOLENCE
+                formViewModel.HistoryOfViolence.PatientID = patientID;
+
                 // Save Patient first to get the ID, avoids Forein Key constraint
                 await context.Patients.AddAsync(formViewModel.Patient);
                 await context.SaveChangesAsync();
@@ -227,6 +236,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 await context.Housing.AddAsync(formViewModel.Housing);
                 await context.FosterCare.AddAsync(formViewModel.FosterCare);
                 await context.AlcoholDrugAssessment.AddAsync(formViewModel.AlcoholDrugAssessment);
+                await context.LegalInvolvement.AddAsync(formViewModel.LegalInvolvement);
+                await context.HistoryOfAbuse.AddAsync(formViewModel.HistoryOfAbuse);
+                await context.HistoryOfViolence.AddAsync(formViewModel.HistoryOfViolence);
                 await context.SaveChangesAsync();
 
                 TempData["SuccessMessage"] = "Successfully created new form";
@@ -328,6 +340,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var housing = await context.Housing.FirstOrDefaultAsync(h => h.PatientID == id);
             var fostercare = await context.FosterCare.FirstOrDefaultAsync(f => f.PatientID == id);
             var alcoholdrugassessment = await context.AlcoholDrugAssessment.FirstOrDefaultAsync(a => a.PatientID == id);
+            var legalinvolvement = await context.LegalInvolvement.FirstOrDefaultAsync(l => l.PatientID == id);
+            var historyofabuse = await context.HistoryOfAbuse.FirstOrDefaultAsync(h => h.PatientID == id);
+            var historyofviolence = await context.HistoryOfViolence.FirstOrDefaultAsync(h => h.PatientID == id);
 
             var viewModel = new FormViewModel()
             {
@@ -360,7 +375,10 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 Employment = employment,
                 Housing = housing,
                 FosterCare = fostercare,
-                AlcoholDrugAssessment = alcoholdrugassessment
+                AlcoholDrugAssessment = alcoholdrugassessment,
+                LegalInvolvement = legalinvolvement,
+                HistoryOfAbuse = historyofabuse,
+                HistoryOfViolence = historyofviolence
             };
 
             return View(viewModel);
@@ -483,6 +501,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             context.Housing.Update(formViewModel.Housing);
             context.FosterCare.Update(formViewModel.FosterCare);
             context.AlcoholDrugAssessment.Update(formViewModel.AlcoholDrugAssessment);
+            context.LegalInvolvement.Update(formViewModel.LegalInvolvement);
+            context.HistoryOfAbuse.Update(formViewModel.HistoryOfAbuse);
+            context.HistoryOfViolence.Update(formViewModel.HistoryOfViolence);
             await context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = $"Successfully edited PatientID: {id}";
