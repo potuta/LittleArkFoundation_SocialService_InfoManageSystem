@@ -7,6 +7,7 @@ using Microsoft.Build.Execution;
 using DinkToPdfAll;
 using DinkToPdf.Contracts;
 using DinkToPdf;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +44,14 @@ builder.Services.AddSingleton<DatabaseService>();
 //{
 //    options.ListenAnyIP(16969); // Change port as needed
 //});
+
+builder.Services.AddScoped<ApplicationDbContext>(provider =>
+{
+    var config = provider.GetRequiredService<IConfiguration>();
+    var connectionString = config.GetConnectionString("DefaultConnection");
+    return new ApplicationDbContext(connectionString);
+});
+
 
 var app = builder.Build();
 
