@@ -31,6 +31,11 @@ using LittleArkFoundation.Areas.Admin.Models.Employment;
 using LittleArkFoundation.Areas.Admin.Models.Housing;
 using LittleArkFoundation.Areas.Admin.Models.FosterCare;
 using LittleArkFoundation.Areas.Admin.Models.AlcoholDrugAssessment;
+using LittleArkFoundation.Areas.Admin.Models.LegalInvolvement;
+using LittleArkFoundation.Areas.Admin.Models.HistoryOfAbuse;
+using LittleArkFoundation.Areas.Admin.Models.HistoryOfViolence;
+using LittleArkFoundation.Areas.Admin.Models.StrengthsResources;
+using LittleArkFoundation.Areas.Admin.Models.Goals;
 
 namespace LittleArkFoundation.Data
 {
@@ -88,6 +93,11 @@ namespace LittleArkFoundation.Data
         public DbSet<HousingModel> Housing { get; set; }
         public DbSet<FosterCareModel> FosterCare { get; set; }
         public DbSet<AlcoholDrugAssessmentModel> AlcoholDrugAssessment { get; set; }
+        public DbSet<LegalInvolvementModel> LegalInvolvement { get; set; }
+        public DbSet<HistoryOfAbuseModel> HistoryOfAbuse { get; set; }
+        public DbSet<HistoryOfViolenceModel> HistoryOfViolence { get; set; }
+        public DbSet<StrengthsResourcesModel> StrengthsResources { get; set; }
+        public DbSet<GoalsModel> Goals { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -404,6 +414,51 @@ namespace LittleArkFoundation.Data
 
             modelBuilder.Entity<AlcoholDrugAssessmentModel>()
                 .Property(a => a.AlcoholDrugID)
+                .ValueGeneratedOnAdd();
+
+            // LegalInvolvement
+            modelBuilder.Entity<LegalInvolvementModel>()
+                .ToTable("LegalInvolvement")
+                .HasKey(l => l.LegalID);
+
+            modelBuilder.Entity<LegalInvolvementModel>()
+                .Property(l => l.LegalID)
+                .ValueGeneratedOnAdd();
+
+            // HistoryOfAbuse
+            modelBuilder.Entity<HistoryOfAbuseModel>()
+                .ToTable("HistoryOfAbuse")
+                .HasKey(h => h.AbuseID);
+
+            modelBuilder.Entity<HistoryOfAbuseModel>()
+                .Property(h => h.AbuseID)
+                .ValueGeneratedOnAdd();
+
+            // HistoryOfViolence
+            modelBuilder.Entity<HistoryOfViolenceModel>()
+                .ToTable("HistoryOfViolence")
+                .HasKey(h => h.ViolenceID);
+
+            modelBuilder.Entity<HistoryOfViolenceModel>()
+                .Property(h => h.ViolenceID)
+                .ValueGeneratedOnAdd();
+
+            // StrengthsResources
+            modelBuilder.Entity<StrengthsResourcesModel>()
+                .ToTable("StrengthsResources")
+                .HasKey(s => s.StrengthID);
+
+            modelBuilder.Entity<StrengthsResourcesModel>()
+                .Property(s => s.StrengthID)
+                .ValueGeneratedOnAdd();
+
+            // Goals
+            modelBuilder.Entity<GoalsModel>()
+                .ToTable("Goals")
+                .HasKey(g => g.GoalID);
+
+            modelBuilder.Entity<GoalsModel>()
+                .Property(g => g.GoalID)
                 .ValueGeneratedOnAdd();
         }
     }

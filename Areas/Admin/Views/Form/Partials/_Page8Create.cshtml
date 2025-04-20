@@ -1,0 +1,117 @@
+﻿@using LittleArkFoundation.Areas.Admin.Models.Form
+@using LittleArkFoundation.Areas.Admin.Models.FamilyComposition
+@model FormViewModel
+
+<table>
+    <tr>
+        <th>
+            V. Strengths/Supports/Resources
+
+            <div style="display: flex;">
+                1. What strengths does your child/family have?
+                <textarea asp-for="StrengthsResources.Strengths" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
+            </div>
+
+            <hr />
+            <div style="display: flex;">
+                2. What limitations does your child/family have (if any)?
+                <textarea asp-for="StrengthsResources.Limitations" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
+            </div>
+
+            <hr />
+            <div style="display: flex;">
+                3. What resources does your child have to help with your current problem?
+                <textarea asp-for="StrengthsResources.Resources" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
+            </div>
+
+            <hr />
+            <div style="display: flex;">
+                4. What experiences (past & present) will help you in improving the current situation?
+                <textarea asp-for="StrengthsResources.Experiences" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
+            </div>
+
+            <hr />
+            <div style="display: flex;">
+                5. What are you (and your family) already doing to improve the current situation?
+                <textarea asp-for="StrengthsResources.AlreadyDoing" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
+            </div>
+
+            <hr />
+            <div style="display: flex;">
+                6. Who does/can your child count on for support?
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" asp-for="StrengthsResources.ParentsSupport" value="true"> Parents
+                <input type="checkbox" asp-for="StrengthsResources.PartnerSupport" value="true"> Boyfriend/Girlfriend
+                <input type="checkbox" asp-for="StrengthsResources.SiblingsSupport" value="true"> Siblings
+                <input type="checkbox" asp-for="StrengthsResources.ExtendedFamilySupport" value="true"> Extended Family
+                <input type="checkbox" asp-for="StrengthsResources.FriendsSupport" value="true"> Friends
+                <input type="checkbox" asp-for="StrengthsResources.NeighborsSupport" value="true"> Neighbors
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" asp-for="StrengthsResources.SchoolStaffSupport" value="true"> School Staff
+                <input type="checkbox" asp-for="StrengthsResources.ChurchSupport" value="true"> Church
+                <input type="checkbox" asp-for="StrengthsResources.PastorSupport" value="true"> Pastor
+                <input type="checkbox" asp-for="StrengthsResources.TherapistSupport" value="true"> Therapist
+                <input type="checkbox" asp-for="StrengthsResources.GroupSupport" value="true"> Group
+                <input type="checkbox" asp-for="StrengthsResources.CommunityServiceSupport" value="true"> Community Service
+                <input type="checkbox" asp-for="StrengthsResources.DoctorSupport" value="true"> Doctor
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" asp-for="StrengthsResources.OthersSupport" data-target="strengthsresources-others" value="true" onchange="toggleRequiredCheckbox(this)"> Others
+                <input type="text" asp-for="StrengthsResources.Others" id="strengthsresources-others" placeholder="Please specify" disabled>
+            </div>
+
+        </th>
+    </tr>
+</table>
+<table>
+    <tr>
+        <th>
+            W. Current Needs/Goals
+
+            <div style="display: flex;">
+                1. What do you feel is your child’s biggest need right now?
+                <textarea asp-for="Goals.CurrentNeeds" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
+            </div>
+
+            <hr />
+            <div style="display: flex;">
+                2. What do you most hope to gain from coming to counseling?
+                <textarea asp-for="Goals.HopeToGain" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
+            </div>
+
+            <hr />
+            <div>
+                3. If you were to pick three goals to work on, what would they be?
+            </div>
+            <div style="display: flex;">
+                Goal 1:
+                <textarea asp-for="Goals.Goal1" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
+            </div>
+            <div style="display: flex;">
+                Goal 2:
+                <textarea asp-for="Goals.Goal2" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
+            </div>
+            <div style="display: flex;">
+                Goal 3:
+                <textarea asp-for="Goals.Goal3" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
+            </div>
+
+            <hr />
+            <div>
+                4. What else would you like for us to be aware of?
+                <textarea asp-for="Goals.AdditionalInfo" rows="2" cols="120" placeholder="Type N/A if no answer" required></textarea>
+            </div>
+        </th>
+    </tr>
+</table>
+
+<table>
+    <tr>
+        <th>
+            X. Assessment Statement
+            <textarea asp-for="Assessments.AssessmentStatement" rows="50" cols="120" placeholder="Type N/A if no answer" required></textarea>
+        </th>
+    </tr>
+</table>
