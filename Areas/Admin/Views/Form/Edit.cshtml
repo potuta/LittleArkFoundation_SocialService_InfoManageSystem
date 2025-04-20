@@ -150,6 +150,16 @@
     <input type="hidden" asp-for="FosterCare.PatientID" />
     <input type="hidden" asp-for="AlcoholDrugAssessment.AlcoholDrugID" />
     <input type="hidden" asp-for="AlcoholDrugAssessment.PatientID" />
+    <input type="hidden" asp-for="LegalInvolvement.LegalID" />
+    <input type="hidden" asp-for="LegalInvolvement.PatientID" />
+    <input type="hidden" asp-for="HistoryOfAbuse.AbuseID" />
+    <input type="hidden" asp-for="HistoryOfAbuse.PatientID" />
+    <input type="hidden" asp-for="HistoryOfViolence.ViolenceID" />
+    <input type="hidden" asp-for="HistoryOfViolence.PatientID" />
+    <input type="hidden" asp-for="StrengthsResources.StrengthID" />
+    <input type="hidden" asp-for="StrengthsResources.PatientID" />
+    <input type="hidden" asp-for="Goals.GoalID" />
+    <input type="hidden" asp-for="Goals.PatientID" />
 
     <div class="form-container">
 
@@ -229,6 +239,32 @@
                 <div id="collapsePage6" class="accordion-collapse collapse" aria-labelledby="headingPage6">
                     <div class="accordion-body">
                         @await Html.PartialAsync("Partials/_Page6Edit", Model)
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item" id="page7">
+                <h2 class="accordion-header" id="headingPage7">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePage7" aria-expanded="false" aria-controls="collapsePage7">
+                        Page 7
+                    </button>
+                </h2>
+                <div id="collapsePage7" class="accordion-collapse collapse" aria-labelledby="headingPage7">
+                    <div class="accordion-body">
+                        @await Html.PartialAsync("Partials/_Page7Edit", Model)
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item" id="page8">
+                <h2 class="accordion-header" id="headingPage8">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePage8" aria-expanded="false" aria-controls="collapsePage8">
+                        Page 8
+                    </button>
+                </h2>
+                <div id="collapsePage8" class="accordion-collapse collapse" aria-labelledby="headingPage8">
+                    <div class="accordion-body">
+                        @await Html.PartialAsync("Partials/_Page8Edit", Model)
                     </div>
                 </div>
             </div>
@@ -708,6 +744,27 @@
                 inputField.required = false;
                 inputField.value = ""; // Clear value when unchecked
             }
+        }
+
+        function toggleRequiredGroupCheckbox(checkbox) {
+            const targetClass = checkbox.getAttribute("data-target");
+            const targets = document.querySelectorAll(`.${targetClass}`);
+
+            targets.forEach(el => {
+                if (checkbox.checked) {
+                    el.disabled = false;
+                    el.required = true;
+                } else {
+                    el.disabled = true;
+                    el.required = false;
+                    el.value = ""; // Clear value for inputs
+
+                    // Also uncheck radio buttons
+                    if (el.type === "radio") {
+                        el.checked = false;
+                    }
+                }
+            });
         }
 
         function updateLightSourceValue(input) {
