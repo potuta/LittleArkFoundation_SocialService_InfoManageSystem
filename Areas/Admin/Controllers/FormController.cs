@@ -39,7 +39,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using (var context = new ApplicationDbContext(connectionString))
             {
-                var patients = await context.Patients.ToListAsync();
+                var patients = await context.Patients
+                    .Where(u => u.IsActive == true)
+                    .ToListAsync();
 
                 var viewModel = new PatientsViewModel
                 {
@@ -56,15 +58,25 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             await using var context = new ApplicationDbContext(connectionString);
 
+            // USERS & SOCIAL WORKER ROLE ID
+            var socialWorkerRoleId = await context.Roles
+                .Where(r => r.RoleName == "Social Worker")
+                .Select(r => r.RoleID)
+                .FirstOrDefaultAsync();
+
+            var users = await context.Users
+                .Where(u => u.RoleID == socialWorkerRoleId)
+                .ToListAsync();
+
             var viewModel = new FormViewModel()
             {
+                Users = users,
                 FamilyMembers = new List<FamilyCompositionModel>() { new FamilyCompositionModel() },
                 Diagnoses = new List<DiagnosesModel>() { new DiagnosesModel() },
                 Medications = new List<MedicationsModel> { new MedicationsModel() },
                 HospitalizationHistory = new List<HospitalizationHistoryModel> { new HospitalizationHistoryModel() },
                 MentalHealthHistory = new List<MentalHealthHistoryModel> { new MentalHealthHistoryModel() },
                 FamilyHistory = new List<FamilyHistoryModel> { new FamilyHistoryModel() }
-
             };
 
             return View(viewModel);
@@ -351,6 +363,16 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             await using var context = new ApplicationDbContext(connectionString);
 
+            // USERS & SOCIAL WORKER ROLE ID
+            var socialWorkerRoleId = await context.Roles
+                .Where(r => r.RoleName == "Social Worker")
+                .Select(r => r.RoleID)
+                .FirstOrDefaultAsync();
+
+            var users = await context.Users
+                .Where(u => u.RoleID == socialWorkerRoleId)
+                .ToListAsync();
+
             var assessment = await context.Assessments.FirstOrDefaultAsync(a => a.PatientID == id);
             var referral = await context.Referrals.FirstOrDefaultAsync(r => r.PatientID == id);
             var informant = await context.Informants.FirstOrDefaultAsync(i => i.PatientID == id);
@@ -401,6 +423,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             var viewModel = new FormViewModel()
             {
+                Users = users,
                 Assessments = assessment,
                 Referrals = referral,
                 Informants = informant,
