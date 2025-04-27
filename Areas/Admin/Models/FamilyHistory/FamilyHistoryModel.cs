@@ -3,6 +3,7 @@
     public class FamilyHistoryModel
     {
         public int FamilyHistoryID { get; set; }
+        public int AssessmentID { get; set; }   
         public int PatientID { get; set; }
         public bool IsSelf { get; set; } = false;
         public bool HasDepression { get; set; } = false;

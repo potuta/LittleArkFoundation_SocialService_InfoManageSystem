@@ -16,6 +16,8 @@ using LittleArkFoundation.Areas.Admin.Models.Medications;
 using LittleArkFoundation.Areas.Admin.Models.HospitalizationHistory;
 using LittleArkFoundation.Areas.Admin.Models.MentalHealthHistory;
 using LittleArkFoundation.Areas.Admin.Models.FamilyHistory;
+using LittleArkFoundation.Areas.Admin.Models.Assessments;
+using LittleArkFoundation.Areas.Admin.Models.MedicalHistory;
 // TODO: Implement logging for forms
 namespace LittleArkFoundation.Areas.Admin.Controllers
 {
@@ -45,7 +47,36 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                 var viewModel = new PatientsViewModel
                 {
-                    Patients = patients
+                    Patients = patients,
+                    Assessments = new List<AssessmentsModel>() { new AssessmentsModel() },
+                    MedicalHistory = new List<MedicalHistoryModel>() { new MedicalHistoryModel() }
+                };
+
+                return View(viewModel);
+            }
+        }
+
+        public async Task<IActionResult> ViewHistory(int id)
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using (var context = new ApplicationDbContext(connectionString))
+            {
+                var patient = await context.Patients.FindAsync(id);
+
+                var assessments = await context.Assessments
+                    .Where(a => a.PatientID == id)
+                    .ToListAsync();
+
+                var medicalhistory = await context.MedicalHistory
+                    .Where(d => d.PatientID == id)
+                    .ToListAsync();
+
+                var viewModel = new PatientsViewModel
+                {
+                    Patients = new List<PatientsModel>() { new PatientsModel() },
+                    Patient = patient,
+                    Assessments = assessments,
+                    MedicalHistory = medicalhistory
                 };
 
                 return View(viewModel);
@@ -96,16 +127,20 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
 
                 var patientID = await new PatientsRepository(connectionString).GenerateID();
+                var assessmentID = await new AssessmentsRepository(connectionString).GenerateID();
 
                 // ASSESSMENTS
                 formViewModel.Assessments.PatientID = patientID;
+                formViewModel.Assessments.AssessmentID = assessmentID;
 
                 // REFERRALS
                 formViewModel.Referrals.PatientID = patientID;
+                formViewModel.Referrals.AssessmentID = assessmentID;
                 formViewModel.Referrals.DateOfReferral = formViewModel.Assessments.DateOfInterview.ToDateTime(formViewModel.Assessments.TimeOfInterview);
 
                 // INFORMANTS
                 formViewModel.Informants.PatientID = patientID;
+                formViewModel.Informants.AssessmentID = assessmentID;
                 formViewModel.Informants.DateOfInformant = formViewModel.Assessments.DateOfInterview.ToDateTime(formViewModel.Assessments.TimeOfInterview);
 
                 // PATIENTS
@@ -115,117 +150,150 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 foreach (var familyMember in formViewModel.FamilyMembers)
                 {
                     familyMember.PatientID = patientID;
+                    familyMember.AssessmentID = assessmentID;
                 }
 
                 // HOUSEHOLD
                 formViewModel.Household.PatientID = patientID;
+                formViewModel.Household.AssessmentID = assessmentID;
 
                 // MSWD CLASSIFICATION
                 formViewModel.MSWDClassification.PatientID = patientID;
+                formViewModel.MSWDClassification.AssessmentID = assessmentID;
 
                 // MONTHLY EXPENSES & UTILITIES
                 formViewModel.MonthlyExpenses.PatientID = patientID;
+                formViewModel.MonthlyExpenses.AssessmentID = assessmentID;
                 formViewModel.Utilities.PatientID = patientID;
+                formViewModel.Utilities.AssessmentID = assessmentID;
 
                 // MEDICAL HISTORY
                 formViewModel.MedicalHistory.PatientID = patientID;
+                formViewModel.MedicalHistory.AssessmentID = assessmentID;
 
                 // CHILD HEALTH
                 formViewModel.ChildHealth.PatientID = patientID;
+                formViewModel.ChildHealth.AssessmentID = assessmentID;
 
                 // DIAGNOSES
                 foreach (var diagnosis in formViewModel.Diagnoses)
                 {
                     diagnosis.PatientID = patientID;
+                    diagnosis.AssessmentID = assessmentID;
                 }
 
                 // MEDICATIONS
                 foreach (var medication in formViewModel.Medications)
                 {
                     medication.PatientID = patientID;
+                    medication.AssessmentID = assessmentID;
                 }
 
                 // HOSPITALIZATION HISTORY
                 foreach (var hospitalization in formViewModel.HospitalizationHistory)
                 {
                     hospitalization.PatientID = patientID;
+                    hospitalization.AssessmentID = assessmentID;
                 }
 
                 // MEDICAL SCREENINGS
                 formViewModel.MedicalScreenings.PatientID = patientID;
+                formViewModel.MedicalScreenings.AssessmentID = assessmentID;
 
                 // PRIMARY CARE DOCTOR
                 formViewModel.PrimaryCareDoctor.PatientID = patientID;
+                formViewModel.PrimaryCareDoctor.AssessmentID = assessmentID;
 
                 // PRESENTING PROBLEMS
                 formViewModel.PresentingProblems.PatientID = patientID;
+                formViewModel.PresentingProblems.AssessmentID = assessmentID;
 
                 // RECENT LOSSES
                 formViewModel.RecentLosses.PatientID = patientID;
+                formViewModel.RecentLosses.AssessmentID = assessmentID;
 
                 // PREGNANCY BIRTH HISTORY
                 formViewModel.PregnancyBirthHistory.PatientID = patientID;
+                formViewModel.PregnancyBirthHistory.AssessmentID = assessmentID;
 
                 // DEVELOPMENTAL HISTORY
                 formViewModel.DevelopmentalHistory.PatientID = patientID;
+                formViewModel.DevelopmentalHistory.AssessmentID = assessmentID;
 
                 // MENTAL HEALTH HISTORY
                 foreach (var mentalHealthHistory in formViewModel.MentalHealthHistory)
                 {
                     mentalHealthHistory.PatientID = patientID;
+                    mentalHealthHistory.AssessmentID = assessmentID;
                 }
 
                 // FAMILY HISTORY   
                 foreach (var familyHistory in formViewModel.FamilyHistory)
                 {
                     familyHistory.PatientID = patientID;
+                    familyHistory.AssessmentID = assessmentID;
                 }
 
                 // SAFETY CONCERNS
                 formViewModel.SafetyConcerns.PatientID = patientID;
+                formViewModel.SafetyConcerns.AssessmentID = assessmentID;
 
                 // CURRENT FUNCTIONING
                 formViewModel.CurrentFunctioning.PatientID = patientID;
+                formViewModel.CurrentFunctioning.AssessmentID = assessmentID;
 
                 // PARENT CHILD RELATIONSHIP
                 formViewModel.ParentChildRelationship.PatientID = patientID;
+                formViewModel.ParentChildRelationship.AssessmentID = assessmentID;
 
                 // EDUCATION
                 formViewModel.Education.PatientID = patientID;
+                formViewModel.Education.AssessmentID = assessmentID;
 
                 // EMPLOYMENT
                 formViewModel.Employment.PatientID = patientID;
+                formViewModel.Employment.AssessmentID = assessmentID;
 
                 // HOUSING
                 formViewModel.Housing.PatientID = patientID;
+                formViewModel.Housing.AssessmentID = assessmentID;
 
                 // FOSTER CARE
                 formViewModel.FosterCare.PatientID = patientID;
+                formViewModel.FosterCare.AssessmentID = assessmentID;
 
                 // ALCOHOL DRUG ASSESSMENT
                 formViewModel.AlcoholDrugAssessment.PatientID = patientID;
+                formViewModel.AlcoholDrugAssessment.AssessmentID = assessmentID;
 
                 // LEGAL INVOLVEMENT
                 formViewModel.LegalInvolvement.PatientID = patientID;
+                formViewModel.LegalInvolvement.AssessmentID = assessmentID;
 
                 // HISTORY OF ABUSE
                 formViewModel.HistoryOfAbuse.PatientID = patientID;
+                formViewModel.HistoryOfAbuse.AssessmentID = assessmentID;
 
                 // HISTORY OF VIOLENCE
                 formViewModel.HistoryOfViolence.PatientID = patientID;
+                formViewModel.HistoryOfViolence.AssessmentID = assessmentID;
 
                 // STRENGTHS RESOURCES
                 formViewModel.StrengthsResources.PatientID = patientID;
+                formViewModel.StrengthsResources.AssessmentID = assessmentID;
 
                 // GOALS
                 formViewModel.Goals.PatientID = patientID;
+                formViewModel.Goals.AssessmentID = assessmentID;
 
                 // Save Patient first to get the ID, avoids Forein Key constraint
                 await context.Patients.AddAsync(formViewModel.Patient);
                 await context.SaveChangesAsync();
 
-                // Update the rest of the form
                 await context.Assessments.AddAsync(formViewModel.Assessments);
+                await context.SaveChangesAsync();
+
+                // Update the rest of the form
                 await context.Referrals.AddAsync(formViewModel.Referrals);
                 await context.Informants.AddAsync(formViewModel.Informants);
                 await context.FamilyComposition.AddRangeAsync(formViewModel.FamilyMembers);
@@ -266,7 +334,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
-        public async Task<IActionResult> ViewForm(int id)
+        public async Task<IActionResult> ViewForm(int id, int assessmentID)
         {
             // Load the HTML template
             string templatePath = Path.Combine(_environment.WebRootPath, "templates/page1_form_template.html");
@@ -319,28 +387,28 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
 
             string htmlContent = await System.IO.File.ReadAllTextAsync(templatePath);
-            htmlContent = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page1(htmlContent, id);
+            htmlContent = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page1(htmlContent, id, assessmentID);
 
             string htmlContent2 = await System.IO.File.ReadAllTextAsync(templatePath2);
-            htmlContent2 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page2(htmlContent2, id);
+            htmlContent2 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page2(htmlContent2, id, assessmentID);
 
             string htmlContent3 = await System.IO.File.ReadAllTextAsync(templatePath3);
-            htmlContent3 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page3(htmlContent3, id);
+            htmlContent3 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page3(htmlContent3, id, assessmentID);
 
             string htmlContent4 = await System.IO.File.ReadAllTextAsync(templatePath4);
-            htmlContent4 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page4(htmlContent4, id);
+            htmlContent4 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page4(htmlContent4, id, assessmentID);
 
             string htmlContent5 = await System.IO.File.ReadAllTextAsync(templatePath5);
-            htmlContent5 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page5(htmlContent5, id);
+            htmlContent5 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page5(htmlContent5, id, assessmentID);
 
             string htmlContent6 = await System.IO.File.ReadAllTextAsync(templatePath6);
-            htmlContent6 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page6(htmlContent6, id);
+            htmlContent6 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page6(htmlContent6, id, assessmentID);
 
             string htmlContent7 = await System.IO.File.ReadAllTextAsync(templatePath7);
-            htmlContent7 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page7(htmlContent7, id);
+            htmlContent7 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page7(htmlContent7, id, assessmentID);
 
             string htmlContent8 = await System.IO.File.ReadAllTextAsync(templatePath8);
-            htmlContent8 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page8(htmlContent8, id);
+            htmlContent8 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page8(htmlContent8, id, assessmentID);
 
             // Pass the modified HTML to the view
             ViewBag.FormHtml1 = htmlContent;
@@ -353,11 +421,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             ViewBag.FormHtml8 = htmlContent8;
 
             ViewBag.Id = id;
+            ViewBag.AssessmentID = assessmentID;
 
             return View();
         }
 
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(int id, int assessmentID)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
 
@@ -373,53 +442,53 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 .Where(u => u.RoleID == socialWorkerRoleId)
                 .ToListAsync();
 
-            var assessment = await context.Assessments.FirstOrDefaultAsync(a => a.PatientID == id);
-            var referral = await context.Referrals.FirstOrDefaultAsync(r => r.PatientID == id);
-            var informant = await context.Informants.FirstOrDefaultAsync(i => i.PatientID == id);
+            var assessment = await context.Assessments.FirstOrDefaultAsync(a => a.AssessmentID == assessmentID);
+            var referral = await context.Referrals.FirstOrDefaultAsync(r => r.AssessmentID == assessmentID);
+            var informant = await context.Informants.FirstOrDefaultAsync(i => i.AssessmentID == assessmentID);
             var patient = await context.Patients.FindAsync(id);
             var familymembers = await context.FamilyComposition
-                                .Where(f => f.PatientID == id)
+                                .Where(f => f.AssessmentID == assessmentID)
                                 .ToListAsync();
-            var household = await context.Households.FirstOrDefaultAsync(h => h.PatientID == id);
-            var mswdClassification = await context.MSWDClassification.FirstOrDefaultAsync(m => m.PatientID == id);
-            var monthlyExpenses = await context.MonthlyExpenses.FirstOrDefaultAsync(m => m.PatientID == id);
-            var utilities = await context.Utilities.FirstOrDefaultAsync(u => u.PatientID == id);
-            var medicalHistory = await context.MedicalHistory.FirstOrDefaultAsync(m => m.PatientID == id);
-            var childHealth = await context.ChildHealth.FirstOrDefaultAsync(c => c.PatientID == id);
+            var household = await context.Households.FirstOrDefaultAsync(h => h.AssessmentID == assessmentID);
+            var mswdClassification = await context.MSWDClassification.FirstOrDefaultAsync(m => m.AssessmentID == assessmentID);
+            var monthlyExpenses = await context.MonthlyExpenses.FirstOrDefaultAsync(m => m.AssessmentID == assessmentID);
+            var utilities = await context.Utilities.FirstOrDefaultAsync(u => u.AssessmentID == assessmentID);
+            var medicalHistory = await context.MedicalHistory.FirstOrDefaultAsync(m => m.AssessmentID == assessmentID);
+            var childHealth = await context.ChildHealth.FirstOrDefaultAsync(c => c.AssessmentID == assessmentID);
             var diagnoses = await context.Diagnoses
-                                .Where(d => d.PatientID == id)
+                                .Where(d => d.AssessmentID == assessmentID)
                                 .ToListAsync();
             var medications = await context.Medications
-                                .Where(m  => m.PatientID == id)
+                                .Where(m  => m.AssessmentID == assessmentID)
                                 .ToListAsync();
             var hospitalization = await context.HospitalizationHistory
-                                .Where(h => h.PatientID == id)
+                                .Where(h => h.AssessmentID == assessmentID)
                                 .ToListAsync();
-            var medicalscreenings = await context.MedicalScreenings.FirstOrDefaultAsync(m => m.PatientID == id);
-            var primarycaredoctor = await context.PrimaryCareDoctor.FirstOrDefaultAsync(m => m.PatientID == id);
-            var presentingproblems = await context.PresentingProblems.FirstOrDefaultAsync(m => m.PatientID == id);
-            var recentlosses = await context.RecentLosses.FirstOrDefaultAsync(m => m.PatientID == id);
-            var pregnancybirthhistory = await context.PregnancyBirthHistory.FirstOrDefaultAsync(m => m.PatientID == id);
-            var developmentalhistory = await context.DevelopmentalHistory.FirstOrDefaultAsync(m => m.PatientID == id);
+            var medicalscreenings = await context.MedicalScreenings.FirstOrDefaultAsync(m => m.AssessmentID == assessmentID);
+            var primarycaredoctor = await context.PrimaryCareDoctor.FirstOrDefaultAsync(m => m.AssessmentID == assessmentID);
+            var presentingproblems = await context.PresentingProblems.FirstOrDefaultAsync(m => m.AssessmentID == assessmentID);
+            var recentlosses = await context.RecentLosses.FirstOrDefaultAsync(m => m.AssessmentID == assessmentID);
+            var pregnancybirthhistory = await context.PregnancyBirthHistory.FirstOrDefaultAsync(m => m.AssessmentID == assessmentID);
+            var developmentalhistory = await context.DevelopmentalHistory.FirstOrDefaultAsync(m => m.AssessmentID == assessmentID);
             var mentalhealthhistory = await context.MentalHealthHistory
-                                .Where(m => m.PatientID == id)
+                                .Where(m => m.AssessmentID == assessmentID)
                                 .ToListAsync();
             var familyhistory = await context.FamilyHistory
-                                .Where(f => f.PatientID == id)
+                                .Where(f => f.AssessmentID == assessmentID)
                                 .ToListAsync();
-            var safetyconcerns = await context.SafetyConcerns.FirstOrDefaultAsync(s => s.PatientID == id);
-            var currentfunctioning = await context.CurrentFunctioning.FirstOrDefaultAsync(c => c.PatientID == id);
-            var parentchildrelationship = await context.ParentChildRelationship.FirstOrDefaultAsync(p => p.PatientID == id);
-            var education = await context.Education.FirstOrDefaultAsync(e => e.PatientID == id);
-            var employment = await context.Employment.FirstOrDefaultAsync(e => e.PatientID == id);
-            var housing = await context.Housing.FirstOrDefaultAsync(h => h.PatientID == id);
-            var fostercare = await context.FosterCare.FirstOrDefaultAsync(f => f.PatientID == id);
-            var alcoholdrugassessment = await context.AlcoholDrugAssessment.FirstOrDefaultAsync(a => a.PatientID == id);
-            var legalinvolvement = await context.LegalInvolvement.FirstOrDefaultAsync(l => l.PatientID == id);
-            var historyofabuse = await context.HistoryOfAbuse.FirstOrDefaultAsync(h => h.PatientID == id);
-            var historyofviolence = await context.HistoryOfViolence.FirstOrDefaultAsync(h => h.PatientID == id);
-            var strengthsresources = await context.StrengthsResources.FirstOrDefaultAsync(s => s.PatientID == id);
-            var goals = await context.Goals.FirstOrDefaultAsync(g => g.PatientID == id);
+            var safetyconcerns = await context.SafetyConcerns.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
+            var currentfunctioning = await context.CurrentFunctioning.FirstOrDefaultAsync(c => c.AssessmentID == assessmentID);
+            var parentchildrelationship = await context.ParentChildRelationship.FirstOrDefaultAsync(p => p.AssessmentID == assessmentID);
+            var education = await context.Education.FirstOrDefaultAsync(e => e.AssessmentID == assessmentID);
+            var employment = await context.Employment.FirstOrDefaultAsync(e => e.AssessmentID == assessmentID);
+            var housing = await context.Housing.FirstOrDefaultAsync(h => h.AssessmentID == assessmentID);
+            var fostercare = await context.FosterCare.FirstOrDefaultAsync(f => f.AssessmentID == assessmentID);
+            var alcoholdrugassessment = await context.AlcoholDrugAssessment.FirstOrDefaultAsync(a => a.AssessmentID == assessmentID);
+            var legalinvolvement = await context.LegalInvolvement.FirstOrDefaultAsync(l => l.AssessmentID == assessmentID);
+            var historyofabuse = await context.HistoryOfAbuse.FirstOrDefaultAsync(h => h.AssessmentID == assessmentID);
+            var historyofviolence = await context.HistoryOfViolence.FirstOrDefaultAsync(h => h.AssessmentID == assessmentID);
+            var strengthsresources = await context.StrengthsResources.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
+            var goals = await context.Goals.FirstOrDefaultAsync(g => g.AssessmentID == assessmentID);
 
             var viewModel = new FormViewModel()
             {
@@ -472,12 +541,13 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             await using var context = new ApplicationDbContext(connectionString);
             int id = formViewModel.Patient.PatientID;
-            var familyMembers = context.FamilyComposition.Where(f => f.PatientID == id);
-            var diagnoses = context.Diagnoses.Where(d => d.PatientID == id);
-            var medications = context.Medications.Where(m  => m.PatientID == id);
-            var hospitalization = context.HospitalizationHistory.Where(h => h.PatientID == id);
-            var mentalhealthhistory = context.MentalHealthHistory.Where(m => m.PatientID == id);
-            var familyhistory = context.FamilyHistory.Where(f => f.PatientID == id);
+            int assessmentId = formViewModel.Assessments.AssessmentID;
+            var familyMembers = context.FamilyComposition.Where(f => f.AssessmentID == assessmentId);
+            var diagnoses = context.Diagnoses.Where(d => d.AssessmentID == assessmentId);
+            var medications = context.Medications.Where(m  => m.AssessmentID == assessmentId);
+            var hospitalization = context.HospitalizationHistory.Where(h => h.AssessmentID == assessmentId);
+            var mentalhealthhistory = context.MentalHealthHistory.Where(m => m.AssessmentID == assessmentId);
+            var familyhistory = context.FamilyHistory.Where(f => f.AssessmentID == assessmentId);
 
             if (familyMembers.Any())
             {
@@ -509,6 +579,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 foreach (var familyMember in formViewModel.FamilyMembers)
                 {
                     familyMember.PatientID = id;
+                    familyMember.AssessmentID = assessmentId;
                 }
                 await context.FamilyComposition.AddRangeAsync(formViewModel.FamilyMembers);
             }
@@ -517,6 +588,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 foreach (var diagnosis in formViewModel.Diagnoses)
                 {
                     diagnosis.PatientID = id;
+                    diagnosis.AssessmentID = assessmentId;
                 }
                 await context.Diagnoses.AddRangeAsync(formViewModel.Diagnoses);
             }
@@ -525,6 +597,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 foreach (var medication in formViewModel.Medications)
                 {
                     medication.PatientID = id;
+                    medication.AssessmentID = assessmentId;
                 }
                 await context.Medications.AddRangeAsync(formViewModel.Medications);
             }
@@ -533,6 +606,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 foreach (var hospitalizationhistory in formViewModel.HospitalizationHistory)
                 {
                     hospitalizationhistory.PatientID = id;
+                    hospitalizationhistory.AssessmentID = assessmentId;
                 }
                 await context.HospitalizationHistory.AddRangeAsync(formViewModel.HospitalizationHistory);
             }
@@ -541,6 +615,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 foreach (var mentalHealthHistory in formViewModel.MentalHealthHistory)
                 {
                     mentalHealthHistory.PatientID = id;
+                    mentalHealthHistory.AssessmentID = assessmentId;
                 }
                 await context.MentalHealthHistory.AddRangeAsync(formViewModel.MentalHealthHistory);
             }
@@ -549,6 +624,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 foreach (var familyHistory in formViewModel.FamilyHistory)
                 {
                     familyHistory.PatientID = id;
+                    familyHistory.AssessmentID = assessmentId;
                 }
                 await context.FamilyHistory.AddRangeAsync(formViewModel.FamilyHistory);
             }
@@ -557,8 +633,10 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             context.Patients.Update(formViewModel.Patient);
             await context.SaveChangesAsync();
 
-            // Update the rest of the form
             context.Assessments.Update(formViewModel.Assessments);
+            await context.SaveChangesAsync();
+
+            // Update the rest of the form
             context.Referrals.Update(formViewModel.Referrals);
             context.Informants.Update(formViewModel.Informants);
             context.Households.Update(formViewModel.Household);
@@ -594,7 +672,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DownloadPDF(int id)
+        public async Task<IActionResult> DownloadPDF(int id, int assessmentID)
         {
             try
             {
@@ -649,28 +727,28 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
 
                 string htmlContent = await System.IO.File.ReadAllTextAsync(templatePath);
-                htmlContent = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page1(htmlContent, id);
+                htmlContent = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page1(htmlContent, id, assessmentID);
 
                 string htmlContent2 = await System.IO.File.ReadAllTextAsync(templatePath2);
-                htmlContent2 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page2(htmlContent2, id);
+                htmlContent2 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page2(htmlContent2, id, assessmentID);
 
                 string htmlContent3 = await System.IO.File.ReadAllTextAsync(templatePath3);
-                htmlContent3 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page3(htmlContent3, id);
+                htmlContent3 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page3(htmlContent3, id, assessmentID);
 
                 string htmlContent4 = await System.IO.File.ReadAllTextAsync(templatePath4);
-                htmlContent4 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page4(htmlContent4, id);
+                htmlContent4 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page4(htmlContent4, id, assessmentID);
 
                 string htmlContent5 = await System.IO.File.ReadAllTextAsync(templatePath5);
-                htmlContent5 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page5(htmlContent5, id);
+                htmlContent5 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page5(htmlContent5, id, assessmentID);
 
                 string htmlContent6 = await System.IO.File.ReadAllTextAsync(templatePath6);
-                htmlContent6 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page6(htmlContent6, id);
+                htmlContent6 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page6(htmlContent6, id, assessmentID);
 
                 string htmlContent7 = await System.IO.File.ReadAllTextAsync(templatePath7);
-                htmlContent7 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page7(htmlContent7, id);
+                htmlContent7 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page7(htmlContent7, id, assessmentID);
 
                 string htmlContent8 = await System.IO.File.ReadAllTextAsync(templatePath8);
-                htmlContent8 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page8(htmlContent8, id);
+                htmlContent8 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page8(htmlContent8, id, assessmentID);
 
                 var pdf1 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent);
                 var pdf2 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent2);

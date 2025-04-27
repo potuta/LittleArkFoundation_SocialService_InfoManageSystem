@@ -3,6 +3,7 @@
     public class UtilitiesModel
     {
         public int UtilityID { get; set; }
+        public int AssessmentID { get; set; }
         public int PatientID { get; set; }
         public string? LightSource { get; set; }
         public decimal? LightSourceAmount { get; set; }

@@ -3,6 +3,7 @@
     public class EducationModel
     {
         public int EducationID { get; set; }
+        public int AssessmentID { get; set; }
         public int PatientID { get; set; }
         public bool IsCurrentlyEnrolled { get; set; } = false;
         public string SchoolName { get; set; } = "N/A";

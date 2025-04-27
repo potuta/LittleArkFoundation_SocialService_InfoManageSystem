@@ -3,6 +3,7 @@
     public class ReferralsModel
     {
         public int ReferralID { get; set; }
+        public int AssessmentID { get; set; }
         public int PatientID { get; set; }
         public string ReferralType { get; set; } = "N/A";
         public string Name { get; set; } = "N/A";

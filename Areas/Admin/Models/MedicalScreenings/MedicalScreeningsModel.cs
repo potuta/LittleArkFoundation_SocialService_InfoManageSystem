@@ -3,6 +3,7 @@
     public class MedicalScreeningsModel
     {
         public int ScreeningsID { get; set; }
+        public int AssessmentID { get; set; }
         public int PatientID { get; set; }
         public bool HasScreeningDone { get; set; } = false;
         public DateOnly HearingTestDate { get; set; } = new DateOnly(1900, 1, 1);

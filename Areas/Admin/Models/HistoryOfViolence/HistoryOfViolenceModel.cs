@@ -3,6 +3,7 @@
     public class HistoryOfViolenceModel
     {
         public int ViolenceID { get; set; }
+        public int AssessmentID { get; set; }
         public int PatientID { get; set; }
         public bool HasBeenAccused { get; set; } = false;
         public bool SexualAbuse { get; set; } = false;

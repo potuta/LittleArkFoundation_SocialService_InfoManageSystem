@@ -3,6 +3,7 @@
     public class SafetyConcernsModel
     {
         public int SafetyConcernID { get; set; }
+        public int AssessmentID { get; set; }
         public int PatientID { get; set; }
         public bool IsSuicidal { get; set; } = false;
         public string DescribeSuicidal { get; set; } = "N/A";

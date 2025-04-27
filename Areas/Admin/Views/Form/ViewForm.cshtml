@@ -57,13 +57,14 @@
 <form asp-action="DownloadPDF" method="post" class="mt-3">
     @Html.AntiForgeryToken()
     <input type="hidden" name="id" value="@ViewBag.Id" />
-    <a class="btn btn-sm btn-success" asp-action="Edit" asp-route-id="@ViewBag.Id">Edit</a>
+    <input type="hidden" name="assessmentID" value="@ViewBag.AssessmentID" />
+    <a class="btn btn-sm btn-success" asp-action="Edit" asp-route-id="@ViewBag.Id" asp-route-assessmentID="@ViewBag.AssessmentID">Edit</a>
     <button type="submit" class="btn btn-sm btn-primary">Download PDF</button>
 </form>
 
 <!-- Back to List -->
 <div class="mt-2">
-    <a class="btn btn-sm btn-outline-primary" asp-action="Index">Back to List</a>
+    <a class="btn btn-sm btn-outline-primary" asp-controller="Form" asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
