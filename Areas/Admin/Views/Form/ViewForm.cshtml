@@ -6,6 +6,11 @@
 <h2>View Form</h2>
 <hr />
 
+<!-- Back to List -->
+<div class="mt-2">
+    <a class="btn btn-outline-secondary mb-3" asp-controller="Form" asp-action="Index">← Back to List</a>
+</div>
+
 <!-- Page Containers -->
 <div id="page1" class="form-page">
 	@Html.Raw(ViewBag.FormHtml1)
@@ -61,11 +66,6 @@
     <a class="btn btn-sm btn-success" asp-action="Edit" asp-route-id="@ViewBag.Id" asp-route-assessmentID="@ViewBag.AssessmentID">Edit</a>
     <button type="submit" class="btn btn-sm btn-primary">Download PDF</button>
 </form>
-
-<!-- Back to List -->
-<div class="mt-2">
-    <a class="btn btn-sm btn-outline-primary" asp-controller="Form" asp-action="Index">Back to List</a>
-</div>
 
 @section Scripts {
     <script>

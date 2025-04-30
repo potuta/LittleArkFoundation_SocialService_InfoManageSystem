@@ -99,6 +99,10 @@
 
 </style>
 
+<div class="mt-2">
+    <a class="btn btn-outline-secondary mb-3" asp-action="ViewForm" asp-route-id="@Model.Patient.PatientID" asp-route-assessmentID="@Model.Assessments.AssessmentID">← Back to Form</a>
+</div>
+
 <form asp-action="Edit" method="post" novalidate>
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="Assessments.Id" />

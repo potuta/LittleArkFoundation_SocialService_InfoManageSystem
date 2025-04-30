@@ -36,20 +36,23 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             _pdfConverter = pdfConverter;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(bool? isActive)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using (var context = new ApplicationDbContext(connectionString))
             {
+                bool activeFlag = isActive ?? true;
+                ViewBag.isActive = activeFlag;
+
                 var patients = await context.Patients
-                    .Where(u => u.IsActive == true)
+                    .Where(u => u.IsActive == activeFlag)
                     .ToListAsync();
 
                 var viewModel = new PatientsViewModel
                 {
                     Patients = patients,
-                    Assessments = new List<AssessmentsModel>() { new AssessmentsModel() },
-                    MedicalHistory = new List<MedicalHistoryModel>() { new MedicalHistoryModel() }
+                    Assessments = new List<AssessmentsModel> { new AssessmentsModel() },
+                    MedicalHistory = new List<MedicalHistoryModel> { new MedicalHistoryModel() }
                 };
 
                 return View(viewModel);
@@ -65,6 +68,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                 var assessments = await context.Assessments
                     .Where(a => a.PatientID == id)
+                    .OrderByDescending(a => a.DateOfInterview)
                     .ToListAsync();
 
                 var medicalhistory = await context.MedicalHistory

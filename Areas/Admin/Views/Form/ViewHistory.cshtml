@@ -1,12 +1,16 @@
 ﻿@using LittleArkFoundation.Areas.Admin.Models.Patients
 @model PatientsViewModel
 @{
-	ViewData["Title"] = "Admission";
-	Layout = "_AdminLayout";
+    ViewData["Title"] = "Admission";
+    Layout = "_AdminLayout";
 }
 
 <h2>Patient's History</h2>
 <hr />
+
+<a asp-action="Index" asp-controller="Form" class="btn btn-outline-secondary mb-3">
+    ← Back to List
+</a>
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -33,7 +37,7 @@
                     <th>AssessmentID</th>
                     <th>PatientID</th>
                     <th>Date</th>
-					<th>Time</th>
+                    <th>Time</th>
                     <th>Name of Patient</th>
                     <th>Ward</th>
                     <th>Diagnosis</th>
@@ -44,28 +48,39 @@
         <tbody>
             @if (Model != null)
             {
+                var isFirst = true;
                 @foreach (var assessment in Model.Assessments)
                 {
+                    var diagnosis = Model.MedicalHistory
+                    .FirstOrDefault(m => m.AssessmentID == assessment.AssessmentID)?.AdmittingDiagnosis;
+
                     <tr>
                         <td>
                             <a href="@Url.Action("ViewForm", new { id = assessment.PatientID, assessmentID = assessment.AssessmentID })" class="btn btn-primary">View Form</a>
                             <a href="@Url.Action("Edit", new { id = assessment.PatientID, assessmentID = assessment.AssessmentID })" class="btn btn-success">Edit</a>
                         </td>
-                        <td>@assessment.AssessmentID</td>
+                        <td>
+                            @assessment.AssessmentID
+                            @if (isFirst)
+                            {
+                                <span class="badge bg-info text-dark ms-2">Latest</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary text-dark ms-2">Old</span>
+                            }
+                        </td>
                         <td>@assessment.PatientID</td>
                         <td>@assessment.DateOfInterview</td>
                         <td>@assessment.TimeOfInterview</td>
-                        <td>@Model.Patient.LastName, @Model.Patient.FirstName @Model.Patient.MiddleName</td>
+                        <td>
+                            @Model.Patient.LastName, @Model.Patient.FirstName @Model.Patient.MiddleName
+                        </td>
                         <td>@assessment.BasicWard</td>
-						@foreach (var medical in Model.MedicalHistory)
-						{
-							@if (assessment.AssessmentID == medical.AssessmentID)
-							{
-								<td>@medical.AdmittingDiagnosis</td>
-							}
-						}
+                        <td>@(diagnosis ?? "—")</td>
 						<td>@assessment.MSWDNo</td>
                     </tr>
+                    isFirst = false;
                 }
             }
         </tbody>
