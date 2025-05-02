@@ -3,6 +3,7 @@
     public class ChildHealthModel
     {
         public int ChildHealthID {  get; set; }
+        public int AssessmentID { get; set; }
         public int PatientID { get; set; }
         public string? OverallHealth { get; set; }
         public bool? HasHealthIssues { get; set; }

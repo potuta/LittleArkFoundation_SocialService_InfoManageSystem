@@ -3,6 +3,7 @@
     public class StrengthsResourcesModel
     {
         public int StrengthID { get; set; }
+        public int AssessmentID { get; set; }
         public int PatientID { get; set; }
         public string Strengths { get; set; } = "N/A";
         public string Limitations { get; set; } = "N/A";

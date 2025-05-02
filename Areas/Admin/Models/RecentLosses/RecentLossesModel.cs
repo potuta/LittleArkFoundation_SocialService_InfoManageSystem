@@ -3,6 +3,7 @@
     public class RecentLossesModel
     {
         public int RecentLossesID { get; set; }
+        public int AssessmentID { get; set; }
         public int PatientID { get; set; }
         public bool FamilyMemberLoss { get; set; } = false;
         public bool FriendLoss { get; set; } = false;

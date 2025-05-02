@@ -97,6 +97,10 @@
 
 </style>
 
+<div class="mt-2">
+    <a class="btn btn-outline-secondary mb-3" asp-action="Index">← Back to List</a>
+</div>
+
 <form asp-action="Create" method="post" novalidate>
     @Html.AntiForgeryToken()
     <div class="form-container">
@@ -213,7 +217,7 @@
             <button type="submit" class="btn btn-sm btn-primary">Submit</button>
         </div>
         <div class="mt-2" style="text-align: center;">
-            <a class="btn btn-sm btn-outline-primary" asp-action="Index">Back to List</a>
+            <a class="btn btn-sm btn-outline-primary" asp-action="Index">← Back to List</a>
         </div>
     </div>
 </form>

@@ -38,6 +38,7 @@ namespace LittleArkFoundation.Areas.Admin.Models.Form
 {
     public class FormViewModel
     {
+        public List<UsersModel>? Users { get; set; } 
         public AssessmentsModel? Assessments { get; set; }
         public ReferralsModel? Referrals { get; set; }
         public InformantsModel? Informants { get; set; }

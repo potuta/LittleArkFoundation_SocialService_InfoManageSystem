@@ -3,6 +3,7 @@
     public class HouseholdModel
     {
         public int HouseholdID { get; set; }
+        public int AssessmentID { get; set; }
         public int PatientID { get; set; }
         public string OtherSourcesOfIncome { get; set; }
         public int HouseholdSize { get; set; }

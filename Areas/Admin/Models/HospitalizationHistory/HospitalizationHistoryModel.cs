@@ -3,6 +3,7 @@
     public class HospitalizationHistoryModel
     {
         public int HospitalizationID { get; set; }
+        public int AssessmentID { get; set; }
         public int PatientID { get; set; }
         public bool? HasSeriousAccidentOrIllness {  get; set; }
         public string? Reason { get; set; }

@@ -3,6 +3,7 @@
     public class CurrentFunctioningModel
     {
         public int CurrentFunctioningID { get; set; }
+        public int AssessmentID { get; set; }
         public int PatientID { get; set; }
         public bool EatingConcerns { get; set; } = false;
         public bool HygieneConcerns { get; set; } = false;

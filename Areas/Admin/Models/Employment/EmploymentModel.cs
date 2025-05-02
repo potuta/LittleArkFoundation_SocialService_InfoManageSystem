@@ -3,6 +3,7 @@
     public class EmploymentModel
     {
         public int EmploymentID { get; set; }
+        public int AssessmentID { get; set; }
         public int PatientID { get; set; }
         public bool IsCurrentlyEmployed { get; set; } = false;
         public string Location { get; set; } = "N/A";

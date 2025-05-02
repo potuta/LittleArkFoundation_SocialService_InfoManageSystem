@@ -23,7 +23,21 @@
     <tr>
         <td>
             Basic Ward: <span class="required">*</span>
-            <input type="text" asp-for="Assessments.BasicWard" required>
+            @* <input type="text" asp-for="Assessments.BasicWard" required> *@
+            <select asp-for="Assessments.BasicWard" required>
+                <option>Ward 2</option>
+                <option>Ward 3</option>
+                <option>Ward 4</option>
+                <option>Ward 5</option>
+                <option>Ward 6</option>
+                <option>Ward 7</option>
+                <option>Ward 8</option>
+                <option>Hema</option>
+                <option>NICU</option>
+                <option>PICU</option>
+                <option>Inf.</option>
+                <option>OB</option>
+            </select>
             <span asp-validation-for="Assessments.BasicWard" class="text-danger"></span>
 
         </td>
@@ -43,7 +57,15 @@
         </td>
         <td>
             MSWD No: <span class="required">*</span>
-            <input type="text" asp-for="Assessments.MSWDNo" required>
+            @* <input type="text" asp-for="Assessments.MSWDNo" required> *@
+
+            <select asp-for="Assessments.MSWDNo" required>
+			    @foreach (var user in Model.Users)
+			    {
+                    <option>@user.Username</option>
+			    }
+            </select>
+
             <span asp-validation-for="Assessments.MSWDNo" class="text-danger"></span>
 
         </td>
@@ -55,7 +77,18 @@
     <tr>
         <td>
             Referral Name: <span class="required">*</span>
-            <input type="text" asp-for="Referrals.Name" required>
+            <select asp-for="Referrals.ReferralType" required>
+                <option>Walk in</option>
+                <option>Govt. Hosp.</option>
+                <option>Clinic/Private</option>
+                <option>Politicians</option>
+                <option>Media</option>
+                <option>HCT</option>
+                <option>NGOs</option>
+                <option>Govt. Agencies</option>
+                <option>Others</option>
+            </select>
+            <input type="text" asp-for="Referrals.Name" placeholder="Type N/A if no answer" required>
             <span asp-validation-for="Referrals.Name" class="text-danger"></span>
 
         </td>
@@ -364,6 +397,14 @@
         <td>Sub Classification:</td>
         <td>
             <div class="radio-group">
+                <input type="radio" asp-for="MSWDClassification.SubClassification" value="A" required> A
+            </div>
+
+            <div class="radio-group">
+                <input type="radio" asp-for="MSWDClassification.SubClassification" value="B" required> B
+            </div>
+
+            <div class="radio-group">
                 <input type="radio" asp-for="MSWDClassification.SubClassification" value="C1" required> C1
             </div>
 
@@ -373,6 +414,10 @@
 
             <div class="radio-group">
                 <input type="radio" asp-for="MSWDClassification.SubClassification" value="C3"> C3
+            </div>
+
+            <div class="radio-group">
+                <input type="radio" asp-for="MSWDClassification.SubClassification" value="D" required> D
             </div>
         </td>
     </tr>

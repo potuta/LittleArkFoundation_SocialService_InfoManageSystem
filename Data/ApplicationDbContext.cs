@@ -158,10 +158,10 @@ namespace LittleArkFoundation.Data
             // Assessments
             modelBuilder.Entity<AssessmentsModel>()
                 .ToTable("Assessments")
-                .HasKey(a => a.AssessmentID);
+                .HasKey(a => a.Id);
 
             modelBuilder.Entity<AssessmentsModel>()
-                .Property(a => a.AssessmentID)
+                .Property(a => a.Id)
                 .ValueGeneratedOnAdd();
 
             // Referrals

@@ -3,6 +3,7 @@
 @{
 	ViewData["Title"] = "Admission";
 	Layout = "_AdminLayout";
+	bool isActive = ViewBag.isActive ?? true;
 }
 
 <h2>Admission</h2>
@@ -14,11 +15,31 @@
             <button type="submit" class="btn btn-dark">Search</button>
         </div>
     </form>
-    <a class="btn btn-primary" asp-action="Index" asp-controller="Form">Back to Full List</a>
+    <a class="btn btn-primary" asp-action="Index" asp-controller="Form">← Back to Full List</a>
 </div>
 
 <div>
-    <a class="btn btn-success" asp-action="Create" asp-controller="Form">Create New</a>
+
+    @if (isActive)
+    {
+        <a class="btn btn-success" asp-action="Create" asp-controller="Form">Create New</a>
+    }
+
+    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+        <a asp-action="Index" asp-controller="Form" asp-route-isActive="true" class="btn btn-secondary @(isActive ? "active" : "")">
+            <div class="custom-radio">
+                <input type="radio" style="accent-color: dodgerblue" value="main" @(isActive ? "checked" : "")>
+                <label style="margin-bottom: 0">Active</label>
+            </div>
+        </a>
+        <a asp-action="Index" asp-controller="Form" asp-route-isActive="false" class="btn btn-secondary @(isActive ? "" : "active")">
+            <div class="custom-radio">
+                <input type="radio" style="accent-color: dodgerblue" value="archive" @(isActive ? "" : "checked")>
+                <label style="margin-bottom: 0">Discharged</label>
+            </div>
+        </a>
+    </div>
+
 </div>
 
 @if (TempData["SuccessMessage"] != null)
@@ -73,8 +94,7 @@
                 {
                     <tr>
                         <td>
-                            <a href="@Url.Action("ViewForm", new { id = patient.PatientID })" class="btn btn-primary">View Form</a>
-                            <a href="@Url.Action("Edit", new { id = patient.PatientID })" class="btn btn-success">Edit</a>
+                            <a href="@Url.Action("ViewHistory", new { id = patient.PatientID })" class="btn btn-primary">View History</a>
                         </td>
                         <td>@patient.PatientID</td>
                         <td>@patient.FirstName</td>
@@ -103,5 +123,6 @@
     </table>
 
 </div>
+
 
 

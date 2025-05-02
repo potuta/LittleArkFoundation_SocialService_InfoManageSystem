@@ -99,66 +99,98 @@
 
 </style>
 
+<div class="mt-2">
+    <a class="btn btn-outline-secondary mb-3" asp-action="ViewForm" asp-route-id="@Model.Patient.PatientID" asp-route-assessmentID="@Model.Assessments.AssessmentID">← Back to Form</a>
+</div>
+
 <form asp-action="Edit" method="post" novalidate>
     @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Assessments.Id" />
     <input type="hidden" asp-for="Assessments.AssessmentID" />
     <input type="hidden" asp-for="Assessments.PatientID" />
     <input type="hidden" asp-for="Referrals.ReferralID" />
+    <input type="hidden" asp-for="Referrals.AssessmentID" />
     <input type="hidden" asp-for="Referrals.PatientID" />
     <input type="hidden" asp-for="Referrals.DateOfReferral" />
     <input type="hidden" asp-for="Informants.InformantID" />
     <input type="hidden" asp-for="Informants.PatientID" />
+    <input type="hidden" asp-for="Informants.AssessmentID" />
     <input type="hidden" asp-for="Informants.DateOfInformant" />
     <input type="hidden" asp-for="Patient.PatientID" />
     <input type="hidden" asp-for="Household.HouseholdID" />
+    <input type="hidden" asp-for="Household.AssessmentID" />
     <input type="hidden" asp-for="Household.PatientID"/>
     <input type="hidden" asp-for="MSWDClassification.ClassificationID" />
+    <input type="hidden" asp-for="MSWDClassification.AssessmentID" />
     <input type="hidden" asp-for="MSWDClassification.PatientID" />
     <input type="hidden" asp-for="MonthlyExpenses.ExpenseID" />
+    <input type="hidden" asp-for="MonthlyExpenses.AssessmentID" />
     <input type="hidden" asp-for="MonthlyExpenses.PatientID" />
     <input type="hidden" asp-for="Utilities.UtilityID" />
+    <input type="hidden" asp-for="Utilities.AssessmentID" />
     <input type="hidden" asp-for="Utilities.PatientID" />
     <input type="hidden" asp-for="MedicalHistory.HistoryID" />
+    <input type="hidden" asp-for="MedicalHistory.AssessmentID" />
     <input type="hidden" asp-for="MedicalHistory.PatientID" />
     <input type="hidden" asp-for="ChildHealth.ChildHealthID" />
+    <input type="hidden" asp-for="ChildHealth.AssessmentID" />
     <input type="hidden" asp-for="ChildHealth.PatientID" />
     <input type="hidden" asp-for="MedicalScreenings.ScreeningsID" />
+    <input type="hidden" asp-for="MedicalScreenings.AssessmentID" />
     <input type="hidden" asp-for="MedicalScreenings.PatientID" />
     <input type="hidden" asp-for="PrimaryCareDoctor.DoctorID" />
+    <input type="hidden" asp-for="PrimaryCareDoctor.AssessmentID" />
     <input type="hidden" asp-for="PrimaryCareDoctor.PatientID" />
     <input type="hidden" asp-for="PresentingProblems.ProblemID" />
+    <input type="hidden" asp-for="PresentingProblems.AssessmentID" />
     <input type="hidden" asp-for="PresentingProblems.PatientID" />
     <input type="hidden" asp-for="RecentLosses.RecentLossesID" />
+    <input type="hidden" asp-for="RecentLosses.AssessmentID" />
     <input type="hidden" asp-for="RecentLosses.PatientID" />
     <input type="hidden" asp-for="PregnancyBirthHistory.BirthID" />
+    <input type="hidden" asp-for="PregnancyBirthHistory.AssessmentID" />
     <input type="hidden" asp-for="PregnancyBirthHistory.PatientID" />
 	<input type="hidden" asp-for="DevelopmentalHistory.DevelopmentalHistoryID" />
+    <input type="hidden" asp-for="DevelopmentalHistory.AssessmentID" />
     <input type="hidden" asp-for="DevelopmentalHistory.PatientID" />
     <input type="hidden" asp-for="SafetyConcerns.SafetyConcernID" />
+    <input type="hidden" asp-for="SafetyConcerns.AssessmentID" />
 	<input type="hidden" asp-for="SafetyConcerns.PatientID" />
     <input type="hidden" asp-for="CurrentFunctioning.CurrentFunctioningID" />
+    <input type="hidden" asp-for="CurrentFunctioning.AssessmentID" />
 	<input type="hidden" asp-for="CurrentFunctioning.PatientID" />
 	<input type="hidden" asp-for="ParentChildRelationship.ParentChildID" />
+    <input type="hidden" asp-for="ParentChildRelationship.AssessmentID" />
 	<input type="hidden" asp-for="ParentChildRelationship.PatientID" />
     <input type="hidden" asp-for="Education.EducationID"/>
+    <input type="hidden" asp-for="Education.AssessmentID" />
     <input type="hidden" asp-for="Education.PatientID" />
 	<input type="hidden" asp-for="Employment.EmploymentID" />
+    <input type="hidden" asp-for="Employment.AssessmentID" />
     <input type="hidden" asp-for="Employment.PatientID" />
     <input type="hidden" asp-for="Housing.HousingID" />
+    <input type="hidden" asp-for="Housing.AssessmentID" />
     <input type="hidden" asp-for="Housing.PatientID" />
     <input type="hidden" asp-for="FosterCare.FosterCareID" />
+    <input type="hidden" asp-for="FosterCare.AssessmentID" />
     <input type="hidden" asp-for="FosterCare.PatientID" />
     <input type="hidden" asp-for="AlcoholDrugAssessment.AlcoholDrugID" />
+    <input type="hidden" asp-for="AlcoholDrugAssessment.AssessmentID" />
     <input type="hidden" asp-for="AlcoholDrugAssessment.PatientID" />
     <input type="hidden" asp-for="LegalInvolvement.LegalID" />
+    <input type="hidden" asp-for="LegalInvolvement.AssessmentID" />
     <input type="hidden" asp-for="LegalInvolvement.PatientID" />
     <input type="hidden" asp-for="HistoryOfAbuse.AbuseID" />
+    <input type="hidden" asp-for="HistoryOfAbuse.AssessmentID" />
     <input type="hidden" asp-for="HistoryOfAbuse.PatientID" />
     <input type="hidden" asp-for="HistoryOfViolence.ViolenceID" />
+    <input type="hidden" asp-for="HistoryOfViolence.AssessmentID" />
     <input type="hidden" asp-for="HistoryOfViolence.PatientID" />
     <input type="hidden" asp-for="StrengthsResources.StrengthID" />
+    <input type="hidden" asp-for="StrengthsResources.AssessmentID" />
     <input type="hidden" asp-for="StrengthsResources.PatientID" />
     <input type="hidden" asp-for="Goals.GoalID" />
+    <input type="hidden" asp-for="Goals.AssessmentID" />
     <input type="hidden" asp-for="Goals.PatientID" />
 
     <div class="form-container">
@@ -277,7 +309,7 @@
             <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('Are you sure you want to save changes?');">Save Changes</button>
         </div>
         <div class="mt-2" style="text-align: center;">
-            <a class="btn btn-sm btn-outline-primary" asp-action="ViewForm" asp-route-id="@Model.Patient.PatientID">Back to Form</a>
+            <a class="btn btn-sm btn-outline-primary" asp-action="ViewForm" asp-route-id="@Model.Patient.PatientID" asp-route-assessmentID="@Model.Assessments.AssessmentID">Back to Form</a>
         </div>
     </div>
 

@@ -3,6 +3,7 @@
     public class MentalHealthHistoryModel
     {
         public int MentalHealthID { get; set; }
+        public int AssessmentID { get; set; }
         public int PatientID { get; set; }
         public bool HasReceivedCounseling { get; set; } = false;
         public DateOnly DateOfService { get; set; } = new DateOnly(1900, 1 ,1);

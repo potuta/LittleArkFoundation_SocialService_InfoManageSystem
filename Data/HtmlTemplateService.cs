@@ -19,21 +19,21 @@ namespace LittleArkFoundation.Data
             _connectionService = connectionService;
         }
 
-        public async Task<string> ModifyHtmlTemplateAsync_Page1(string htmlContent, int id)
+        public async Task<string> ModifyHtmlTemplateAsync_Page1(string htmlContent, int id, int assessmentID)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
 
             await using var context = new ApplicationDbContext(connectionString);
 
             var patient = await context.Patients.FindAsync(id);
-            var assessment = await context.Assessments.FirstOrDefaultAsync(a => a.PatientID == id);
-            var referral = await context.Referrals.FirstOrDefaultAsync(r => r.PatientID == id);
-            var informant = await context.Informants.FirstOrDefaultAsync(i => i.PatientID == id);
+            var assessment = await context.Assessments.FirstOrDefaultAsync(a => a.AssessmentID == assessmentID);
+            var referral = await context.Referrals.FirstOrDefaultAsync(r => r.AssessmentID == assessmentID);
+            var informant = await context.Informants.FirstOrDefaultAsync(i => i.AssessmentID == assessmentID);
             var familymembers = await context.FamilyComposition
-                                .Where(f => f.PatientID == id)
+                                .Where(f => f.AssessmentID == assessmentID)
                                 .ToListAsync();
-            var household = await context.Households.FirstOrDefaultAsync(h => h.PatientID == id);
-            var mswdclassification = await context.MSWDClassification.FirstOrDefaultAsync(m => m.PatientID == id);
+            var household = await context.Households.FirstOrDefaultAsync(h => h.AssessmentID == assessmentID);
+            var mswdclassification = await context.MSWDClassification.FirstOrDefaultAsync(m => m.AssessmentID == assessmentID);
             
             if (patient == null)
             {
@@ -621,17 +621,17 @@ namespace LittleArkFoundation.Data
             return htmlDoc.DocumentNode.OuterHtml; // Return updated HTML
         }
 
-        public async Task<string> ModifyHtmlTemplateAsync_Page2(string htmlContent, int id)
+        public async Task<string> ModifyHtmlTemplateAsync_Page2(string htmlContent, int id, int assessmentID)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
 
             await using var context = new ApplicationDbContext(connectionString);
 
             var patient = await context.Patients.FindAsync(id);
-            var monthlyexpenses = await context.MonthlyExpenses.FirstOrDefaultAsync(m => m.PatientID == id);
-            var utilities = await context.Utilities.FirstOrDefaultAsync(u => u.PatientID == id);
-            var medicalhistory = await context.MedicalHistory.FirstOrDefaultAsync(m => m.PatientID == id);
-            var childhealth = await context.ChildHealth.FirstOrDefaultAsync(c => c.PatientID == id);
+            var monthlyexpenses = await context.MonthlyExpenses.FirstOrDefaultAsync(m => m.AssessmentID == assessmentID);
+            var utilities = await context.Utilities.FirstOrDefaultAsync(u => u.AssessmentID == assessmentID);
+            var medicalhistory = await context.MedicalHistory.FirstOrDefaultAsync(m => m.AssessmentID == assessmentID);
+            var childhealth = await context.ChildHealth.FirstOrDefaultAsync(c => c.AssessmentID == assessmentID);
 
             if (patient == null)
             {
@@ -950,19 +950,19 @@ namespace LittleArkFoundation.Data
             return htmlDoc.DocumentNode.OuterHtml; // Return updated HTML
         }
 
-        public async Task<string> ModifyHtmlTemplateAsync_Page3(string htmlContent, int id)
+        public async Task<string> ModifyHtmlTemplateAsync_Page3(string htmlContent, int id, int assessmentID)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
 
             await using var context = new ApplicationDbContext(connectionString);
 
             var patient = await context.Patients.FindAsync(id);
-            var diagnoses = await context.Diagnoses.Where(p => p.PatientID == id).ToListAsync();
-            var medications = await context.Medications.Where(p => p.PatientID == id).ToListAsync();
-            var hospitalizationhistory = await context.HospitalizationHistory.Where(p => p.PatientID == id).ToListAsync();
-            var medicalscreenings = await context.MedicalScreenings.FirstOrDefaultAsync(c => c.PatientID == id);
-            var primarycaredoctor = await context.PrimaryCareDoctor.FirstOrDefaultAsync(p => p.PatientID == id);
-            var presentingproblems = await context.PresentingProblems.FirstOrDefaultAsync(p => p.PatientID == id);
+            var diagnoses = await context.Diagnoses.Where(p => p.AssessmentID == assessmentID).ToListAsync();
+            var medications = await context.Medications.Where(p => p.AssessmentID == assessmentID).ToListAsync();
+            var hospitalizationhistory = await context.HospitalizationHistory.Where(p => p.AssessmentID == assessmentID).ToListAsync();
+            var medicalscreenings = await context.MedicalScreenings.FirstOrDefaultAsync(c => c.AssessmentID == assessmentID);
+            var primarycaredoctor = await context.PrimaryCareDoctor.FirstOrDefaultAsync(p => p.AssessmentID == assessmentID);
+            var presentingproblems = await context.PresentingProblems.FirstOrDefaultAsync(p => p.AssessmentID == assessmentID);
 
             if (patient == null)
             {
@@ -1546,20 +1546,20 @@ namespace LittleArkFoundation.Data
             return htmlDoc.DocumentNode.OuterHtml; // Return updated HTML
         }
 
-        public async Task<string> ModifyHtmlTemplateAsync_Page4(string htmlContent, int id)
+        public async Task<string> ModifyHtmlTemplateAsync_Page4(string htmlContent, int id, int assessmentID)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
 
             await using var context = new ApplicationDbContext(connectionString);
 
             var patient = await context.Patients.FindAsync(id);
-            var presentingproblems = await context.PresentingProblems.FirstOrDefaultAsync(p => p.PatientID == id);
-            var recentlosses = await context.RecentLosses.FirstOrDefaultAsync(p => p.PatientID == id);
-            var pregnancybirthhistory = await context.PregnancyBirthHistory.FirstOrDefaultAsync(p => p.PatientID == id);
-            var developmentalhistory = await context.DevelopmentalHistory.FirstOrDefaultAsync(p => p.PatientID == id);
-            var mentalhealthhistory = await context.MentalHealthHistory.Where(p => p.PatientID == id).ToListAsync();
-            var familyhistory = await context.FamilyHistory.Where(p => p.PatientID == id).ToListAsync();
-            var safetyconcerns = await context.SafetyConcerns.FirstOrDefaultAsync(p => p.PatientID == id);
+            var presentingproblems = await context.PresentingProblems.FirstOrDefaultAsync(p => p.AssessmentID == assessmentID);
+            var recentlosses = await context.RecentLosses.FirstOrDefaultAsync(p => p.AssessmentID == assessmentID);
+            var pregnancybirthhistory = await context.PregnancyBirthHistory.FirstOrDefaultAsync(p => p.AssessmentID == assessmentID);
+            var developmentalhistory = await context.DevelopmentalHistory.FirstOrDefaultAsync(p => p.AssessmentID == assessmentID);
+            var mentalhealthhistory = await context.MentalHealthHistory.Where(p => p.AssessmentID == assessmentID).ToListAsync();
+            var familyhistory = await context.FamilyHistory.Where(p => p.AssessmentID == assessmentID).ToListAsync();
+            var safetyconcerns = await context.SafetyConcerns.FirstOrDefaultAsync(p => p.AssessmentID == assessmentID);
 
             if (patient == null)
             {
@@ -2377,16 +2377,16 @@ namespace LittleArkFoundation.Data
             return htmlDoc.DocumentNode.OuterHtml;
         }
 
-        public async Task<string> ModifyHtmlTemplateAsync_Page5(string htmlContent, int id)
+        public async Task<string> ModifyHtmlTemplateAsync_Page5(string htmlContent, int id, int assessmentID)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
 
             await using var context = new ApplicationDbContext(connectionString);
 
             var patient = await context.Patients.FindAsync(id);
-            var safetyconcerns = await context.SafetyConcerns.FirstOrDefaultAsync(p => p.PatientID == id);
-            var currentfunctioning = await context.CurrentFunctioning.FirstOrDefaultAsync(p => p.PatientID == id);
-            var parentchildrelationship = await context.ParentChildRelationship.FirstOrDefaultAsync(p => p.PatientID == id);
+            var safetyconcerns = await context.SafetyConcerns.FirstOrDefaultAsync(p => p.AssessmentID == assessmentID);
+            var currentfunctioning = await context.CurrentFunctioning.FirstOrDefaultAsync(p => p.AssessmentID == assessmentID);
+            var parentchildrelationship = await context.ParentChildRelationship.FirstOrDefaultAsync(p => p.AssessmentID == assessmentID);
 
             if (patient == null)
             {
@@ -3227,18 +3227,18 @@ namespace LittleArkFoundation.Data
             return htmlDoc.DocumentNode.OuterHtml; // Return updated HTML
         }
 
-        public async Task<string> ModifyHtmlTemplateAsync_Page6(string htmlContent, int id)
+        public async Task<string> ModifyHtmlTemplateAsync_Page6(string htmlContent, int id, int assessmentID)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
 
             await using var context = new ApplicationDbContext(connectionString);
 
             var patient = await context.Patients.FindAsync(id); 
-            var education = await context.Education.FirstOrDefaultAsync(p => p.PatientID == id);
-            var employment = await context.Employment.FirstOrDefaultAsync(p => p.PatientID == id);
-            var housing = await context.Housing.FirstOrDefaultAsync(p => p.PatientID == id);
-            var fostercare = await context.FosterCare.FirstOrDefaultAsync(p => p.PatientID == id);
-            var alcoholdrugassessment = await context.AlcoholDrugAssessment.FirstOrDefaultAsync(p => p.PatientID == id);
+            var education = await context.Education.FirstOrDefaultAsync(p => p.AssessmentID == assessmentID);
+            var employment = await context.Employment.FirstOrDefaultAsync(p => p.AssessmentID == assessmentID);
+            var housing = await context.Housing.FirstOrDefaultAsync(p => p.AssessmentID == assessmentID);
+            var fostercare = await context.FosterCare.FirstOrDefaultAsync(p => p.AssessmentID == assessmentID);
+            var alcoholdrugassessment = await context.AlcoholDrugAssessment.FirstOrDefaultAsync(p => p.AssessmentID == assessmentID);
 
             if (patient == null)
             {
@@ -3866,17 +3866,17 @@ namespace LittleArkFoundation.Data
 
         }
 
-        public async Task<string> ModifyHtmlTemplateAsync_Page7(string htmlContent, int id)
+        public async Task<string> ModifyHtmlTemplateAsync_Page7(string htmlContent, int id, int assessmentID)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
 
             await using var context = new ApplicationDbContext(connectionString);
 
             var patient = await context.Patients.FindAsync(id);
-            var alcoholdrugassessment = await context.AlcoholDrugAssessment.FirstOrDefaultAsync(p => p.PatientID == id);
-            var legalinvolvement = await context.LegalInvolvement.FirstOrDefaultAsync(p => p.PatientID == id);
-            var historyofabuse = await context.HistoryOfAbuse.FirstOrDefaultAsync(p => p.PatientID == id);
-            var historyofviolence = await context.HistoryOfViolence.FirstOrDefaultAsync(p => p.PatientID == id);
+            var alcoholdrugassessment = await context.AlcoholDrugAssessment.FirstOrDefaultAsync(p => p.AssessmentID == assessmentID);
+            var legalinvolvement = await context.LegalInvolvement.FirstOrDefaultAsync(p => p.AssessmentID == assessmentID);
+            var historyofabuse = await context.HistoryOfAbuse.FirstOrDefaultAsync(p => p.AssessmentID == assessmentID);
+            var historyofviolence = await context.HistoryOfViolence.FirstOrDefaultAsync(p => p.AssessmentID == assessmentID);
 
             if (patient == null)
             {
@@ -4667,16 +4667,16 @@ namespace LittleArkFoundation.Data
             return htmlDoc.DocumentNode.OuterHtml; // Return updated HTML
         }
 
-        public async Task<string> ModifyHtmlTemplateAsync_Page8(string htmlContent, int id)
+        public async Task<string> ModifyHtmlTemplateAsync_Page8(string htmlContent, int id, int assessmentID)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
 
             await using var context = new ApplicationDbContext(connectionString);
 
             var patient = await context.Patients.FindAsync(id);
-            var strengthsresources = await context.StrengthsResources.FirstOrDefaultAsync(p => p.PatientID == id);
-            var goals = await context.Goals.FirstOrDefaultAsync(p => p.PatientID == id);
-            var assessments = await context.Assessments.FirstOrDefaultAsync(p => p.PatientID == id);
+            var strengthsresources = await context.StrengthsResources.FirstOrDefaultAsync(p => p.AssessmentID == assessmentID);
+            var goals = await context.Goals.FirstOrDefaultAsync(p => p.AssessmentID == assessmentID);
+            var assessments = await context.Assessments.FirstOrDefaultAsync(p => p.AssessmentID == assessmentID);
 
             if (patient == null)
             {
