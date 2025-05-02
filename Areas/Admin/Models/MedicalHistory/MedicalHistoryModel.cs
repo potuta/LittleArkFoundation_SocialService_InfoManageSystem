@@ -3,6 +3,7 @@
     public class MedicalHistoryModel
     {
         public int HistoryID { get; set; }
+        public int AssessmentID { get; set; }
         public int PatientID { get; set; }
         public string? AdmittingDiagnosis { get; set; }
         public string? FinalDiagnosis { get; set; }

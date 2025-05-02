@@ -3,6 +3,7 @@
     public class DevelopmentalHistoryModel
     {
         public int DevelopmentalHistoryID { get; set; }
+        public int AssessmentID { get; set; }   
         public int PatientID { get; set; }
         public int RolledOverAge { get; set; } = 0;
         public int CrawledAge { get; set; } = 0;

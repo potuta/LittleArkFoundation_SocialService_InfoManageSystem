@@ -3,6 +3,7 @@
     public class FosterCareModel
     {
         public int FosterCareID { get; set; }
+        public int AssessmentID { get; set; }
         public int PatientID { get; set; }
         public string HasBeenFosterCared { get; set; } = "N/A";
         public int FosterAgeStart { get; set; } = 0;

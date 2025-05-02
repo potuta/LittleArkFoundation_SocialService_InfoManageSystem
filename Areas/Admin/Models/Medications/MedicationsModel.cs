@@ -3,6 +3,7 @@
     public class MedicationsModel
     {
         public int MedicationID { get; set; }
+        public int AssessmentID { get; set; }
         public int PatientID { get; set; }
         public bool? DoesTakeAnyMedication { get; set; }
         public string? Medication {  get; set; }

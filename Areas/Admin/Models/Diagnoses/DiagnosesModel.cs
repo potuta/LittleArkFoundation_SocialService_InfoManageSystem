@@ -3,6 +3,7 @@
     public class DiagnosesModel
     {
         public int DiagnosisID { get; set; }
+        public int AssessmentID { get; set; }
         public int PatientID { get; set; }
         public string? MedicalCondition { get; set; }
         public bool? ReceivingTreatment { get; set; }

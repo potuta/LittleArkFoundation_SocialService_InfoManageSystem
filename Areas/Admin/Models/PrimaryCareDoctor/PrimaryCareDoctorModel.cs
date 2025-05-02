@@ -3,6 +3,7 @@
     public class PrimaryCareDoctorModel
     {
         public int DoctorID { get; set; }
+        public int AssessmentID { get; set; }
         public int PatientID { get; set; }
         public string? DoctorName { get; set; }
         public string? Facility { get; set; }

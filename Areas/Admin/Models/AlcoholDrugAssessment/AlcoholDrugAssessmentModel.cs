@@ -3,6 +3,7 @@
     public class AlcoholDrugAssessmentModel
     {
         public int AlcoholDrugID { get; set; }
+        public int AssessmentID { get; set; }
         public int PatientID { get; set; }
         public string TobaccoUse { get; set; } = "N/A";
         public string AlcoholUse { get; set; } = "N/A";

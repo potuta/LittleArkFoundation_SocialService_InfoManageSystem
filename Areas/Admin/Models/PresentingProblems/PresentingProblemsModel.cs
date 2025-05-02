@@ -3,6 +3,7 @@
     public class PresentingProblemsModel
     {
         public int ProblemID { get; set; }
+        public int AssessmentID { get; set; }
         public int PatientID { get; set; }
         public string? PresentingProblem { get; set; }
         public int? Severity { get; set; }

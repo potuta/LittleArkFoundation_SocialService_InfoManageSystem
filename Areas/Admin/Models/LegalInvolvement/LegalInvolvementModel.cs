@@ -3,6 +3,7 @@
     public class LegalInvolvementModel
     {
         public int LegalID { get; set; }
+        public int AssessmentID { get; set; }
         public int PatientID { get; set; }
         public bool HasCustodyCase { get; set; } = false;
         public string DescribeCustodyCase { get; set; } = "N/A";
