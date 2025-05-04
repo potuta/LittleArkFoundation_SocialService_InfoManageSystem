@@ -128,7 +128,8 @@
                             }
                             else
                             {
-                                <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#dischargeModal">Re-Admit</a>
+                                <a href="@Url.Action("ReAdmitPatient", "Discharge", new { area = "Admin", id = patient.PatientID, assessmentID = assessment.AssessmentID })" class="btn btn-success" 
+                                onclick="return confirm('Are you sure you want to re-admit this patient?');">Re-Admit</a>
                             }
                         </td>
                         <td>@patient.PatientID</td>

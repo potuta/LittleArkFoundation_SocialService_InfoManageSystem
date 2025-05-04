@@ -103,6 +103,21 @@
     <a class="btn btn-outline-secondary mb-3" asp-action="ViewForm" asp-route-id="@Model.Patient.PatientID" asp-route-assessmentID="@Model.Assessments.AssessmentID">← Back to Form</a>
 </div>
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert" style="width: 60%;">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="width: 60%;">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
 <form asp-action="Edit" method="post" novalidate>
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="Assessments.Id" />
