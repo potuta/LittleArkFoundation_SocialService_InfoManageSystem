@@ -6,9 +6,9 @@ namespace LittleArkFoundation.Areas.Admin.Models.Patients
 {
     public class PatientsViewModel
     {
-        public List<PatientsModel>? Patients { get; set; }
-        public List<AssessmentsModel>? Assessments { get; set; }
-        public List<MedicalHistoryModel>? MedicalHistory { get; set; }
-        public PatientsModel? Patient { get; set; }
+        public List<PatientsModel> Patients { get; set; } = new List<PatientsModel>() { new PatientsModel() };
+        public List<AssessmentsModel> Assessments { get; set; } = new List<AssessmentsModel> { new AssessmentsModel() };
+        public List<MedicalHistoryModel> MedicalHistory { get; set; } = new List<MedicalHistoryModel> { new MedicalHistoryModel() };
+        public PatientsModel Patient { get; set; } = new PatientsModel();
     }
 }

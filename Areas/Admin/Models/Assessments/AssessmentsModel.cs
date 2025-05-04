@@ -12,5 +12,6 @@
         public string? HealthRecordNo { get; set; }
         public string? MSWDNo { get; set; }
         public string? AssessmentStatement { get; set; }
+        public int? UserID { get; set; }
     }
 }

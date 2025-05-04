@@ -92,9 +92,15 @@
             {
                 @foreach (var patient in Model.Patients)
                 {
+					var assessment = Model.Assessments
+                    .OrderByDescending(a => a.DateOfInterview)
+					.FirstOrDefault(a => a.PatientID == patient.PatientID);
+
                     <tr>
                         <td>
-                            <a href="@Url.Action("ViewHistory", new { id = patient.PatientID })" class="btn btn-primary">View History</a>
+                            <a href="@Url.Action("ViewForm", new { id = patient.PatientID, assessmentID = assessment.AssessmentID })" class="btn btn-primary">View Form</a>
+                            <a href="@Url.Action("Edit", new { id = patient.PatientID, assessmentID = assessment.AssessmentID })" class="btn btn-success">Edit</a>
+                            <a href="@Url.Action("ViewHistory", new { id = patient.PatientID })" class="btn btn-dark text-white">View History</a>
                         </td>
                         <td>@patient.PatientID</td>
                         <td>@patient.FirstName</td>

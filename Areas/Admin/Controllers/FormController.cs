@@ -18,6 +18,7 @@ using LittleArkFoundation.Areas.Admin.Models.MentalHealthHistory;
 using LittleArkFoundation.Areas.Admin.Models.FamilyHistory;
 using LittleArkFoundation.Areas.Admin.Models.Assessments;
 using LittleArkFoundation.Areas.Admin.Models.MedicalHistory;
+using System.Security.Claims;
 // TODO: Implement logging for forms
 namespace LittleArkFoundation.Areas.Admin.Controllers
 {
@@ -48,11 +49,14 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     .Where(u => u.IsActive == activeFlag)
                     .ToListAsync();
 
+                var assessments = await context.Assessments
+                    .OrderByDescending(a => a.DateOfInterview)
+                    .ToListAsync();
+
                 var viewModel = new PatientsViewModel
                 {
                     Patients = patients,
-                    Assessments = new List<AssessmentsModel> { new AssessmentsModel() },
-                    MedicalHistory = new List<MedicalHistoryModel> { new MedicalHistoryModel() }
+                    Assessments = assessments
                 };
 
                 return View(viewModel);
@@ -77,7 +81,6 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                 var viewModel = new PatientsViewModel
                 {
-                    Patients = new List<PatientsModel>() { new PatientsModel() },
                     Patient = patient,
                     Assessments = assessments,
                     MedicalHistory = medicalhistory
@@ -132,10 +135,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                 var patientID = await new PatientsRepository(connectionString).GenerateID();
                 var assessmentID = await new AssessmentsRepository(connectionString).GenerateID();
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
                 // ASSESSMENTS
                 formViewModel.Assessments.PatientID = patientID;
                 formViewModel.Assessments.AssessmentID = assessmentID;
+                formViewModel.Assessments.UserID = int.Parse(userIdClaim.Value);
 
                 // REFERRALS
                 formViewModel.Referrals.PatientID = patientID;
