@@ -1,9 +1,10 @@
 ﻿@using LittleArkFoundation.Areas.Admin.Models.Patients
+@using System.Security.Claims
 @model PatientsViewModel
 @{
-	ViewData["Title"] = "Admission";
-	Layout = "_AdminLayout";
-	bool isActive = ViewBag.isActive ?? true;
+    ViewData["Title"] = "Admission";
+    Layout = "_AdminLayout";
+    bool isActive = ViewBag.isActive ?? true;
 }
 
 <h2>Admission</h2>
@@ -51,7 +52,7 @@
 }
 @if (TempData["ErrorMessage"] != null)
 {
-    <div class="alert alert-success alert-dismissible fade show" role="alert" style="width: 60%;">
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="width: 60%;">
         @TempData["ErrorMessage"]
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
@@ -92,15 +93,43 @@
             {
                 @foreach (var patient in Model.Patients)
                 {
-					var assessment = Model.Assessments
+                    var assessment = Model.Assessments
                     .OrderByDescending(a => a.DateOfInterview)
-					.FirstOrDefault(a => a.PatientID == patient.PatientID);
+                    .FirstOrDefault(a => a.PatientID == patient.PatientID);
 
+					var mswdclassification = Model.MSWDClassifications
+					.FirstOrDefault(m => m.AssessmentID == assessment.AssessmentID);
+
+                    var userIdName = User.FindFirst(ClaimTypes.Name);
+                    var userId = User.FindFirst(ClaimTypes.NameIdentifier);
                     <tr>
                         <td>
-                            <a href="@Url.Action("ViewForm", new { id = patient.PatientID, assessmentID = assessment.AssessmentID })" class="btn btn-primary">View Form</a>
-                            <a href="@Url.Action("Edit", new { id = patient.PatientID, assessmentID = assessment.AssessmentID })" class="btn btn-success">Edit</a>
                             <a href="@Url.Action("ViewHistory", new { id = patient.PatientID })" class="btn btn-dark text-white">View History</a>
+                            @if (isActive)
+                            {
+                                <a href="@Url.Action("ViewForm", new { id = patient.PatientID, assessmentID = assessment.AssessmentID })" class="btn btn-primary">View Form</a>
+                                <a href="@Url.Action("Edit", new { id = patient.PatientID, assessmentID = assessment.AssessmentID })" class="btn btn-success">Edit</a>
+                                <a href="#"
+                                   class="btn btn-danger"
+                                   data-bs-toggle="modal"
+                                   data-bs-target="#dischargeModal"
+                                   data-patient-id="@patient.PatientID"
+                                   data-patient-assessmentID="@assessment.AssessmentID"
+                                   data-patient-fn="@patient.FirstName"
+                                   data-patient-mn="@patient.MiddleName"
+                                   data-patient-ln="@patient.LastName"
+                                   data-patient-ward="@assessment.BasicWard"
+                                   data-patient-class="@mswdclassification.SubClassification"
+                                   data-userID="@userId.Value"
+                                   data-msw="@userIdName.Value">
+                                    Discharge
+                                </a>
+
+                            }
+                            else
+                            {
+                                <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#dischargeModal">Re-Admit</a>
+                            }
                         </td>
                         <td>@patient.PatientID</td>
                         <td>@patient.FirstName</td>
@@ -129,6 +158,175 @@
     </table>
 
 </div>
+
+<!-- Discharge Modal -->
+
+<div class="modal fade" id="dischargeModal" tabindex="-1" aria-labelledby="dischargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Patient Discharge</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="dischargeForm" asp-area="Admin" asp-action="DischargePatient" asp-controller="Discharge" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="Discharge.PatientID" id="dischargePatientID" />
+                    <input type="hidden" asp-for="Discharge.AssessmentID" id="dischargeAssessmentID" />
+                    <input type="hidden" asp-for="Discharge.UserID" id="dischargeUserID" />
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label>First Name</label>
+                            <input type="text" class="form-control" asp-for="Discharge.FirstName" id="dischargeFirstName" readonly />
+                        </div>
+                        <div class="col-md-4">
+                            <label>Middle Name</label>
+                            <input type="text" class="form-control" asp-for="Discharge.MiddleName" id="dischargeMiddleName" readonly />
+                        </div>
+                        <div class="col-md-4">
+                            <label>Last Name</label>
+                            <input type="text" class="form-control" asp-for="Discharge.LastName" id="dischargeLastName" readonly />
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>Ward</label>
+                            <input type="text" class="form-control" asp-for="Discharge.Ward" id="dischargeWard" readonly />
+                        </div>
+                        <div class="col-md-4">
+                            <label>Class</label>
+                            <input type="text" class="form-control" asp-for="Discharge.Class" id="dischargeClass" readonly />
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>Date Processed</label>
+                            <input type="date" class="form-control" asp-for="Discharge.ProcessedDate" id="dischargeProcessedDate" required/>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Date of Discharged</label>
+                            <input type="date" class="form-control" asp-for="Discharge.DischargedDate" id="dischargeDischargedDate" required/>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>Received HB</label>
+                            <input type="time" id="receivedHB" class="form-control" asp-for="Discharge.ReceivedHB" readonly/>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Issued MSS</label>
+                            <input type="time" id="issuedMSS" class="form-control" asp-for="Discharge.IssuedMSS" readonly/>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Duration</label>
+                            <input type="text" id="duration" class="form-control" asp-for="Discharge.Duration" readonly />
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>PHIC Category</label>
+                            <select class="form-select" asp-for="Discharge.PHICCategory">
+                                <option>Indigent</option>
+                                <option>SSS</option>
+                                <option>GSIS</option>
+                                <option>POS-NCH</option>
+                                <option>Self-Employed</option>
+                                <option>None</option>
+
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label>PHIC Used</label>
+                            <select class="form-select" id="phicUsed" onchange="toggleRemarks(this.value)" asp-for="Discharge.PHICUsed">
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label>MSW</label>
+                            <input type="text" class="form-control" id="dischargeMSW" asp-for="Discharge.MSW" readonly />
+                        </div>
+
+                        <div class="col-12 d-none" id="remarksContainer">
+                            <label>Remarks (If No)</label>
+                            <textarea class="form-control" rows="2" asp-for="Discharge.RemarksIfNo"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-danger" onclick="confirmDischarge()">Confirm Discharge</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+
+        const dischargeModal = document.getElementById('dischargeModal');
+
+        let dischargeStartTime;
+
+        dischargeModal.addEventListener('show.bs.modal', function (event) {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById("dischargeProcessedDate").value = today;
+            document.getElementById("dischargeDischargedDate").value = today;
+
+            const button = event.relatedTarget;
+            const patientId = button.getAttribute('data-patient-id');
+			const assessmentID = button.getAttribute('data-patient-assessmentID');
+            const patientFn = button.getAttribute('data-patient-fn');
+            const patientMn = button.getAttribute('data-patient-mn');
+            const patientLn = button.getAttribute('data-patient-ln');
+            const patientWard = button.getAttribute('data-patient-ward');
+            const patientClass = button.getAttribute('data-patient-class');
+            const msw = button.getAttribute('data-msw');
+			const userID = button.getAttribute('data-userID');
+
+            document.getElementById('dischargePatientID').value = patientId;
+            document.getElementById('dischargeAssessmentID').value = assessmentID;
+            document.getElementById('dischargeFirstName').value = patientFn;
+            document.getElementById('dischargeMiddleName').value = patientMn;
+            document.getElementById('dischargeLastName').value = patientLn;
+            document.getElementById('dischargeWard').value = patientWard;
+            document.getElementById('dischargeClass').value = patientClass;
+            document.getElementById('dischargeMSW').value = msw;
+			document.getElementById('dischargeUserID').value = userID;
+
+            dischargeStartTime = new Date();
+            document.getElementById('receivedHB').value = dischargeStartTime.toLocaleTimeString('en-GB').slice(0, 5);
+        });
+
+        function confirmDischarge() {
+            const now = new Date();
+            document.getElementById('issuedMSS').value = now.toLocaleTimeString('en-GB').slice(0, 5); // HH:mm
+
+            if (dischargeStartTime) {
+                const diffMs = now - dischargeStartTime;
+                const diffMins = Math.floor(diffMs / 60000);
+                const hrs = Math.floor(diffMins / 60);
+                const mins = diffMins % 60;
+
+                let durationText = '';
+                if (hrs > 0) durationText += `${hrs} hour${hrs !== 1 ? 's' : ''} `;
+                if (mins > 0 || hrs === 0) durationText += `${mins} minute${mins !== 1 ? 's' : ''}`;
+
+                document.getElementById('duration').value = durationText.trim();
+            }
+
+            // Ask for confirmation before submitting
+            if (confirm("Are you sure you want to confirm discharge?")) {
+                document.getElementById('dischargeForm').submit(); // <-- Submit the form
+            }
+        }
+
+
+        function toggleRemarks(value) {
+            const container = document.getElementById('remarksContainer');
+            container.classList.toggle('d-none', value === "Yes");
+        }
+    </script>
+
+
+}
 
 
 

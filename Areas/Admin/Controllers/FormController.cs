@@ -53,10 +53,14 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     .OrderByDescending(a => a.DateOfInterview)
                     .ToListAsync();
 
+                var mswdclassification = await context.MSWDClassification
+                    .ToListAsync();
+
                 var viewModel = new PatientsViewModel
                 {
                     Patients = patients,
-                    Assessments = assessments
+                    Assessments = assessments,
+                    MSWDClassifications = mswdclassification
                 };
 
                 return View(viewModel);
@@ -85,6 +89,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     Assessments = assessments,
                     MedicalHistory = medicalhistory
                 };
+
+                ViewBag.UserIDName = User.FindFirst(ClaimTypes.Name);
 
                 return View(viewModel);
             }

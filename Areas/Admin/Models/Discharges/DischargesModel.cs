@@ -13,7 +13,7 @@
         public string Ward { get; set; } = "N/A";
         public TimeOnly ReceivedHB { get; set; } = new TimeOnly(0, 0, 0);
         public TimeOnly IssuedMSS { get; set; } = new TimeOnly(0, 0, 0);
-        public TimeOnly Duration { get; set; } = new TimeOnly(0, 0, 0);
+        public string Duration { get; set; } = "N/A";
         public string Class { get; set; } = "N/A";
         public string PHICCategory { get; set; } = "N/A";
         public bool PHICUsed { get; set; } = false;
