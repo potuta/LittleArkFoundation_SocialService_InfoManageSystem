@@ -58,106 +58,107 @@
     </div>
 }
 
-<div class="table-responsive" style="width: 60%;">
-    <table class="table" style="width: max-content;">
-        <thead>
-            @if (Model != null)
-            {
-                <tr>
-                    <th style="width: 100%;">Actions</th>
-                    <th>PatientID</th>
-                    <th>FirstName</th>
-                    <th>MiddleName</th>
-                    <th>LastName</th>
-                    <th>DateOfBirth</th>
-                    <th>Age</th>
-                    <th>Sex</th>
-                    <th>ContactNo</th>
-                    <th>PlaceOfBirth</th>
-                    <th>Gender</th>
-                    <th>Religion</th>
-                    <th>Nationality</th>
-                    <th>PermanentAddress</th>
-                    <th>TemporaryAddress</th>
-                    <th>CivilStatus</th>
-                    <th>EducationLevel</th>
-                    <th>Occupation</th>
-                    <th>MonthlyIncome</th>
-                    <th>PhilhealthPIN</th>
-                    <th>PhilhealthMembership</th>
-                </tr>
-            }
-        </thead>
-        <tbody>
-            @if (Model != null)
-            {
-                @foreach (var patient in Model.Patients)
+<div class="container-fluid px-0 mx-0" style="max-width: 1400px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
                 {
-                    var assessment = Model.Assessments
-                    .OrderByDescending(a => a.DateOfInterview)
-                    .FirstOrDefault(a => a.PatientID == patient.PatientID);
-
-					var mswdclassification = Model.MSWDClassifications
-					.FirstOrDefault(m => m.AssessmentID == assessment.AssessmentID);
-
-                    var userIdName = User.FindFirst(ClaimTypes.Name);
-                    var userId = User.FindFirst(ClaimTypes.NameIdentifier);
                     <tr>
-                        <td>
-                            <a href="@Url.Action("ViewHistory", new { id = patient.PatientID })" class="btn btn-dark text-white">View History</a>
-                            @if (isActive)
-                            {
-                                <a href="@Url.Action("ViewForm", new { id = patient.PatientID, assessmentID = assessment.AssessmentID })" class="btn btn-primary">View Form</a>
-                                <a href="@Url.Action("Edit", new { id = patient.PatientID, assessmentID = assessment.AssessmentID })" class="btn btn-success">Edit</a>
-                                <a href="#"
-                                   class="btn btn-danger"
-                                   data-bs-toggle="modal"
-                                   data-bs-target="#dischargeModal"
-                                   data-patient-id="@patient.PatientID"
-                                   data-patient-assessmentID="@assessment.AssessmentID"
-                                   data-patient-fn="@patient.FirstName"
-                                   data-patient-mn="@patient.MiddleName"
-                                   data-patient-ln="@patient.LastName"
-                                   data-patient-ward="@assessment.BasicWard"
-                                   data-patient-class="@mswdclassification.SubClassification"
-                                   data-userID="@userId.Value"
-                                   data-msw="@userIdName.Value">
-                                    Discharge
-                                </a>
-
-                            }
-                            else
-                            {
-                                <a href="@Url.Action("ReAdmitPatient", "Discharge", new { area = "Admin", id = patient.PatientID, assessmentID = assessment.AssessmentID })" class="btn btn-success" 
-                                onclick="return confirm('Are you sure you want to re-admit this patient?');">Re-Admit</a>
-                            }
-                        </td>
-                        <td>@patient.PatientID</td>
-                        <td>@patient.FirstName</td>
-                        <td>@patient.MiddleName</td>
-                        <td>@patient.LastName</td>
-                        <td>@patient.DateOfBirth</td>
-                        <td>@patient.Age</td>
-                        <td>@patient.Sex</td>
-                        <td>@patient.ContactNo</td>
-                        <td>@patient.PlaceOfBirth</td>
-                        <td>@patient.Gender</td>
-                        <td>@patient.Religion</td>
-                        <td>@patient.Nationality</td>
-                        <td>@patient.PermanentAddress</td>
-                        <td>@patient.TemporaryAddress</td>
-                        <td>@patient.CivilStatus</td>
-                        <td>@patient.EducationLevel</td>
-                        <td>@patient.Occupation</td>
-                        <td>@patient.MonthlyIncome</td>
-                        <td>@patient.PhilhealthPIN</td>
-                        <td>@patient.PhilhealthMembership</td>
+                        <th style="width: 100%;">Actions</th>
+                        <th>PatientID</th>
+                        <th>FirstName</th>
+                        <th>MiddleName</th>
+                        <th>LastName</th>
+                        <th>DateOfBirth</th>
+                        <th>Age</th>
+                        <th>Sex</th>
+                        <th>ContactNo</th>
+                        <th>PlaceOfBirth</th>
+                        <th>Gender</th>
+                        <th>Religion</th>
+                        <th>Nationality</th>
+                        <th>PermanentAddress</th>
+                        <th>TemporaryAddress</th>
+                        <th>CivilStatus</th>
+                        <th>EducationLevel</th>
+                        <th>Occupation</th>
+                        <th>MonthlyIncome</th>
+                        <th>PhilhealthPIN</th>
+                        <th>PhilhealthMembership</th>
                     </tr>
                 }
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    @foreach (var patient in Model.Patients)
+                    {
+                        var assessment = Model.Assessments
+                        .OrderByDescending(a => a.DateOfInterview)
+                        .FirstOrDefault(a => a.PatientID == patient.PatientID);
 
+					    var mswdclassification = Model.MSWDClassifications
+					    .FirstOrDefault(m => m.AssessmentID == assessment.AssessmentID);
+
+                        var userIdName = User.FindFirst(ClaimTypes.Name);
+                        var userId = User.FindFirst(ClaimTypes.NameIdentifier);
+                        <tr>
+                            <td class="d-flex gap-2" style="white-space: nowrap;">
+                                <a href="@Url.Action("ViewHistory", new { id = patient.PatientID })" class="btn btn-dark text-white">View History</a>
+                                @if (isActive)
+                                {
+                                    <a href="@Url.Action("ViewForm", new { id = patient.PatientID, assessmentID = assessment.AssessmentID })" class="btn btn-primary">View Form</a>
+                                    <a href="@Url.Action("Edit", new { id = patient.PatientID, assessmentID = assessment.AssessmentID })" class="btn btn-success">Edit</a>
+                                    <a href="#"
+                                       class="btn btn-danger"
+                                       data-bs-toggle="modal"
+                                       data-bs-target="#dischargeModal"
+                                       data-patient-id="@patient.PatientID"
+                                       data-patient-assessmentID="@assessment.AssessmentID"
+                                       data-patient-fn="@patient.FirstName"
+                                       data-patient-mn="@patient.MiddleName"
+                                       data-patient-ln="@patient.LastName"
+                                       data-patient-ward="@assessment.BasicWard"
+                                       data-patient-class="@mswdclassification.SubClassification"
+                                       data-userID="@userId.Value"
+                                       data-msw="@userIdName.Value">
+                                        Discharge
+                                    </a>
+
+                                }
+                                else
+                                {
+                                    <a href="@Url.Action("ReAdmitPatient", "Discharge", new { area = "Admin", id = patient.PatientID, assessmentID = assessment.AssessmentID })" class="btn btn-success" 
+                                    onclick="return confirm('Are you sure you want to re-admit this patient?');">Re-Admit</a>
+                                }
+                            </td>
+                            <td style="white-space: nowrap;">@patient.PatientID</td>
+                            <td style="white-space: nowrap;">@patient.FirstName</td>
+                            <td style="white-space: nowrap;">@patient.MiddleName</td>
+                            <td style="white-space: nowrap;">@patient.LastName</td>
+                            <td style="white-space: nowrap;">@patient.DateOfBirth</td>
+                            <td style="white-space: nowrap;">@patient.Age</td>
+                            <td style="white-space: nowrap;">@patient.Sex</td>
+                            <td style="white-space: nowrap;">@patient.ContactNo</td>
+                            <td style="white-space: nowrap;">@patient.PlaceOfBirth</td>
+                            <td style="white-space: nowrap;">@patient.Gender</td>
+                            <td style="white-space: nowrap;">@patient.Religion</td>
+                            <td style="white-space: nowrap;">@patient.Nationality</td>
+                            <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">@patient.PermanentAddress</td>
+                            <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">@patient.TemporaryAddress</td>
+                            <td style="white-space: nowrap;">@patient.CivilStatus</td>
+                            <td style="white-space: nowrap;">@patient.EducationLevel</td>
+                            <td style="white-space: nowrap;">@patient.Occupation</td>
+                            <td style="white-space: nowrap;">@patient.MonthlyIncome</td>
+                            <td style="white-space: nowrap;">@patient.PhilhealthPIN</td>
+                            <td style="white-space: nowrap;">@patient.PhilhealthMembership</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <!-- Discharge Modal -->

@@ -34,33 +34,34 @@
     </div>
 }
 
-<div class="table-responsive" style="width: 60%;">
-    <table class="table" style="width: fit-content;">
-        <thead>
-            @if (Model != null)
-            {
-                <tr>
-                    <th>Id</th>
-                    <th>Message</th>
-                    <th>Level</th>
-                    <th>TimeStamp</th>
-                </tr>
-            }
-        </thead>
-        <tbody>
-            @if (Model != null)
-            {
-                @foreach (var log in Model.LogsList)
+<div class="container-fluid px-0 mx-0" style="max-width: 1400px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
                 {
                     <tr>
-                        <th>@log.Id</th>
-                        <th>@log.Message</th>
-                        <th>@log.Level</th>
-                        <th>@log.TimeStamp</th>
+                        <th>Id</th>
+                        <th>Message</th>
+                        <th>Level</th>
+                        <th>TimeStamp</th>
                     </tr>
                 }
-            }
-        </tbody>
-    </table>
-
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    @foreach (var log in Model.LogsList)
+                    {
+                        <tr>
+                            <th>@log.Id</th>
+                            <th>@log.Message</th>
+                            <th>@log.Level</th>
+                            <th>@log.TimeStamp</th>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
 </div>

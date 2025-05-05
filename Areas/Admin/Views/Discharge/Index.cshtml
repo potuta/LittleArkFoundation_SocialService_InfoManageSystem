@@ -56,51 +56,52 @@
     </div>
 }
 
-<div class="table-responsive" >
-    <table class="table">
-        <thead>
-            @if (Model != null)
-            {
-                <tr>
-                    <th>No.</th>
-                    <th>Date Processed</th>
-                    <th>Date of Discharge</th>
-                    <th>Name of Patient</th>
-                    <th>Ward</th>
-                    <th>Received HB</th>
-                    <th>Issued MSS Faci</th>
-                    <th>Duration</th>
-                    <th>Class</th>
-                    <th>PHIC Category</th>
-                    <th>PHIC Used?</th>
-                    <th>Remarks if NO</th>
-                    <th>MSW</th>
-                </tr>
-            }
-        </thead>
-        <tbody>
-            @if (Model != null)
-            {
-                @foreach (var discharge in Model.Discharges)
+<div class="container-fluid px-0 mx-0" style="max-width: 1400px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
                 {
                     <tr>
-                        <td>@discharge.Id</td>
-                        <td>@discharge.ProcessedDate</td>
-                        <td>@discharge.DischargedDate</td>
-                        <td>@discharge.LastName, @discharge.FirstName @discharge.MiddleName</td>
-				        <td>@discharge.Ward</td>
-                        <td>@discharge.ReceivedHB</td>
-                        <td>@discharge.IssuedMSS</td>
-                        <td>@discharge.Duration</td>
-                        <td>@discharge.Class</td>
-                        <td>@discharge.PHICCategory</td>
-                        <td>@discharge.PHICUsed</td>
-                        <td>@discharge.RemarksIfNo</td>
-                        <td>@discharge.MSW</td>
+                        <th>No.</th>
+                        <th>Date Processed</th>
+                        <th>Date of Discharge</th>
+                        <th>Name of Patient</th>
+                        <th>Ward</th>
+                        <th>Received HB</th>
+                        <th>Issued MSS Faci</th>
+                        <th>Duration</th>
+                        <th>Class</th>
+                        <th>PHIC Category</th>
+                        <th>PHIC Used?</th>
+                        <th>Remarks if NO</th>
+                        <th>MSW</th>
                     </tr>
                 }
-            }
-        </tbody>
-    </table>
-
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    @foreach (var discharge in Model.Discharges)
+                    {
+                        <tr>
+                            <td style="white-space: nowrap;">@discharge.Id</td>
+                            <td style="white-space: nowrap;">@discharge.ProcessedDate</td>
+                            <td style="white-space: nowrap;">@discharge.DischargedDate</td>
+                            <td style="white-space: nowrap;">@discharge.LastName, @discharge.FirstName @discharge.MiddleName</td>
+                            <td style="white-space: nowrap;">@discharge.Ward</td>
+                            <td style="white-space: nowrap;">@discharge.ReceivedHB</td>
+                            <td style="white-space: nowrap;">@discharge.IssuedMSS</td>
+                            <td style="white-space: nowrap;">@discharge.Duration</td>
+                            <td style="white-space: nowrap;">@discharge.Class</td>
+                            <td style="white-space: nowrap;">@discharge.PHICCategory</td>
+                            <td style="white-space: nowrap;">@discharge.PHICUsed</td>
+                            <td style="white-space: nowrap;">@discharge.RemarksIfNo</td>
+                            <td style="white-space: nowrap;">@discharge.MSW</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
