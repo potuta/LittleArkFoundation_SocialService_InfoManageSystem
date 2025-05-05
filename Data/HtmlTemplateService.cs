@@ -530,7 +530,7 @@ namespace LittleArkFoundation.Data
 
             switch (mswdclassification.MembershipSector)
             {
-                case "Artisenal Fisher Folk":
+                case "Artisanal Fisher Folk":
                     var artisenalfisherfolk = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Artisenalcheckbox']");
                     if (artisenalfisherfolk != null)
                     {

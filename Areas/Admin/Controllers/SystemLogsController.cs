@@ -26,7 +26,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                 await using var context = new ApplicationDbContext(connectionString);
 
-                var logs = await context.Logs.ToListAsync();
+                var logs = await context.Logs.OrderByDescending(l => l.TimeStamp).ToListAsync();
 
                 var logsViewModel = new LogsViewModel
                 {
