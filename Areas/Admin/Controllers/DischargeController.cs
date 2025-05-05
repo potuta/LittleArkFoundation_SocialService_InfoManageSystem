@@ -95,7 +95,6 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                 patient.IsActive = false; // Mark patient as inactive
 
-                // Save to database — replace with your actual DB context/service
                 context.Discharges.Add(dischargeEntity);
                 context.Patients.Update(patient);
                 await context.SaveChangesAsync();
