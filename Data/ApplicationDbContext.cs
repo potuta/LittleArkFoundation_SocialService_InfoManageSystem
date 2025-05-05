@@ -36,6 +36,7 @@ using LittleArkFoundation.Areas.Admin.Models.HistoryOfAbuse;
 using LittleArkFoundation.Areas.Admin.Models.HistoryOfViolence;
 using LittleArkFoundation.Areas.Admin.Models.StrengthsResources;
 using LittleArkFoundation.Areas.Admin.Models.Goals;
+using LittleArkFoundation.Areas.Admin.Models.Discharges;
 
 namespace LittleArkFoundation.Data
 {
@@ -98,6 +99,7 @@ namespace LittleArkFoundation.Data
         public DbSet<HistoryOfViolenceModel> HistoryOfViolence { get; set; }
         public DbSet<StrengthsResourcesModel> StrengthsResources { get; set; }
         public DbSet<GoalsModel> Goals { get; set; }
+        public DbSet<DischargesModel> Discharges { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -459,6 +461,15 @@ namespace LittleArkFoundation.Data
 
             modelBuilder.Entity<GoalsModel>()
                 .Property(g => g.GoalID)
+                .ValueGeneratedOnAdd();
+
+            // Discharges
+            modelBuilder.Entity<DischargesModel>()
+                .ToTable("Discharges")
+                .HasKey(d => d.Id);
+
+            modelBuilder.Entity<DischargesModel>()
+                .Property(d => d.Id)
                 .ValueGeneratedOnAdd();
         }
     }
