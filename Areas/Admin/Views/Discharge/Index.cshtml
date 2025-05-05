@@ -1,7 +1,106 @@
-﻿@{
+﻿@using LittleArkFoundation.Areas.Admin.Models.Discharges
+@model DischargeViewModel
+
+@{
     ViewData["Title"] = "Discharge";
     Layout = "_AdminLayout";
+    string? sortBy = ViewBag.sortBy ?? null;
 }
 
 <h2>Discharge</h2>
 <hr />
+
+<div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+    <div class="search-container" style="width: 100%">
+        <form asp-action="Search" asp-controller="Discharge">
+            <div class="input-group">
+                <input type="search" name="searchString" class="form-control" placeholder="Search by First Name" aria-label="Search">
+                <button type="submit" class="btn btn-dark">Search</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="btn-group">
+        <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-1" data-bs-toggle="dropdown" aria-expanded="false">
+            @if (string.IsNullOrEmpty(sortBy))
+            {
+                <span class="mb-0">Sort by</span>
+            }
+            else
+            {
+                <span class="mb-0">@sortBy</span>
+            }
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" asp-action="SortBy" asp-controller="Discharge" asp-route-sortByUserID="">All</a></li>
+            @foreach (var user in Model.Users)
+            {
+                <li><a class="dropdown-item" asp-action="SortBy" asp-controller="Discharge" asp-route-sortByUserID="@user.UserID">@user.Username</a></li>
+            }
+        </ul>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert" style="width: 60%;">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="width: 60%;">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="table-responsive" >
+    <table class="table">
+        <thead>
+            @if (Model != null)
+            {
+                <tr>
+                    <th>No.</th>
+                    <th>Date Processed</th>
+                    <th>Date of Discharge</th>
+                    <th>Name of Patient</th>
+                    <th>Ward</th>
+                    <th>Received HB</th>
+                    <th>Issued MSS Faci</th>
+                    <th>Duration</th>
+                    <th>Class</th>
+                    <th>PHIC Category</th>
+                    <th>PHIC Used?</th>
+                    <th>Remarks if NO</th>
+                    <th>MSW</th>
+                </tr>
+            }
+        </thead>
+        <tbody>
+            @if (Model != null)
+            {
+                @foreach (var discharge in Model.Discharges)
+                {
+                    <tr>
+                        <td>@discharge.Id</td>
+                        <td>@discharge.ProcessedDate</td>
+                        <td>@discharge.DischargedDate</td>
+                        <td>@discharge.LastName, @discharge.FirstName @discharge.MiddleName</td>
+				        <td>@discharge.Ward</td>
+                        <td>@discharge.ReceivedHB</td>
+                        <td>@discharge.IssuedMSS</td>
+                        <td>@discharge.Duration</td>
+                        <td>@discharge.Class</td>
+                        <td>@discharge.PHICCategory</td>
+                        <td>@discharge.PHICUsed</td>
+                        <td>@discharge.RemarksIfNo</td>
+                        <td>@discharge.MSW</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+</div>

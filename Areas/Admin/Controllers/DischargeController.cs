@@ -1,4 +1,5 @@
 ﻿using LittleArkFoundation.Areas.Admin.Data;
+using LittleArkFoundation.Areas.Admin.Models;
 using LittleArkFoundation.Areas.Admin.Models.AlcoholDrugAssessment;
 using LittleArkFoundation.Areas.Admin.Models.Assessments;
 using LittleArkFoundation.Areas.Admin.Models.ChildHealth;
@@ -56,7 +57,50 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index()
         {
-            return View();
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            var discharges = await context.Discharges.OrderByDescending(d => d.DischargedDate).ToListAsync();
+
+            var viewModel = new DischargeViewModel
+            {
+                Users = users,
+                Discharges = discharges,
+            };
+
+            return View(viewModel);
+        }
+
+        public async Task<IActionResult> SortBy(string sortByUserID)
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+            if (!string.IsNullOrEmpty(sortByUserID))
+            {
+                var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+                var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+                var discharges = await context.Discharges
+                    .Where(d => d.UserID == int.Parse(sortByUserID))
+                    .OrderByDescending(d => d.DischargedDate)
+                    .ToListAsync();
+
+
+                var viewModel = new DischargeViewModel
+                {
+                    Users = users,
+                    Discharges = discharges
+                };
+
+                var user = await context.Users.FindAsync(int.Parse(sortByUserID));
+
+                ViewBag.sortBy = user.Username;
+                return View("Index", viewModel);
+
+            }
+
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
