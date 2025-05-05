@@ -79,86 +79,90 @@
     </div>
 }
 
-<table class="table">
-    <thead>
-        @if (Model.Users != null || Model.UsersArchives != null)
-        {
-            if (!isArchive)
-            {
-                <tr>
-                    <th>UserID</th>
-                    <th>Username</th>
-                    <th>Email</th>
-                    <th>PhoneNumber</th>
-                    <th>PasswordHash</th>
-                    <th>RoleID</th>
-                    <th>CreatedAt</th>
-                    <th></th>
-                </tr>
-            }
-            else
-            {
-                <tr>
-                    <th>UserID</th>
-                    <th>Username</th>
-                    <th>Email</th>
-                    <th>PhoneNumber</th>
-                    <th>PasswordHash</th>
-                    <th>RoleID</th>
-                    <th>CreatedAt</th>
-                    <th>ArchivedAt</th>
-                    <th>ArchivedBy</th>
-                    <th></th>
-                </tr>
-            }
-        }
+<div class="container-fluid px-0 mx-0" style="max-width: 1400px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model.Users != null || Model.UsersArchives != null)
+                {
+                    if (!isArchive)
+                    {
+                        <tr>
+                            <th>UserID</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>PhoneNumber</th>
+                            <th>PasswordHash</th>
+                            <th>RoleID</th>
+                            <th>CreatedAt</th>
+                            <th></th>
+                        </tr>
+                    }
+                    else
+                    {
+                        <tr>
+                            <th>UserID</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>PhoneNumber</th>
+                            <th>PasswordHash</th>
+                            <th>RoleID</th>
+                            <th>CreatedAt</th>
+                            <th>ArchivedAt</th>
+                            <th>ArchivedBy</th>
+                            <th></th>
+                        </tr>
+                    }
+                }
 
-    </thead>
-    <tbody>
-        @if (Model.Users != null || Model.UsersArchives != null)
-        {
-            if (!isArchive)
-            {
-                @foreach (var user in Model.Users)
+            </thead>
+            <tbody>
+                @if (Model.Users != null || Model.UsersArchives != null)
                 {
-                    <tr>
-                        <td>@user.UserID</td>
-                        <td>@user.Username</td>
-                        <td>@user.Email</td>
-                        <td>@user.PhoneNumber</td>
-                        <td class="td-password">@user.PasswordHash</td>
-                        <td>@user.RoleID</td>
-                        <td>@user.CreatedAt</td>
-                        <td>
-                            <a href="@Url.Action("Edit", new { id = user.UserID })" class="btn btn-primary">Edit</a>
-                            <a href="@Url.Action("Archive", new { id = user.UserID })" class="btn btn-danger" onclick="return confirm('Are you sure you want to archive this user?');">Move to Archive</a>
-                        </td>
-                    </tr>
+                    if (!isArchive)
+                    {
+                        @foreach (var user in Model.Users)
+                        {
+                            <tr>
+                                <td style="white-space: nowrap;">@user.UserID</td>
+                                <td style="white-space: nowrap;">@user.Username</td>
+                                <td style="white-space: nowrap;">@user.Email</td>
+                                <td style="white-space: nowrap;">@user.PhoneNumber</td>
+                                <td class="td-password" style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">@user.PasswordHash</td>
+                                <td style="white-space: nowrap;">@user.RoleID</td>
+                                <td style="white-space: nowrap;">@user.CreatedAt</td>
+                                <td class="d-flex gap-2" style="white-space: nowrap;">
+                                    <a href="@Url.Action("Edit", new { id = user.UserID })" class="btn btn-primary">Edit</a>
+                                    <a href="@Url.Action("Archive", new { id = user.UserID })" class="btn btn-danger" onclick="return confirm('Are you sure you want to archive this user?');">Move to Archive</a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        @foreach (var user in Model.UsersArchives)
+                        {
+                            <tr>
+                                <td style="white-space: nowrap;">@user.UserID</td>
+                                <td style="white-space: nowrap;">@user.Username</td>
+                                <td style="white-space: nowrap;">@user.Email</td>
+                                <td style="white-space: nowrap;">@user.PhoneNumber</td>
+                                <td class="td-password" style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">@user.PasswordHash</td>
+                                <td style="white-space: nowrap;">@user.RoleID</td>
+                                <td style="white-space: nowrap;">@user.CreatedAt</td>
+                                <td style="white-space: nowrap;">@user.ArchivedAt</td>
+                                <td style="white-space: nowrap;">@user.ArchivedBy</td>
+                                <td class="d-flex gap-2" style="white-space: nowrap;">
+                                    <a href="@Url.Action("Unarchive", new { id = user.UserID })" class="btn btn-success" onclick="return confirm('Are you sure you want to unarchive this user?');">Unarchive</a>
+                                </td>
+                            </tr>
+                        }
+                    }
                 }
-            }
-            else
-            {
-                @foreach (var user in Model.UsersArchives)
-                {
-                    <tr>
-                        <td>@user.UserID</td>
-                        <td>@user.Username</td>
-                        <td>@user.Email</td>
-                        <td>@user.PhoneNumber</td>
-                        <td class="td-password">@user.PasswordHash</td>
-                        <td>@user.RoleID</td>
-                        <td>@user.CreatedAt</td>
-                        <td>@user.ArchivedAt</td>
-                        <td>@user.ArchivedBy</td>
-                        <td>
-                            <a href="@Url.Action("Unarchive", new { id = user.UserID })" class="btn btn-success" onclick="return confirm('Are you sure you want to unarchive this user?');">Unarchive</a>
-                        </td>
-                    </tr>
-                }
-            }
-        }
-    </tbody>
-</table>
+            </tbody>
+        </table>
+    </div>
+</div>
 
 <!-- Create User Modal -->
 <div class="modal fade" id="createUserModal" tabindex="-1" role="dialog" aria-labelledby="createUserModalLabel" aria-hidden="true">
