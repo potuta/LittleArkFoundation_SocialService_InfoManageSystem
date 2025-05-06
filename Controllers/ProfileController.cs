@@ -92,7 +92,7 @@ namespace LittleArkFoundation.Controllers
                 return RedirectToAction("Index", user.NewUser.UserID);
             }
 
-            return RedirectToAction("Index", "Dashboard", new { area = $"{await new RolesRepository(_connectionService).GetRoleNameByRoleID(user.NewUser.RoleID)}" });
+            return RedirectToAction("Index", "Dashboard", new { area = $"Admin" });
         }
     }
 }
