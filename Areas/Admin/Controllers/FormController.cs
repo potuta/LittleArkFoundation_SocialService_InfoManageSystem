@@ -83,11 +83,15 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     .Where(d => d.PatientID == id)
                     .ToListAsync();
 
+                var users = await context.Users
+                    .ToListAsync();
+
                 var viewModel = new PatientsViewModel
                 {
                     Patient = patient,
                     Assessments = assessments,
-                    MedicalHistory = medicalhistory
+                    MedicalHistory = medicalhistory,
+                    Users = users
                 };
 
                 ViewBag.UserIDName = User.FindFirst(ClaimTypes.Name);

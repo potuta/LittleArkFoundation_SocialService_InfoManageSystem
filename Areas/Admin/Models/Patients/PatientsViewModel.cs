@@ -14,5 +14,6 @@ namespace LittleArkFoundation.Areas.Admin.Models.Patients
         public PatientsModel Patient { get; set; } = new PatientsModel();
         public DischargesModel Discharge { get; set; } = new DischargesModel();
         public List<MSWDClassificationModel> MSWDClassifications { get; set; } = new List<MSWDClassificationModel> { new MSWDClassificationModel() };
+        public List<UsersModel> Users { get; set; } = new List<UsersModel> { new UsersModel() };
     }
 }

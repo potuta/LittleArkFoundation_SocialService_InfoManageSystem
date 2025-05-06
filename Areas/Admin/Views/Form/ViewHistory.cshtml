@@ -54,6 +54,8 @@
                     var diagnosis = Model.MedicalHistory
                     .FirstOrDefault(m => m.AssessmentID == assessment.AssessmentID)?.AdmittingDiagnosis;
 
+					var user = Model.Users.FirstOrDefault(u => u.UserID == assessment.UserID);
+
                     <tr>
                         <td>
                             <a href="@Url.Action("ViewForm", new { id = assessment.PatientID, assessmentID = assessment.AssessmentID })" class="btn btn-primary">View Form</a>
@@ -85,7 +87,7 @@
                         </td>
                         <td>@assessment.BasicWard</td>
                         <td>@(diagnosis ?? "—")</td>
-						<td>@assessment.MSWDNo</td>
+						<td>@user.Username</td>
                     </tr>
                     isFirst = false;
                 }

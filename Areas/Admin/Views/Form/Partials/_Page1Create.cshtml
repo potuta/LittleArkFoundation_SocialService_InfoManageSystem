@@ -57,14 +57,14 @@
         </td>
         <td>
             MSWD No: <span class="required">*</span>
-            @* <input type="text" asp-for="Assessments.MSWDNo" required> *@
+            <input type="text" asp-for="Assessments.MSWDNo" required>
 
-            <select asp-for="Assessments.MSWDNo" required>
+            @* <select asp-for="Assessments.MSWDNo" required>
 			    @foreach (var user in Model.Users)
 			    {
                     <option>@user.Username</option>
 			    }
-            </select>
+            </select> *@
 
             <span asp-validation-for="Assessments.MSWDNo" class="text-danger"></span>
 
@@ -100,7 +100,7 @@
         </td>
         <td>
             Contact No: <span class="required">*</span>
-            <input type="text" asp-for="Referrals.ContactNo" required>
+            <input type="number" asp-for="Referrals.ContactNo" required>
             <span asp-validation-for="Referrals.ContactNo" class="text-danger"></span>
 
         </td>
@@ -125,7 +125,7 @@
         </td>
         <td>
             Contact No: <span class="required">*</span>
-            <input type="text" asp-for="Informants.ContactNo" required>
+            <input type="number" asp-for="Informants.ContactNo" required>
             <span asp-validation-for="Informants.ContactNo" class="text-danger"></span>
 
         </td>
@@ -180,7 +180,7 @@
     <tr>
         <td>
             Contact No: <span class="required">*</span>
-            <input type="text" asp-for="Patient.ContactNo" required>
+            <input type="number" asp-for="Patient.ContactNo" required>
             <span asp-validation-for="Patient.ContactNo" class="text-danger"></span>
 
         </td>
