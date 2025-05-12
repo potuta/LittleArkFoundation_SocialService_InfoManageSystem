@@ -943,7 +943,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var worksheet = workbook.Worksheets.Add(fileName);
 
             // HEADERS
-            // Row 1
+            // Column 1
             var cell1 = worksheet.Cell(1, 1);
             cell1.Value = userID == 0 ? "All" : discharges[0].MSW;
             cell1.Style.Font.Bold = true;
@@ -951,7 +951,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             cell1.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             worksheet.Range(1, 1, 1, 13).Merge(); // Merge across desired columns
 
-            // Row 2
+            // Column 2
             var cell2 = worksheet.Cell(2, 1);
             cell2.Value = "LOG SHEET OF FACILITATED DISCHARGED PATIENTS WITH ZERO COPAYMENT";
             cell2.Style.Font.Bold = true;
@@ -959,21 +959,21 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             cell2.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             worksheet.Range(2, 1, 2, 13).Merge();
 
-            // Row 3
+            // Column 3
             var cell3 = worksheet.Cell(3, 1);
             cell3.Value = $"{discharges[0].DischargedDate.Year} Discharges";
             cell3.Style.Font.Bold = true;
             cell3.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             worksheet.Range(3, 1, 3, 13).Merge();
 
-            // Row 4: Merged Time column
+            // Column 4: Merged Time column
             var timeCell = worksheet.Range(4, 6, 4, 7);
             timeCell.Merge();
             timeCell.Value = "Time";
             timeCell.Style.Font.Bold = true;
             timeCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
-            // Rest of rows
+            // Rest of columns
             worksheet.Cell(5, 1).Value = "No.";
             worksheet.Cell(5, 2).Value = "Date Processed";
             worksheet.Cell(5, 3).Value = "Date of Discharge";
@@ -1014,6 +1014,110 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 stream.Position = 0;
                 return File(stream.ToArray(), 
                             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 
+                            $"{fileName}.xlsx");
+            }
+
+        }
+
+        public async Task<IActionResult> ViewStats()
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+            var discharges = await context.Discharges.ToListAsync();
+            if (discharges == null || !discharges.Any())
+            {
+                TempData["ErrorMessage"] = "No discharges found.";
+                return RedirectToAction("Index");
+            }
+
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+
+            var viewModel = new DischargeViewModel
+            {
+                Discharges = discharges,
+                Users = users
+            };
+            return View(viewModel);
+        }
+
+        public async Task<IActionResult> ExportStatsToExcel()
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+
+            var discharges = await context.Discharges.ToListAsync();
+            var fileName = $"DischargesStats_{discharges[0].DischargedDate.Year}";
+
+            var workbook = new XLWorkbook();
+            var worksheet = workbook.Worksheets.Add(fileName);
+
+            // HEADERS
+            // Rest of columns
+            worksheet.Cell(2, 1).Value = "Date Processed";
+
+            int col = 2;
+            foreach (var user in users)
+            {
+                worksheet.Cell(2, col).Value = user.Username;
+                col++;
+            }
+
+            worksheet.Cell(2, col).Value = "Grand Total";
+
+            // Prepare data grouped by ProcessedDate
+            var groupedDischarges = discharges
+                .GroupBy(d => d.ProcessedDate)
+                .OrderBy(g => g.Key)
+                .ToList();
+
+            int row = 3;
+            foreach (var group in groupedDischarges)
+            {
+                worksheet.Cell(row, 1).Value = group.Key.ToShortDateString();
+
+                int currentCol = 2;
+                foreach (var user in users)
+                {
+                    int count = group.Count(d => d.UserID == user.UserID);
+                    worksheet.Cell(row, currentCol).Value = count;
+                    currentCol++;
+                }
+
+                worksheet.Cell(row, currentCol).Value = group.Count(); // Grand total
+                row++;
+            }
+
+            // After data rows
+            int totalRow = row; 
+
+            worksheet.Cell(totalRow, 1).Value = "Total";
+
+            // For each user column, calculate total discharges across all dates
+            int userCol = 2;
+            foreach (var user in users)
+            {
+                int userTotal = discharges.Count(d => d.UserID == user.UserID);
+                worksheet.Cell(totalRow, userCol).Value = userTotal;
+                userCol++;
+            }
+
+            // Grand total: total number of discharge records
+            worksheet.Cell(totalRow, userCol).Value = discharges.Count;
+            worksheet.Row(totalRow).Style.Font.Bold = true;
+
+            // Autofit for better presentation
+            worksheet.Columns().AdjustToContents();
+
+            using (var stream = new MemoryStream())
+            {
+                workbook.SaveAs(stream);
+                stream.Position = 0;
+                return File(stream.ToArray(),
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                             $"{fileName}.xlsx");
             }
 
