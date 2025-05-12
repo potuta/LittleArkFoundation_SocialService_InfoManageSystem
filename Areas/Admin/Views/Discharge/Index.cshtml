@@ -4,7 +4,9 @@
 @{
     ViewData["Title"] = "Discharge";
     Layout = "_AdminLayout";
-    string? sortBy = ViewBag.sortBy ?? null;
+    string? sortBy = ViewBag.sortBy ?? "";
+    bool matchedUser = Model.Users.Any(u => u.Username == sortBy);
+
 }
 
 <h2>Discharge</h2>
@@ -38,7 +40,30 @@
                 <li><a class="dropdown-item" asp-action="SortBy" asp-controller="Discharge" asp-route-sortByUserID="@user.UserID">@user.Username</a></li>
             }
         </ul>
+        @if (matchedUser)
+        {
+            foreach (var user in Model.Users)
+            {
+                if (user.Username == sortBy)
+                {
+                    <a class="btn btn-sm btn-primary" style="margin-left:5px;"
+                       asp-action="ExportToExcel"
+                       asp-route-userID="@user.UserID">
+                        Download Excel (@user.Username)
+                    </a>
+                }
+            }
+        }
+        else
+        {
+            <a class="btn btn-sm btn-primary" style="margin-left:5px;"
+               asp-action="ExportToExcel">
+                Download Excel (All)
+            </a>
+        }
     </div>
+
+
 </div>
 
 @if (TempData["SuccessMessage"] != null)
@@ -56,7 +81,7 @@
     </div>
 }
 
-<div class="container-fluid px-0 mx-0" style="max-width: 1400px;">
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
     <div class="table-responsive" style="overflow-x: auto;">
         <table class="table" style="min-width: 1200px;">
             <thead>

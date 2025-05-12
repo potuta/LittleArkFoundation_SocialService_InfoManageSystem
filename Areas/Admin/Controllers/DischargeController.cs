@@ -1,4 +1,5 @@
-﻿using LittleArkFoundation.Areas.Admin.Data;
+﻿using ClosedXML.Excel;
+using LittleArkFoundation.Areas.Admin.Data;
 using LittleArkFoundation.Areas.Admin.Models;
 using LittleArkFoundation.Areas.Admin.Models.AlcoholDrugAssessment;
 using LittleArkFoundation.Areas.Admin.Models.Assessments;
@@ -908,6 +909,114 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 LoggingService.LogError("Error: " + ex.Message);
                 return RedirectToAction("Index", "Form");
             }
+        }
+
+        public async Task<IActionResult> ExportToExcel(int userID)
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            List<DischargesModel> discharges;
+            string fileName;
+
+            if (userID == 0)
+            {
+                discharges = await context.Discharges.ToListAsync();
+                fileName = $"Discharges_{discharges[0].DischargedDate.Year}_All";
+            }
+            else
+            {
+                discharges = await context.Discharges
+                    .Where(d => d.UserID == userID)
+                    .ToListAsync();
+
+                if (discharges == null || !discharges.Any())
+                {
+                    TempData["ErrorMessage"] = "No discharges found for the selected user.";
+                    return RedirectToAction("Index");
+                }
+
+                fileName = $"Discharges_{discharges[0].DischargedDate.Year}_{discharges[0].MSW}";
+            }
+
+            var workbook = new XLWorkbook();
+            var worksheet = workbook.Worksheets.Add(fileName);
+
+            // HEADERS
+            // Row 1
+            var cell1 = worksheet.Cell(1, 1);
+            cell1.Value = userID == 0 ? "All" : discharges[0].MSW;
+            cell1.Style.Font.Bold = true;
+            cell1.Style.Font.FontSize = 14;
+            cell1.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            worksheet.Range(1, 1, 1, 13).Merge(); // Merge across desired columns
+
+            // Row 2
+            var cell2 = worksheet.Cell(2, 1);
+            cell2.Value = "LOG SHEET OF FACILITATED DISCHARGED PATIENTS WITH ZERO COPAYMENT";
+            cell2.Style.Font.Bold = true;
+            cell2.Style.Font.FontSize = 12;
+            cell2.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            worksheet.Range(2, 1, 2, 13).Merge();
+
+            // Row 3
+            var cell3 = worksheet.Cell(3, 1);
+            cell3.Value = $"{discharges[0].DischargedDate.Year} Discharges";
+            cell3.Style.Font.Bold = true;
+            cell3.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            worksheet.Range(3, 1, 3, 13).Merge();
+
+            // Row 4: Merged Time column
+            var timeCell = worksheet.Range(4, 6, 4, 7);
+            timeCell.Merge();
+            timeCell.Value = "Time";
+            timeCell.Style.Font.Bold = true;
+            timeCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            // Rest of rows
+            worksheet.Cell(5, 1).Value = "No.";
+            worksheet.Cell(5, 2).Value = "Date Processed";
+            worksheet.Cell(5, 3).Value = "Date of Discharge";
+            worksheet.Cell(5, 4).Value = "Name of Patient";
+            worksheet.Cell(5, 5).Value = "Ward";
+            worksheet.Cell(5, 6).Value = "Received HB";
+            worksheet.Cell(5, 7).Value = "Issued MSS Faci";
+            worksheet.Cell(5, 8).Value = "Duration";
+            worksheet.Cell(5, 9).Value = "Class";
+            worksheet.Cell(5, 10).Value = "PHIC Category";
+            worksheet.Cell(5, 11).Value = "PHIC Used?";
+            worksheet.Cell(5, 12).Value = "Remarks if NO";
+            worksheet.Cell(5, 13).Value = "MSW";
+
+            int row = 6;
+            foreach (var discharge in discharges)
+            {
+                worksheet.Cell(row, 1).Value = discharge.Id;
+                worksheet.Cell(row, 2).Value = discharge.ProcessedDate.ToString();
+                worksheet.Cell(row, 3).Value = discharge.DischargedDate.ToString();
+                worksheet.Cell(row, 4).Value = $"{discharge.LastName}, {discharge.FirstName} {discharge.MiddleName}";
+                worksheet.Cell(row, 5).Value = discharge.Ward;
+                worksheet.Cell(row, 6).Value = discharge.ReceivedHB.ToString();
+                worksheet.Cell(row, 7).Value = discharge.IssuedMSS.ToString();
+                worksheet.Cell(row, 8).Value = discharge.Duration.ToString();
+                worksheet.Cell(row, 9).Value = discharge.Class;
+                worksheet.Cell(row, 10).Value = discharge.PHICCategory;
+                worksheet.Cell(row, 11).Value = discharge.PHICUsed ? "Yes" : "No";
+                worksheet.Cell(row, 12).Value = discharge.RemarksIfNo;
+                worksheet.Cell(row, 13).Value = discharge.MSW;
+                // Add more fields...
+                row++;
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                workbook.SaveAs(stream);
+                stream.Position = 0;
+                return File(stream.ToArray(), 
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 
+                            $"{fileName}.xlsx");
+            }
+
         }
 
     }
