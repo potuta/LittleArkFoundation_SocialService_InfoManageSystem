@@ -1056,7 +1056,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var worksheet = workbook.Worksheets.Add(fileName);
 
             // HEADERS
-            // Rest of columns
+            // COUNTA Of MSW
+            worksheet.Cell(1, 1).Value = "COUNTA of MSW";
             worksheet.Cell(2, 1).Value = "Date Processed";
 
             int col = 2;
@@ -1108,6 +1109,63 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             // Grand total: total number of discharge records
             worksheet.Cell(totalRow, userCol).Value = discharges.Count;
             worksheet.Row(totalRow).Style.Font.Bold = true;
+
+            // HEADERS
+            // COUNTA Of Class
+            worksheet.Cell(totalRow + 2, 1).Value = "Counta of Class";
+            worksheet.Cell(totalRow + 3, 1).Value = "Class";
+
+            int classCol = 2;
+            foreach (var user in users)
+            {
+                worksheet.Cell(totalRow + 3, classCol).Value = user.Username;
+                classCol++;
+            }
+
+            worksheet.Cell(totalRow + 3, classCol).Value = "Grand Total";
+
+            // Prepare data grouped by Class
+            var classes = new List<string>  
+            {
+                "A", "B", "C1", "C2", "C3", "D"
+            };
+            var groupedClass = discharges
+                .Where(d => !string.IsNullOrEmpty(d.Class))
+                .GroupBy(d => d.Class)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            int classRow = totalRow + 4;
+            foreach (var cls in classes)
+            {
+                worksheet.Cell(classRow, 1).Value = cls;
+
+                int currentClassCol = 2;
+                foreach (var user in users)
+                {
+                    int count = groupedClass.ContainsKey(cls)
+                        ? groupedClass[cls].Count(d => d.UserID == user.UserID)
+                        : 0;
+
+                    worksheet.Cell(classRow, currentClassCol).Value = count;
+                    currentClassCol++;
+                }
+
+                // Grand total per class
+                worksheet.Cell(classRow, currentClassCol).Value = groupedClass.ContainsKey(cls) ? groupedClass[cls].Count : 0;
+
+                classRow++;
+            }
+
+            worksheet.Cell(classRow, 1).Value = "Total";
+            int totalClassCol = 2;
+            foreach (var user in users)
+            {
+                int totalPerUser = discharges.Count(d => d.UserID == user.UserID && classes.Contains(d.Class));
+                worksheet.Cell(classRow, totalClassCol).Value = totalPerUser;
+                totalClassCol++;
+            }
+            worksheet.Cell(classRow, totalClassCol).Value = discharges.Count(d => classes.Contains(d.Class));
+            worksheet.Row(classRow).Style.Font.Bold = true;
 
             // Autofit for better presentation
             worksheet.Columns().AdjustToContents();
