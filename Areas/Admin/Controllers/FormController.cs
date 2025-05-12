@@ -51,6 +51,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                 var assessments = await context.Assessments
                     .OrderByDescending(a => a.DateOfInterview)
+                    .ThenByDescending(a => a.TimeOfInterview)
                     .ToListAsync();
 
                 var mswdclassification = await context.MSWDClassification
@@ -75,8 +76,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 var patient = await context.Patients.FindAsync(id);
 
                 var assessments = await context.Assessments
-                    .Where(a => a.PatientID == id)
                     .OrderByDescending(a => a.DateOfInterview)
+                    .ThenByDescending(a => a.TimeOfInterview)
                     .ToListAsync();
 
                 var medicalhistory = await context.MedicalHistory

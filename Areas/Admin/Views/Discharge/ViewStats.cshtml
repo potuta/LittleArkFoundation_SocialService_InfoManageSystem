@@ -1,0 +1,95 @@
+﻿@using LittleArkFoundation.Areas.Admin.Models.Discharges
+@model DischargeViewModel
+
+@{
+    ViewData["Title"] = "Discharge Stats";
+    Layout = "_AdminLayout";
+
+    // Unique MSWs
+    var msws = Model.Users.Select(u => u.Username).Distinct().ToList();
+
+    // Group discharges by ProcessedDate
+    var grouped = Model.Discharges
+        .GroupBy(d => d.ProcessedDate)
+        .OrderBy(g => g.Key)
+        .ToList();
+
+    var mswTotals = msws.ToDictionary(msw => msw, msw => Model.Discharges.Count(d => d.MSW == msw));
+    var overallTotal = Model.Discharges.Count;
+}
+
+<h2>View Discharges Stats</h2>
+<hr />
+
+<!-- Back to List -->
+<div class="mt-2">
+    <a class="btn btn-outline-secondary mb-3" asp-controller="Discharge" asp-action="Index">← Back to List</a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert" style="width: 60%;">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="width: 60%;">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<a class="btn btn-sm btn-success" style="margin-left:5px;"
+   asp-action="ExportStatsToExcel">
+    Download Excel
+</a>
+
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>Date Processed</th>
+                        @foreach (var msw in msws)
+                        {
+                            <th>@msw</th>
+                        }
+                        <th>Grand Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    @foreach (var group in grouped)
+                    {
+                        <tr>
+                            <td>@group.Key.ToShortDateString()</td>
+
+                            @foreach (var msw in msws)
+                            {
+                                var count = group.Count(d => d.MSW == msw);
+                                <td>@count</td>
+                            }
+
+                            <td>@group.Count()</td>
+                        </tr>
+                    }
+
+                    <tr class="fw-bold">
+                        <td>Total</td>
+                        @foreach (var msw in msws)
+                        {
+                            <td>@mswTotals[msw]</td>
+                        }
+                        <td>@overallTotal</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
