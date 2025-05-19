@@ -11,7 +11,7 @@
 <hr />
 
 <div>
-    @if (Model.CurrentConnectionString == Model.DefaultConnectionString)
+    @if (Model.CurrentDatabaseName == Model.DefaultDatabaseName)
     {
         <a href="@Url.Action("CreateNewDatabaseYear")" class="btn btn-success" onclick="return confirm('Warning! creating a new database year will automatically archive this years database, do you still want to continue?');">
             Create new database year
