@@ -76,6 +76,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 var patient = await context.Patients.FindAsync(id);
 
                 var assessments = await context.Assessments
+                    .Where(a => a.PatientID == id)
                     .OrderByDescending(a => a.DateOfInterview)
                     .ThenByDescending(a => a.TimeOfInterview)
                     .ToListAsync();
@@ -144,8 +145,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     return View(formViewModel);
                 }
 
-                var patientID = await new PatientsRepository(connectionString).GenerateID();
-                var assessmentID = await new AssessmentsRepository(connectionString).GenerateID();
+                // Save Patient first to get the ID, avoids Forein Key constraint
+                await context.Patients.AddAsync(formViewModel.Patient);
+                await context.SaveChangesAsync();
+
+                var patientID = formViewModel.Patient.PatientID;
+                var assessmentID = await new AssessmentsRepository(connectionString).GenerateID(patientID);
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
                 // ASSESSMENTS
@@ -162,9 +167,6 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 formViewModel.Informants.PatientID = patientID;
                 formViewModel.Informants.AssessmentID = assessmentID;
                 formViewModel.Informants.DateOfInformant = formViewModel.Assessments.DateOfInterview.ToDateTime(formViewModel.Assessments.TimeOfInterview);
-
-                // PATIENTS
-                formViewModel.Patient.PatientID = patientID;
 
                 // FAMILY COMPOSITION
                 foreach (var familyMember in formViewModel.FamilyMembers)
@@ -305,10 +307,6 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 // GOALS
                 formViewModel.Goals.PatientID = patientID;
                 formViewModel.Goals.AssessmentID = assessmentID;
-
-                // Save Patient first to get the ID, avoids Forein Key constraint
-                await context.Patients.AddAsync(formViewModel.Patient);
-                await context.SaveChangesAsync();
 
                 await context.Assessments.AddAsync(formViewModel.Assessments);
                 await context.SaveChangesAsync();

@@ -180,7 +180,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     }
 
                     var patientID = id;
-                    var newAssessmentID = await new AssessmentsRepository(connectionString).GenerateID();
+                    var newAssessmentID = await new AssessmentsRepository(connectionString).GenerateID(id);
                     var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
                     // ASSESSMENTS
