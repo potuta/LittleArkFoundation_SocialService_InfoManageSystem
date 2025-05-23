@@ -19,6 +19,8 @@ using LittleArkFoundation.Areas.Admin.Models.FamilyHistory;
 using LittleArkFoundation.Areas.Admin.Models.Assessments;
 using LittleArkFoundation.Areas.Admin.Models.MedicalHistory;
 using System.Security.Claims;
+using LittleArkFoundation.Areas.Admin.Models.ProgressNotes;
+using DocumentFormat.OpenXml.InkML;
 // TODO: Implement logging for forms
 namespace LittleArkFoundation.Areas.Admin.Controllers
 {
@@ -76,6 +78,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 var patient = await context.Patients.FindAsync(id);
 
                 var assessments = await context.Assessments
+                    .Where(a => a.PatientID == id)
                     .OrderByDescending(a => a.DateOfInterview)
                     .ThenByDescending(a => a.TimeOfInterview)
                     .ToListAsync();
@@ -125,7 +128,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 Medications = new List<MedicationsModel> { new MedicationsModel() },
                 HospitalizationHistory = new List<HospitalizationHistoryModel> { new HospitalizationHistoryModel() },
                 MentalHealthHistory = new List<MentalHealthHistoryModel> { new MentalHealthHistoryModel() },
-                FamilyHistory = new List<FamilyHistoryModel> { new FamilyHistoryModel() }
+                FamilyHistory = new List<FamilyHistoryModel> { new FamilyHistoryModel() },
+                ProgressNotes = new List<ProgressNotesModel> { new ProgressNotesModel() }
             };
 
             return View(viewModel);
@@ -144,8 +148,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     return View(formViewModel);
                 }
 
-                var patientID = await new PatientsRepository(connectionString).GenerateID();
-                var assessmentID = await new AssessmentsRepository(connectionString).GenerateID();
+                // Save Patient first to get the ID, avoids Forein Key constraint
+                await context.Patients.AddAsync(formViewModel.Patient);
+                await context.SaveChangesAsync();
+
+                var patientID = formViewModel.Patient.PatientID;
+                var assessmentID = await new AssessmentsRepository(connectionString).GenerateID(patientID);
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
                 // ASSESSMENTS
@@ -162,9 +170,6 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 formViewModel.Informants.PatientID = patientID;
                 formViewModel.Informants.AssessmentID = assessmentID;
                 formViewModel.Informants.DateOfInformant = formViewModel.Assessments.DateOfInterview.ToDateTime(formViewModel.Assessments.TimeOfInterview);
-
-                // PATIENTS
-                formViewModel.Patient.PatientID = patientID;
 
                 // FAMILY COMPOSITION
                 foreach (var familyMember in formViewModel.FamilyMembers)
@@ -306,9 +311,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 formViewModel.Goals.PatientID = patientID;
                 formViewModel.Goals.AssessmentID = assessmentID;
 
-                // Save Patient first to get the ID, avoids Forein Key constraint
-                await context.Patients.AddAsync(formViewModel.Patient);
-                await context.SaveChangesAsync();
+                // PROGRESS NOTES
+                foreach (var progressNote in formViewModel.ProgressNotes)
+                {
+                    progressNote.PatientID = patientID;
+                    progressNote.AssessmentID = assessmentID;
+                }
 
                 await context.Assessments.AddAsync(formViewModel.Assessments);
                 await context.SaveChangesAsync();
@@ -347,6 +355,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 await context.HistoryOfViolence.AddAsync(formViewModel.HistoryOfViolence);
                 await context.StrengthsResources.AddAsync(formViewModel.StrengthsResources);
                 await context.Goals.AddAsync(formViewModel.Goals);
+                await context.ProgressNotes.AddRangeAsync(formViewModel.ProgressNotes);
                 await context.SaveChangesAsync();
 
                 TempData["SuccessMessage"] = "Successfully created new form";
@@ -509,6 +518,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var historyofviolence = await context.HistoryOfViolence.FirstOrDefaultAsync(h => h.AssessmentID == assessmentID);
             var strengthsresources = await context.StrengthsResources.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
             var goals = await context.Goals.FirstOrDefaultAsync(g => g.AssessmentID == assessmentID);
+            var progressnotes = await context.ProgressNotes
+                                .Where(p => p.AssessmentID == assessmentID)
+                                .ToListAsync();
 
             var viewModel = new FormViewModel()
             {
@@ -547,7 +559,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 HistoryOfAbuse = historyofabuse,
                 HistoryOfViolence = historyofviolence,
                 StrengthsResources = strengthsresources,
-                Goals = goals
+                Goals = goals,
+                ProgressNotes = progressnotes
             };
 
             return View(viewModel);
@@ -568,6 +581,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var hospitalization = context.HospitalizationHistory.Where(h => h.AssessmentID == assessmentId);
             var mentalhealthhistory = context.MentalHealthHistory.Where(m => m.AssessmentID == assessmentId);
             var familyhistory = context.FamilyHistory.Where(f => f.AssessmentID == assessmentId);
+            var progressnotes = context.ProgressNotes.Where(p => p.AssessmentID == assessmentId);
 
             if (familyMembers.Any())
             {
@@ -592,6 +606,10 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             if (familyhistory.Any())
             {
                 context.FamilyHistory.RemoveRange(familyhistory);
+            }
+            if (progressnotes.Any())
+            {
+                context.ProgressNotes.RemoveRange(progressnotes);
             }
 
             if (formViewModel.FamilyMembers != null)
@@ -647,6 +665,32 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     familyHistory.AssessmentID = assessmentId;
                 }
                 await context.FamilyHistory.AddRangeAsync(formViewModel.FamilyHistory);
+            }
+            if (formViewModel.ProgressNotes != null)
+            {
+                foreach (var progressNote in formViewModel.ProgressNotes)
+                {
+                    progressNote.PatientID = id;
+                    progressNote.AssessmentID = assessmentId;
+
+                    if (progressNote.RemoveAttachment)
+                    {
+                        progressNote.Attachment = null;
+                        progressNote.AttachmentContentType = null;
+                    }
+                    else if (progressNote.AttachmentFile != null && progressNote.AttachmentFile.Length > 0)
+                    {
+                        using (var ms = new MemoryStream())
+                        {
+                            await progressNote.AttachmentFile.CopyToAsync(ms);
+                            progressNote.Attachment = ms.ToArray();
+                        }
+                        progressNote.AttachmentContentType = progressNote.AttachmentFile.ContentType;
+                    }
+
+                }
+
+                await context.ProgressNotes.AddRangeAsync(formViewModel.ProgressNotes);
             }
 
             // Update Patient first, avoids Forein Key constraint
@@ -802,6 +846,68 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 return RedirectToAction("Index");
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetProgressNoteFile(int id)
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var progressNote = await context.ProgressNotes.FindAsync(id);
+            if (progressNote == null || progressNote.Attachment == null || progressNote.Attachment.Length == 0)
+                return NotFound();
+
+            // Suggest a filename (you can customize this further if needed)
+            var fileName = $"progress_note_{id}";
+
+            // Optional: Add file extension based on MIME type
+            var contentType = progressNote.AttachmentContentType ?? "application/octet-stream";
+            var extension = contentType switch
+            {
+                "application/pdf" => ".pdf",
+                "image/jpeg" => ".jpg",
+                "image/png" => ".png",
+                _ => ""
+            };
+
+            return File(progressNote.Attachment, contentType, fileName + extension);
+            //return File(progressNote.Attachment, progressNote.AttachmentContentType);
+        }
+
+        private string GetMimeType(byte[] fileBytes)
+        {
+            // PDF magic number: %PDF- (25 50 44 46 2D)
+            if (fileBytes.Length > 4 &&
+                fileBytes[0] == 0x25 && fileBytes[1] == 0x50 && fileBytes[2] == 0x44 && fileBytes[3] == 0x46 && fileBytes[4] == 0x2D)
+            {
+                return "application/pdf";
+            }
+
+            // JPEG magic numbers: FF D8 FF
+            if (fileBytes.Length > 3 &&
+                fileBytes[0] == 0xFF && fileBytes[1] == 0xD8 && fileBytes[2] == 0xFF)
+            {
+                return "image/jpeg";
+            }
+
+            // PNG magic numbers: 89 50 4E 47
+            if (fileBytes.Length > 4 &&
+                fileBytes[0] == 0x89 && fileBytes[1] == 0x50 && fileBytes[2] == 0x4E && fileBytes[3] == 0x47)
+            {
+                return "image/png";
+            }
+
+            // GIF magic numbers: GIF87a or GIF89a
+            if (fileBytes.Length > 6 &&
+                fileBytes[0] == 0x47 && fileBytes[1] == 0x49 && fileBytes[2] == 0x46 &&
+                (fileBytes[3] == 0x38 && (fileBytes[4] == 0x37 || fileBytes[4] == 0x39) && fileBytes[5] == 0x61))
+            {
+                return "image/gif";
+            }
+
+            return "application/octet-stream"; // fallback
+        }
+
 
     }
 }

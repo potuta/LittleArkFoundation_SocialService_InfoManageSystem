@@ -1,0 +1,63 @@
+﻿@using LittleArkFoundation.Areas.Admin.Models.Form
+@model FormViewModel
+
+<div class="section-title">PROGRESS NOTES</div>
+<table id="progressnotes-table">
+    <tr>
+        <th>
+            DATE
+        </th>
+        <th>
+            PROGRESS NOTES
+        </th>
+        <th>
+            ATTACHMENT
+        </th>
+        <th>
+            Actions
+        </th>
+    </tr>
+    <tbody class="progressnotes-input">
+        @for (int i = 0; i < Model.ProgressNotes.Count; i++)
+        {
+            <tr>
+                <td>
+                    <input type="date" name="ProgressNotes[@i].Date" required>
+                </td>
+
+                <td>
+                    <textarea name="ProgressNotes[@i].ProgressNotes" rows="2" cols="30" placeholder="Type N/A if no answer" required></textarea>
+                </td>
+
+                <td>
+                    <input type="file" name="ProgressNotes[@i].AttachmentFile" id="uploadedFile-@i" accept=".pdf,image/*" class="form-control mb-2" onchange="handleFileUpload(this, @i)" />
+
+                    <div id="previewContainer-@i" class="mt-2" style="display: none;">
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#filePreviewModal-@i">
+                            View File
+                        </button>
+                    </div>
+
+                    <!-- File Display Modal -->
+                    <div class="modal fade" id="filePreviewModal-@i" tabindex="-1" aria-labelledby="filePreviewModalLabel-@i" aria-hidden="true">
+                        <div class="modal-dialog modal-xl modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="filePreviewModalLabel-@i">File Preview</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body text-center" id="filePreviewContent-@i">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+
+                <td><button type="button" id="progressnotes-button-remove" onclick="removeRow(this)">❌</button></td>
+            </tr>
+        }
+    </tbody>
+
+</table>
+<button type="button" id="progressnotes-button-add" onclick="addRow(this)">➕ Add Row</button>

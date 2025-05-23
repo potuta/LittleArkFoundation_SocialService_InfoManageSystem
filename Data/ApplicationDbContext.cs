@@ -37,6 +37,7 @@ using LittleArkFoundation.Areas.Admin.Models.HistoryOfViolence;
 using LittleArkFoundation.Areas.Admin.Models.StrengthsResources;
 using LittleArkFoundation.Areas.Admin.Models.Goals;
 using LittleArkFoundation.Areas.Admin.Models.Discharges;
+using LittleArkFoundation.Areas.Admin.Models.ProgressNotes;
 
 namespace LittleArkFoundation.Data
 {
@@ -100,6 +101,7 @@ namespace LittleArkFoundation.Data
         public DbSet<StrengthsResourcesModel> StrengthsResources { get; set; }
         public DbSet<GoalsModel> Goals { get; set; }
         public DbSet<DischargesModel> Discharges { get; set; }
+        public DbSet<ProgressNotesModel> ProgressNotes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -156,6 +158,10 @@ namespace LittleArkFoundation.Data
             modelBuilder.Entity<PatientsModel>()
                 .ToTable("Patients")
                 .HasKey(p => p.PatientID);
+
+            modelBuilder.Entity<PatientsModel>()
+                .Property(p => p.PatientID)
+                .ValueGeneratedOnAdd();
 
             // Assessments
             modelBuilder.Entity<AssessmentsModel>()
@@ -470,6 +476,15 @@ namespace LittleArkFoundation.Data
 
             modelBuilder.Entity<DischargesModel>()
                 .Property(d => d.Id)
+                .ValueGeneratedOnAdd();
+
+            // ProgressNotes
+            modelBuilder.Entity<ProgressNotesModel>()
+                .ToTable("ProgressNotes")
+                .HasKey(p => p.ProgressNotesID);
+
+            modelBuilder.Entity<ProgressNotesModel>()
+                .Property(p => p.ProgressNotesID)
                 .ValueGeneratedOnAdd();
         }
     }

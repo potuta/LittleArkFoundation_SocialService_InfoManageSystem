@@ -28,6 +28,7 @@ using LittleArkFoundation.Areas.Admin.Models.Patients;
 using LittleArkFoundation.Areas.Admin.Models.PregnancyBirthHistory;
 using LittleArkFoundation.Areas.Admin.Models.PresentingProblems;
 using LittleArkFoundation.Areas.Admin.Models.PrimaryCareDoctor;
+using LittleArkFoundation.Areas.Admin.Models.ProgressNotes;
 using LittleArkFoundation.Areas.Admin.Models.RecentLosses;
 using LittleArkFoundation.Areas.Admin.Models.Referrals;
 using LittleArkFoundation.Areas.Admin.Models.SafetyConcerns;
@@ -74,6 +75,7 @@ namespace LittleArkFoundation.Areas.Admin.Models.Form
         public HistoryOfViolenceModel? HistoryOfViolence { get; set; }
         public StrengthsResourcesModel? StrengthsResources { get; set; }
         public GoalsModel? Goals { get; set; }
+        public List<ProgressNotesModel>? ProgressNotes { get; set; } 
 
     }
 }
