@@ -1,0 +1,108 @@
+﻿@using LittleArkFoundation.Areas.Admin.Models.Form
+@model FormViewModel
+
+<div class="section-title">PROGRESS NOTES</div>
+<table id="progressnotes-table">
+    <tr>
+        <th>
+            DATE
+        </th>
+        <th>
+            PROGRESS NOTES
+        </th>
+        <th>
+            ATTACHMENT
+        </th>
+        <th>
+            Actions
+        </th>
+    </tr>
+    <tbody class="progressnotes-input">
+        @for (int i = 0; i < Model.ProgressNotes.Count; i++)
+        {
+            <tr>
+                @{
+                    var hasFile = Model.ProgressNotes[i].Attachment != null && Model.ProgressNotes[i].Attachment.Length > 0;
+                    var contentType = Model.ProgressNotes[i].AttachmentContentType ?? "";
+                    bool isPdf = contentType == "application/pdf";
+                    bool isImage = contentType.StartsWith("image/");
+                }
+                <td>
+                    <input type="date" asp-for="ProgressNotes[i].Date" required>
+                </td>
+
+                <td>
+                    <textarea asp-for="ProgressNotes[i].ProgressNotes" rows="2" cols="30" placeholder="Type N/A if no answer" required></textarea>
+                </td>
+
+                <td>
+
+                    <input type="hidden" asp-for="ProgressNotes[i].Attachment" id="removeAttachment-@i" />
+                    <input type="hidden" asp-for="ProgressNotes[i].AttachmentContentType" id="removeAttachment-@i" />
+
+                    <input type="file" asp-for="ProgressNotes[i].AttachmentFile" id="uploadedFile-@i"
+                           accept=".pdf,image/*" class="form-control mb-2"
+                           onchange="handleFileUpload(this, @i)" />
+
+                    <!-- Hidden input to track attachment removal -->
+                    <input type="hidden" asp-for="ProgressNotes[i].RemoveAttachment" id="removeAttachment-@i" />
+
+                    <div id="previewContainer-@i" class="mt-2" style="@(hasFile ? "" : "display: none;")">
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#filePreviewModal-@i">
+                            View File
+                        </button>
+                        <a href="@Url.Action("GetProgressNoteFile", "Form", new { id = Model.ProgressNotes[i].ProgressNotesID })"
+                           style="@(hasFile ? "" : "display: none;")"
+                           class="btn btn-primary" target="_blank">
+                            Download File
+                        </a>
+                        <button type="button" class="btn btn-danger ms-2"
+                                onclick="if (confirm('Are you sure you want to remove this file?')) removeFile(@i);">
+                            Remove File
+                        </button>
+                    </div>
+
+                    <!-- File Display Modal -->
+                    <div class="modal fade" id="filePreviewModal-@i" tabindex="-1" aria-labelledby="filePreviewModalLabel-@i" aria-hidden="true">
+                        <div class="modal-dialog modal-xl modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="filePreviewModalLabel-@i">File Preview</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body text-center" id="filePreviewContent-@i">
+                                    @if (Model.ProgressNotes[i].Attachment != null && Model.ProgressNotes[i].Attachment.Length > 0)
+                                    {
+                                        if (isPdf)
+                                        {
+                                            <iframe src="@Url.Action("GetProgressNoteFile", "Form", new { id = Model.ProgressNotes[i].ProgressNotesID })"
+                                                    type="application/pdf"
+                                                    width="100%" height="600px" style="border:none;">
+                                            </iframe>
+
+                                        }
+                                        else if (isImage)
+                                        {
+                                            <img src="@Url.Action("GetProgressNoteFile", "Form", new { id = Model.ProgressNotes[i].ProgressNotesID })"
+                                                 style="max-width:100%; max-height:600px;" alt="Uploaded image" />
+                                        }
+                                        else
+                                        {
+                                            <p>File preview not supported.</p>
+                                        }
+                                    }
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </td>
+
+                <td><button type="button" id="progressnotes-button-remove" onclick="removeRow(this)">❌</button></td>
+            </tr>
+        }
+    </tbody>
+
+</table>
+<button type="button" id="progressnotes-button-add" onclick="addRow(this)">➕ Add Row</button>

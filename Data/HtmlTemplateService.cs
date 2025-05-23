@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using System.Configuration;
 using System.Net.Http;
+using System.Text;
 
 namespace LittleArkFoundation.Data
 {
@@ -4910,6 +4911,63 @@ namespace LittleArkFoundation.Data
 
 
             return htmlDoc.DocumentNode.OuterHtml; // Return updated HTML
+        }
+
+        public async Task<List<string>> ModifyHtmlTemplateAsync_Page9(string htmlContent, int id, int assessmentID)
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var patient = await context.Patients.FindAsync(id);
+            var assessments = await context.Assessments.FirstOrDefaultAsync(p => p.AssessmentID == assessmentID);
+
+            int notesPerPage = 29;
+            var pagedNotes = await context.ProgressNotes
+                .Select((note, index) => new { note, index })
+                .GroupBy(x => x.index / notesPerPage)
+                .Select(g => g.Select(x => x.note).ToList())
+                .ToListAsync();
+
+            var fullPagesHtml = new List<string>();
+
+            foreach (var notesPage in pagedNotes)
+            {
+                // USING HTMLAGILITYPACK
+                var htmlDoc = new HtmlDocument();
+                htmlDoc.LoadHtml(htmlContent);
+
+                // Find the placeholder
+                var container = htmlDoc.GetElementbyId("progress-notes-container");
+
+                // Generate dynamic content
+                var topOffset = 115;
+                var spacing = 30;
+                var sb = new StringBuilder();
+
+                foreach (var note in notesPage)
+                {
+                    sb.Append($@"
+                    <div>
+                        <div style='width: 492px; height: 24px; left: 84px; top: {topOffset}px; position: absolute; overflow: hidden; outline: 1px black solid; outline-offset: -1px'>
+                            <div style='width: 480px; height: 8px; left: 6px; top: 8px; position: absolute; text-align: center; justify-content: center; display: flex; flex-direction: column; color: black; font-size: 8px; font-family: Inter; font-weight: 400; word-wrap: break-word'>
+                            {note.ProgressNotes}
+                            </div>
+                        </div>
+                        <div style='width: 67px; height: 24px; left: 18px; top: {topOffset}px; position: absolute; overflow: hidden; outline: 1px black solid; outline-offset: -1px'>
+                            <div style='width: 59px; height: 6px; left: 4px; top: 9px; position: absolute; text-align: center; justify-content: center; display: flex; flex-direction: column; color: black; font-size: 8px; font-family: Inter; font-weight: 400; word-wrap: break-word'>
+                            {note.Date}
+                            </div>
+                        </div>
+                    </div>");
+                    topOffset += spacing;
+                }
+
+                container.InnerHtml = sb.ToString();
+                fullPagesHtml.Add(htmlDoc.DocumentNode.OuterHtml);
+            }
+
+            return fullPagesHtml; // Return updated HTML
         }
     }
 }
