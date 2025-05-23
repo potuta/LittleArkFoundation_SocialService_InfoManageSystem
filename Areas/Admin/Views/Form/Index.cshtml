@@ -95,8 +95,9 @@
                     @foreach (var patient in Model.Patients)
                     {
                         var assessment = Model.Assessments
+                        .Where(a => a.PatientID == patient.PatientID)
                         .OrderByDescending(a => a.DateOfInterview)
-                        .FirstOrDefault(a => a.PatientID == patient.PatientID);
+                        .FirstOrDefault();
 
 					    var mswdclassification = Model.MSWDClassifications
 					    .FirstOrDefault(m => m.AssessmentID == assessment.AssessmentID);

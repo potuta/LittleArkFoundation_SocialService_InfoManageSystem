@@ -157,6 +157,10 @@ namespace LittleArkFoundation.Data
                 .ToTable("Patients")
                 .HasKey(p => p.PatientID);
 
+            modelBuilder.Entity<PatientsModel>()
+                .Property(p => p.PatientID)
+                .ValueGeneratedOnAdd();
+
             // Assessments
             modelBuilder.Entity<AssessmentsModel>()
                 .ToTable("Assessments")

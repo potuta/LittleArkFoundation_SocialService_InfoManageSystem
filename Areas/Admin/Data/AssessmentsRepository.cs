@@ -18,13 +18,13 @@ namespace LittleArkFoundation.Areas.Admin.Data
             _connectionString = connectionString;
         }
 
-        public async Task<int> GenerateID()
+        public async Task<int> GenerateID(int id)
         {
             try
             {
                 await using var context = new ApplicationDbContext(_connectionString);
-                var list = await context.Assessments.ToListAsync();
-                return list.Count + 1;
+                var count = await context.Assessments.CountAsync(a => a.PatientID == id);
+                return count + 1;
             }
             catch (Exception ex)
             {
