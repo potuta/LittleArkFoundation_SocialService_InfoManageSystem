@@ -80,5 +80,42 @@ namespace LittleArkFoundation.Data
                 }
             });
         }
+
+        public async Task<byte[]> ConvertImageToPdfAsync(byte[] imageBytes, string imageFormat = "png")
+        {
+            return await Task.Run(() =>
+            {
+                // Convert image bytes to base64 string
+                string base64 = Convert.ToBase64String(imageBytes);
+                string imageSrc = $"data:image/{imageFormat};base64,{base64}";
+
+                // Basic HTML that embeds the image
+                string html = $@"
+                    <html>
+                        <head>
+                            <style>
+                                body {{
+                                    margin: 0;
+                                    padding: 0;
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    height: 100vh;
+                                }}
+                                img {{
+                                    max-width: 100%;
+                                    max-height: 100%;
+                                }}
+                            </style>
+                        </head>
+                        <body>
+                            <img src='{imageSrc}' alt='Image'/>
+                        </body>
+                    </html>";
+
+                return GeneratePdfAsync(html, "Image Attachment");
+            });
+        }
+
     }
 }
