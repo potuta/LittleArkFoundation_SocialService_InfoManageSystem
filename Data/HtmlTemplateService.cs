@@ -4925,13 +4925,13 @@ namespace LittleArkFoundation.Data
             int notesPerPage = 29;
             var notes = await context.ProgressNotes
                 .Where(p => p.PatientID == id && p.AssessmentID == assessmentID)
-                .ToListAsync(); // ✅ Materialize first to allow indexing
+                .ToListAsync(); 
 
             var pagedNotes = notes
                 .Select((note, index) => new { note, index })
                 .GroupBy(x => x.index / notesPerPage)
                 .Select(g => g.Select(x => x.note).ToList())
-                .ToList(); // ✅ This is now pure LINQ-to-Objects
+                .ToList(); 
 
             var fullPagesHtml = new List<string>();
 

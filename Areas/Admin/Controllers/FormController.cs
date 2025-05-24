@@ -467,26 +467,6 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 htmlResults.Add(html);
             }
 
-            //for (int i = 0; i < htmlResults.Count; i++)
-            //{
-            //    ViewData[$"FormHtml{i + 1}"] = htmlResults[i];
-            //}
-
-            // Pass the modified HTML to the view
-            //ViewData[FormHtml1 = htmlContent;
-            //ViewData.FormHtml2 = htmlContent2;
-            //ViewBag.FormHtml3 = htmlContent3;
-            //ViewBag.FormHtml4 = htmlContent4;
-            //ViewBag.FormHtml5 = htmlContent5;
-            //ViewBag.FormHtml6 = htmlContent6;
-            //ViewBag.FormHtml7 = htmlContent7;
-            //ViewBag.FormHtml8 = htmlContent8;
-
-            //for (int i = 0; i < listHtmlContent9.Count; i++)
-            //{
-            //    ViewData[$"FormHtml{9 + i}"] = listHtmlContent9[i];
-            //}
-
             return View(new HtmlFormViewModel
             {
                 Id = id,
@@ -913,7 +893,6 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     }
                 }
 
-                //byte[] pdfBytes = _pdfConverter.Convert(pdfDocument);
                 byte[] mergedPdf = await new PDFService(_pdfConverter).MergePdfsAsync(pdfList);
                 return File(mergedPdf, "application/pdf", $"{id}.pdf");
             }
@@ -935,7 +914,6 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             if (progressNote == null || progressNote.Attachment == null || progressNote.Attachment.Length == 0)
                 return NotFound();
 
-            // Suggest a filename (you can customize this further if needed)
             var fileName = $"progress_note_{id}";
 
             // Optional: Add file extension based on MIME type
@@ -949,7 +927,6 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             };
 
             return File(progressNote.Attachment, contentType, fileName + extension);
-            //return File(progressNote.Attachment, progressNote.AttachmentContentType);
         }
     }
 }
