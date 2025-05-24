@@ -19,6 +19,10 @@ using LittleArkFoundation.Areas.Admin.Models.FamilyHistory;
 using LittleArkFoundation.Areas.Admin.Models.Assessments;
 using LittleArkFoundation.Areas.Admin.Models.MedicalHistory;
 using System.Security.Claims;
+using LittleArkFoundation.Areas.Admin.Models.ProgressNotes;
+using DocumentFormat.OpenXml.InkML;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using System.Text;
 // TODO: Implement logging for forms
 namespace LittleArkFoundation.Areas.Admin.Controllers
 {
@@ -126,7 +130,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 Medications = new List<MedicationsModel> { new MedicationsModel() },
                 HospitalizationHistory = new List<HospitalizationHistoryModel> { new HospitalizationHistoryModel() },
                 MentalHealthHistory = new List<MentalHealthHistoryModel> { new MentalHealthHistoryModel() },
-                FamilyHistory = new List<FamilyHistoryModel> { new FamilyHistoryModel() }
+                FamilyHistory = new List<FamilyHistoryModel> { new FamilyHistoryModel() },
+                ProgressNotes = new List<ProgressNotesModel> { new ProgressNotesModel() }
             };
 
             return View(viewModel);
@@ -308,6 +313,13 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 formViewModel.Goals.PatientID = patientID;
                 formViewModel.Goals.AssessmentID = assessmentID;
 
+                // PROGRESS NOTES
+                foreach (var progressNote in formViewModel.ProgressNotes)
+                {
+                    progressNote.PatientID = patientID;
+                    progressNote.AssessmentID = assessmentID;
+                }
+
                 await context.Assessments.AddAsync(formViewModel.Assessments);
                 await context.SaveChangesAsync();
 
@@ -345,6 +357,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 await context.HistoryOfViolence.AddAsync(formViewModel.HistoryOfViolence);
                 await context.StrengthsResources.AddAsync(formViewModel.StrengthsResources);
                 await context.Goals.AddAsync(formViewModel.Goals);
+                await context.ProgressNotes.AddRangeAsync(formViewModel.ProgressNotes);
                 await context.SaveChangesAsync();
 
                 TempData["SuccessMessage"] = "Successfully created new form";
@@ -363,6 +376,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             string templatePath6 = Path.Combine(_environment.WebRootPath, "templates/page6_form_template.html");
             string templatePath7 = Path.Combine(_environment.WebRootPath, "templates/page7_form_template.html");
             string templatePath8 = Path.Combine(_environment.WebRootPath, "templates/page8_form_template.html");
+            string templatePath9 = Path.Combine(_environment.WebRootPath, "templates/page9_form_template.html");
 
             if (!System.IO.File.Exists(templatePath))
             {
@@ -404,6 +418,11 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 return StatusCode(500, "Form template not found.");
             }
 
+            if (!System.IO.File.Exists(templatePath9))
+            {
+                return StatusCode(500, "Form template not found.");
+            }
+
             string htmlContent = await System.IO.File.ReadAllTextAsync(templatePath);
             htmlContent = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page1(htmlContent, id, assessmentID);
 
@@ -428,20 +447,52 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             string htmlContent8 = await System.IO.File.ReadAllTextAsync(templatePath8);
             htmlContent8 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page8(htmlContent8, id, assessmentID);
 
+            string htmlContent9 = await System.IO.File.ReadAllTextAsync(templatePath9);
+            var listHtmlContent9 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page9(htmlContent9, id, assessmentID);
+
+            var htmlResults = new List<string>
+            {
+                htmlContent,
+                htmlContent2,
+                htmlContent3,
+                htmlContent4,
+                htmlContent5,
+                htmlContent6,
+                htmlContent7,
+                htmlContent8
+            };
+
+            foreach (var html in listHtmlContent9)
+            {
+                htmlResults.Add(html);
+            }
+
+            //for (int i = 0; i < htmlResults.Count; i++)
+            //{
+            //    ViewData[$"FormHtml{i + 1}"] = htmlResults[i];
+            //}
+
             // Pass the modified HTML to the view
-            ViewBag.FormHtml1 = htmlContent;
-            ViewBag.FormHtml2 = htmlContent2;
-            ViewBag.FormHtml3 = htmlContent3;
-            ViewBag.FormHtml4 = htmlContent4;
-            ViewBag.FormHtml5 = htmlContent5;
-            ViewBag.FormHtml6 = htmlContent6;
-            ViewBag.FormHtml7 = htmlContent7;
-            ViewBag.FormHtml8 = htmlContent8;
+            //ViewData[FormHtml1 = htmlContent;
+            //ViewData.FormHtml2 = htmlContent2;
+            //ViewBag.FormHtml3 = htmlContent3;
+            //ViewBag.FormHtml4 = htmlContent4;
+            //ViewBag.FormHtml5 = htmlContent5;
+            //ViewBag.FormHtml6 = htmlContent6;
+            //ViewBag.FormHtml7 = htmlContent7;
+            //ViewBag.FormHtml8 = htmlContent8;
 
-            ViewBag.Id = id;
-            ViewBag.AssessmentID = assessmentID;
+            //for (int i = 0; i < listHtmlContent9.Count; i++)
+            //{
+            //    ViewData[$"FormHtml{9 + i}"] = listHtmlContent9[i];
+            //}
 
-            return View();
+            return View(new HtmlFormViewModel
+            {
+                Id = id,
+                AssessmentID = assessmentID,
+                HtmlPages = htmlResults
+            });
         }
 
         public async Task<IActionResult> Edit(int id, int assessmentID)
@@ -507,6 +558,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var historyofviolence = await context.HistoryOfViolence.FirstOrDefaultAsync(h => h.AssessmentID == assessmentID);
             var strengthsresources = await context.StrengthsResources.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
             var goals = await context.Goals.FirstOrDefaultAsync(g => g.AssessmentID == assessmentID);
+            var progressnotes = await context.ProgressNotes
+                                .Where(p => p.AssessmentID == assessmentID)
+                                .ToListAsync();
 
             var viewModel = new FormViewModel()
             {
@@ -545,7 +599,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 HistoryOfAbuse = historyofabuse,
                 HistoryOfViolence = historyofviolence,
                 StrengthsResources = strengthsresources,
-                Goals = goals
+                Goals = goals,
+                ProgressNotes = progressnotes
             };
 
             return View(viewModel);
@@ -566,6 +621,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var hospitalization = context.HospitalizationHistory.Where(h => h.AssessmentID == assessmentId);
             var mentalhealthhistory = context.MentalHealthHistory.Where(m => m.AssessmentID == assessmentId);
             var familyhistory = context.FamilyHistory.Where(f => f.AssessmentID == assessmentId);
+            var progressnotes = context.ProgressNotes.Where(p => p.AssessmentID == assessmentId);
 
             if (familyMembers.Any())
             {
@@ -590,6 +646,10 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             if (familyhistory.Any())
             {
                 context.FamilyHistory.RemoveRange(familyhistory);
+            }
+            if (progressnotes.Any())
+            {
+                context.ProgressNotes.RemoveRange(progressnotes);
             }
 
             if (formViewModel.FamilyMembers != null)
@@ -645,6 +705,32 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     familyHistory.AssessmentID = assessmentId;
                 }
                 await context.FamilyHistory.AddRangeAsync(formViewModel.FamilyHistory);
+            }
+            if (formViewModel.ProgressNotes != null)
+            {
+                foreach (var progressNote in formViewModel.ProgressNotes)
+                {
+                    progressNote.PatientID = id;
+                    progressNote.AssessmentID = assessmentId;
+
+                    if (progressNote.RemoveAttachment)
+                    {
+                        progressNote.Attachment = null;
+                        progressNote.AttachmentContentType = null;
+                    }
+                    else if (progressNote.AttachmentFile != null && progressNote.AttachmentFile.Length > 0)
+                    {
+                        using (var ms = new MemoryStream())
+                        {
+                            await progressNote.AttachmentFile.CopyToAsync(ms);
+                            progressNote.Attachment = ms.ToArray();
+                        }
+                        progressNote.AttachmentContentType = progressNote.AttachmentFile.ContentType;
+                    }
+
+                }
+
+                await context.ProgressNotes.AddRangeAsync(formViewModel.ProgressNotes);
             }
 
             // Update Patient first, avoids Forein Key constraint
@@ -703,6 +789,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 string templatePath6 = Path.Combine(_environment.WebRootPath, "templates/page6_form_template.html");
                 string templatePath7 = Path.Combine(_environment.WebRootPath, "templates/page7_form_template.html");
                 string templatePath8 = Path.Combine(_environment.WebRootPath, "templates/page8_form_template.html");
+                string templatePath9 = Path.Combine(_environment.WebRootPath, "templates/page9_form_template.html");
 
                 if (!System.IO.File.Exists(templatePath))
                 {
@@ -744,6 +831,11 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     return StatusCode(500, "Form template not found.");
                 }
 
+                if (!System.IO.File.Exists(templatePath9))
+                {
+                    return StatusCode(500, "Form template not found.");
+                }
+
                 string htmlContent = await System.IO.File.ReadAllTextAsync(templatePath);
                 htmlContent = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page1(htmlContent, id, assessmentID);
 
@@ -768,6 +860,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 string htmlContent8 = await System.IO.File.ReadAllTextAsync(templatePath8);
                 htmlContent8 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page8(htmlContent8, id, assessmentID);
 
+                string htmlContent9 = await System.IO.File.ReadAllTextAsync(templatePath9);
+                var listHtmlContent9 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page9(htmlContent9, id, assessmentID);
+
                 var pdf1 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent);
                 var pdf2 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent2);
                 var pdf3 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent3);
@@ -789,6 +884,35 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     pdf8
                 };
 
+                foreach (var htmlContentItem in listHtmlContent9)
+                {
+                    var pdf = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContentItem);
+                    pdfList.Add(pdf);
+                }
+
+                string connectionString = _connectionService.GetCurrentConnectionString();
+                await using var context = new ApplicationDbContext(connectionString);
+                var progressNotes = await context.ProgressNotes
+                    .Where(p => p.PatientID == id && p.AssessmentID == assessmentID)
+                    .ToListAsync();
+
+                foreach (var progressNote in progressNotes)
+                {
+                    if (progressNote.Attachment != null && progressNote.Attachment.Length > 0)
+                    {
+                        if (progressNote.AttachmentContentType != null && progressNote.AttachmentContentType.StartsWith("image/"))
+                        {
+                            var imagePdf = await new PDFService(_pdfConverter).ConvertImageToPdfAsync(progressNote.Attachment);
+                            pdfList.Add(imagePdf);
+                        }
+                        else if (progressNote.AttachmentContentType == "application/pdf")
+                        {
+                            pdfList.Add(progressNote.Attachment);
+                        }
+
+                    }
+                }
+
                 //byte[] pdfBytes = _pdfConverter.Convert(pdfDocument);
                 byte[] mergedPdf = await new PDFService(_pdfConverter).MergePdfsAsync(pdfList);
                 return File(mergedPdf, "application/pdf", $"{id}.pdf");
@@ -801,5 +925,31 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetProgressNoteFile(int id)
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var progressNote = await context.ProgressNotes.FindAsync(id);
+            if (progressNote == null || progressNote.Attachment == null || progressNote.Attachment.Length == 0)
+                return NotFound();
+
+            // Suggest a filename (you can customize this further if needed)
+            var fileName = $"progress_note_{id}";
+
+            // Optional: Add file extension based on MIME type
+            var contentType = progressNote.AttachmentContentType ?? "application/octet-stream";
+            var extension = contentType switch
+            {
+                "application/pdf" => ".pdf",
+                "image/jpeg" => ".jpg",
+                "image/png" => ".png",
+                _ => ""
+            };
+
+            return File(progressNote.Attachment, contentType, fileName + extension);
+            //return File(progressNote.Attachment, progressNote.AttachmentContentType);
+        }
     }
 }

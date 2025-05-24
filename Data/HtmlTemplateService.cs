@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using System.Configuration;
 using System.Net.Http;
+using System.Text;
 
 namespace LittleArkFoundation.Data
 {
@@ -4910,6 +4911,73 @@ namespace LittleArkFoundation.Data
 
 
             return htmlDoc.DocumentNode.OuterHtml; // Return updated HTML
+        }
+
+        public async Task<List<string>> ModifyHtmlTemplateAsync_Page9(string htmlContent, int id, int assessmentID)
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var patient = await context.Patients.FindAsync(id);
+            var assessments = await context.Assessments.FirstOrDefaultAsync(p => p.AssessmentID == assessmentID);
+
+            int notesPerPage = 29;
+            var notes = await context.ProgressNotes
+                .Where(p => p.PatientID == id && p.AssessmentID == assessmentID)
+                .ToListAsync(); // ✅ Materialize first to allow indexing
+
+            var pagedNotes = notes
+                .Select((note, index) => new { note, index })
+                .GroupBy(x => x.index / notesPerPage)
+                .Select(g => g.Select(x => x.note).ToList())
+                .ToList(); // ✅ This is now pure LINQ-to-Objects
+
+            var fullPagesHtml = new List<string>();
+
+            foreach (var notesPage in pagedNotes)
+            {
+                // UPDATE LOGO IMAGE
+                string imagePath = Path.Combine(_environment.WebRootPath, "resources", "NCH-Logo.png");
+                byte[] imageBytes = await System.IO.File.ReadAllBytesAsync(imagePath);
+                string base64String = Convert.ToBase64String(imageBytes);
+                htmlContent = htmlContent.Replace("/resources/NCH-Logo.png", $"data:image/png;base64,{base64String}");
+
+                // USING HTMLAGILITYPACK
+                var htmlDoc = new HtmlDocument();
+                htmlDoc.LoadHtml(htmlContent);
+
+                // Find the placeholder
+                var container = htmlDoc.GetElementbyId("progress-notes-container");
+
+                // Generate dynamic content
+                var topOffset = 115;
+                var spacing = 23;
+                var sb = new StringBuilder();
+
+                foreach (var note in notesPage)
+                {
+                    sb.Append($@"
+                    <div>
+                        <div style='width: 492px; height: 24px; left: 84px; top: {topOffset}px; position: absolute; overflow: hidden; outline: 1px black solid; outline-offset: -1px'>
+                            <div style='width: 480px; height: 8px; left: 6px; top: 8px; position: absolute; text-align: center; justify-content: center; display: flex; flex-direction: column; color: black; font-size: 8px; font-family: Inter; font-weight: 400; word-wrap: break-word'>
+                            {note.ProgressNotes}
+                            </div>
+                        </div>
+                        <div style='width: 67px; height: 24px; left: 18px; top: {topOffset}px; position: absolute; overflow: hidden; outline: 1px black solid; outline-offset: -1px'>
+                            <div style='width: 59px; height: 6px; left: 4px; top: 9px; position: absolute; text-align: center; justify-content: center; display: flex; flex-direction: column; color: black; font-size: 8px; font-family: Inter; font-weight: 400; word-wrap: break-word'>
+                            {note.Date}
+                            </div>
+                        </div>
+                    </div>");
+                    topOffset += spacing;
+                }
+
+                container.InnerHtml = sb.ToString();
+                fullPagesHtml.Add(htmlDoc.DocumentNode.OuterHtml);
+            }
+
+            return fullPagesHtml; // Return updated HTML
         }
     }
 }
