@@ -14,38 +14,6 @@
 </div>
 
 <!-- Page Containers -->
-@* <div id="page1" class="form-page">
-    @Html.Raw(ViewBag.FormHtml1)
-</div>
-
-<div id="page2" class="form-page" style="display: none;">
-    @Html.Raw(ViewBag.FormHtml2)
-</div>
-
-<div id="page3" class="form-page" style="display: none;">
-    @Html.Raw(ViewBag.FormHtml3)
-</div>
-
-<div id="page4" class="form-page" style="display: none;">
-    @Html.Raw(ViewBag.FormHtml4)
-</div>
-
-<div id="page5" class="form-page" style="display: none;">
-    @Html.Raw(ViewBag.FormHtml5)
-</div>
-
-<div id="page6" class="form-page" style="display: none;">
-    @Html.Raw(ViewBag.FormHtml6)
-</div>
-
-<div id="page7" class="form-page" style="display: none;">
-    @Html.Raw(ViewBag.FormHtml7)
-</div>
-
-<div id="page8" class="form-page" style="display: none;">
-    @Html.Raw(ViewBag.FormHtml8)
-</div> *@
-
 @for (int i = 0; i < Model.HtmlPages.Count; i++)
 {
     <div id="page@(i + 1)" class="form-page" style="display: @(i == 0 ? "block" : "none");">
@@ -54,19 +22,6 @@
 }
 
 <!-- Navigation Buttons -->
-@* <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
-    <button type="button" id="prevPage" class="btn btn-outline-primary" onclick="changePage(-1)"><</button>
-    <button type="button" id="navPage1" class="btn btn-outline-primary active" onclick="jumpToPage(1)">1</button>
-    <button type="button" id="navPage2" class="btn btn-outline-primary" onclick="jumpToPage(2)">2</button>
-    <button type="button" id="navPage3" class="btn btn-outline-primary" onclick="jumpToPage(3)">3</button>
-    <button type="button" id="navPage4" class="btn btn-outline-primary" onclick="jumpToPage(4)">4</button>
-    <button type="button" id="navPage5" class="btn btn-outline-primary" onclick="jumpToPage(5)">5</button>
-    <button type="button" id="navPage6" class="btn btn-outline-primary" onclick="jumpToPage(6)">6</button>
-    <button type="button" id="navPage7" class="btn btn-outline-primary" onclick="jumpToPage(7)">7</button>
-    <button type="button" id="navPage8" class="btn btn-outline-primary" onclick="jumpToPage(8)">8</button>
-    <button type="button" id="nextPage" class="btn btn-outline-primary" onclick="changePage(1)">></button>
-</div> *@
-
 <div class="btn-group btn-group-sm mt-3" role="group" aria-label="Small button group">
     <button type="button" id="prevPage" class="btn btn-outline-primary" onclick="changePage(-1)" disabled><</button>
 
