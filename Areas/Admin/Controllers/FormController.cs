@@ -21,6 +21,8 @@ using LittleArkFoundation.Areas.Admin.Models.MedicalHistory;
 using System.Security.Claims;
 using LittleArkFoundation.Areas.Admin.Models.ProgressNotes;
 using DocumentFormat.OpenXml.InkML;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using System.Text;
 // TODO: Implement logging for forms
 namespace LittleArkFoundation.Areas.Admin.Controllers
 {
@@ -68,6 +70,55 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                 return View(viewModel);
             }
+        }
+
+        public async Task<IActionResult> Search(string searchString, bool? isActive)
+        {
+            bool activeFlag = isActive ?? true;
+            ViewBag.isActive = activeFlag;
+
+            if (string.IsNullOrEmpty(searchString))
+            {
+                // If no search string, return all patients with the specified active flag
+                return RedirectToAction("Index", new { isActive = activeFlag });
+            }
+
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var searchWords = searchString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            var query = context.Patients.Where(u => u.IsActive == activeFlag);
+
+            foreach (var word in searchWords)
+            {
+                var term = word.Trim();
+
+                query = query.Where(u =>
+                    EF.Functions.Like(u.FirstName, $"%{term}%") ||
+                    EF.Functions.Like(u.MiddleName, $"%{term}%") ||
+                    EF.Functions.Like(u.LastName, $"%{term}%") ||
+                    EF.Functions.Like(u.PatientID.ToString(), $"%{term}%"));
+            }
+
+            var patients = await query.ToListAsync();
+
+            var assessments = await context.Assessments
+                    .OrderByDescending(a => a.DateOfInterview)
+                    .ThenByDescending(a => a.TimeOfInterview)
+                    .ToListAsync();
+
+            var mswdclassification = await context.MSWDClassification
+                .ToListAsync();
+
+            var viewModel = new PatientsViewModel
+            {
+                Patients = patients,
+                Assessments = assessments,
+                MSWDClassifications = mswdclassification
+            };
+
+            return View("Index", viewModel);
         }
 
         public async Task<IActionResult> ViewHistory(int id)
@@ -374,6 +425,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             string templatePath6 = Path.Combine(_environment.WebRootPath, "templates/page6_form_template.html");
             string templatePath7 = Path.Combine(_environment.WebRootPath, "templates/page7_form_template.html");
             string templatePath8 = Path.Combine(_environment.WebRootPath, "templates/page8_form_template.html");
+            string templatePath9 = Path.Combine(_environment.WebRootPath, "templates/page9_form_template.html");
 
             if (!System.IO.File.Exists(templatePath))
             {
@@ -415,6 +467,11 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 return StatusCode(500, "Form template not found.");
             }
 
+            if (!System.IO.File.Exists(templatePath9))
+            {
+                return StatusCode(500, "Form template not found.");
+            }
+
             string htmlContent = await System.IO.File.ReadAllTextAsync(templatePath);
             htmlContent = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page1(htmlContent, id, assessmentID);
 
@@ -439,20 +496,61 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             string htmlContent8 = await System.IO.File.ReadAllTextAsync(templatePath8);
             htmlContent8 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page8(htmlContent8, id, assessmentID);
 
-            // Pass the modified HTML to the view
-            ViewBag.FormHtml1 = htmlContent;
-            ViewBag.FormHtml2 = htmlContent2;
-            ViewBag.FormHtml3 = htmlContent3;
-            ViewBag.FormHtml4 = htmlContent4;
-            ViewBag.FormHtml5 = htmlContent5;
-            ViewBag.FormHtml6 = htmlContent6;
-            ViewBag.FormHtml7 = htmlContent7;
-            ViewBag.FormHtml8 = htmlContent8;
+            string htmlContent9 = await System.IO.File.ReadAllTextAsync(templatePath9);
+            var listHtmlContent9 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page9(htmlContent9, id, assessmentID);
 
-            ViewBag.Id = id;
-            ViewBag.AssessmentID = assessmentID;
+            var htmlResults = new List<string>
+            {
+                htmlContent,
+                htmlContent2,
+                htmlContent3,
+                htmlContent4,
+                htmlContent5,
+                htmlContent6,
+                htmlContent7,
+                htmlContent8
+            };
 
-            return View();
+            foreach (var html in listHtmlContent9)
+            {
+                htmlResults.Add(html);
+            }
+
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+            var progressNotes = await context.ProgressNotes
+                .Where(p => p.PatientID == id && p.AssessmentID == assessmentID)
+                .ToListAsync();
+
+            foreach (var progressNote in progressNotes)
+            {
+                if (progressNote.Attachment != null && progressNote.Attachment.Length > 0)
+                {
+                    if (progressNote.AttachmentContentType?.StartsWith("image/") == true)
+                    {
+                        string base64Image = Convert.ToBase64String(progressNote.Attachment);
+                        string imageHtml = $"<div style='text-align:center;'><img src='data:{progressNote.AttachmentContentType};base64,{base64Image}' style='max-width:100%; height:auto;' /></div>";
+                        htmlResults.Add(imageHtml);
+                    }
+                    else if (progressNote.AttachmentContentType == "application/pdf")
+                    {
+                        string base64Pdf = Convert.ToBase64String(progressNote.Attachment);
+                        string pdfHtml = $@"
+                        <div style='text-align:center;'>
+                            <iframe src='data:application/pdf;base64,{base64Pdf}' 
+                                    width='100%' height='800px' style='border:none;'></iframe>
+                        </div>";
+                        htmlResults.Add(pdfHtml);
+                    }
+                }
+            }
+
+            return View(new HtmlFormViewModel
+            {
+                Id = id,
+                AssessmentID = assessmentID,
+                HtmlPages = htmlResults
+            });
         }
 
         public async Task<IActionResult> Edit(int id, int assessmentID)
@@ -749,6 +847,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 string templatePath6 = Path.Combine(_environment.WebRootPath, "templates/page6_form_template.html");
                 string templatePath7 = Path.Combine(_environment.WebRootPath, "templates/page7_form_template.html");
                 string templatePath8 = Path.Combine(_environment.WebRootPath, "templates/page8_form_template.html");
+                string templatePath9 = Path.Combine(_environment.WebRootPath, "templates/page9_form_template.html");
 
                 if (!System.IO.File.Exists(templatePath))
                 {
@@ -790,6 +889,11 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     return StatusCode(500, "Form template not found.");
                 }
 
+                if (!System.IO.File.Exists(templatePath9))
+                {
+                    return StatusCode(500, "Form template not found.");
+                }
+
                 string htmlContent = await System.IO.File.ReadAllTextAsync(templatePath);
                 htmlContent = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page1(htmlContent, id, assessmentID);
 
@@ -814,6 +918,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 string htmlContent8 = await System.IO.File.ReadAllTextAsync(templatePath8);
                 htmlContent8 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page8(htmlContent8, id, assessmentID);
 
+                string htmlContent9 = await System.IO.File.ReadAllTextAsync(templatePath9);
+                var listHtmlContent9 = await new HtmlTemplateService(_environment, _connectionService).ModifyHtmlTemplateAsync_Page9(htmlContent9, id, assessmentID);
+
                 var pdf1 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent);
                 var pdf2 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent2);
                 var pdf3 = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContent3);
@@ -835,7 +942,35 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     pdf8
                 };
 
-                //byte[] pdfBytes = _pdfConverter.Convert(pdfDocument);
+                foreach (var htmlContentItem in listHtmlContent9)
+                {
+                    var pdf = await new PDFService(_pdfConverter).GeneratePdfAsync(htmlContentItem);
+                    pdfList.Add(pdf);
+                }
+
+                string connectionString = _connectionService.GetCurrentConnectionString();
+                await using var context = new ApplicationDbContext(connectionString);
+                var progressNotes = await context.ProgressNotes
+                    .Where(p => p.PatientID == id && p.AssessmentID == assessmentID)
+                    .ToListAsync();
+
+                foreach (var progressNote in progressNotes)
+                {
+                    if (progressNote.Attachment != null && progressNote.Attachment.Length > 0)
+                    {
+                        if (progressNote.AttachmentContentType != null && progressNote.AttachmentContentType.StartsWith("image/"))
+                        {
+                            var imagePdf = await new PDFService(_pdfConverter).ConvertImageToPdfAsync(progressNote.Attachment);
+                            pdfList.Add(imagePdf);
+                        }
+                        else if (progressNote.AttachmentContentType == "application/pdf")
+                        {
+                            pdfList.Add(progressNote.Attachment);
+                        }
+
+                    }
+                }
+
                 byte[] mergedPdf = await new PDFService(_pdfConverter).MergePdfsAsync(pdfList);
                 return File(mergedPdf, "application/pdf", $"{id}.pdf");
             }
@@ -857,7 +992,6 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             if (progressNote == null || progressNote.Attachment == null || progressNote.Attachment.Length == 0)
                 return NotFound();
 
-            // Suggest a filename (you can customize this further if needed)
             var fileName = $"progress_note_{id}";
 
             // Optional: Add file extension based on MIME type
@@ -871,43 +1005,6 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             };
 
             return File(progressNote.Attachment, contentType, fileName + extension);
-            //return File(progressNote.Attachment, progressNote.AttachmentContentType);
         }
-
-        private string GetMimeType(byte[] fileBytes)
-        {
-            // PDF magic number: %PDF- (25 50 44 46 2D)
-            if (fileBytes.Length > 4 &&
-                fileBytes[0] == 0x25 && fileBytes[1] == 0x50 && fileBytes[2] == 0x44 && fileBytes[3] == 0x46 && fileBytes[4] == 0x2D)
-            {
-                return "application/pdf";
-            }
-
-            // JPEG magic numbers: FF D8 FF
-            if (fileBytes.Length > 3 &&
-                fileBytes[0] == 0xFF && fileBytes[1] == 0xD8 && fileBytes[2] == 0xFF)
-            {
-                return "image/jpeg";
-            }
-
-            // PNG magic numbers: 89 50 4E 47
-            if (fileBytes.Length > 4 &&
-                fileBytes[0] == 0x89 && fileBytes[1] == 0x50 && fileBytes[2] == 0x4E && fileBytes[3] == 0x47)
-            {
-                return "image/png";
-            }
-
-            // GIF magic numbers: GIF87a or GIF89a
-            if (fileBytes.Length > 6 &&
-                fileBytes[0] == 0x47 && fileBytes[1] == 0x49 && fileBytes[2] == 0x46 &&
-                (fileBytes[3] == 0x38 && (fileBytes[4] == 0x37 || fileBytes[4] == 0x39) && fileBytes[5] == 0x61))
-            {
-                return "image/gif";
-            }
-
-            return "application/octet-stream"; // fallback
-        }
-
-
     }
 }

@@ -1,4 +1,6 @@
-﻿@{
+﻿@using LittleArkFoundation.Areas.Admin.Models.Form
+@model HtmlFormViewModel
+@{
     ViewData["Title"] = "View Form";
     Layout = "_AdminLayout";
 }
@@ -12,65 +14,38 @@
 </div>
 
 <!-- Page Containers -->
-<div id="page1" class="form-page">
-	@Html.Raw(ViewBag.FormHtml1)
-</div>
-
-<div id="page2" class="form-page" style="display: none;">
-	@Html.Raw(ViewBag.FormHtml2)
-</div>
-
-<div id="page3" class="form-page" style="display: none;">
-    @Html.Raw(ViewBag.FormHtml3)
-</div>
-
-<div id="page4" class="form-page" style="display: none;">
-    @Html.Raw(ViewBag.FormHtml4)
-</div>
-
-<div id="page5" class="form-page" style="display: none;">
-    @Html.Raw(ViewBag.FormHtml5)
-</div>
-
-<div id="page6" class="form-page" style="display: none;">
-    @Html.Raw(ViewBag.FormHtml6)
-</div>
-
-<div id="page7" class="form-page" style="display: none;">
-    @Html.Raw(ViewBag.FormHtml7)
-</div>
-
-<div id="page8" class="form-page" style="display: none;">
-    @Html.Raw(ViewBag.FormHtml8)
-</div>
+@for (int i = 0; i < Model.HtmlPages.Count; i++)
+{
+    <div id="page@(i + 1)" class="form-page" style="display: @(i == 0 ? "block" : "none");">
+        @Html.Raw(Model.HtmlPages[i])
+    </div>
+}
 
 <!-- Navigation Buttons -->
-<div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
-    <button type="button" id="prevPage" class="btn btn-outline-primary" onclick="changePage(-1)"><</button>
-    <button type="button" id="navPage1" class="btn btn-outline-primary active" onclick="jumpToPage(1)">1</button>
-    <button type="button" id="navPage2" class="btn btn-outline-primary" onclick="jumpToPage(2)">2</button>
-    <button type="button" id="navPage3" class="btn btn-outline-primary" onclick="jumpToPage(3)">3</button>
-    <button type="button" id="navPage4" class="btn btn-outline-primary" onclick="jumpToPage(4)">4</button>
-	<button type="button" id="navPage5" class="btn btn-outline-primary" onclick="jumpToPage(5)">5</button>
-    <button type="button" id="navPage6" class="btn btn-outline-primary" onclick="jumpToPage(6)">6</button>
-    <button type="button" id="navPage7" class="btn btn-outline-primary" onclick="jumpToPage(7)">7</button>
-    <button type="button" id="navPage8" class="btn btn-outline-primary" onclick="jumpToPage(8)">8</button>
+<div class="btn-group btn-group-sm mt-3" role="group" aria-label="Small button group">
+    <button type="button" id="prevPage" class="btn btn-outline-primary" onclick="changePage(-1)" disabled><</button>
+
+    @for (int i = 0; i < Model.HtmlPages.Count; i++)
+    {
+        <button type="button" id="navPage@(i + 1)" class="btn btn-outline-primary @(i == 0 ? "active" : "")" onclick="jumpToPage(@(i + 1))">@(@i + 1)</button>
+    }
+
     <button type="button" id="nextPage" class="btn btn-outline-primary" onclick="changePage(1)">></button>
 </div>
 
 <!-- Form for PDF Download -->
 <form asp-action="DownloadPDF" method="post" class="mt-3">
     @Html.AntiForgeryToken()
-    <input type="hidden" name="id" value="@ViewBag.Id" />
-    <input type="hidden" name="assessmentID" value="@ViewBag.AssessmentID" />
-    <a class="btn btn-sm btn-success" asp-action="Edit" asp-route-id="@ViewBag.Id" asp-route-assessmentID="@ViewBag.AssessmentID">Edit</a>
+    <input type="hidden" name="id" value="@Model.Id" />
+    <input type="hidden" name="assessmentID" value="@Model.AssessmentID" />
+    <a class="btn btn-sm btn-success" asp-action="Edit" asp-route-id="@Model.Id" asp-route-assessmentID="@Model.AssessmentID">Edit</a>
     <button type="submit" class="btn btn-sm btn-primary">Download PDF</button>
 </form>
 
 @section Scripts {
     <script>
         let currentPage = 1;
-        const totalPages = 8; // Adjust based on total form pages
+        const totalPages = @Model.HtmlPages.Count;
 
         function changePage(step) {
             document.getElementById(`page${currentPage}`).style.display = "none";
@@ -83,14 +58,13 @@
 
             document.getElementById(`navPage${currentPage}`).classList.add("active");
 
-            // Show/hide navigation buttons
-            document.getElementById("prevPage").disabled = currentPage > 1 ? false : true;
-            document.getElementById("nextPage").disabled = currentPage < totalPages ? false : true;
+            document.getElementById("prevPage").disabled = currentPage === 1;
+            document.getElementById("nextPage").disabled = currentPage === totalPages;
         }
 
-        function jumpToPage(step) {
+        function jumpToPage(pageNum) {
             document.getElementById(`page${currentPage}`).style.display = "none";
-            currentPage = step;
+            currentPage = pageNum;
             document.getElementById(`page${currentPage}`).style.display = "block";
 
             for (let i = 1; i <= totalPages; i++) {
@@ -99,10 +73,8 @@
 
             document.getElementById(`navPage${currentPage}`).classList.add("active");
 
-            // Show/hide navigation buttons
-            document.getElementById("prevPage").disabled = currentPage > 1 ? false : true;
-            document.getElementById("nextPage").disabled = currentPage < totalPages ? false : true;
+            document.getElementById("prevPage").disabled = currentPage === 1;
+            document.getElementById("nextPage").disabled = currentPage === totalPages;
         }
-
     </script>
 }

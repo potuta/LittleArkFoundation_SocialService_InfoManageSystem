@@ -4923,16 +4923,26 @@ namespace LittleArkFoundation.Data
             var assessments = await context.Assessments.FirstOrDefaultAsync(p => p.AssessmentID == assessmentID);
 
             int notesPerPage = 29;
-            var pagedNotes = await context.ProgressNotes
+            var notes = await context.ProgressNotes
+                .Where(p => p.PatientID == id && p.AssessmentID == assessmentID)
+                .ToListAsync(); 
+
+            var pagedNotes = notes
                 .Select((note, index) => new { note, index })
                 .GroupBy(x => x.index / notesPerPage)
                 .Select(g => g.Select(x => x.note).ToList())
-                .ToListAsync();
+                .ToList(); 
 
             var fullPagesHtml = new List<string>();
 
             foreach (var notesPage in pagedNotes)
             {
+                // UPDATE LOGO IMAGE
+                string imagePath = Path.Combine(_environment.WebRootPath, "resources", "NCH-Logo.png");
+                byte[] imageBytes = await System.IO.File.ReadAllBytesAsync(imagePath);
+                string base64String = Convert.ToBase64String(imageBytes);
+                htmlContent = htmlContent.Replace("/resources/NCH-Logo.png", $"data:image/png;base64,{base64String}");
+
                 // USING HTMLAGILITYPACK
                 var htmlDoc = new HtmlDocument();
                 htmlDoc.LoadHtml(htmlContent);
@@ -4942,7 +4952,7 @@ namespace LittleArkFoundation.Data
 
                 // Generate dynamic content
                 var topOffset = 115;
-                var spacing = 30;
+                var spacing = 23;
                 var sb = new StringBuilder();
 
                 foreach (var note in notesPage)
