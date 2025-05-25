@@ -72,6 +72,55 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
+        public async Task<IActionResult> Search(string searchString, bool? isActive)
+        {
+            bool activeFlag = isActive ?? true;
+            ViewBag.isActive = activeFlag;
+
+            if (string.IsNullOrEmpty(searchString))
+            {
+                // If no search string, return all patients with the specified active flag
+                return RedirectToAction("Index", new { isActive = activeFlag });
+            }
+
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var searchWords = searchString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            var query = context.Patients.Where(u => u.IsActive == activeFlag);
+
+            foreach (var word in searchWords)
+            {
+                var term = word.Trim();
+
+                query = query.Where(u =>
+                    EF.Functions.Like(u.FirstName, $"%{term}%") ||
+                    EF.Functions.Like(u.MiddleName, $"%{term}%") ||
+                    EF.Functions.Like(u.LastName, $"%{term}%") ||
+                    EF.Functions.Like(u.PatientID.ToString(), $"%{term}%"));
+            }
+
+            var patients = await query.ToListAsync();
+
+            var assessments = await context.Assessments
+                    .OrderByDescending(a => a.DateOfInterview)
+                    .ThenByDescending(a => a.TimeOfInterview)
+                    .ToListAsync();
+
+            var mswdclassification = await context.MSWDClassification
+                .ToListAsync();
+
+            var viewModel = new PatientsViewModel
+            {
+                Patients = patients,
+                Assessments = assessments,
+                MSWDClassifications = mswdclassification
+            };
+
+            return View("Index", viewModel);
+        }
+
         public async Task<IActionResult> ViewHistory(int id)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();

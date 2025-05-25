@@ -67,11 +67,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             {
                 if (!string.IsNullOrEmpty(searchString))
                 {
+                    var loweredSearch = searchString.ToLower();
                     if (isArchive)
                     {
                         var usersArchive = await context.UsersArchives
                                             .Where(u => string.IsNullOrEmpty(searchString) ||
-                                            u.Username.ToLower().Contains(searchString) ||
+                                            u.Username.ToLower().Contains(loweredSearch) ||
                                             u.UserID.ToString().Contains(searchString)) 
                                             .ToListAsync();
 
@@ -88,7 +89,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                     var users = await context.Users
                                     .Where(u => string.IsNullOrEmpty(searchString) ||
-                                    u.Username.ToLower().Contains(searchString) ||
+                                    u.Username.ToLower().Contains(loweredSearch) ||
                                     u.UserID.ToString().Contains(searchString)) 
                                     .ToListAsync();
 

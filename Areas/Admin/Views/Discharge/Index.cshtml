@@ -16,10 +16,11 @@
     <div class="search-container" style="width: 100%">
         <form asp-action="Search" asp-controller="Discharge">
             <div class="input-group">
-                <input type="search" name="searchString" class="form-control" placeholder="Search by First Name" aria-label="Search">
+                <input type="search" name="searchString" class="form-control" placeholder="Search by FullName" aria-label="Search">
                 <button type="submit" class="btn btn-dark">Search</button>
             </div>
         </form>
+        <a class="btn btn-primary" asp-action="Index" asp-controller="Discharge">← Back to Full List</a>
     </div>
 
     <div class="btn-group">

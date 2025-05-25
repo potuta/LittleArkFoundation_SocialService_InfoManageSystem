@@ -10,7 +10,7 @@
 <h2>Admission</h2>
 
 <div class="search-container">
-    <form asp-action="Search" asp-controller="Form">
+    <form asp-action="Search" asp-route-isActive="@isActive" asp-controller="Form">
         <div class="input-group">
             <input type="search" name="searchString" class="form-control" placeholder="Search by Id/FullName" aria-label="Search">
             <button type="submit" class="btn btn-dark">Search</button>
