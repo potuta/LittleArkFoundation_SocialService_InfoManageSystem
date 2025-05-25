@@ -1,6 +1,80 @@
-﻿@{
+﻿@model LittleArkFoundation.Areas.Admin.Models.Dashboard.DashboardViewModel
+@{
     ViewData["Title"] = "Dashboard";
     Layout = "_AdminLayout";
 }
 
+<style>
+    .dashboard-div {
+		font-family: Arial, sans-serif;
+    }
+
+    .dashboard-table {
+        border-collapse: collapse;
+        width: 60%;
+        margin-bottom: 40px;
+    }
+
+    .dashboard-table th, td {
+        border: 1px solid #dddddd;
+        text-align: center;
+        padding: 12px;
+    }
+
+    .dashboard-table th {
+        background-color: #f2f2f2;
+    }
+
+    .dashboard-section-title {
+        font-size: 18px;
+        margin-top: 40px;
+        margin-bottom: 10px;
+    }
+</style>
+
 <h2>Dashboard</h2>
+<hr />
+
+<div class="dashboard-div">
+    <div class="dashboard-section-title">Daily Statistics</div>
+    <table class="dashboard-table">
+        <tr>
+            <th>OPD</th>
+            <th>Admission</th>
+            <th>Discharge</th>
+        </tr>
+        <tr>
+            <td>0</td>
+            <td>@Model.DailyAssessments.Count</td>
+            <td>@Model.DailyDischarges.Count</td>
+        </tr>
+    </table>
+
+    <div class="dashboard-section-title">Monthly Statistics</div>
+    <table class="dashboard-table">
+        <tr>
+            <th>OPD</th>
+            <th>Admission</th>
+            <th>Discharge</th>
+        </tr>
+        <tr>
+            <td>0</td>
+            <td>@Model.MonthlyAssessments.Count</td>
+            <td>@Model.MonthlyDischarges.Count</td>
+        </tr>
+    </table>
+
+    <div class="dashboard-section-title">Yearly Statistics</div>
+    <table class="dashboard-table">
+        <tr>
+            <th>OPD</th>
+            <th>Admission</th>
+            <th>Discharge</th>
+        </tr>
+        <tr>
+            <td>0</td>
+            <td>@Model.YearlyAssessments.Count</td>
+            <td>@Model.YearlyDischarges.Count</td>
+        </tr>
+    </table>
+</div>
