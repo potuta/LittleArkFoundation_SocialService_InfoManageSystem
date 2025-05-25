@@ -516,6 +516,35 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 htmlResults.Add(html);
             }
 
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+            var progressNotes = await context.ProgressNotes
+                .Where(p => p.PatientID == id && p.AssessmentID == assessmentID)
+                .ToListAsync();
+
+            foreach (var progressNote in progressNotes)
+            {
+                if (progressNote.Attachment != null && progressNote.Attachment.Length > 0)
+                {
+                    if (progressNote.AttachmentContentType?.StartsWith("image/") == true)
+                    {
+                        string base64Image = Convert.ToBase64String(progressNote.Attachment);
+                        string imageHtml = $"<div style='text-align:center;'><img src='data:{progressNote.AttachmentContentType};base64,{base64Image}' style='max-width:100%; height:auto;' /></div>";
+                        htmlResults.Add(imageHtml);
+                    }
+                    else if (progressNote.AttachmentContentType == "application/pdf")
+                    {
+                        string base64Pdf = Convert.ToBase64String(progressNote.Attachment);
+                        string pdfHtml = $@"
+                        <div style='text-align:center;'>
+                            <iframe src='data:application/pdf;base64,{base64Pdf}' 
+                                    width='100%' height='800px' style='border:none;'></iframe>
+                        </div>";
+                        htmlResults.Add(pdfHtml);
+                    }
+                }
+            }
+
             return View(new HtmlFormViewModel
             {
                 Id = id,
