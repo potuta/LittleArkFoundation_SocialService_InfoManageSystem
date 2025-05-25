@@ -75,6 +75,47 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return View(viewModel);
         }
 
+        public async Task<IActionResult> Search(string searchString)
+        {
+            if (string.IsNullOrEmpty(searchString))
+            {
+                // If no search string, return all patients with the specified active flag
+                return RedirectToAction("Index");
+            }
+
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+
+            var searchWords = searchString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            var query = context.Discharges
+                .OrderByDescending(d => d.DischargedDate)
+                .AsQueryable();
+
+            foreach (var word in searchWords)
+            {
+                var term = word.Trim();
+
+                query = query.Where(u =>
+                    EF.Functions.Like(u.FirstName, $"%{term}%") ||
+                    EF.Functions.Like(u.MiddleName, $"%{term}%") ||
+                    EF.Functions.Like(u.LastName, $"%{term}%"));
+            }
+
+            var discharges = await query.ToListAsync();
+
+            var viewModel = new DischargeViewModel
+            {
+                Users = users,
+                Discharges = discharges,
+            };
+
+            return View("Index", viewModel);
+        }
+
         public async Task<IActionResult> SortBy(string sortByUserID)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
