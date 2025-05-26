@@ -11,6 +11,7 @@ namespace LittleArkFoundation.Areas.Admin.Models.ProgressNotes
         public string ProgressNotes { get; set; } = "N/A";
         public byte[]? Attachment { get; set; }
         public string? AttachmentContentType { get; set; } = "application/octet-stream";
+        public int UserID { get; set; } = 0;
 
         [NotMapped]
         public IFormFile? AttachmentFile { get; set; }

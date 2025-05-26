@@ -33,6 +33,7 @@ using LittleArkFoundation.Areas.Admin.Models.Patients;
 using LittleArkFoundation.Areas.Admin.Models.PregnancyBirthHistory;
 using LittleArkFoundation.Areas.Admin.Models.PresentingProblems;
 using LittleArkFoundation.Areas.Admin.Models.PrimaryCareDoctor;
+using LittleArkFoundation.Areas.Admin.Models.ProgressNotes;
 using LittleArkFoundation.Areas.Admin.Models.RecentLosses;
 using LittleArkFoundation.Areas.Admin.Models.Referrals;
 using LittleArkFoundation.Areas.Admin.Models.SafetyConcerns;
@@ -225,7 +226,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
                     // ASSESSMENTS
-                    var assessment = await context.Assessments.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
+                    var assessment = await context.Assessments.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
                     var newAssessment = new AssessmentsModel
                     {
                         AssessmentID = newAssessmentID,
@@ -241,7 +242,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     };
 
                     // REFERRALS
-                    var referral = await context.Referrals.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
+                    var referral = await context.Referrals.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
                     var newReferral = new ReferralsModel
                     {
                         AssessmentID = newAssessmentID,
@@ -254,7 +255,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     };
 
                     // INFORMANTS
-                    var informant = await context.Informants.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
+                    var informant = await context.Informants.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
                     var newInformant = new InformantsModel
                     {
                         AssessmentID = newAssessmentID,
@@ -271,7 +272,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                     // FAMILY COMPOSITION
                     var familyComposition = await context.FamilyComposition
-                        .Where(s => s.AssessmentID == assessmentID)
+                        .Where(s => s.AssessmentID == assessmentID && s.PatientID == patientID)
                         .ToListAsync();
 
                     var newFamilyComposition = new List<FamilyCompositionModel>();
@@ -297,7 +298,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     }
 
                     // HOUSEHOLD
-                    var household = await context.Households.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
+                    var household = await context.Households.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
                     var newHousehold = new HouseholdModel
                     {
                         AssessmentID = newAssessmentID,
@@ -309,7 +310,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     };
 
                     // MSWD CLASSIFICATION
-                    var mswdclassification = await context.MSWDClassification.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
+                    var mswdclassification = await context.MSWDClassification.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
                     var newMSWDClassification = new MSWDClassificationModel
                     {
                         AssessmentID = newAssessmentID,
@@ -321,7 +322,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     };
 
                     // MONTHLY EXPENSES & UTILITIES
-                    var monthlyExpenses = await context.MonthlyExpenses.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
+                    var monthlyExpenses = await context.MonthlyExpenses.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
                     var newMonthlyExpenses = new MonthlyExpensesModel
                     {
                         AssessmentID = newAssessmentID,
@@ -339,7 +340,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                         Total = monthlyExpenses.Total
                     };
 
-                    var utilities = await context.Utilities.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
+                    var utilities = await context.Utilities.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
                     var newUtilities = new UtilitiesModel
                     {
                         AssessmentID = newAssessmentID,
@@ -352,7 +353,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     };
 
                     // MEDICAL HISTORY
-                    var medicalHistory = await context.MedicalHistory.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
+                    var medicalHistory = await context.MedicalHistory.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
                     var newMedicalHistory = new MedicalHistoryModel
                     {
                         AssessmentID = newAssessmentID,
@@ -366,7 +367,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     };
 
                     // CHILD HEALTH
-                    var childHealth = await context.ChildHealth.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
+                    var childHealth = await context.ChildHealth.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
                     var newChildHealth = new ChildHealthModel
                     {
                         AssessmentID = newAssessmentID,
@@ -381,7 +382,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                     // DIAGNOSES
                     var diagnoses = await context.Diagnoses
-                        .Where(s => s.AssessmentID == assessmentID)
+                        .Where(s => s.AssessmentID == assessmentID && s.PatientID == patientID)
                         .ToListAsync();
 
                     var newDiagnoses = new List<DiagnosesModel>();
@@ -404,7 +405,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                     // MEDICATIONS
                     var medications = await context.Medications
-                        .Where(s => s.AssessmentID == assessmentID)
+                        .Where(s => s.AssessmentID == assessmentID && s.PatientID == patientID)
                         .ToListAsync();
 
                     var newMedications = new List<MedicationsModel>();
@@ -431,7 +432,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                     // HOSPITALIZATION HISTORY
                     var hospitalizationHistory = await context.HospitalizationHistory
-                        .Where(s => s.AssessmentID == assessmentID)
+                        .Where(s => s.AssessmentID == assessmentID && s.PatientID == patientID)
                         .ToListAsync();
 
                     var newHospitalizationHistory = new List<HospitalizationHistoryModel>();
@@ -452,7 +453,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     }
 
                     // MEDICAL SCREENINGS
-                    var medicalscreenings = await context.MedicalScreenings.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
+                    var medicalscreenings = await context.MedicalScreenings.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
                     var newMedicalScreenings = new MedicalScreeningsModel
                     {
                         AssessmentID = newAssessmentID,
@@ -467,7 +468,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     };
 
                     // PRIMARY CARE DOCTOR
-                    var primaryCareDoctor = await context.PrimaryCareDoctor.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
+                    var primaryCareDoctor = await context.PrimaryCareDoctor.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
                     var newPrimaryCareDoctor = new PrimaryCareDoctorModel
                     {
                         AssessmentID = newAssessmentID,
@@ -478,7 +479,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     };
 
                     // PRESENTING PROBLEMS
-                    var presentingproblems = await context.PresentingProblems.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
+                    var presentingproblems = await context.PresentingProblems.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
                     var newPresentingProblems = new PresentingProblemsModel
                     {
                         AssessmentID = newAssessmentID,
@@ -499,7 +500,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     };
 
                     // RECENT LOSSES
-                    var recentlosses = await context.RecentLosses.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
+                    var recentlosses = await context.RecentLosses.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
                     var newRecentLosses = new RecentLossesModel
                     {
                         AssessmentID = newAssessmentID,
@@ -520,7 +521,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     };
 
                     // PREGNANCY BIRTH HISTORY
-                    var pregnancyBirthHistory = await context.PregnancyBirthHistory.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
+                    var pregnancyBirthHistory = await context.PregnancyBirthHistory.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
                     var newPregnancyBirthHistory = new PregnancyBirthHistoryModel
                     {
                         AssessmentID = newAssessmentID,
@@ -543,7 +544,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     };
 
                     // DEVELOPMENTAL HISTORY
-                    var developmentalhistory = await context.DevelopmentalHistory.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
+                    var developmentalhistory = await context.DevelopmentalHistory.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
                     var newDevelopmentalHistory = new DevelopmentalHistoryModel
                     {
                         AssessmentID = newAssessmentID,
@@ -566,7 +567,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                     // MENTAL HEALTH HISTORY
                     var mentalHealthHistory = await context.MentalHealthHistory
-                        .Where(s => s.AssessmentID == assessmentID)
+                        .Where(s => s.AssessmentID == assessmentID && s.PatientID == patientID)
                         .ToListAsync();
 
                     var newMentalHealthHistory = new List<MentalHealthHistoryModel>();
@@ -589,7 +590,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                     // FAMILY HISTORY   
                     var familyHistory = await context.FamilyHistory
-                        .Where(s => s.AssessmentID == assessmentID)
+                        .Where(s => s.AssessmentID == assessmentID && s.PatientID == patientID)
                         .ToListAsync();
 
                     var newFamilyHistory = new List<FamilyHistoryModel>();
@@ -619,7 +620,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     }
 
                     // SAFETY CONCERNS
-                    var safetyConcerns = await context.SafetyConcerns.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
+                    var safetyConcerns = await context.SafetyConcerns.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
                     var newSafetyConcerns = new SafetyConcernsModel
                     {
                         AssessmentID = newAssessmentID,
@@ -637,7 +638,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     };
 
                     // CURRENT FUNCTIONING
-                    var currentFunctioning = await context.CurrentFunctioning.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
+                    var currentFunctioning = await context.CurrentFunctioning.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
                     var newCurrentFunctioning = new CurrentFunctioningModel
                     {
                         AssessmentID = newAssessmentID,
@@ -663,7 +664,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     };
 
                     // PARENT CHILD RELATIONSHIP
-                    var parentchildrelationship = await context.ParentChildRelationship.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
+                    var parentchildrelationship = await context.ParentChildRelationship.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
                     var newParentChildRelationship = new ParentChildRelationshipModel
                     {
                         AssessmentID = newAssessmentID,
@@ -674,7 +675,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     };
 
                     // EDUCATION
-                    var education = await context.Education.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
+                    var education = await context.Education.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
                     var newEducation = new EducationModel
                     {
                         AssessmentID = newAssessmentID,
@@ -700,7 +701,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     };
 
                     // EMPLOYMENT
-                    var employment = await context.Employment.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
+                    var employment = await context.Employment.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
                     var newEmployment = new EmploymentModel
                     {
                         AssessmentID = newAssessmentID,
@@ -712,7 +713,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     };
 
                     // HOUSING
-                    var housing = await context.Housing.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
+                    var housing = await context.Housing.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
                     var newHousing = new HousingModel
                     {
                         AssessmentID = newAssessmentID,
@@ -726,7 +727,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     };
 
                     // FOSTER CARE
-                    var fosterCare = await context.FosterCare.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
+                    var fosterCare = await context.FosterCare.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
                     var newFosterCare = new FosterCareModel
                     {
                         AssessmentID = newAssessmentID,
@@ -741,7 +742,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     };
 
                     // ALCOHOL DRUG ASSESSMENT
-                    var alcoholDrugAssessment = await context.AlcoholDrugAssessment.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
+                    var alcoholDrugAssessment = await context.AlcoholDrugAssessment.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
                     var newAlcoholDrugAssessment = new AlcoholDrugAssessmentModel
                     {
                         AssessmentID = newAssessmentID,
@@ -763,7 +764,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     };
 
                     // LEGAL INVOLVEMENT
-                    var legalInvolvement = await context.LegalInvolvement.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
+                    var legalInvolvement = await context.LegalInvolvement.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
                     var newLegalInvolvement = new LegalInvolvementModel
                     {
                         AssessmentID = newAssessmentID,
@@ -781,7 +782,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     };
 
                     // HISTORY OF ABUSE
-                    var historyOfAbuse = await context.HistoryOfAbuse.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
+                    var historyOfAbuse = await context.HistoryOfAbuse.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
                     var newHistoryOfAbuse = new HistoryOfAbuseModel
                     {
                         AssessmentID = newAssessmentID,
@@ -818,7 +819,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     };
 
                     // HISTORY OF VIOLENCE
-                    var historyOfViolence = await context.HistoryOfViolence.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
+                    var historyOfViolence = await context.HistoryOfViolence.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
                     var newHistoryOfViolence = new HistoryOfViolenceModel
                     {
                         AssessmentID = newAssessmentID,
@@ -849,7 +850,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     };
 
                     // STRENGTHS RESOURCES
-                    var strengthsResources = await context.StrengthsResources.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
+                    var strengthsResources = await context.StrengthsResources.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
                     var newStrengthsResources = new StrengthsResourcesModel
                     {
                         AssessmentID = newAssessmentID,
@@ -877,7 +878,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     };
 
                     // GOALS
-                    var goals = await context.Goals.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
+                    var goals = await context.Goals.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
                     var newGoals = new GoalsModel
                     {
                         AssessmentID = newAssessmentID,
@@ -889,6 +890,26 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                         Goal3 = goals.Goal3,
                         AdditionalInfo = goals.AdditionalInfo
                     };
+
+                    // PROGRESS NOTES
+                    var progressnotes = await context.ProgressNotes
+                        .Where(s => s.AssessmentID == assessmentID && s.PatientID == patientID)
+                        .ToListAsync();
+                    var newProgressNotes = new List<ProgressNotesModel>();
+                    foreach (var progressNote in progressnotes)
+                    {
+                        var newProgressNote = new ProgressNotesModel
+                        {
+                            AssessmentID = newAssessmentID,
+                            PatientID = patientID,
+                            Date = progressNote.Date,
+                            ProgressNotes = progressNote.ProgressNotes,
+                            Attachment = progressNote.Attachment,
+                            AttachmentContentType = progressNote.AttachmentContentType,
+                            UserID = progressNote.UserID
+                        };
+                        newProgressNotes.Add(newProgressNote);
+                    }
 
                     // Change patient to active
                     patient.IsActive = true;
@@ -930,6 +951,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     await context.HistoryOfViolence.AddAsync(newHistoryOfViolence);
                     await context.StrengthsResources.AddAsync(newStrengthsResources);
                     await context.Goals.AddAsync(newGoals);
+                    await context.ProgressNotes.AddRangeAsync(newProgressNotes);
                     await context.SaveChangesAsync();
 
                     TempData["SuccessMessage"] = "Successfully re-admitted patient.";
