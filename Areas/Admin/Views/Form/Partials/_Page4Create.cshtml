@@ -369,13 +369,13 @@
             Incarceration
         </th>
 
-        <th>
+        @* <th>
             Action
-        </th>
+        </th> *@
 
     </tr>
     <tbody class="familyhistory-input">
-        @for (int i = 0; i < Model.FamilyHistory.Count; i++)
+        @* @for (int i = 0; i < Model.FamilyHistory.Count; i++)
         {
             <tr>
                 <td>
@@ -457,10 +457,169 @@
 
                 <td><button type="button" id="familyhistory-button-remove" onclick="removeRow(this)">❌</button></td>
             </tr>
-        }
+        } *@
+
+        <tr>
+            <td>
+                <select name="FamilyHistory[0].IsSelf" required>
+                    <option value="True">Self</option>
+                    @* <option value="False">Others</option> *@
+                </select>
+            </td>
+
+            <td>
+                <select name="FamilyHistory[0].HasDepression" required>
+                    <option value="True">Yes</option>
+                    <option value="False">No</option>
+                </select>
+            </td>
+
+            <td>
+                <select name="FamilyHistory[0].HasAnxiety" required>
+                    <option value="True">Yes</option>
+                    <option value="False">No</option>
+                </select>
+            </td>
+
+            <td>
+                <select name="FamilyHistory[0].HasBipolarDisorder" required>
+                    <option value="True">Yes</option>
+                    <option value="False">No</option>
+                </select>
+            </td>
+
+            <td>
+                <select name="FamilyHistory[0].HasSchizophrenia" required>
+                    <option value="True">Yes</option>
+                    <option value="False">No</option>
+                </select>
+            </td>
+
+            <td>
+                <select name="FamilyHistory[0].HasADHD_ADD" required>
+                    <option value="True">Yes</option>
+                    <option value="False">No</option>
+                </select>
+            </td>
+
+            <td>
+                <select name="FamilyHistory[0].HasTraumaHistory" required>
+                    <option value="True">Yes</option>
+                    <option value="False">No</option>
+                </select>
+            </td>
+
+            <td>
+                <select name="FamilyHistory[0].HasAbusiveBehavior" required>
+                    <option value="True">Yes</option>
+                    <option value="False">No</option>
+                </select>
+            </td>
+
+            <td>
+                <select name="FamilyHistory[0].HasAlcoholAbuse" required>
+                    <option value="True">Yes</option>
+                    <option value="False">No</option>
+                </select>
+            </td>
+
+            <td>
+                <select name="FamilyHistory[0].HasDrugAbuse" required>
+                    <option value="True">Yes</option>
+                    <option value="False">No</option>
+                </select>
+            </td>
+
+            <td>
+                <select name="FamilyHistory[0].HasIncarceration" required>
+                    <option value="True">Yes</option>
+                    <option value="False">No</option>
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <select name="FamilyHistory[1].IsSelf" required>
+                    @* <option value="True">Self</option> *@
+                    <option value="False">Others</option>
+                </select>
+            </td>
+
+            <td>
+                <select name="FamilyHistory[1].HasDepression" required>
+                    <option value="True">Yes</option>
+                    <option value="False">No</option>
+                </select>
+            </td>
+
+            <td>
+                <select name="FamilyHistory[1].HasAnxiety" required>
+                    <option value="True">Yes</option>
+                    <option value="False">No</option>
+                </select>
+            </td>
+
+            <td>
+                <select name="FamilyHistory[1].HasBipolarDisorder" required>
+                    <option value="True">Yes</option>
+                    <option value="False">No</option>
+                </select>
+            </td>
+
+            <td>
+                <select name="FamilyHistory[1].HasSchizophrenia" required>
+                    <option value="True">Yes</option>
+                    <option value="False">No</option>
+                </select>
+            </td>
+
+            <td>
+                <select name="FamilyHistory[1].HasADHD_ADD" required>
+                    <option value="True">Yes</option>
+                    <option value="False">No</option>
+                </select>
+            </td>
+
+            <td>
+                <select name="FamilyHistory[1].HasTraumaHistory" required>
+                    <option value="True">Yes</option>
+                    <option value="False">No</option>
+                </select>
+            </td>
+
+            <td>
+                <select name="FamilyHistory[1].HasAbusiveBehavior" required>
+                    <option value="True">Yes</option>
+                    <option value="False">No</option>
+                </select>
+            </td>
+
+            <td>
+                <select name="FamilyHistory[1].HasAlcoholAbuse" required>
+                    <option value="True">Yes</option>
+                    <option value="False">No</option>
+                </select>
+            </td>
+
+            <td>
+                <select name="FamilyHistory[1].HasDrugAbuse" required>
+                    <option value="True">Yes</option>
+                    <option value="False">No</option>
+                </select>
+            </td>
+
+            <td>
+                <select name="FamilyHistory[1].HasIncarceration" required>
+                    <option value="True">Yes</option>
+                    <option value="False">No</option>
+                </select>
+            </td>
+        </tr>
+
     </tbody>
 </table>
-<button type="button" id="familyhistory-button-add" onclick="addRow(this)">➕ Add Row</button>
+@* <button type="button" id="familyhistory-button-add" onclick="addRow(this)">➕ Add Row</button> *@
 
 <table>
     <tr>
