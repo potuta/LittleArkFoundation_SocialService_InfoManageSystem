@@ -363,11 +363,18 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 formViewModel.Goals.AssessmentID = assessmentID;
 
                 // PROGRESS NOTES
-                foreach (var progressNote in formViewModel.ProgressNotes)
-                {
-                    progressNote.PatientID = patientID;
-                    progressNote.AssessmentID = assessmentID;
-                }
+                //foreach (var progressNote in formViewModel.ProgressNotes)
+                //{
+                //    progressNote.PatientID = patientID;
+                //    progressNote.AssessmentID = assessmentID;
+                //}
+                formViewModel.ProgressNotes = new List<ProgressNotesModel>{
+                    new ProgressNotesModel
+                    {
+                        PatientID = patientID,
+                        AssessmentID = assessmentID
+                    }
+                };
 
                 await context.Assessments.AddAsync(formViewModel.Assessments);
                 await context.SaveChangesAsync();
@@ -569,55 +576,55 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 .Where(u => u.RoleID == socialWorkerRoleId)
                 .ToListAsync();
 
-            var assessment = await context.Assessments.FirstOrDefaultAsync(a => a.AssessmentID == assessmentID);
-            var referral = await context.Referrals.FirstOrDefaultAsync(r => r.AssessmentID == assessmentID);
-            var informant = await context.Informants.FirstOrDefaultAsync(i => i.AssessmentID == assessmentID);
+            var assessment = await context.Assessments.FirstOrDefaultAsync(a => a.AssessmentID == assessmentID && a.PatientID == id);
+            var referral = await context.Referrals.FirstOrDefaultAsync(r => r.AssessmentID == assessmentID && r.PatientID == id);
+            var informant = await context.Informants.FirstOrDefaultAsync(i => i.AssessmentID == assessmentID && i.PatientID == id);
             var patient = await context.Patients.FindAsync(id);
             var familymembers = await context.FamilyComposition
-                                .Where(f => f.AssessmentID == assessmentID)
+                                .Where(f => f.AssessmentID == assessmentID && f.PatientID == id)
                                 .ToListAsync();
-            var household = await context.Households.FirstOrDefaultAsync(h => h.AssessmentID == assessmentID);
-            var mswdClassification = await context.MSWDClassification.FirstOrDefaultAsync(m => m.AssessmentID == assessmentID);
-            var monthlyExpenses = await context.MonthlyExpenses.FirstOrDefaultAsync(m => m.AssessmentID == assessmentID);
-            var utilities = await context.Utilities.FirstOrDefaultAsync(u => u.AssessmentID == assessmentID);
-            var medicalHistory = await context.MedicalHistory.FirstOrDefaultAsync(m => m.AssessmentID == assessmentID);
-            var childHealth = await context.ChildHealth.FirstOrDefaultAsync(c => c.AssessmentID == assessmentID);
+            var household = await context.Households.FirstOrDefaultAsync(h => h.AssessmentID == assessmentID && h.PatientID == id);
+            var mswdClassification = await context.MSWDClassification.FirstOrDefaultAsync(m => m.AssessmentID == assessmentID && m.PatientID == id);
+            var monthlyExpenses = await context.MonthlyExpenses.FirstOrDefaultAsync(m => m.AssessmentID == assessmentID && m.PatientID == id);
+            var utilities = await context.Utilities.FirstOrDefaultAsync(u => u.AssessmentID == assessmentID && u.PatientID == id);
+            var medicalHistory = await context.MedicalHistory.FirstOrDefaultAsync(m => m.AssessmentID == assessmentID && m.PatientID == id);
+            var childHealth = await context.ChildHealth.FirstOrDefaultAsync(c => c.AssessmentID == assessmentID && c.PatientID == id);
             var diagnoses = await context.Diagnoses
-                                .Where(d => d.AssessmentID == assessmentID)
+                                .Where(d => d.AssessmentID == assessmentID && d.PatientID == id)
                                 .ToListAsync();
             var medications = await context.Medications
-                                .Where(m  => m.AssessmentID == assessmentID)
+                                .Where(m  => m.AssessmentID == assessmentID && m.PatientID == id)
                                 .ToListAsync();
             var hospitalization = await context.HospitalizationHistory
-                                .Where(h => h.AssessmentID == assessmentID)
+                                .Where(h => h.AssessmentID == assessmentID && h.PatientID == id)
                                 .ToListAsync();
-            var medicalscreenings = await context.MedicalScreenings.FirstOrDefaultAsync(m => m.AssessmentID == assessmentID);
-            var primarycaredoctor = await context.PrimaryCareDoctor.FirstOrDefaultAsync(m => m.AssessmentID == assessmentID);
-            var presentingproblems = await context.PresentingProblems.FirstOrDefaultAsync(m => m.AssessmentID == assessmentID);
-            var recentlosses = await context.RecentLosses.FirstOrDefaultAsync(m => m.AssessmentID == assessmentID);
-            var pregnancybirthhistory = await context.PregnancyBirthHistory.FirstOrDefaultAsync(m => m.AssessmentID == assessmentID);
-            var developmentalhistory = await context.DevelopmentalHistory.FirstOrDefaultAsync(m => m.AssessmentID == assessmentID);
+            var medicalscreenings = await context.MedicalScreenings.FirstOrDefaultAsync(m => m.AssessmentID == assessmentID && m.PatientID == id);
+            var primarycaredoctor = await context.PrimaryCareDoctor.FirstOrDefaultAsync(m => m.AssessmentID == assessmentID && m.PatientID == id);
+            var presentingproblems = await context.PresentingProblems.FirstOrDefaultAsync(m => m.AssessmentID == assessmentID && m.PatientID == id);
+            var recentlosses = await context.RecentLosses.FirstOrDefaultAsync(m => m.AssessmentID == assessmentID && m.PatientID == id);
+            var pregnancybirthhistory = await context.PregnancyBirthHistory.FirstOrDefaultAsync(m => m.AssessmentID == assessmentID && m.PatientID == id);
+            var developmentalhistory = await context.DevelopmentalHistory.FirstOrDefaultAsync(m => m.AssessmentID == assessmentID && m.PatientID == id);
             var mentalhealthhistory = await context.MentalHealthHistory
-                                .Where(m => m.AssessmentID == assessmentID)
+                                .Where(m => m.AssessmentID == assessmentID && m.PatientID == id)
                                 .ToListAsync();
             var familyhistory = await context.FamilyHistory
-                                .Where(f => f.AssessmentID == assessmentID)
+                                .Where(f => f.AssessmentID == assessmentID && f.PatientID == id)
                                 .ToListAsync();
-            var safetyconcerns = await context.SafetyConcerns.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
-            var currentfunctioning = await context.CurrentFunctioning.FirstOrDefaultAsync(c => c.AssessmentID == assessmentID);
-            var parentchildrelationship = await context.ParentChildRelationship.FirstOrDefaultAsync(p => p.AssessmentID == assessmentID);
-            var education = await context.Education.FirstOrDefaultAsync(e => e.AssessmentID == assessmentID);
-            var employment = await context.Employment.FirstOrDefaultAsync(e => e.AssessmentID == assessmentID);
-            var housing = await context.Housing.FirstOrDefaultAsync(h => h.AssessmentID == assessmentID);
-            var fostercare = await context.FosterCare.FirstOrDefaultAsync(f => f.AssessmentID == assessmentID);
-            var alcoholdrugassessment = await context.AlcoholDrugAssessment.FirstOrDefaultAsync(a => a.AssessmentID == assessmentID);
-            var legalinvolvement = await context.LegalInvolvement.FirstOrDefaultAsync(l => l.AssessmentID == assessmentID);
-            var historyofabuse = await context.HistoryOfAbuse.FirstOrDefaultAsync(h => h.AssessmentID == assessmentID);
-            var historyofviolence = await context.HistoryOfViolence.FirstOrDefaultAsync(h => h.AssessmentID == assessmentID);
-            var strengthsresources = await context.StrengthsResources.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID);
-            var goals = await context.Goals.FirstOrDefaultAsync(g => g.AssessmentID == assessmentID);
+            var safetyconcerns = await context.SafetyConcerns.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == id);
+            var currentfunctioning = await context.CurrentFunctioning.FirstOrDefaultAsync(c => c.AssessmentID == assessmentID && c.PatientID == id);
+            var parentchildrelationship = await context.ParentChildRelationship.FirstOrDefaultAsync(p => p.AssessmentID == assessmentID && p.PatientID == id);
+            var education = await context.Education.FirstOrDefaultAsync(e => e.AssessmentID == assessmentID && e.PatientID == id);
+            var employment = await context.Employment.FirstOrDefaultAsync(e => e.AssessmentID == assessmentID && e.PatientID == id);
+            var housing = await context.Housing.FirstOrDefaultAsync(h => h.AssessmentID == assessmentID && h.PatientID == id);
+            var fostercare = await context.FosterCare.FirstOrDefaultAsync(f => f.AssessmentID == assessmentID && f.PatientID == id);
+            var alcoholdrugassessment = await context.AlcoholDrugAssessment.FirstOrDefaultAsync(a => a.AssessmentID == assessmentID && a.PatientID == id);
+            var legalinvolvement = await context.LegalInvolvement.FirstOrDefaultAsync(l => l.AssessmentID == assessmentID && l.PatientID == id);
+            var historyofabuse = await context.HistoryOfAbuse.FirstOrDefaultAsync(h => h.AssessmentID == assessmentID && h.PatientID == id);
+            var historyofviolence = await context.HistoryOfViolence.FirstOrDefaultAsync(h => h.AssessmentID == assessmentID && h.PatientID == id);
+            var strengthsresources = await context.StrengthsResources.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == id);
+            var goals = await context.Goals.FirstOrDefaultAsync(g => g.AssessmentID == assessmentID && g.PatientID == id);
             var progressnotes = await context.ProgressNotes
-                                .Where(p => p.AssessmentID == assessmentID)
+                                .Where(p => p.AssessmentID == assessmentID && p.PatientID == id)
                                 .ToListAsync();
 
             var viewModel = new FormViewModel()
@@ -673,13 +680,13 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             await using var context = new ApplicationDbContext(connectionString);
             int id = formViewModel.Patient.PatientID;
             int assessmentId = formViewModel.Assessments.AssessmentID;
-            var familyMembers = context.FamilyComposition.Where(f => f.AssessmentID == assessmentId);
-            var diagnoses = context.Diagnoses.Where(d => d.AssessmentID == assessmentId);
-            var medications = context.Medications.Where(m  => m.AssessmentID == assessmentId);
-            var hospitalization = context.HospitalizationHistory.Where(h => h.AssessmentID == assessmentId);
-            var mentalhealthhistory = context.MentalHealthHistory.Where(m => m.AssessmentID == assessmentId);
-            var familyhistory = context.FamilyHistory.Where(f => f.AssessmentID == assessmentId);
-            var progressnotes = context.ProgressNotes.Where(p => p.AssessmentID == assessmentId);
+            var familyMembers = context.FamilyComposition.Where(f => f.AssessmentID == assessmentId && f.PatientID == id);
+            var diagnoses = context.Diagnoses.Where(d => d.AssessmentID == assessmentId && d.PatientID == id);
+            var medications = context.Medications.Where(m  => m.AssessmentID == assessmentId && m.PatientID == id);
+            var hospitalization = context.HospitalizationHistory.Where(h => h.AssessmentID == assessmentId && h.PatientID == id);
+            var mentalhealthhistory = context.MentalHealthHistory.Where(m => m.AssessmentID == assessmentId && m.PatientID == id);
+            var familyhistory = context.FamilyHistory.Where(f => f.AssessmentID == assessmentId && f.PatientID == id);
+            var progressnotes = context.ProgressNotes.Where(p => p.AssessmentID == assessmentId && p.PatientID == id);
 
             if (familyMembers.Any())
             {
@@ -784,6 +791,11 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                             progressNote.Attachment = ms.ToArray();
                         }
                         progressNote.AttachmentContentType = progressNote.AttachmentFile.ContentType;
+                    }
+
+                    if (progressNote.UserID == 0)
+                    {
+                        progressNote.UserID = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
                     }
 
                 }
