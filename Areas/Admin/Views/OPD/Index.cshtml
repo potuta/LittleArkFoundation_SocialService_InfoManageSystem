@@ -1,7 +1,158 @@
-﻿@{
+﻿@model LittleArkFoundation.Areas.Admin.Models.OPD.OPDViewModel
+@{
     ViewData["Title"] = "OPD";
     Layout = "_AdminLayout";
+    bool isAdmitted = ViewBag.isAdmitted ?? false;
 }
 
 <h2>OPD</h2>
 <hr />
+
+<div class="search-container">
+    <form asp-action="Search" asp-route-isAdmitted="@isAdmitted" asp-controller="OPD">
+        <div class="input-group">
+            <input type="search" name="searchString" class="form-control" placeholder="Search by Id/FullName" aria-label="Search">
+            <button type="submit" class="btn btn-dark">Search</button>
+        </div>
+    </form>
+    <a class="btn btn-primary" asp-action="Index" asp-controller="OPD">← Back to Full List</a>
+</div>
+
+<div>
+
+    @if (!isAdmitted)
+    {
+        <a class="btn btn-success" asp-action="Create" asp-controller="OPD">Create New</a>
+    }
+
+    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+        <a asp-action="Index" asp-controller="OPD" asp-route-isAdmitted="false" class="btn btn-secondary @(isAdmitted ? "" : "active")">
+            <div class="custom-radio">
+                <input type="radio" style="accent-color: dodgerblue" value="main" @(isAdmitted ? "" : "checked")>
+                <label style="margin-bottom: 0">Regular</label>
+            </div>
+        </a>
+        <a asp-action="Index" asp-controller="OPD" asp-route-isAdmitted="true" class="btn btn-secondary @(isAdmitted ? "active" : "")">
+            <div class="custom-radio">
+                <input type="radio" style="accent-color: dodgerblue" value="archive" @(isAdmitted ? "checked" : "")>
+                <label style="margin-bottom: 0">Admitted</label>
+            </div>
+        </a>
+    </div>
+
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert" style="width: 60%;">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="width: 60%;">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                <tr>
+                    <th>Actions</th>
+                    <th>Date</th>
+                    <th>No</th>
+                    <th>Old/New</th>
+                    <th>Class</th>
+                    <th>Name of Patient</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                    <th>PWD</th>
+                    <th>Diagnosis</th>
+                    <th>Complete Address</th>
+                    <th>Source of Referral</th>
+                    <th>Name of Parents</th>
+                    <th>Occupation</th>
+                    <th>Monthly Income</th>
+                    <th>No. of Children</th>
+                    <th>Assistance Needed</th>
+                    <th>Amount</th>
+                    <th>Pt's Share</th>
+                    <th>Amount Extended</th>
+                    <th>Resources</th>
+                    <th>Proponent of GL</th>
+                    <th>Amt of Received GL</th>
+                    <th>MSW</th>
+                    <th>Category</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    @foreach (var opd in Model.OPDList)
+                    {
+                        <tr>
+                            <td class="d-flex gap-2" style="white-space: nowrap;">
+								@if (!isAdmitted)
+								{
+								    <a class="btn btn-primary" asp-action="Admit" asp-route-id="@opd.Id">Admit</a>
+									<a class="btn btn-success" asp-action="Edit" asp-route-id="@opd.Id">Edit</a>
+									<a class="btn btn-danger" asp-action="Delete" asp-route-id="@opd.Id">Delete</a>
+								}
+							</td>
+                            <td style="white-space: nowrap;">@opd.Date</td>
+                            <td style="white-space: nowrap;">@opd.Id</td>
+                            <td style="white-space: nowrap;">
+                                @if (opd.IsOld)
+                                {
+                                    <label>Old</label>
+                                }
+                                else
+                                {
+                                    <label>New</label>
+                                }
+                            </td>
+                            <td style="white-space: nowrap;">@opd.Class</td>
+                            <td style="white-space: nowrap;">@opd.LastName, @opd.FirstName @opd.MiddleName</td>
+                            <td style="white-space: nowrap;">@opd.Age</td>
+                            <td style="white-space: nowrap;">@opd.Gender</td>
+                            <td style="white-space: nowrap;">
+                                @if (opd.IsPWD)
+                                {
+                                    <label>Yes</label>
+                                }
+                                else
+                                {
+                                    <label>No</label>
+                                }
+                            </td>
+                            <td style="white-space: nowrap;">@opd.Diagnosis</td>
+                            <td style="white-space: nowrap;">@opd.Address</td>
+                            <td style="white-space: nowrap;">@opd.SourceOfReferral</td>
+                            <td style="white-space: nowrap;">@opd.MotherFirstName / @opd.FatherFirstName</td>
+                            <td style="white-space: nowrap;">@opd.MotherOccupation / @opd.FatherOccupation</td>
+							<td style="white-space: nowrap;">@opd.MonthlyIncome</td>
+							<td style="white-space: nowrap;">@opd.NoOfChildren</td>
+							<td style="white-space: nowrap;">@opd.AssistanceNeeded</td>
+							<td style="white-space: nowrap;">@opd.Amount</td>
+							<td style="white-space: nowrap;">@opd.PtShare</td>
+							<td style="white-space: nowrap;">@opd.AmountExtended</td>
+							<td style="white-space: nowrap;">@opd.Resources</td>
+							<td style="white-space: nowrap;">@opd.GLProponent</td>
+							<td style="white-space: nowrap;">@opd.GLAmountReceived</td>
+							<td style="white-space: nowrap;">@opd.MSW</td>
+							<td style="white-space: nowrap;">@opd.Category</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+
