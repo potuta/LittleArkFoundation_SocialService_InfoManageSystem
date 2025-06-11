@@ -1,8 +1,10 @@
-﻿using LittleArkFoundation.Areas.Admin.Models.Form;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using LittleArkFoundation.Areas.Admin.Models.Form;
 using LittleArkFoundation.Areas.Admin.Models.OPD;
 using LittleArkFoundation.Authorize;
 using LittleArkFoundation.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
@@ -59,18 +61,31 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(OPDViewModel viewModel)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return View(viewModel);
+                string connectionString = _connectionService.GetCurrentConnectionString();
+                await using var context = new ApplicationDbContext(connectionString);
+
+                await context.OPD.AddAsync(viewModel.OPD);
+                await context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "Successfully created new OPD";
+                LoggingService.LogInformation($"OPD Patient creation successful. Created OPD Id: {viewModel.OPD.Id}. Created by UserID: {User.FindFirst(ClaimTypes.NameIdentifier).Value}, DateTime: {DateTime.Now}");
+                return RedirectToAction("Index");
+
             }
-
-            string connectionString = _connectionService.GetCurrentConnectionString();
-            await using var context = new ApplicationDbContext(connectionString);
-
-            await context.OPD.AddAsync(viewModel.OPD);
-            await context.SaveChangesAsync();
-
-            return View(viewModel);
+            catch (SqlException se)
+            {
+                TempData["ErrorMessage"] = "SQL Error: " + se.Message;
+                LoggingService.LogError("SQL Error: " + se.Message);
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Error: " + ex.Message;
+                LoggingService.LogError("Error: " + ex.Message);
+                return RedirectToAction("Index");
+            }
         }
     }
 }
