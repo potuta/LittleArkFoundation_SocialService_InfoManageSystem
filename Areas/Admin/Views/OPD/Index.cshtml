@@ -1,7 +1,47 @@
-﻿@{
+﻿@model LittleArkFoundation.Areas.Admin.Models.OPD.OPDViewModel
+@{
     ViewData["Title"] = "OPD";
     Layout = "_AdminLayout";
+	bool isAdmitted = ViewBag.isAdmitted ?? false;
 }
 
 <h2>OPD</h2>
 <hr />
+
+<div class="search-container">
+    <form asp-action="Search" asp-route-isAdmitted="@isAdmitted" asp-controller="OPD">
+        <div class="input-group">
+            <input type="search" name="searchString" class="form-control" placeholder="Search by Id/FullName" aria-label="Search">
+            <button type="submit" class="btn btn-dark">Search</button>
+        </div>
+    </form>
+    <a class="btn btn-primary" asp-action="Index" asp-controller="OPD">← Back to Full List</a>
+</div>
+
+<div>
+
+    @if (!isAdmitted)
+    {
+        <a class="btn btn-success" asp-action="Create" asp-controller="OPD">Create New</a>
+    }
+
+    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+        <a asp-action="Index" asp-controller="OPD" asp-route-isAdmitted="false" class="btn btn-secondary @(isAdmitted ? "" : "active")">
+            <div class="custom-radio">
+                <input type="radio" style="accent-color: dodgerblue" value="main" @(isAdmitted ? "" : "checked")>
+                <label style="margin-bottom: 0">Regular</label>
+            </div>
+        </a>
+        <a asp-action="Index" asp-controller="OPD" asp-route-isAdmitted="true" class="btn btn-secondary @(isAdmitted ? "active" : "")">
+            <div class="custom-radio">
+                <input type="radio" style="accent-color: dodgerblue" value="archive" @(isAdmitted ? "checked" : "")>
+                <label style="margin-bottom: 0">Admitted</label>
+            </div>
+        </a>
+    </div>
+
+</div>
+
+
+
+

@@ -38,6 +38,7 @@ using LittleArkFoundation.Areas.Admin.Models.StrengthsResources;
 using LittleArkFoundation.Areas.Admin.Models.Goals;
 using LittleArkFoundation.Areas.Admin.Models.Discharges;
 using LittleArkFoundation.Areas.Admin.Models.ProgressNotes;
+using LittleArkFoundation.Areas.Admin.Models.OPD;
 
 namespace LittleArkFoundation.Data
 {
@@ -102,6 +103,7 @@ namespace LittleArkFoundation.Data
         public DbSet<GoalsModel> Goals { get; set; }
         public DbSet<DischargesModel> Discharges { get; set; }
         public DbSet<ProgressNotesModel> ProgressNotes { get; set; }
+        public DbSet<OPDModel> OPD { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -485,6 +487,15 @@ namespace LittleArkFoundation.Data
 
             modelBuilder.Entity<ProgressNotesModel>()
                 .Property(p => p.ProgressNotesID)
+                .ValueGeneratedOnAdd();
+
+            // OPD
+            modelBuilder.Entity<OPDModel>()
+                .ToTable("OPD")
+                .HasKey(o => o.Id);
+
+            modelBuilder.Entity<OPDModel>()
+                .Property(o => o.Id)
                 .ValueGeneratedOnAdd();
         }
     }
