@@ -1,0 +1,474 @@
+﻿@model LittleArkFoundation.Areas.Admin.Models.OPD.OPDViewModel
+@{
+    ViewData["Title"] = "OPD";
+    Layout = "_AdminLayout";
+}
+
+<style>
+    .form-container {
+        width: 100%;
+        max-width: 1200px;
+        margin: auto;
+        border: 1px solid #000;
+        padding: 20px;
+    }
+
+    table {
+        font-size: small;
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        border: 1px solid black;
+        padding: 5px;
+        text-align: left;
+        font-size: medium;
+    }
+
+    .section-title {
+        background-color: #f2f2f2;
+        font-weight: bold;
+        padding: 5px;
+        text-align: center;
+    }
+
+    input, select {
+        width: 98%;
+        font-size: medium;
+        padding: 5px;
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+    .required {
+        color: red;
+        font-weight: bold;
+    }
+
+    .checkbox-group, .radio-group {
+        display: flex;
+        align-items: center;
+        gap: 10px; /* Adjust spacing between checkbox/radio and text */
+        margin-bottom: 5px;
+    }
+
+        .checkbox-group input[type="checkbox"],
+        .radio-group input[type="radio"] {
+            transform: scale(1.2); /* Slightly increase size for better visibility */
+            padding: 0;
+            margin: 0;
+            width: 2rem;
+        }
+
+    .mentalhealth-input input:hover, .mentalhealth-input input:focus,
+    .mentalhealth-input select:hover, .mentalhealth-input select:focus,
+    .hospitalizaiton-input input:hover, .hospitalizaiton-input input:focus,
+    .hospitalizaiton-input select:hover, .hospitalizaiton-input select:focus,
+    .medication-input input:hover, .medication-input input:focus,
+    .medication-input select:hover, .medication-input select:focus,
+    .diagnosis-input input:hover, .diagnosis-input input:focus,
+    .diagnosis-input select:hover, .diagnosis-input select:focus,
+    .family-input input:hover, .family-input input:focus,
+    .family-input select:hover, .family-input select:focus {
+        transform: scale(1.2); /* Slightly enlarges the input field */
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.2); /* Adds a subtle glow */
+        z-index: 10; /* Ensures it appears above other elements */
+        position: relative;
+        width: 10rem;
+    }
+
+    textarea {
+        width: 100%;
+    }
+
+</style>
+
+<div class="mt-2">
+    <a class="btn btn-outline-secondary mb-3" asp-action="Index">← Back to List</a>
+</div>
+
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="OPD.MSW" value="@Model.User.Username" />
+	<input type="hidden" asp-for="OPD.UserID" value="@Model.User.UserID" />
+
+    <div class="form-container">
+        <h2 style="text-align: center;">OPD Assessment Tool</h2>
+        <!-- <h3 style="text-align: center;">MSWD Assessment Tool for Children/Adolescent</h3> -->
+
+        <table>
+            <tr>
+                <td>
+                    Date of Interview: <span class="required">*</span>
+                    <input type="date" asp-for="OPD.Date" id="dateInput" required>
+
+                </td>
+                <td>
+                    Old/New: <span class="required">*</span>
+                    <select asp-for="OPD.IsOld" required>
+                        <option value="true">Old</option>
+                        <option value="false">New</option>
+                    </select>
+                </td>
+                <td>
+                    Class: <span class="required">*</span>
+                    <select asp-for="OPD.Class" required>
+                        <option value="N/A">N/A</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C1">C1</option>
+                        <option value="C2">C2</option>
+                        <option value="C3">C3</option>
+                        <option value="D">D</option>
+                    </select>
+
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    First Name: <span class="required">*</span>
+                    <input type="text" asp-for="OPD.FirstName" placeholder="Type N/A if No Answer" required>
+
+                </td>
+                <td>
+                    Middle Name: <span class="required">*</span>
+                    <input type="text" asp-for="OPD.MiddleName" placeholder="Type N/A if No Answer" required>
+                </td>
+                <td>
+                    Last Name: <span class="required">*</span>
+                    <input type="text" asp-for="OPD.LastName" placeholder="Type N/A if No Answer" required>
+
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    Contact Number: <span class="required">*</span>
+                    <input type="number" asp-for="OPD.ContactNo" placeholder="Type 0 if No Answer" required>
+
+                </td>
+                <td>
+                    Age: <span class="required">*</span>
+                    <input type="number" asp-for="OPD.Age" placeholder="Type N/A if No Answer" required>
+                </td>
+                <td>
+                    Gender: <span class="required">*</span>
+                    <select asp-for="OPD.Gender" required>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    PWD: <span class="required">*</span>
+                    <select asp-for="OPD.IsPWD" required>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </td>
+
+                <td>
+                    Diagnosis: <span class="required">*</span>
+                    <textarea type="text" asp-for="OPD.Diagnosis" placeholder="Type N/A if No Answer" required></textarea>
+
+                </td>
+
+                <td>
+                    Complete Address: <span class="required">*</span>
+                    <textarea type="text" asp-for="OPD.Address" placeholder="Type N/A if No Answer" required></textarea>
+
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    Source of Referral: <span class="required">*</span>
+                    <select asp-for="OPD.SourceOfReferral" required>
+                        <option>Walk in</option>
+                        <option>Govt. Hosp.</option>
+                        <option>Clinic/Private</option>
+                        <option>Politicians</option>
+                        <option>Media</option>
+                        <option>HCT</option>
+                        <option>NGOs</option>
+                        <option>Govt. Agencies</option>
+                        <option>Others</option>
+                    </select>
+                </td>
+
+                <td>
+                    Monthly Income: <span class="required">*</span>
+                    <input type="number" asp-for="OPD.MonthlyIncome" placeholder="Type 0 if No Answer" required>
+                </td>
+
+                <td>
+                    No. of Children: <span class="required">*</span>
+                    <input type="number" asp-for="OPD.NoOfChildren" placeholder="Type 0 if No Answer" required>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    Assistance Needed: <span class="required">*</span>
+                    <textarea type="text" asp-for="OPD.AssistanceNeeded" placeholder="Type N/A if No Answer" required></textarea>
+                </td>
+
+                <td>
+                    Amount: <span class="required">*</span>
+                    <input type="number" asp-for="OPD.Amount" placeholder="Type 0 if No Answer" required>
+                </td>
+
+                <td>
+                    Pt's Share: <span class="required">*</span>
+                    <input type="text" asp-for="OPD.PtShare" placeholder="Type N/A if No Answer" required>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    Amount Extended: <span class="required">*</span>
+                    <input type="number" asp-for="OPD.AmountExtended" placeholder="Type 0 if No Answer" required>
+                </td>
+
+                <td>
+                    Resources: <span class="required">*</span>
+                    <select asp-for="OPD.Resources" required>
+                        <option>MAIP-HI</option>
+                        <option>Hospital</option>
+                        <option>MAIP</option>
+                        <option>OP</option>
+                        <option>Donor</option>
+                        <option>CAF</option>
+                        <option>Z Ben</option>
+                        <option>PHIC</option>
+                        <option>PCSO</option>
+                    </select>
+                </td>
+
+                <td>
+                    Proponent of GL: <span class="required">*</span>
+                    <input type="text" asp-for="OPD.GLProponent" placeholder="Type N/A if No Answer" required>
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="2">
+                    Amount of Received GL: <span class="required">*</span>
+                    <input type="number" asp-for="OPD.GLAmountReceived" placeholder="Type 0 if No Answer" required>
+                </td>
+
+                <td colspan="2">
+                    Category: <span class="required">*</span>
+                    <select asp-for="OPD.Category" required>
+                        <option>OPD</option>
+                        <option>ER</option>
+                        <option>Employee</option>
+                        <option>Employee's Dependent_adult</option>
+                        <option>OB</option>
+                        <option>Watcher</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+
+        <div class="section-title">Parents Information</div>
+        <table>
+            <tr>
+                <td>
+                    Mother's First Name: <span class="required">*</span>
+                    <input type="text" asp-for="OPD.MotherFirstName" placeholder="Type N/A if No Answer" required>
+
+                </td>
+                <td>
+                    Mother's Middle Name: <span class="required">*</span>
+                    <input type="text" asp-for="OPD.MotherMiddleName" placeholder="Type N/A if No Answer" required>
+
+                </td>
+                <td>
+                    Mother's Last Name: <span class="required">*</span>
+                    <input type="text" asp-for="OPD.MotherLastName" placeholder="Type N/A if No Answer" required>
+
+                </td>
+                <td>
+                    Mother's Occupation: <span class="required">*</span>
+                    <input type="text" asp-for="OPD.MotherOccupation" placeholder="Type N/A if No Answer" required>
+
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    Father's First Name: <span class="required">*</span>
+                    <input type="text" asp-for="OPD.FatherFirstName" placeholder="Type N/A if No Answer" required>
+
+                </td>
+                <td>
+                    Father's Middle Name: <span class="required">*</span>
+                    <input type="text" asp-for="OPD.FatherMiddleName" placeholder="Type N/A if No Answer" required>
+
+                </td>
+                <td>
+                    Father's Last Name: <span class="required">*</span>
+                    <input type="text" asp-for="OPD.FatherLastName" placeholder="Type N/A if No Answer" required>
+
+                </td>
+                <td>
+                    Father's Occupation: <span class="required">*</span>
+                    <input type="text" asp-for="OPD.FatherOccupation" placeholder="Type N/A if No Answer" required>
+
+                </td>
+            </tr>
+        </table>
+
+
+        @* --- Add new here --- *@
+
+        <div class="mt-2" style="text-align: center;">
+            <button type="submit" class="btn btn-sm btn-primary">Submit</button>
+        </div>
+        <div class="mt-2" style="text-align: center;">
+            <a class="btn btn-sm btn-outline-primary" asp-action="Index">Back to List</a>
+        </div>
+    </div>
+
+</form>
+
+@section Scripts {
+    <script>
+        function handleFileUpload(input, index) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const previewContainer = document.getElementById(`previewContainer-${index}`);
+            const previewContent = document.getElementById(`filePreviewContent-${index}`);
+
+            const fileReader = new FileReader();
+
+            fileReader.onload = function (e) {
+                const fileUrl = e.target.result;
+
+                let previewHtml = '';
+                if (file.type.startsWith('image/')) {
+                    previewHtml = `<img src="${fileUrl}" class="img-fluid" alt="Preview Image" />`;
+                } else if (file.type === 'application/pdf') {
+                    previewHtml = `<embed src="${fileUrl}" type="application/pdf" width="100%" height="600px" />`;
+                } else {
+                    previewHtml = `<p>Preview not supported for this file type.</p>`;
+                }
+
+                previewContent.innerHTML = previewHtml;
+                previewContainer.style.display = 'block';
+            };
+
+            fileReader.readAsDataURL(file); // Convert file to base64 for preview
+        }
+
+        // Get today's date in YYYY-MM-DD format
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById("dateInput").value = today;
+
+        // Get current time in HH:MM format
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        document.getElementById("timeInput").value = `${hours}:${minutes}`;
+
+        function toggleRequired(checkbox) {
+            let inputField = checkbox.nextElementSibling; // The input field next to the checkbox
+
+            if (checkbox.checked) {
+                inputField.required = true;
+                inputField.disabled = false;
+            } else {
+                inputField.required = false;
+                inputField.disabled = true;
+                inputField.value = ""; // Clear value when unchecked
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll('input[type="radio"][data-target]').forEach(radio => {
+                let inputField = document.getElementById(radio.getAttribute("data-target"));
+
+                if (radio.checked && radio.value !== "Others" && inputField) {
+                    inputField.disabled = false;
+                    inputField.required = true;
+                    inputField.value = radio.value; // Set stored value for "Others"
+                }
+            });
+        });
+
+        function toggleRequiredRadio(radio) {
+            let targetId = radio.getAttribute("data-target");
+            let inputField = document.getElementById(targetId);
+
+            // Disable all "Others" input fields within the same radio group
+            document.getElementsByName(radio.name).forEach(r => {
+                let field = document.getElementById(r.getAttribute("data-target"));
+                if (field) {
+                    field.disabled = true;
+                    field.required = false;
+                    field.value = ""; // Clear value when another radio is selected
+                }
+            });
+
+            // Enable the "Others" input field only when selected
+            if (inputField && radio.value === "Others") {
+                inputField.disabled = false;
+                inputField.required = true;
+            }
+            else if (inputField) {
+                inputField.disabled = false;
+                inputField.required = true;
+            }
+        }
+
+        function toggleRequiredCheckbox(checkbox) {
+            let targetId = checkbox.getAttribute("data-target");
+            let inputField = document.getElementById(targetId);
+
+            if (checkbox.checked) {
+                inputField.disabled = false;
+                inputField.required = true;
+            }
+            else {
+                inputField.disabled = true;
+                inputField.required = false;
+                inputField.value = ""; // Clear value when unchecked
+            }
+        }
+
+        function toggleRequiredGroupCheckbox(checkbox) {
+            const targetClass = checkbox.getAttribute("data-target");
+            const targets = document.querySelectorAll(`.${targetClass}`);
+
+            targets.forEach(el => {
+                if (checkbox.checked) {
+                    el.disabled = false;
+                    el.required = true;
+                } else {
+                    el.disabled = true;
+                    el.required = false;
+                    el.value = ""; // Clear value for inputs
+
+                    // Also uncheck radio buttons
+                    if (el.type === "radio") {
+                        el.checked = false;
+                    }
+                }
+            });
+        }
+
+        function updateOthersValue(input) {
+            let radio = document.querySelector(`input[data-target="${input.id}"]`);
+
+            if (radio.checked && input.value.trim() !== "") {
+                radio.value = input.value.trim(); // Update radio value dynamically
+            }
+        }
+
+    </script>
+}

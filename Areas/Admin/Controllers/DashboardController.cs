@@ -34,6 +34,23 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             var userId = int.Parse(userIdClaim.Value);
 
+            // OPD
+            var opdList = await context.OPD
+                .Where(o => o.UserID == userId)
+                .ToListAsync();
+
+            var dailyOPD = opdList
+                .Where(o => o.Date == DateOnly.FromDateTime(DateTime.Now))
+                .ToList();
+
+            var monthlyOPD = opdList
+                .Where(o => o.Date.Month == DateTime.Now.Month && o.Date.Year == DateTime.Now.Year)
+                .ToList();
+
+            var yearlyOPD = opdList
+                .Where(o => o.Date.Year == DateTime.Now.Year)
+                .ToList();
+
             // Assessments
             var assessments = await context.Assessments
                 .Where(a => a.UserID == userId)
@@ -70,6 +87,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             var viewModel = new DashboardViewModel()
             {
+                DailyOPD = dailyOPD,
+                MonthlyOPD = monthlyOPD,
+                YearlyOPD = yearlyOPD,
                 DailyAssessments = dailyassessments,
                 MonthlyAssessments = monthlyassessments,
                 YearlyAssessments = yearlyassessments,
