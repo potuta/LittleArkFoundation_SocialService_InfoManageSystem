@@ -87,5 +87,50 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 return RedirectToAction("Index");
             }
         }
+
+        public async Task<IActionResult> Edit(int id)
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+            var opd = await context.OPD.FindAsync(id);
+            if (opd == null)
+            {
+                TempData["ErrorMessage"] = "OPD not found.";
+                return RedirectToAction("Index");
+            }
+            var viewModel = new OPDViewModel
+            {
+                OPD = opd
+            };
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(OPDViewModel viewModel)
+        {
+            try
+            {
+                string connectionString = _connectionService.GetCurrentConnectionString();
+                await using var context = new ApplicationDbContext(connectionString);
+                context.OPD.Update(viewModel.OPD);
+                await context.SaveChangesAsync();
+                TempData["SuccessMessage"] = $"Successfully edited/updated OPD Id: {viewModel.OPD.Id}";
+                LoggingService.LogInformation($"OPD Patient edited/updated successful. Updated OPD Id: {viewModel.OPD.Id}. Updated by UserID: {User.FindFirst(ClaimTypes.NameIdentifier).Value}, DateTime: {DateTime.Now}");
+                return RedirectToAction("Index");
+            }
+            catch (SqlException se)
+            {
+                TempData["ErrorMessage"] = "SQL Error: " + se.Message;
+                LoggingService.LogError("SQL Error: " + se.Message);
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Error: " + ex.Message;
+                LoggingService.LogError("Error: " + ex.Message);
+                return RedirectToAction("Index");
+            }
+        }
     }
 }
