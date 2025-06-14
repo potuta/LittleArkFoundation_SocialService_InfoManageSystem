@@ -2,7 +2,7 @@
 @model DischargeViewModel
 
 @{
-    ViewData["Title"] = "Discharge Stats";
+    ViewData["Title"] = "Discharge Reports";
     Layout = "_AdminLayout";
 
     // Unique MSWs
@@ -52,14 +52,17 @@
 </style>
 
 <div class="header-bar">
-    <h2>Discharges Statistics</h2>
+    <h2>Discharge Reports</h2>
 
     <div class="menu-bar d-flex gap-2">
-        <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")"
+        <a class="btn btn-outline-dark @(
+           ViewContext.RouteData.Values["action"]?.ToString() == "Index" ||
+           ViewContext.RouteData.Values["action"]?.ToString() == "SortBy"
+           ? "active" : "")"
            asp-action="Index" asp-controller="Discharge">Main</a>
 
-        <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "ViewStats" ? "active" : "")"
-           asp-action="ViewStats" asp-controller="Discharge">Statistics</a>
+        <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "Reports" ? "active" : "")"
+           asp-action="Reports" asp-controller="Discharge">Reports</a>
     </div>
 </div>
 <hr />
@@ -86,13 +89,12 @@
 
 <div class="w-100 text-end mb-3">
     <a class="btn btn-sm btn-success" style="margin-left:5px;"
-       asp-action="ExportStatsToExcel">
+       asp-action="ExportReportsToExcel">
         Download Excel
     </a>
 </div>
 
-<h4 style="margin-top: 15px;">COUNTA of MSW</h4>
-
+<h4 style="margin-top: 15px;">COUNTA of Date Processed by MSW</h4>
 <div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
     <div class="table-responsive" style="overflow-x: auto;">
         <table class="table" style="min-width: 1200px;">
@@ -142,7 +144,6 @@
 </div>
 
 <h4 style="margin-top: 15px;">COUNTA of Class</h4>
-
 <div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
     <div class="table-responsive" style="overflow-x: auto;">
         <table class="table" style="min-width: 1200px;">

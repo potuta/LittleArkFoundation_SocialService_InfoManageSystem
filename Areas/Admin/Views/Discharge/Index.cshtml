@@ -34,11 +34,14 @@
     <h2>Discharge</h2>
 
     <div class="menu-bar d-flex gap-2">
-        <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")"
+        <a class="btn btn-outline-dark @(
+           ViewContext.RouteData.Values["action"]?.ToString() == "Index" ||
+           ViewContext.RouteData.Values["action"]?.ToString() == "SortBy"
+           ? "active" : "")"
            asp-action="Index" asp-controller="Discharge">Main</a>
 
-        <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "ViewStats" ? "active" : "")"
-           asp-action="ViewStats" asp-controller="Discharge">Statistics</a>
+        <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "Reports" ? "active" : "")"
+           asp-action="Reports" asp-controller="Discharge">Reports</a>
     </div>
 </div>
 <hr />

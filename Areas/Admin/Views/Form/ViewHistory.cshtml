@@ -37,8 +37,8 @@
         <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "General" ? "active" : "")"
            asp-action="General" asp-controller="Form">General</a>
 
-        <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "ViewStats" ? "active" : "")"
-           asp-action="ViewStats" asp-controller="Form">Statistics</a>
+        <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "Statistics" ? "active" : "")"
+           asp-action="Statistics" asp-controller="Form">Statistics</a>
     </div>
 </div>
 <hr />

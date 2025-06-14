@@ -80,7 +80,6 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         {
             if (string.IsNullOrEmpty(searchString))
             {
-                // If no search string, return all patients with the specified active flag
                 return RedirectToAction("Index");
             }
 
@@ -1082,7 +1081,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
         }
 
-        public async Task<IActionResult> ViewStats()
+        public async Task<IActionResult> Reports()
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
@@ -1104,7 +1103,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return View(viewModel);
         }
 
-        public async Task<IActionResult> ExportStatsToExcel()
+        public async Task<IActionResult> ExportReportsToExcel()
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);

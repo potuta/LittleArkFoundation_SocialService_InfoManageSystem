@@ -1,0 +1,338 @@
+﻿@model LittleArkFoundation.Areas.Admin.Models.OPD.OPDViewModel
+@{
+	ViewData["Title"] = "OPD Reports";
+	Layout = "_AdminLayout";
+
+    // Unique MSWs
+    var msws = Model.Users.Select(u => u.Username).Distinct().ToList();
+
+    // Group discharges by ProcessedDate
+    var grouped = Model.OPDList
+        .GroupBy(d => d.Date)
+        .OrderBy(g => g.Key)
+        .ToList();
+    var mswTotals = msws.ToDictionary(msw => msw, msw => Model.OPDList.Count(d => d.MSW == msw));
+    var overallTotal = Model.OPDList.Count;
+
+    var groupedClass = new List<string>
+    {
+        "A", "B", "C1", "C2", "C3", "D"
+    };
+
+    var groupedByClass = Model.OPDList
+        .Where(d => !string.IsNullOrEmpty(d.Class))
+        .GroupBy(d => d.Class)
+        .ToDictionary(g => g.Key, g => g.ToList());
+
+    var classTotals = msws.ToDictionary(msw => msw, msw => Model.OPDList.Count(d => d.MSW == msw));
+    var overallClassTotal = Model.OPDList.Count;
+}
+
+<style>
+    .menu-bar a {
+        min-width: 100px;
+        text-align: center;
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .header-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+    }
+
+        .header-bar h2 {
+            margin-bottom: 0;
+        }
+
+</style>
+
+<div class="header-bar">
+    <h2>OPD Reports</h2>
+
+    <div class="menu-bar d-flex gap-2">
+        <a class="btn btn-outline-dark @(
+           ViewContext.RouteData.Values["action"]?.ToString() == "Index" ||
+           ViewContext.RouteData.Values["action"]?.ToString() == "SortBy"
+           ? "active" : "")"
+           asp-action="Index" asp-controller="OPD">Main</a>
+
+        <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "OPDAssisted" ? "active" : "")"
+           asp-action="OPDAssisted" asp-controller="OPD">OPD Assisted</a>
+
+        <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "Reports" ? "active" : "")"
+           asp-action="Reports" asp-controller="OPD">Reports</a>
+
+        <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "Statistics" ? "active" : "")"
+           asp-action="Statistics" asp-controller="OPD">Statistics</a>
+    </div>
+</div>
+<hr />
+
+<!-- Back to List -->
+<div class="mt-2">
+    <a class="btn btn-outline-secondary mb-3" asp-controller="OPD" asp-action="Index">← Back to List</a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert" style="width: 60%;">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="width: 60%;">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="w-100 text-end mb-3">
+    <a class="btn btn-sm btn-success" style="margin-left:5px;"
+       asp-action="ExportReportsToExcel">
+        Download Excel
+    </a>
+</div>
+
+<h4 style="margin-top: 15px;">COUNTA of Date Processed by MSW</h4>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>Date Processed</th>
+                        @foreach (var msw in msws)
+                        {
+                            <th>@msw</th>
+                        }
+                        <th>Grand Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    @foreach (var group in grouped)
+                    {
+                        <tr>
+                            <td>@group.Key.ToShortDateString()</td>
+
+                            @foreach (var msw in msws)
+                            {
+                                var count = group.Count(d => d.MSW == msw);
+                                <td>@count</td>
+                            }
+
+                            <td>@group.Count()</td>
+                        </tr>
+                    }
+
+                    <tr class="fw-bold">
+                        <td>Total</td>
+                        @foreach (var msw in msws)
+                        {
+                            <td>@mswTotals[msw]</td>
+                        }
+                        <td>@overallTotal</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h4 style="margin-top: 15px;">COUNTA of Class</h4>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>Date Processed</th>
+                        @foreach (var msw in msws)
+                        {
+                            <th>@msw</th>
+                        }
+                        <th>Grand Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    @foreach (var cls in groupedClass)
+                    {
+                        <tr>
+                            <td>@cls</td>
+
+                            @foreach (var msw in msws)
+                            {
+                                var count = groupedByClass.ContainsKey(cls)
+                                ? groupedByClass[cls].Count(d => d.MSW == msw)
+                                : 0;
+                                <td>@count</td>
+                            }
+
+                            <td>
+                                @(groupedByClass.ContainsKey(cls) ? groupedByClass[cls].Count : 0)
+                            </td>
+                        </tr>
+                    }
+
+                    <tr class="fw-bold">
+                        <td>Total</td>
+                        @foreach (var msw in msws)
+                        {
+                            <td>@classTotals[msw]</td>
+                        }
+                        <td>@overallClassTotal</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h4 style="margin-top: 15px;">COUNTA of Class by Gender</h4>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>Class</th>
+                        <th>F</th>
+						<th>M</th>
+                        <th>Grand Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    foreach (var cls in groupedClass)
+                    {
+                        var femaleCount = Model.OPDList.Count(d => d.Class == cls && d.Gender == "Female");
+						var maleCount = Model.OPDList.Count(d => d.Class == cls && d.Gender == "Male");
+                        <tr>
+                            <td>@cls</td>
+                            <td>@femaleCount</td>
+					        <td>@maleCount</td>
+                            <td>@Model.OPDList.Count(d => d.Class == cls)</td>
+                        </tr>
+                    }
+
+                    var femaleCountAll = Model.OPDList.Count(d => d.Gender == "Female");
+                    var maleCountAll = Model.OPDList.Count(d => d.Gender == "Male");
+					var totalCountAll = femaleCountAll + maleCountAll;
+                    <tr class="fw-bold">
+                        <td>Total</td>
+                        <td>@femaleCountAll</td>
+						<td>@maleCountAll</td>
+						<td>@totalCountAll</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+	</div>
+</div>
+
+<h4 style="margin-top: 15px;">COUNTA of Old/New</h4>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>MSW</th>
+                        <th>Old</th>
+                        <th>New</th>
+                        <th>Grand Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    @foreach (var msw in msws)
+                    {
+                        var oldCount = Model.OPDList.Count(d => d.IsOld == true && d.MSW == msw);
+                        var newCount = Model.OPDList.Count(d => d.IsOld == false && d.MSW == msw);
+                        var totalCount = oldCount + newCount;
+                        <tr>
+                            <td>@msw</td>
+                            <td>@oldCount</td>
+                            <td>@newCount</td>
+                            <td>@totalCount</td>
+                        </tr>
+                    }
+
+                    var oldCountAll = Model.OPDList.Count(d => d.IsOld == true);
+                    var newCountAll = Model.OPDList.Count(d => d.IsOld == false);
+					var totalCountAll = oldCountAll + newCountAll;
+                    <tr class="fw-bold">
+                        <td>Total</td>
+                        <td>@oldCountAll</td>
+                        <td>@newCountAll</td>
+                        <td>@totalCountAll</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h4 style="margin-top: 15px;">COUNTA of PWD</h4>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>MSW</th>
+                        <th>PWD</th>
+                        <th>Non-PWD</th>
+                        <th>Grand Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    @foreach (var msw in msws)
+                    {
+                        var pwdCount = Model.OPDList.Count(d => d.IsPWD == true && d.MSW == msw);
+                        var nonPwdCount = Model.OPDList.Count(d => d.IsPWD == false && d.MSW == msw);
+                        var totalCount = pwdCount + nonPwdCount;
+                        <tr>
+                            <td>@msw</td>
+                            <td>@pwdCount</td>
+                            <td>@nonPwdCount</td>
+                            <td>@totalCount</td>
+                        </tr>
+                    }
+                    var pwdCountAll = Model.OPDList.Count(d => d.IsPWD == true);
+                    var nonPwdCountAll = Model.OPDList.Count(d => d.IsPWD == false);
+                    var totalCountAll = pwdCountAll + nonPwdCountAll;
+                    <tr class="fw-bold">
+                        <td>Total</td>
+                        <td>@pwdCountAll</td>
+                        <td>@nonPwdCountAll</td>
+                        <td>@totalCountAll</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+                             

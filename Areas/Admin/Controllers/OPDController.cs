@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 using LittleArkFoundation.Areas.Admin.Models.Form;
 using LittleArkFoundation.Areas.Admin.Models.OPD;
 using LittleArkFoundation.Authorize;
@@ -28,6 +29,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             bool activeFlag = isAdmitted ?? false;
             ViewBag.isAdmitted = activeFlag;
 
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
             var opdList = await context.OPD
                 .Where(opd => opd.IsAdmitted == activeFlag)
                 .ToListAsync();
@@ -35,9 +38,77 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var viewModel = new OPDViewModel
             {
                 OPDList = opdList,
+                Users = users
             };
 
             return View(viewModel);
+        }
+
+        public async Task<IActionResult> Search(string searchString, bool? isAdmitted)
+        {
+            bool activeFlag = isAdmitted ?? false;
+            ViewBag.isAdmitted = activeFlag;
+
+            if (string.IsNullOrEmpty(searchString))
+            {
+                // If no search string, return all patients with the specified active flag
+                return RedirectToAction("Index", new {isAdmitted = activeFlag });
+            }
+
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var searchWords = searchString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            var query = context.OPD.Where(u => u.IsAdmitted == activeFlag);
+
+            foreach (var word in searchWords)
+            {
+                var term = word.Trim();
+
+                query = query.Where(u =>
+                    EF.Functions.Like(u.FirstName, $"%{term}%") ||
+                    EF.Functions.Like(u.MiddleName, $"%{term}%") ||
+                    EF.Functions.Like(u.LastName, $"%{term}%") ||
+                    EF.Functions.Like(u.Id.ToString(), $"%{term}%"));
+            }
+
+            var opdList = await query.ToListAsync();
+
+            var viewModel = new OPDViewModel
+            {
+                OPDList = opdList,
+            };
+
+            return View("Index", viewModel);
+        }
+
+        public async Task<IActionResult> SortBy(string sortByUserID)
+        {
+            if (string.IsNullOrEmpty(sortByUserID))
+            {
+                return RedirectToAction("Index");
+            }
+
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            int userId = int.Parse(sortByUserID);
+
+            var opdList = await context.OPD.Where(opd => opd.UserID == userId).ToListAsync();
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+
+            var viewModel = new OPDViewModel
+            {
+                OPDList = opdList,
+                Users = users
+            };
+
+            var user = await context.Users.FindAsync(userId);
+
+            ViewBag.sortBy = user.Username;
+            return View("Index", viewModel);
         }
 
         public async Task<IActionResult> Create()
@@ -164,6 +235,34 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 LoggingService.LogError("Error: " + ex.Message);
                 return RedirectToAction("Index");
             }
+        }
+
+        //public async Task<IActionResult> ExportLogsheetToExcel(int userID)
+        //{
+
+        //}
+
+        public async Task<IActionResult> Reports()
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var opdList = await context.OPD.ToListAsync();
+            if (opdList == null || !opdList.Any())
+            {
+                TempData["ErrorMessage"] = "No OPD records found.";
+                return RedirectToAction("Index");
+            }
+
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+
+            var viewModel = new OPDViewModel
+            {
+                OPDList = opdList,
+                Users = users
+            };
+            return View(viewModel);
         }
     }
 }
