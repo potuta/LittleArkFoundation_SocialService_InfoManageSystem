@@ -100,7 +100,16 @@
 								{
 								    <a class="btn btn-primary" asp-action="Admit" asp-route-id="@opd.Id">Admit</a>
 									<a class="btn btn-success" asp-action="Edit" asp-route-id="@opd.Id">Edit</a>
-									<a class="btn btn-danger" asp-action="Delete" asp-route-id="@opd.Id">Delete</a>
+                                    if (User.HasClaim("Permission", "DeleteOPD"))
+                                    {
+                                        <a class="btn btn-danger" asp-action="Delete" asp-route-id="@opd.Id" onclick="return confirm('Are you sure you want to delete this OPD?');">Delete</a>
+                                    }
+                                    else
+                                    {
+                                        <a class="btn btn-danger text-muted" style="cursor: not-allowed;" title="You do not have permission">
+                                            Delete
+                                        </a>
+                                    }
 								}
 							</td>
                             <td style="white-space: nowrap;">@opd.Date</td>
