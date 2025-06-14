@@ -7,7 +7,42 @@
     bool isActive = ViewBag.isActive ?? true;
 }
 
-<h2>Admission</h2>
+<style>
+    .menu-bar a {
+        min-width: 100px;
+        text-align: center;
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .header-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+    }
+
+        .header-bar h2 {
+            margin-bottom: 0;
+        }
+
+</style>
+
+
+<div class="header-bar">
+    <h2>Admission</h2>
+
+    <div class="menu-bar d-flex gap-2">
+        <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")" 
+        asp-action="Index" asp-controller="Form">Main</a>
+
+        <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "General" ? "active" : "")"
+        asp-action="General" asp-controller="Form">General</a>
+
+        <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "ViewStats" ? "active" : "")" 
+        asp-action="ViewStats" asp-controller="Form">Statistics</a>
+    </div>
+</div>
 <hr />
 
 <div class="search-container">
