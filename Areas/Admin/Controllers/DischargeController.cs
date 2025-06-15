@@ -80,7 +80,6 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         {
             if (string.IsNullOrEmpty(searchString))
             {
-                // If no search string, return all patients with the specified active flag
                 return RedirectToAction("Index");
             }
 
@@ -1082,7 +1081,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
         }
 
-        public async Task<IActionResult> ViewStats()
+        public async Task<IActionResult> Reports()
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
@@ -1104,7 +1103,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return View(viewModel);
         }
 
-        public async Task<IActionResult> ExportStatsToExcel()
+        public async Task<IActionResult> ExportReportsToExcel()
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
@@ -1113,14 +1112,14 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
 
             var discharges = await context.Discharges.ToListAsync();
-            var fileName = $"DischargesStats_{discharges[0].DischargedDate.Year}";
+            var fileName = $"DischargesReports_{discharges[0].DischargedDate.Year}";
 
             var workbook = new XLWorkbook();
             var worksheet = workbook.Worksheets.Add(fileName);
 
             // HEADERS
-            // COUNTA Of MSW
-            worksheet.Cell(1, 1).Value = "COUNTA of MSW";
+            // COUNTA OF DATE PROCESSED BY MSW
+            worksheet.Cell(1, 1).Value = "COUNTA OF DATE PROCESSED BY MSW";
             worksheet.Cell(2, 1).Value = "Date Processed";
 
             int col = 2;

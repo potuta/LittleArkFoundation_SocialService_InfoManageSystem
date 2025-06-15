@@ -3,19 +3,105 @@
     ViewData["Title"] = "OPD";
     Layout = "_AdminLayout";
     bool isAdmitted = ViewBag.isAdmitted ?? false;
+    string? sortBy = ViewBag.sortBy ?? "";
+    bool matchedUser = Model.Users.Any(u => u.Username == sortBy);
 }
 
-<h2>OPD</h2>
+<style>
+    .menu-bar a {
+        min-width: 100px;
+        text-align: center;
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .header-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+    }
+
+        .header-bar h2 {
+            margin-bottom: 0;
+        }
+
+</style>
+
+
+<div class="header-bar">
+    <h2>OPD</h2>
+
+    <div class="menu-bar d-flex gap-2">
+        <a class="btn btn-outline-dark @(
+           ViewContext.RouteData.Values["action"]?.ToString() == "Index" ||
+           ViewContext.RouteData.Values["action"]?.ToString() == "SortBy"
+           ? "active" : "")"
+           asp-action="Index" asp-controller="OPD">Main</a>
+
+        <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "OPDAssisted" ? "active" : "")"
+           asp-action="OPDAssisted" asp-controller="OPD">OPD Assisted</a>
+
+        <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "Reports" ? "active" : "")"
+           asp-action="Reports" asp-controller="OPD">Reports</a>
+
+        <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "Statistics" ? "active" : "")"
+           asp-action="Statistics" asp-controller="OPD">Statistics</a>
+    </div>
+</div>
 <hr />
 
-<div class="search-container">
-    <form asp-action="Search" asp-route-isAdmitted="@isAdmitted" asp-controller="OPD">
-        <div class="input-group">
-            <input type="search" name="searchString" class="form-control" placeholder="Search by Id/FullName" aria-label="Search">
-            <button type="submit" class="btn btn-dark">Search</button>
-        </div>
-    </form>
-    <a class="btn btn-primary" asp-action="Index" asp-controller="OPD">← Back to Full List</a>
+<div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+    <div class="search-container">
+        <form asp-action="Search" asp-route-isAdmitted="@isAdmitted" asp-controller="OPD">
+            <div class="input-group">
+                <input type="search" name="searchString" class="form-control" placeholder="Search by Id/FullName" aria-label="Search">
+                <button type="submit" class="btn btn-dark">Search</button>
+            </div>
+        </form>
+        <a class="btn btn-primary" asp-action="Index" asp-controller="OPD">← Back to Full List</a>
+    </div>
+
+    <div class="btn-group">
+        <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-1" data-bs-toggle="dropdown" aria-expanded="false">
+            @if (string.IsNullOrEmpty(sortBy))
+            {
+                <span class="mb-0">Sort by MSW</span>
+            }
+            else
+            {
+                <span class="mb-0">@sortBy</span>
+            }
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" asp-action="SortBy" asp-controller="OPD" asp-route-sortByUserID="">All</a></li>
+            @foreach (var user in Model.Users)
+            {
+                <li><a class="dropdown-item" asp-action="SortBy" asp-controller="OPD" asp-route-sortByUserID="@user.UserID">@user.Username</a></li>
+            }
+        </ul>
+        @if (matchedUser)
+        {
+            foreach (var user in Model.Users)
+            {
+                if (user.Username == sortBy)
+                {
+                    <a class="btn btn-sm btn-success" style="margin-left:5px;"
+                       asp-action="ExportLogsheetToExcel"
+                       asp-route-userID="@user.UserID">
+                        Download Excel (@user.Username)
+                    </a>
+                }
+            }
+        }
+        else
+        {
+            <a class="btn btn-sm btn-success" style="margin-left:5px;"
+               asp-action="ExportLogsheetToExcel">
+                Download Excel (All)
+            </a>
+        }
+    </div>
 </div>
 
 <div>
