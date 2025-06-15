@@ -226,7 +226,8 @@
                             <td>@cls</td>
                             <td>@femaleCount</td>
 					        <td>@maleCount</td>
-                            <td>@Model.OPDList.Count(d => d.Class == cls)</td>
+                            @* <td>@Model.OPDList.Count(d => d.Class == cls)</td> *@
+							<td>@(femaleCount + maleCount)</td>
                         </tr>
                     }
 
