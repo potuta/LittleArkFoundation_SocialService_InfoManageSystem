@@ -24,6 +24,8 @@ using DocumentFormat.OpenXml.InkML;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using System.Text;
 using Microsoft.Data.SqlClient;
+using LittleArkFoundation.Areas.Admin.Models.Referrals;
+using LittleArkFoundation.Areas.Admin.Models.MSWDClassification;
 // TODO: Implement logging for forms
 namespace LittleArkFoundation.Areas.Admin.Controllers
 {
@@ -185,6 +187,71 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             };
 
             return View(viewModel);
+        }
+
+        public async Task<IActionResult> AdmitOPD(int Id)
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            // USERS & SOCIAL WORKER ROLE ID
+            var socialWorkerRoleId = await context.Roles
+                .Where(r => r.RoleName == "Social Worker")
+                .Select(r => r.RoleID)
+                .FirstOrDefaultAsync();
+
+            var users = await context.Users
+                .Where(u => u.RoleID == socialWorkerRoleId)
+                .ToListAsync();
+
+            var opd = await context.OPD
+                .Where(o => o.Id == Id)
+                .FirstOrDefaultAsync();
+
+            var patient = new PatientsModel
+            {
+                FirstName = opd.FirstName,
+                MiddleName = opd.MiddleName,
+                LastName = opd.LastName,
+                Age = opd.Age,
+                Gender = opd.Gender,
+                PermanentAddress = opd.Address,
+                MonthlyIncome = opd.MonthlyIncome,
+            };
+
+            var mswdClassification = new MSWDClassificationModel
+            {
+                SubClassification = opd.Class
+            };
+
+            var referral = new ReferralsModel
+            {
+                ReferralType = opd.SourceOfReferral
+            };
+
+            var medicalHistory = new MedicalHistoryModel
+            {
+                AdmittingDiagnosis = opd.Diagnosis,
+            };
+
+            var viewModel = new FormViewModel()
+            {
+                Users = users,
+                FamilyMembers = new List<FamilyCompositionModel>() { new FamilyCompositionModel() },
+                Diagnoses = new List<DiagnosesModel>() { new DiagnosesModel() },
+                Medications = new List<MedicationsModel> { new MedicationsModel() },
+                HospitalizationHistory = new List<HospitalizationHistoryModel> { new HospitalizationHistoryModel() },
+                MentalHealthHistory = new List<MentalHealthHistoryModel> { new MentalHealthHistoryModel() },
+                FamilyHistory = new List<FamilyHistoryModel> { new FamilyHistoryModel() },
+                ProgressNotes = new List<ProgressNotesModel> { new ProgressNotesModel() },
+                Patient = patient,
+                MSWDClassification = mswdClassification,
+                Referrals = referral,
+                MedicalHistory = medicalHistory,
+
+            };
+
+            return View("Create", viewModel);
         }
 
         [HttpPost]
