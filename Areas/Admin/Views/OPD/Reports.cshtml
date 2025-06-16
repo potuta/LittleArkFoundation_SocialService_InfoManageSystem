@@ -55,9 +55,17 @@
     <div class="menu-bar d-flex gap-2">
         <a class="btn btn-outline-dark @(
            ViewContext.RouteData.Values["action"]?.ToString() == "Index" ||
-           ViewContext.RouteData.Values["action"]?.ToString() == "SortBy"
+           ViewContext.RouteData.Values["action"]?.ToString() == "SortBy" ||
+           ViewContext.RouteData.Values["action"]?.ToString() == "Search"
            ? "active" : "")"
            asp-action="Index" asp-controller="OPD">Main</a>
+
+        <a class="btn btn-outline-dark @(
+           ViewContext.RouteData.Values["action"]?.ToString() == "General" ||
+           ViewContext.RouteData.Values["action"]?.ToString() == "SortByGeneral" ||
+           ViewContext.RouteData.Values["action"]?.ToString() == "SearchGeneral"
+           ? "active" : "")"
+           asp-action="General" asp-controller="OPD">General</a>
 
         <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "OPDAssisted" ? "active" : "")"
            asp-action="OPDAssisted" asp-controller="OPD">OPD Assisted</a>
