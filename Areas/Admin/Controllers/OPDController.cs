@@ -84,6 +84,38 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return View("Index", viewModel);
         }
 
+        public async Task<IActionResult> SearchGeneral(string searchString)
+        {
+            if (string.IsNullOrEmpty(searchString))
+            {
+                return RedirectToAction("General");
+            }
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var searchWords = searchString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            var query = context.OPD.AsQueryable();
+
+            foreach (var word in searchWords)
+            {
+                var term = word.Trim();
+                query = query.Where(u =>
+                    EF.Functions.Like(u.FirstName, $"%{term}%") ||
+                    EF.Functions.Like(u.MiddleName, $"%{term}%") ||
+                    EF.Functions.Like(u.LastName, $"%{term}%") ||
+                    EF.Functions.Like(u.Id.ToString(), $"%{term}%"));
+            }
+
+            var opdList = await query.ToListAsync();
+
+            var viewModel = new OPDViewModel
+            {
+                OPDList = opdList,
+            };
+
+            return View("General", viewModel);
+        }
+
         public async Task<IActionResult> SortBy(string sortByUserID)
         {
             if (string.IsNullOrEmpty(sortByUserID))
@@ -110,6 +142,34 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             ViewBag.sortBy = user.Username;
             return View("Index", viewModel);
+        }
+
+        public async Task<IActionResult> SortByGeneral(string sortByUserID)
+        {
+            if (string.IsNullOrEmpty(sortByUserID))
+            {
+                return RedirectToAction("General");
+            }
+
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            int userId = int.Parse(sortByUserID);
+
+            var opdList = await context.OPD.Where(opd => opd.UserID == userId).ToListAsync();
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+
+            var viewModel = new OPDViewModel
+            {
+                OPDList = opdList,
+                Users = users
+            };
+
+            var user = await context.Users.FindAsync(userId);
+
+            ViewBag.sortBy = user.Username;
+            return View("General", viewModel);
         }
 
         public async Task<IActionResult> Create()
@@ -238,10 +298,144 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
-        //public async Task<IActionResult> ExportLogsheetToExcel(int userID)
-        //{
+        public async Task<IActionResult> General()
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
 
-        //}
+            var opdList = await context.OPD.ToListAsync();
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+
+            var viewModel = new OPDViewModel
+            {
+                OPDList = opdList,
+                Users = users
+            };
+
+            return View(viewModel);
+        }
+
+        public async Task<IActionResult> ExportLogsheetToExcel(int userID)
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+
+            List<OPDModel> opdList;
+            string fileName;
+            if (userID > 0)
+            {
+                // Filter by specific user
+                opdList = await context.OPD.Where(opd => opd.UserID == userID).ToListAsync();
+                if (opdList == null || !opdList.Any())
+                {
+                    TempData["ErrorMessage"] = "No OPD records found for selected user.";
+                    return RedirectToAction("Index");
+                }
+                fileName = $"OPD_Logsheet_{opdList[0].Date.Year}_{opdList[0].MSW}";
+            }
+            else
+            {
+                // Export all OPD records
+                opdList = await context.OPD.ToListAsync();
+                fileName = $"OPD_Logsheet_{opdList[0].Date.Year}_All";
+            }
+
+            var workbook = new XLWorkbook();
+            var worksheet = workbook.Worksheets.Add(fileName);
+
+            // HEADERS
+
+            var headers = new[]
+            {
+                "Date", "No", "Old/New", "Class", "Name of Patient",
+                "Age", "G", "PWD", "Diagnosis", "Complete Address",
+                "Source of Referral", "Name of Parents", "Occupation",
+                "Monthly Income", "No. of Children", "Assistance Needed",
+                "Amount", "PT's Share", "Amount Extended", "Resources",
+                "Proponent of GL", "Amount of Received GL", "MSW", "Category"
+            };
+
+            // Column 1
+            var cell1 = worksheet.Cell(1, 1);
+            cell1.Value = userID == 0 ? "All" : opdList[0].MSW;
+            cell1.Style.Font.Bold = true;
+            cell1.Style.Font.FontSize = 14;
+            cell1.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            worksheet.Range(1, 1, 1, headers.Count()).Merge(); // Merge across desired columns
+
+            // Column 2
+            var cell2 = worksheet.Cell(2, 1);
+            cell2.Value = "OPD LOGSHEET";
+            cell2.Style.Font.Bold = true;
+            cell2.Style.Font.FontSize = 12;
+            cell2.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            worksheet.Range(2, 1, 2, headers.Count()).Merge();
+
+            // Column 3
+            var cell3 = worksheet.Cell(3, 1);
+            cell3.Value = $"{opdList[0].Date.Year} OPD";
+            cell3.Style.Font.Bold = true;
+            cell3.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            worksheet.Range(3, 1, 3, headers.Count()).Merge();
+
+            // Rest of columns
+            int headerRow = 4;
+            for (int i = 0; i < headers.Length; i++)
+            {
+                worksheet.Cell(headerRow, i + 1).Value = headers[i];
+                worksheet.Cell(headerRow, i + 1).Style.Font.Bold = true;
+                worksheet.Cell(headerRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            }
+
+            int dataRow = headerRow + 1;
+            foreach (var opd in opdList)
+            {
+                worksheet.Cell(dataRow, 1).Value = opd.Date.ToShortDateString();
+                worksheet.Cell(dataRow, 2).Value = opd.Id;
+                worksheet.Cell(dataRow, 3).Value = opd.IsOld ? "Old" : "New";
+                worksheet.Cell(dataRow, 4).Value = opd.Class;
+                worksheet.Cell(dataRow, 5).Value = $"{opd.LastName}, {opd.FirstName} {opd.MiddleName}";
+                worksheet.Cell(dataRow, 6).Value = opd.Age;
+                worksheet.Cell(dataRow, 7).Value = opd.Gender;
+                worksheet.Cell(dataRow, 8).Value = opd.IsPWD ? "Yes" : "No";
+                worksheet.Cell(dataRow, 9).Value = opd.Diagnosis;
+                worksheet.Cell(dataRow, 10).Value = opd.Address;
+                worksheet.Cell(dataRow, 11).Value = opd.SourceOfReferral;
+                worksheet.Cell(dataRow, 12).Value = $"{opd.MotherLastName} / " +
+                                                     $"{opd.FatherLastName}";
+                worksheet.Cell(dataRow, 13).Value = $"{opd.MotherOccupation} / " + 
+                                                     $"{opd.FatherOccupation}";
+                worksheet.Cell(dataRow, 14).Value = opd.MonthlyIncome;
+                worksheet.Cell(dataRow, 15).Value = opd.NoOfChildren;
+                worksheet.Cell(dataRow, 16).Value = opd.AssistanceNeeded;
+                worksheet.Cell(dataRow, 17).Value = opd.Amount;
+                worksheet.Cell(dataRow, 18).Value = opd.PtShare;
+                worksheet.Cell(dataRow, 19).Value = opd.AmountExtended;
+                worksheet.Cell(dataRow, 20).Value = opd.Resources;
+                worksheet.Cell(dataRow, 21).Value = opd.GLProponent;
+                worksheet.Cell(dataRow, 22).Value = opd.GLAmountReceived;
+                worksheet.Cell(dataRow, 23).Value = opd.MSW;
+                worksheet.Cell(dataRow, 24).Value = opd.Category;
+
+                dataRow++;
+            }
+
+            // Autofit for better presentation
+            worksheet.Columns().AdjustToContents();
+
+            using (var stream = new MemoryStream())
+            {
+                workbook.SaveAs(stream);
+                stream.Position = 0;
+                return File(stream.ToArray(),
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            $"{fileName}.xlsx");
+            }
+        }
 
         public async Task<IActionResult> Reports()
         {
