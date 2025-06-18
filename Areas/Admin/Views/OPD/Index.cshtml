@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "OPD";
     Layout = "_AdminLayout";
-    bool isAdmitted = ViewBag.isAdmitted ?? false;
+	string? sortToggle = ViewBag.sortToggle ?? "All";
     string? sortBy = ViewBag.sortBy ?? "";
     bool matchedUser = Model.Users.Any(u => u.Username == sortBy);
 }
@@ -40,13 +40,6 @@
            ? "active" : "")"
            asp-action="Index" asp-controller="OPD">Main</a>
 
-        <a class="btn btn-outline-dark @(
-            ViewContext.RouteData.Values["action"]?.ToString() == "General" ||
-           ViewContext.RouteData.Values["action"]?.ToString() == "SortByGeneral" ||
-            ViewContext.RouteData.Values["action"]?.ToString() == "SearchGeneral"
-            ? "active" : "")"
-           asp-action="General" asp-controller="OPD">General</a>
-
         <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "OPDAssisted" ? "active" : "")"
            asp-action="OPDAssisted" asp-controller="OPD">OPD Assisted</a>
 
@@ -60,8 +53,8 @@
 <hr />
 
 <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
-    <div class="search-container">
-        <form asp-action="Search" asp-route-isAdmitted="@isAdmitted" asp-controller="OPD">
+    <div class="search-container" style="width: 100%">
+        <form asp-action="Search" asp-route-sortToggle="@sortToggle" asp-controller="OPD">
             <div class="input-group">
                 <input type="search" name="searchString" class="form-control" placeholder="Search by Id/FullName" aria-label="Search">
                 <button type="submit" class="btn btn-dark">Search</button>
@@ -82,10 +75,10 @@
             }
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" asp-action="SortBy" asp-controller="OPD" asp-route-sortByUserID="">All</a></li>
+            <li><a class="dropdown-item" asp-action="SortBy" asp-controller="OPD" asp-route-sortByUserID="" asp-route-sortToggle="@sortToggle">All</a></li>
             @foreach (var user in Model.Users)
             {
-                <li><a class="dropdown-item" asp-action="SortBy" asp-controller="OPD" asp-route-sortByUserID="@user.UserID">@user.Username</a></li>
+                <li><a class="dropdown-item" asp-action="SortBy" asp-controller="OPD" asp-route-sortByUserID="@user.UserID" asp-route-sortToggle="@sortToggle">@user.Username</a></li>
             }
         </ul>
         @if (matchedUser)
@@ -114,21 +107,27 @@
 
 <div>
 
-    @if (!isAdmitted)
+    @if (sortToggle == "All" || sortToggle == "Not Admitted")
     {
         <a class="btn btn-success" asp-action="Create" asp-controller="OPD">Create New</a>
     }
 
     <div class="btn-group btn-group-toggle" data-toggle="buttons">
-        <a asp-action="Index" asp-controller="OPD" asp-route-isAdmitted="false" class="btn btn-secondary @(isAdmitted ? "" : "active")">
+        <a asp-action="Index" asp-controller="OPD" asp-route-sortToggle="All" class="btn btn-secondary @(sortToggle == "All" ? "active" : "")">
             <div class="custom-radio">
-                <input type="radio" style="accent-color: dodgerblue" value="main" @(isAdmitted ? "" : "checked")>
-                <label style="margin-bottom: 0">Regular</label>
+                <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "All" ? "checked" : "")>
+                <label style="margin-bottom: 0">All</label>
             </div>
         </a>
-        <a asp-action="Index" asp-controller="OPD" asp-route-isAdmitted="true" class="btn btn-secondary @(isAdmitted ? "active" : "")">
+        <a asp-action="Index" asp-controller="OPD" asp-route-sortToggle="Not Admitted" class="btn btn-secondary @(sortToggle == "Not Admitted" ? "active" : "")">
             <div class="custom-radio">
-                <input type="radio" style="accent-color: dodgerblue" value="archive" @(isAdmitted ? "checked" : "")>
+                <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "Not Admitted" ? "checked" : "")>
+                <label style="margin-bottom: 0">Not Admitted</label>
+            </div>
+        </a>
+        <a asp-action="Index" asp-controller="OPD" asp-route-sortToggle="Admitted" class="btn btn-secondary @(sortToggle == "Admitted" ? "active" : "")">
+            <div class="custom-radio">
+                <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "Admitted" ? "checked" : "")>
                 <label style="margin-bottom: 0">Admitted</label>
             </div>
         </a>
@@ -190,7 +189,7 @@
                     {
                         <tr>
                             <td class="d-flex gap-2" style="white-space: nowrap;">
-								@if (!isAdmitted)
+								@if (sortToggle == "All" || sortToggle == "Not Admitted")
 								{
                                     <a class="btn btn-primary" asp-action="AdmitOPD" asp-controller="Form" asp-route-id="@opd.Id" 
                                     onclick="return confirm('Are you sure you want to admit this OPD?');">Admit</a>
