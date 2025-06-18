@@ -2,8 +2,10 @@
 @{
     ViewData["Title"] = "OPD";
     Layout = "_AdminLayout";
-	string? sortToggle = ViewBag.sortToggle ?? "All";
+    string? sortToggle = ViewBag.sortToggle ?? "All";
     string? sortBy = ViewBag.sortBy ?? "";
+	string? sortByUserID = ViewBag.sortByUserID ?? "";
+    string? sortByMonth = ViewBag.sortByMonth ?? "";
     bool matchedUser = Model.Users.Any(u => u.Username == sortBy);
 }
 
@@ -64,7 +66,7 @@
     </div>
 
     <div class="btn-group">
-        <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-1" data-bs-toggle="dropdown" aria-expanded="false">
+        <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-1 me-2" data-bs-toggle="dropdown" aria-expanded="false">
             @if (string.IsNullOrEmpty(sortBy))
             {
                 <span class="mb-0">Sort by MSW</span>
@@ -75,10 +77,10 @@
             }
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" asp-action="SortBy" asp-controller="OPD" asp-route-sortByUserID="" asp-route-sortToggle="@sortToggle">All</a></li>
+            <li><a class="dropdown-item" asp-action="SortBy" asp-controller="OPD" asp-route-sortByUserID="" asp-route-sortByMonth="@sortByMonth" asp-route-sortToggle="@sortToggle">All</a></li>
             @foreach (var user in Model.Users)
             {
-                <li><a class="dropdown-item" asp-action="SortBy" asp-controller="OPD" asp-route-sortByUserID="@user.UserID" asp-route-sortToggle="@sortToggle">@user.Username</a></li>
+                <li><a class="dropdown-item" asp-action="SortBy" asp-controller="OPD" asp-route-sortByUserID="@user.UserID" asp-route-sortByMonth="@sortByMonth" asp-route-sortToggle="@sortToggle">@user.Username</a></li>
             }
         </ul>
         @* @if (matchedUser)
@@ -102,6 +104,14 @@
                 Download Excel (All)
             </a>
         } *@
+
+        @* Month filter *@
+        <form method="get" asp-action="SortBy" class="d-flex align-items-center gap-2">
+            <input type="hidden" name="sortByUserID" value="@sortByUserID" />
+            <input type="hidden" name="sortToggle" value="@sortToggle" />
+            <input type="month" name="sortByMonth" class="form-control form-control-sm" value="@sortByMonth" />
+            <button type="submit" class="btn btn-secondary btn-sm" style="width: 100%;">Filter Month</button>
+        </form>
 
         <button type="button" class="btn btn-success btn-sm" style="margin-left:5px;" data-bs-toggle="modal" data-bs-target="#exportModal">
             Download Excel

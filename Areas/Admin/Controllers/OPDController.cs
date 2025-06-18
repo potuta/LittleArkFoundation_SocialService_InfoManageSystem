@@ -108,41 +108,40 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return View("Index", viewModel);
         }
 
-        public async Task<IActionResult> SortBy(string sortByUserID, string? sortToggle)
+        public async Task<IActionResult> SortBy(string sortByUserID, string? sortByMonth, string? sortToggle)
         {
             string sortToggleValue = sortToggle ?? "All";
             ViewBag.sortToggle = sortToggleValue;
 
-            if (string.IsNullOrEmpty(sortByUserID))
-            {
-                return RedirectToAction("Index");
-            }
-
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
 
-            int userId = int.Parse(sortByUserID);
+            IQueryable<OPDModel> query = context.OPD.AsQueryable();
 
-            List<OPDModel> opdList;
+            if (!string.IsNullOrEmpty(sortByUserID))
+            {
+                query = query.Where(opd => opd.UserID == int.Parse(sortByUserID));
+                var user = await context.Users.FindAsync(int.Parse(sortByUserID));
+                ViewBag.sortBy = user.Username;
+                ViewBag.sortByUserID = user.UserID.ToString();
+            }
 
             if (sortToggleValue == "Admitted")
             {
-                opdList = await context.OPD
-                    .Where(opd => opd.IsAdmitted && opd.UserID == userId)
-                    .ToListAsync();
+                query = query.Where(opd => opd.IsAdmitted);
             }
             else if (sortToggleValue == "Not Admitted")
             {
-                opdList = await context.OPD
-                    .Where(opd => !opd.IsAdmitted && opd.UserID == userId)
-                    .ToListAsync();
+                query = query.Where(opd => !opd.IsAdmitted);
             }
-            else
+
+            if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
             {
-                opdList = await context.OPD
-                    .Where(opd => opd.UserID == userId)
-                    .ToListAsync();
+                query = query.Where(opd => opd.Date.Month == month.Month && opd.Date.Year == month.Year);
+                ViewBag.sortByMonth = month.ToString("yyyy-MM");
             }
+
+            var opdList = await query.ToListAsync();
 
             var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
@@ -152,10 +151,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 OPDList = opdList,
                 Users = users
             };
-
-            var user = await context.Users.FindAsync(userId);
-
-            ViewBag.sortBy = user.Username;
+            
             return View("Index", viewModel);
         }
 
