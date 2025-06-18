@@ -296,7 +296,7 @@
                                     </div>
                                     <div class="modal-body">
                                         <div class="list-group-item d-flex justify-content-between align-items-center">
-                                             <h6 class="ms-2">Factor</h6>
+                                             <h6 class="ms-2">Factors</h6>
                                              <h6 class="me-2">Points</h6>
                                         </div>
                                         <ul class="list-group">
@@ -309,7 +309,12 @@
                                             }
                                         </ul>
                                         <hr />
-                                        <p class="text-end fw-bold">Total Score: <span class="text-success">@totalScore</span></p>
+                                        <p class="text-end text-secondary fw-medium small mb-0">
+                                            Threshold: ≥ 35
+                                        </p>
+                                        <p class="text-end fw-bold">
+                                            Total Score: <span class="@(isEligible ? "text-success" : "text-danger")">@totalScore</span>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
