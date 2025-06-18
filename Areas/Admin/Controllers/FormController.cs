@@ -207,6 +207,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var opd = await context.OPD
                 .Where(o => o.Id == Id)
                 .FirstOrDefaultAsync();
+            opd.IsAdmitted = true;
+            await context.SaveChangesAsync();
 
             var patient = new PatientsModel
             {

@@ -1,6 +1,7 @@
 ﻿using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
+using LittleArkFoundation.Areas.Admin.Data;
 using LittleArkFoundation.Areas.Admin.Models.Form;
 using LittleArkFoundation.Areas.Admin.Models.OPD;
 using LittleArkFoundation.Authorize;
@@ -8,6 +9,7 @@ using LittleArkFoundation.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using System.Security.Claims;
 
 namespace LittleArkFoundation.Areas.Admin.Controllers
@@ -22,38 +24,62 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             _connectionService = connectionService;
         }
 
-        public async Task<IActionResult> Index(bool? isAdmitted)
+        public async Task<IActionResult> Index(string? sortToggle)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
 
-            bool activeFlag = isAdmitted ?? false;
-            ViewBag.isAdmitted = activeFlag;
+            string sortToggleValue = sortToggle ?? "All";
+            ViewBag.sortToggle = sortToggleValue;
+
+            var opdList = new List<OPDModel>();
+            if (sortToggleValue == "All")
+            {
+                // Fetch all OPD records
+                opdList = await context.OPD.ToListAsync();
+            }
+            else if (sortToggleValue == "Admitted")
+            {
+                // Fetch only admitted patients
+                opdList = await context.OPD.Where(opd => opd.IsAdmitted).ToListAsync();
+            }
+            else if (sortToggleValue == "Not Admitted")
+            {
+                // Fetch only non-admitted patients
+                opdList = await context.OPD.Where(opd => !opd.IsAdmitted).ToListAsync();
+            }
+
+            var scoredList = new List<(OPDModel opd, Dictionary<string, int> scores, bool isEligible)>();
+            var _scoreService = new OPDScoringService(connectionString);
+            foreach (var opd in opdList)
+            {
+                var scores = await _scoreService.GetWeightedScoresAsync(opd);
+                var isEligible = await _scoreService.IsEligibleForAdmissionAsync(scores.Values.Sum());
+                scoredList.Add((opd, scores, isEligible));
+            }
 
             var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
-            var opdList = await context.OPD
-                .Where(opd => opd.IsAdmitted == activeFlag)
-                .ToListAsync();
 
             var viewModel = new OPDViewModel
             {
                 OPDList = opdList,
+                OPDScoringList = scoredList,
                 Users = users
             };
 
             return View(viewModel);
         }
 
-        public async Task<IActionResult> Search(string searchString, bool? isAdmitted)
+        public async Task<IActionResult> Search(string searchString, string? sortToggle)
         {
-            bool activeFlag = isAdmitted ?? false;
-            ViewBag.isAdmitted = activeFlag;
+            string sortToggleValue = sortToggle ?? "All";
+            ViewBag.sortToggle = sortToggleValue;
 
             if (string.IsNullOrEmpty(searchString))
             {
                 // If no search string, return all patients with the specified active flag
-                return RedirectToAction("Index", new {isAdmitted = activeFlag });
+                return RedirectToAction("Index", new {sortToggle = sortToggleValue });
             }
 
             string connectionString = _connectionService.GetCurrentConnectionString();
@@ -61,7 +87,16 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             var searchWords = searchString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-            var query = context.OPD.Where(u => u.IsAdmitted == activeFlag);
+            IQueryable<OPDModel> query = context.OPD.AsQueryable();
+
+            if (sortToggleValue == "Admitted")
+            {
+                query = query.Where(u => u.IsAdmitted);
+            }
+            else if (sortToggleValue == "Not Admitted")
+            {
+                query = query.Where(u => !u.IsAdmitted);
+            }
 
             foreach (var word in searchWords)
             {
@@ -76,100 +111,79 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             var opdList = await query.ToListAsync();
 
+            var scoredList = new List<(OPDModel opd, Dictionary<string, int> scores, bool isEligible)>();
+            var _scoreService = new OPDScoringService(connectionString);
+            foreach (var opd in opdList)
+            {
+                var scores = await _scoreService.GetWeightedScoresAsync(opd);
+                var isEligible = await _scoreService.IsEligibleForAdmissionAsync(scores.Values.Sum());
+                scoredList.Add((opd, scores, isEligible));
+            }
+
             var viewModel = new OPDViewModel
             {
                 OPDList = opdList,
+                OPDScoringList = scoredList,
             };
 
             return View("Index", viewModel);
         }
 
-        public async Task<IActionResult> SearchGeneral(string searchString)
+        public async Task<IActionResult> SortBy(string sortByUserID, string? sortByMonth, string? sortToggle)
         {
-            if (string.IsNullOrEmpty(searchString))
-            {
-                return RedirectToAction("General");
-            }
+            string sortToggleValue = sortToggle ?? "All";
+            ViewBag.sortToggle = sortToggleValue;
+
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
 
-            var searchWords = searchString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            var query = context.OPD.AsQueryable();
+            IQueryable<OPDModel> query = context.OPD.AsQueryable();
 
-            foreach (var word in searchWords)
+            if (!string.IsNullOrEmpty(sortByUserID))
             {
-                var term = word.Trim();
-                query = query.Where(u =>
-                    EF.Functions.Like(u.FirstName, $"%{term}%") ||
-                    EF.Functions.Like(u.MiddleName, $"%{term}%") ||
-                    EF.Functions.Like(u.LastName, $"%{term}%") ||
-                    EF.Functions.Like(u.Id.ToString(), $"%{term}%"));
+                query = query.Where(opd => opd.UserID == int.Parse(sortByUserID));
+                var user = await context.Users.FindAsync(int.Parse(sortByUserID));
+                ViewBag.sortBy = user.Username;
+                ViewBag.sortByUserID = user.UserID.ToString();
+            }
+
+            if (sortToggleValue == "Admitted")
+            {
+                query = query.Where(opd => opd.IsAdmitted);
+            }
+            else if (sortToggleValue == "Not Admitted")
+            {
+                query = query.Where(opd => !opd.IsAdmitted);
+            }
+
+            if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
+            {
+                query = query.Where(opd => opd.Date.Month == month.Month && opd.Date.Year == month.Year);
+                ViewBag.sortByMonth = month.ToString("yyyy-MM");
             }
 
             var opdList = await query.ToListAsync();
 
-            var viewModel = new OPDViewModel
+            var scoredList = new List<(OPDModel opd, Dictionary<string, int> scores, bool isEligible)>();
+            var _scoreService = new OPDScoringService(connectionString);
+            foreach (var opd in opdList)
             {
-                OPDList = opdList,
-            };
-
-            return View("General", viewModel);
-        }
-
-        public async Task<IActionResult> SortBy(string sortByUserID)
-        {
-            if (string.IsNullOrEmpty(sortByUserID))
-            {
-                return RedirectToAction("Index");
+                var scores = await _scoreService.GetWeightedScoresAsync(opd);
+                var isEligible = await _scoreService.IsEligibleForAdmissionAsync(scores.Values.Sum());
+                scoredList.Add((opd, scores, isEligible));
             }
 
-            string connectionString = _connectionService.GetCurrentConnectionString();
-            await using var context = new ApplicationDbContext(connectionString);
-
-            int userId = int.Parse(sortByUserID);
-
-            var opdList = await context.OPD.Where(opd => opd.UserID == userId).ToListAsync();
             var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
 
             var viewModel = new OPDViewModel
             {
                 OPDList = opdList,
+                OPDScoringList = scoredList,
                 Users = users
             };
-
-            var user = await context.Users.FindAsync(userId);
-
-            ViewBag.sortBy = user.Username;
+            
             return View("Index", viewModel);
-        }
-
-        public async Task<IActionResult> SortByGeneral(string sortByUserID)
-        {
-            if (string.IsNullOrEmpty(sortByUserID))
-            {
-                return RedirectToAction("General");
-            }
-
-            string connectionString = _connectionService.GetCurrentConnectionString();
-            await using var context = new ApplicationDbContext(connectionString);
-
-            int userId = int.Parse(sortByUserID);
-
-            var opdList = await context.OPD.Where(opd => opd.UserID == userId).ToListAsync();
-            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
-            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
-
-            var viewModel = new OPDViewModel
-            {
-                OPDList = opdList,
-                Users = users
-            };
-
-            var user = await context.Users.FindAsync(userId);
-
-            ViewBag.sortBy = user.Username;
-            return View("General", viewModel);
         }
 
         public async Task<IActionResult> Create()
@@ -298,51 +312,38 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
-        public async Task<IActionResult> General()
+        public async Task<IActionResult> ExportLogsheetToExcel(int userID, string? month)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
 
-            var opdList = await context.OPD.ToListAsync();
-            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
-            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            // Parse the month input if provided
+            bool filterByMonth = DateTime.TryParseExact(month, "yyyy-MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedMonth);
 
-            var viewModel = new OPDViewModel
-            {
-                OPDList = opdList,
-                Users = users
-            };
+            IQueryable<OPDModel> query = context.OPD;
 
-            return View(viewModel);
-        }
-
-        public async Task<IActionResult> ExportLogsheetToExcel(int userID)
-        {
-            string connectionString = _connectionService.GetCurrentConnectionString();
-            await using var context = new ApplicationDbContext(connectionString);
-
-            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
-            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
-
-            List<OPDModel> opdList;
-            string fileName;
             if (userID > 0)
             {
-                // Filter by specific user
-                opdList = await context.OPD.Where(opd => opd.UserID == userID).ToListAsync();
-                if (opdList == null || !opdList.Any())
-                {
-                    TempData["ErrorMessage"] = "No OPD records found for selected user.";
-                    return RedirectToAction("Index");
-                }
-                fileName = $"OPD_Logsheet_{opdList[0].Date.Year}_{opdList[0].MSW}";
+                query = query.Where(opd => opd.UserID == userID);
             }
-            else
+
+            if (filterByMonth)
             {
-                // Export all OPD records
-                opdList = await context.OPD.ToListAsync();
-                fileName = $"OPD_Logsheet_{opdList[0].Date.Year}_All";
+                query = query.Where(opd => opd.Date.Month == parsedMonth.Month && opd.Date.Year == parsedMonth.Year);
             }
+
+            var opdList = await query.ToListAsync();
+
+            if (opdList == null || !opdList.Any())
+            {
+                TempData["ErrorMessage"] = "No OPD records found for selected filters.";
+                return RedirectToAction("Index");
+            }
+
+            // File name generation
+            string mswName = userID > 0 ? opdList.First().MSW : "All MSW";
+            string monthLabel = filterByMonth ? parsedMonth.ToString("MMMM_yyyy") : opdList.First().Date.Year.ToString();
+            string fileName = $"OPD_Logsheet_{monthLabel}_{mswName}";
 
             var workbook = new XLWorkbook();
             var worksheet = workbook.Worksheets.Add(fileName);
@@ -361,7 +362,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             // Column 1
             var cell1 = worksheet.Cell(1, 1);
-            cell1.Value = userID == 0 ? "All" : opdList[0].MSW;
+            cell1.Value = mswName;
             cell1.Style.Font.Bold = true;
             cell1.Style.Font.FontSize = 14;
             cell1.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
@@ -377,7 +378,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             // Column 3
             var cell3 = worksheet.Cell(3, 1);
-            cell3.Value = $"{opdList[0].Date.Year} OPD";
+            cell3.Value = $"{monthLabel} OPD";
             cell3.Style.Font.Bold = true;
             cell3.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             worksheet.Range(3, 1, 3, headers.Count()).Merge();

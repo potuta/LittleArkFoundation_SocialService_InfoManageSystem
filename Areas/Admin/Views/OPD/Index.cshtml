@@ -2,8 +2,10 @@
 @{
     ViewData["Title"] = "OPD";
     Layout = "_AdminLayout";
-    bool isAdmitted = ViewBag.isAdmitted ?? false;
+    string? sortToggle = ViewBag.sortToggle ?? "All";
     string? sortBy = ViewBag.sortBy ?? "";
+	string? sortByUserID = ViewBag.sortByUserID ?? "";
+    string? sortByMonth = ViewBag.sortByMonth ?? "";
     bool matchedUser = Model.Users.Any(u => u.Username == sortBy);
 }
 
@@ -40,13 +42,6 @@
            ? "active" : "")"
            asp-action="Index" asp-controller="OPD">Main</a>
 
-        <a class="btn btn-outline-dark @(
-            ViewContext.RouteData.Values["action"]?.ToString() == "General" ||
-           ViewContext.RouteData.Values["action"]?.ToString() == "SortByGeneral" ||
-            ViewContext.RouteData.Values["action"]?.ToString() == "SearchGeneral"
-            ? "active" : "")"
-           asp-action="General" asp-controller="OPD">General</a>
-
         <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "OPDAssisted" ? "active" : "")"
            asp-action="OPDAssisted" asp-controller="OPD">OPD Assisted</a>
 
@@ -60,8 +55,8 @@
 <hr />
 
 <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
-    <div class="search-container">
-        <form asp-action="Search" asp-route-isAdmitted="@isAdmitted" asp-controller="OPD">
+    <div class="search-container" style="width: 100%">
+        <form asp-action="Search" asp-route-sortToggle="@sortToggle" asp-controller="OPD">
             <div class="input-group">
                 <input type="search" name="searchString" class="form-control" placeholder="Search by Id/FullName" aria-label="Search">
                 <button type="submit" class="btn btn-dark">Search</button>
@@ -71,7 +66,7 @@
     </div>
 
     <div class="btn-group">
-        <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-1" data-bs-toggle="dropdown" aria-expanded="false">
+        <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-1 me-2" data-bs-toggle="dropdown" aria-expanded="false">
             @if (string.IsNullOrEmpty(sortBy))
             {
                 <span class="mb-0">Sort by MSW</span>
@@ -82,13 +77,13 @@
             }
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" asp-action="SortBy" asp-controller="OPD" asp-route-sortByUserID="">All</a></li>
+            <li><a class="dropdown-item" asp-action="SortBy" asp-controller="OPD" asp-route-sortByUserID="" asp-route-sortByMonth="@sortByMonth" asp-route-sortToggle="@sortToggle">All</a></li>
             @foreach (var user in Model.Users)
             {
-                <li><a class="dropdown-item" asp-action="SortBy" asp-controller="OPD" asp-route-sortByUserID="@user.UserID">@user.Username</a></li>
+                <li><a class="dropdown-item" asp-action="SortBy" asp-controller="OPD" asp-route-sortByUserID="@user.UserID" asp-route-sortByMonth="@sortByMonth" asp-route-sortToggle="@sortToggle">@user.Username</a></li>
             }
         </ul>
-        @if (matchedUser)
+        @* @if (matchedUser)
         {
             foreach (var user in Model.Users)
             {
@@ -108,27 +103,46 @@
                asp-action="ExportLogsheetToExcel">
                 Download Excel (All)
             </a>
-        }
+        } *@
+
+        @* Month filter *@
+        <form method="get" asp-action="SortBy" class="d-flex align-items-center gap-2">
+            <input type="hidden" name="sortByUserID" value="@sortByUserID" />
+            <input type="hidden" name="sortToggle" value="@sortToggle" />
+            <input type="month" name="sortByMonth" class="form-control form-control-sm" value="@sortByMonth" />
+            <button type="submit" class="btn btn-secondary btn-sm" style="width: 100%;">Filter Month</button>
+        </form>
+
+        <button type="button" class="btn btn-success btn-sm" style="margin-left:5px;" data-bs-toggle="modal" data-bs-target="#exportModal">
+            Download Excel
+        </button>
+
     </div>
 </div>
 
 <div>
 
-    @if (!isAdmitted)
+    @if (sortToggle == "All" || sortToggle == "Not Admitted")
     {
-        <a class="btn btn-success" asp-action="Create" asp-controller="OPD">Create New</a>
+        <a class="btn btn-success me-2" asp-action="Create" asp-controller="OPD">Create New</a>
     }
 
     <div class="btn-group btn-group-toggle" data-toggle="buttons">
-        <a asp-action="Index" asp-controller="OPD" asp-route-isAdmitted="false" class="btn btn-secondary @(isAdmitted ? "" : "active")">
+        <a asp-action="Index" asp-controller="OPD" asp-route-sortToggle="All" class="btn btn-secondary @(sortToggle == "All" ? "active" : "")">
             <div class="custom-radio">
-                <input type="radio" style="accent-color: dodgerblue" value="main" @(isAdmitted ? "" : "checked")>
-                <label style="margin-bottom: 0">Regular</label>
+                <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "All" ? "checked" : "")>
+                <label style="margin-bottom: 0">All</label>
             </div>
         </a>
-        <a asp-action="Index" asp-controller="OPD" asp-route-isAdmitted="true" class="btn btn-secondary @(isAdmitted ? "active" : "")">
+        <a asp-action="Index" asp-controller="OPD" asp-route-sortToggle="Not Admitted" class="btn btn-secondary @(sortToggle == "Not Admitted" ? "active" : "")">
             <div class="custom-radio">
-                <input type="radio" style="accent-color: dodgerblue" value="archive" @(isAdmitted ? "checked" : "")>
+                <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "Not Admitted" ? "checked" : "")>
+                <label style="margin-bottom: 0">Not Admitted</label>
+            </div>
+        </a>
+        <a asp-action="Index" asp-controller="OPD" asp-route-sortToggle="Admitted" class="btn btn-secondary @(sortToggle == "Admitted" ? "active" : "")">
+            <div class="custom-radio">
+                <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "Admitted" ? "checked" : "")>
                 <label style="margin-bottom: 0">Admitted</label>
             </div>
         </a>
@@ -156,6 +170,7 @@
         <table class="table" style="min-width: 1200px;">
             <thead>
                 <tr>
+                    <th>DSS</th>
                     <th>Actions</th>
                     <th>Date</th>
                     <th>No</th>
@@ -186,16 +201,31 @@
             <tbody>
                 @if (Model != null)
                 {
-                    @foreach (var opd in Model.OPDList)
+                    @foreach (var item in Model.OPDScoringList)
                     {
+						var opd = item.opd;
+						var scores = item.scores;
+						var totalScore = scores.Values.Sum();
+                        var isEligible = item.isEligible;
+
+                        var modalId = $"scoreBreakdownModal_{opd.Id}";
+                        var modalLabelId = $"{modalId}_label";
                         <tr>
+                            <td>
+                                <button type="button"
+                                        class="badge @(isEligible ? "bg-success" : "bg-danger") text-dark ms-2 border-0"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#@modalId">
+                                    @(isEligible ? "Eligible" : "Not Eligible")
+                                </button>
+                            </td>
                             <td class="d-flex gap-2" style="white-space: nowrap;">
-								@if (!isAdmitted)
+								@if (!opd.IsAdmitted)
 								{
                                     <a class="btn btn-primary" asp-action="AdmitOPD" asp-controller="Form" asp-route-id="@opd.Id" 
                                     onclick="return confirm('Are you sure you want to admit this OPD?');">Admit</a>
 									<a class="btn btn-success" asp-action="Edit" asp-route-id="@opd.Id">Edit</a>
-                                    if (User.HasClaim("Permission", "DeleteOPD"))
+                                    @* if (User.HasClaim("Permission", "DeleteOPD"))
                                     {
                                         <a class="btn btn-danger" asp-action="Delete" asp-route-id="@opd.Id" onclick="return confirm('Are you sure you want to delete this OPD?');">Delete</a>
                                     }
@@ -204,8 +234,13 @@
                                         <a class="btn btn-danger text-muted" style="cursor: not-allowed;" title="You do not have permission">
                                             Delete
                                         </a>
-                                    }
+                                    } *@
 								}
+                                else
+                                {
+                                    <span class="badge bg-secondary text-dark ms-2">Admitted</span>
+								}
+		
 							</td>
                             <td style="white-space: nowrap;">@opd.Date</td>
                             <td style="white-space: nowrap;">@opd.Id</td>
@@ -250,12 +285,89 @@
 							<td style="white-space: nowrap;">@opd.MSW</td>
 							<td style="white-space: nowrap;">@opd.Category</td>
                         </tr>
+
+                        <!-- Weighted Score Modal -->
+                        <div class="modal fade" id="@modalId" tabindex="-1" aria-labelledby="@modalLabelId" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="@modalLabelId">Weighted Score Breakdown</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                             <h6 class="ms-2">Factors</h6>
+                                             <h6 class="me-2">Points</h6>
+                                        </div>
+                                        <ul class="list-group">
+                                            @foreach (var score in scores)
+                                            {
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    @score.Key 
+                                                    <span class="badge bg-primary rounded-pill">@score.Value</span>
+                                                </li>
+                                            }
+                                        </ul>
+                                        <hr />
+                                        <p class="text-end text-secondary fw-medium small mb-0">
+                                            Threshold: ≥ 35
+                                        </p>
+                                        <p class="text-end fw-bold">
+                                            Total Score: <span class="@(isEligible ? "text-success" : "text-danger")">@totalScore</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     }
                 }
             </tbody>
         </table>
     </div>
 </div>
+
+<!-- Download/Export Excel Modal -->
+<div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="ExportLogsheetToExcel" asp-controller="OPD" method="get">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exportModalLabel">Export to Excel</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="userID" class="form-label">MSW</label>
+                        <select class="form-select" id="userID" name="userID">
+                            <option value="0">All</option>
+                            @foreach (var user in Model.Users)
+                            {
+                                <option value="@user.UserID">@user.Username</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="month" class="form-label">Month</label>
+                        <input type="month" id="month" name="month" class="form-control">
+                        <div class="form-text">Leave empty for "All Time"</div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Export</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
 
 
 
