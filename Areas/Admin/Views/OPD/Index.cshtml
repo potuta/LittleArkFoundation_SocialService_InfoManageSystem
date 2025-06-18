@@ -170,6 +170,7 @@
         <table class="table" style="min-width: 1200px;">
             <thead>
                 <tr>
+                    <th>DSS</th>
                     <th>Actions</th>
                     <th>Date</th>
                     <th>No</th>
@@ -200,9 +201,24 @@
             <tbody>
                 @if (Model != null)
                 {
-                    @foreach (var opd in Model.OPDList)
+                    @foreach (var item in Model.OPDScoringList)
                     {
+						var opd = item.opd;
+						var scores = item.scores;
+						var totalScore = scores.Values.Sum();
+                        var isEligible = item.isEligible;
+
+                        var modalId = $"scoreBreakdownModal_{opd.Id}";
+                        var modalLabelId = $"{modalId}_label";
                         <tr>
+                            <td>
+                                <button type="button"
+                                        class="badge @(isEligible ? "bg-success" : "bg-danger") text-dark ms-2 border-0"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#@modalId">
+                                    @(isEligible ? "Eligible" : "Not Eligible")
+                                </button>
+                            </td>
                             <td class="d-flex gap-2" style="white-space: nowrap;">
 								@if (!opd.IsAdmitted)
 								{
@@ -269,6 +285,36 @@
 							<td style="white-space: nowrap;">@opd.MSW</td>
 							<td style="white-space: nowrap;">@opd.Category</td>
                         </tr>
+
+                        <!-- Weighted Score Modal -->
+                        <div class="modal fade" id="@modalId" tabindex="-1" aria-labelledby="@modalLabelId" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="@modalLabelId">Weighted Score Breakdown</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                             <h6 class="ms-2">Factor</h6>
+                                             <h6 class="me-2">Points</h6>
+                                        </div>
+                                        <ul class="list-group">
+                                            @foreach (var score in scores)
+                                            {
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    @score.Key 
+                                                    <span class="badge bg-primary rounded-pill">@score.Value</span>
+                                                </li>
+                                            }
+                                        </ul>
+                                        <hr />
+                                        <p class="text-end fw-bold">Total Score: <span class="text-success">@totalScore</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     }
                 }
             </tbody>
@@ -313,6 +359,9 @@
         </div>
     </div>
 </div>
+
+
+
 
 
 
