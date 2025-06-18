@@ -81,7 +81,7 @@
                 <li><a class="dropdown-item" asp-action="SortBy" asp-controller="OPD" asp-route-sortByUserID="@user.UserID" asp-route-sortToggle="@sortToggle">@user.Username</a></li>
             }
         </ul>
-        @if (matchedUser)
+        @* @if (matchedUser)
         {
             foreach (var user in Model.Users)
             {
@@ -101,7 +101,12 @@
                asp-action="ExportLogsheetToExcel">
                 Download Excel (All)
             </a>
-        }
+        } *@
+
+        <button type="button" class="btn btn-success btn-sm" style="margin-left:5px;" data-bs-toggle="modal" data-bs-target="#exportModal">
+            Download Excel
+        </button>
+
     </div>
 </div>
 
@@ -109,7 +114,7 @@
 
     @if (sortToggle == "All" || sortToggle == "Not Admitted")
     {
-        <a class="btn btn-success" asp-action="Create" asp-controller="OPD">Create New</a>
+        <a class="btn btn-success me-2" asp-action="Create" asp-controller="OPD">Create New</a>
     }
 
     <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -189,7 +194,7 @@
                     {
                         <tr>
                             <td class="d-flex gap-2" style="white-space: nowrap;">
-								@if (sortToggle == "All" || sortToggle == "Not Admitted")
+								@if (!opd.IsAdmitted)
 								{
                                     <a class="btn btn-primary" asp-action="AdmitOPD" asp-controller="Form" asp-route-id="@opd.Id" 
                                     onclick="return confirm('Are you sure you want to admit this OPD?');">Admit</a>
@@ -205,6 +210,11 @@
                                         </a>
                                     }
 								}
+                                else
+                                {
+                                    <span class="badge bg-secondary text-dark ms-2">Admitted</span>
+								}
+		
 							</td>
                             <td style="white-space: nowrap;">@opd.Date</td>
                             <td style="white-space: nowrap;">@opd.Id</td>
@@ -255,6 +265,45 @@
         </table>
     </div>
 </div>
+
+<!-- Download/Export Excel Modal -->
+<div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="ExportLogsheetToExcel" asp-controller="OPD" method="get">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exportModalLabel">Export to Excel</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="userID" class="form-label">MSW</label>
+                        <select class="form-select" id="userID" name="userID">
+                            <option value="0">All</option>
+                            @foreach (var user in Model.Users)
+                            {
+                                <option value="@user.UserID">@user.Username</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="month" class="form-label">Month</label>
+                        <input type="month" id="month" name="month" class="form-control">
+                        <div class="form-text">Leave empty for "All Time"</div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Export</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 
 
 

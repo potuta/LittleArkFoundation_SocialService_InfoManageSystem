@@ -8,6 +8,7 @@ using LittleArkFoundation.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using System.Security.Claims;
 
 namespace LittleArkFoundation.Areas.Admin.Controllers
@@ -284,33 +285,38 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
-        public async Task<IActionResult> ExportLogsheetToExcel(int userID)
+        public async Task<IActionResult> ExportLogsheetToExcel(int userID, string? month)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
 
-            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
-            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            // Parse the month input if provided
+            bool filterByMonth = DateTime.TryParseExact(month, "yyyy-MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedMonth);
 
-            List<OPDModel> opdList;
-            string fileName;
+            IQueryable<OPDModel> query = context.OPD;
+
             if (userID > 0)
             {
-                // Filter by specific user
-                opdList = await context.OPD.Where(opd => opd.UserID == userID).ToListAsync();
-                if (opdList == null || !opdList.Any())
-                {
-                    TempData["ErrorMessage"] = "No OPD records found for selected user.";
-                    return RedirectToAction("Index");
-                }
-                fileName = $"OPD_Logsheet_{opdList[0].Date.Year}_{opdList[0].MSW}";
+                query = query.Where(opd => opd.UserID == userID);
             }
-            else
+
+            if (filterByMonth)
             {
-                // Export all OPD records
-                opdList = await context.OPD.ToListAsync();
-                fileName = $"OPD_Logsheet_{opdList[0].Date.Year}_All";
+                query = query.Where(opd => opd.Date.Month == parsedMonth.Month && opd.Date.Year == parsedMonth.Year);
             }
+
+            var opdList = await query.ToListAsync();
+
+            if (opdList == null || !opdList.Any())
+            {
+                TempData["ErrorMessage"] = "No OPD records found for selected filters.";
+                return RedirectToAction("Index");
+            }
+
+            // File name generation
+            string mswName = userID > 0 ? opdList.First().MSW : "All MSW";
+            string monthLabel = filterByMonth ? parsedMonth.ToString("MMMM_yyyy") : opdList.First().Date.Year.ToString();
+            string fileName = $"OPD_Logsheet_{monthLabel}_{mswName}";
 
             var workbook = new XLWorkbook();
             var worksheet = workbook.Worksheets.Add(fileName);
@@ -329,7 +335,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             // Column 1
             var cell1 = worksheet.Cell(1, 1);
-            cell1.Value = userID == 0 ? "All" : opdList[0].MSW;
+            cell1.Value = mswName;
             cell1.Style.Font.Bold = true;
             cell1.Style.Font.FontSize = 14;
             cell1.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
@@ -345,7 +351,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             // Column 3
             var cell3 = worksheet.Cell(3, 1);
-            cell3.Value = $"{opdList[0].Date.Year} OPD";
+            cell3.Value = $"{monthLabel} OPD";
             cell3.Style.Font.Bold = true;
             cell3.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             worksheet.Range(3, 1, 3, headers.Count()).Merge();
