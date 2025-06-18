@@ -22,19 +22,33 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             _connectionService = connectionService;
         }
 
-        public async Task<IActionResult> Index(bool? isAdmitted)
+        public async Task<IActionResult> Index(string? sortToggle)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
 
-            bool activeFlag = isAdmitted ?? false;
-            ViewBag.isAdmitted = activeFlag;
+            string sortToggleValue = sortToggle ?? "All";
+            ViewBag.sortToggle = sortToggleValue;
+
+            var opdList = new List<OPDModel>();
+            if (sortToggleValue == "All")
+            {
+                // Fetch all OPD records
+                opdList = await context.OPD.ToListAsync();
+            }
+            else if (sortToggleValue == "Admitted")
+            {
+                // Fetch only admitted patients
+                opdList = await context.OPD.Where(opd => opd.IsAdmitted).ToListAsync();
+            }
+            else if (sortToggleValue == "Not Admitted")
+            {
+                // Fetch only non-admitted patients
+                opdList = await context.OPD.Where(opd => !opd.IsAdmitted).ToListAsync();
+            }
 
             var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
-            var opdList = await context.OPD
-                .Where(opd => opd.IsAdmitted == activeFlag)
-                .ToListAsync();
 
             var viewModel = new OPDViewModel
             {
@@ -45,15 +59,15 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return View(viewModel);
         }
 
-        public async Task<IActionResult> Search(string searchString, bool? isAdmitted)
+        public async Task<IActionResult> Search(string searchString, string? sortToggle)
         {
-            bool activeFlag = isAdmitted ?? false;
-            ViewBag.isAdmitted = activeFlag;
+            string sortToggleValue = sortToggle ?? "All";
+            ViewBag.sortToggle = sortToggleValue;
 
             if (string.IsNullOrEmpty(searchString))
             {
                 // If no search string, return all patients with the specified active flag
-                return RedirectToAction("Index", new {isAdmitted = activeFlag });
+                return RedirectToAction("Index", new {sortToggle = sortToggleValue });
             }
 
             string connectionString = _connectionService.GetCurrentConnectionString();
@@ -61,7 +75,16 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             var searchWords = searchString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-            var query = context.OPD.Where(u => u.IsAdmitted == activeFlag);
+            IQueryable<OPDModel> query = context.OPD.AsQueryable();
+
+            if (sortToggleValue == "Admitted")
+            {
+                query = query.Where(u => u.IsAdmitted);
+            }
+            else if (sortToggleValue == "Not Admitted")
+            {
+                query = query.Where(u => !u.IsAdmitted);
+            }
 
             foreach (var word in searchWords)
             {
@@ -84,40 +107,11 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return View("Index", viewModel);
         }
 
-        public async Task<IActionResult> SearchGeneral(string searchString)
+        public async Task<IActionResult> SortBy(string sortByUserID, string? sortToggle)
         {
-            if (string.IsNullOrEmpty(searchString))
-            {
-                return RedirectToAction("General");
-            }
-            string connectionString = _connectionService.GetCurrentConnectionString();
-            await using var context = new ApplicationDbContext(connectionString);
+            string sortToggleValue = sortToggle ?? "All";
+            ViewBag.sortToggle = sortToggleValue;
 
-            var searchWords = searchString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            var query = context.OPD.AsQueryable();
-
-            foreach (var word in searchWords)
-            {
-                var term = word.Trim();
-                query = query.Where(u =>
-                    EF.Functions.Like(u.FirstName, $"%{term}%") ||
-                    EF.Functions.Like(u.MiddleName, $"%{term}%") ||
-                    EF.Functions.Like(u.LastName, $"%{term}%") ||
-                    EF.Functions.Like(u.Id.ToString(), $"%{term}%"));
-            }
-
-            var opdList = await query.ToListAsync();
-
-            var viewModel = new OPDViewModel
-            {
-                OPDList = opdList,
-            };
-
-            return View("General", viewModel);
-        }
-
-        public async Task<IActionResult> SortBy(string sortByUserID)
-        {
             if (string.IsNullOrEmpty(sortByUserID))
             {
                 return RedirectToAction("Index");
@@ -128,7 +122,27 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             int userId = int.Parse(sortByUserID);
 
-            var opdList = await context.OPD.Where(opd => opd.UserID == userId).ToListAsync();
+            List<OPDModel> opdList;
+
+            if (sortToggleValue == "Admitted")
+            {
+                opdList = await context.OPD
+                    .Where(opd => opd.IsAdmitted && opd.UserID == userId)
+                    .ToListAsync();
+            }
+            else if (sortToggleValue == "Not Admitted")
+            {
+                opdList = await context.OPD
+                    .Where(opd => !opd.IsAdmitted && opd.UserID == userId)
+                    .ToListAsync();
+            }
+            else
+            {
+                opdList = await context.OPD
+                    .Where(opd => opd.UserID == userId)
+                    .ToListAsync();
+            }
+
             var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
 
@@ -142,34 +156,6 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             ViewBag.sortBy = user.Username;
             return View("Index", viewModel);
-        }
-
-        public async Task<IActionResult> SortByGeneral(string sortByUserID)
-        {
-            if (string.IsNullOrEmpty(sortByUserID))
-            {
-                return RedirectToAction("General");
-            }
-
-            string connectionString = _connectionService.GetCurrentConnectionString();
-            await using var context = new ApplicationDbContext(connectionString);
-
-            int userId = int.Parse(sortByUserID);
-
-            var opdList = await context.OPD.Where(opd => opd.UserID == userId).ToListAsync();
-            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
-            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
-
-            var viewModel = new OPDViewModel
-            {
-                OPDList = opdList,
-                Users = users
-            };
-
-            var user = await context.Users.FindAsync(userId);
-
-            ViewBag.sortBy = user.Username;
-            return View("General", viewModel);
         }
 
         public async Task<IActionResult> Create()
@@ -296,24 +282,6 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 LoggingService.LogError("Error: " + ex.Message);
                 return RedirectToAction("Index");
             }
-        }
-
-        public async Task<IActionResult> General()
-        {
-            string connectionString = _connectionService.GetCurrentConnectionString();
-            await using var context = new ApplicationDbContext(connectionString);
-
-            var opdList = await context.OPD.ToListAsync();
-            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
-            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
-
-            var viewModel = new OPDViewModel
-            {
-                OPDList = opdList,
-                Users = users
-            };
-
-            return View(viewModel);
         }
 
         public async Task<IActionResult> ExportLogsheetToExcel(int userID)
