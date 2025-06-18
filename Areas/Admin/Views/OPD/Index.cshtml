@@ -209,7 +209,7 @@
                                     <a class="btn btn-primary" asp-action="AdmitOPD" asp-controller="Form" asp-route-id="@opd.Id" 
                                     onclick="return confirm('Are you sure you want to admit this OPD?');">Admit</a>
 									<a class="btn btn-success" asp-action="Edit" asp-route-id="@opd.Id">Edit</a>
-                                    if (User.HasClaim("Permission", "DeleteOPD"))
+                                    @* if (User.HasClaim("Permission", "DeleteOPD"))
                                     {
                                         <a class="btn btn-danger" asp-action="Delete" asp-route-id="@opd.Id" onclick="return confirm('Are you sure you want to delete this OPD?');">Delete</a>
                                     }
@@ -218,7 +218,7 @@
                                         <a class="btn btn-danger text-muted" style="cursor: not-allowed;" title="You do not have permission">
                                             Delete
                                         </a>
-                                    }
+                                    } *@
 								}
                                 else
                                 {
