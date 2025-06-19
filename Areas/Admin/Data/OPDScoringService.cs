@@ -92,11 +92,11 @@ namespace LittleArkFoundation.Areas.Admin.Data
 
             if (diagnosisScore > 0)
             {
-                scores.Add("Diagnosis_Critical", diagnosisScore);
+                scores.Add($"Diagnosis_Critical: {opd.Diagnosis}", diagnosisScore);
             }
 
             // ASSISTANCE REQUESTED
-            var highPriorityTests = new[] { "BUN/CREA", "ALT/AST", "K", "NA", "CA" };
+            var highPriorityTests = new[] { "BUN", "ALT", "K", "NA", "CA", "CREA", "AST" };
             var midPriorityTests = new[] { "CBC", "FBS", "LIPID PROFILE" };
             var lowPriorityTests = new[] { "URIC ACID", "UA" };
 

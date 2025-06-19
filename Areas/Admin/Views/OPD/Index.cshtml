@@ -54,6 +54,7 @@
 </div>
 <hr />
 
+@* Search *@
 <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
     <div class="search-container" style="width: 100%">
         <form asp-action="Search" asp-route-sortToggle="@sortToggle" asp-controller="OPD">
@@ -64,7 +65,46 @@
         </form>
         <a class="btn btn-primary" asp-action="Index" asp-controller="OPD">← Back to Full List</a>
     </div>
+</div>
 
+<div class="d-flex justify-content-between align-items-center">
+
+    @* Left toggles/buttons *@
+    <div class="d-flex align-items-center gap-3">
+        @if (sortToggle == "All" || sortToggle == "Not Admitted")
+        {
+            <a class="btn btn-success" asp-action="Create" asp-controller="OPD">Create New</a>
+        }
+
+        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <a asp-action="Index" asp-controller="OPD" asp-route-sortToggle="All" class="btn btn-secondary @(sortToggle == "All" ? "active" : "")">
+                <div class="custom-radio">
+                    <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "All" ? "checked" : "")>
+                    <label style="margin-bottom: 0">All</label>
+                </div>
+            </a>
+            <a asp-action="Index" asp-controller="OPD" asp-route-sortToggle="Not Admitted" class="btn btn-secondary @(sortToggle == "Not Admitted" ? "active" : "")">
+                <div class="custom-radio">
+                    <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "Not Admitted" ? "checked" : "")>
+                    <label style="margin-bottom: 0">Not Admitted</label>
+                </div>
+            </a>
+            <a asp-action="Index" asp-controller="OPD" asp-route-sortToggle="Admitted" class="btn btn-secondary @(sortToggle == "Admitted" ? "active" : "")">
+                <div class="custom-radio">
+                    <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "Admitted" ? "checked" : "")>
+                    <label style="margin-bottom: 0">Admitted</label>
+                </div>
+            </a>
+        </div>
+
+        <div class="form-check form-switch mb-0">
+          <input class="form-check-input" type="checkbox" role="switch" id="dssFlexSwitchCheckChecked" 
+          onchange="updateDSSEnabled()" checked>
+          <label class="form-check-label" for="dssFlexSwitchCheckChecked">Enable DSS</label>
+        </div>
+    </div>
+
+    @* Right toggles/buttons *@
     <div class="btn-group">
         <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-1 me-2" data-bs-toggle="dropdown" aria-expanded="false">
             @if (string.IsNullOrEmpty(sortBy))
@@ -118,35 +158,6 @@
         </button>
 
     </div>
-</div>
-
-<div>
-
-    @if (sortToggle == "All" || sortToggle == "Not Admitted")
-    {
-        <a class="btn btn-success me-2" asp-action="Create" asp-controller="OPD">Create New</a>
-    }
-
-    <div class="btn-group btn-group-toggle" data-toggle="buttons">
-        <a asp-action="Index" asp-controller="OPD" asp-route-sortToggle="All" class="btn btn-secondary @(sortToggle == "All" ? "active" : "")">
-            <div class="custom-radio">
-                <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "All" ? "checked" : "")>
-                <label style="margin-bottom: 0">All</label>
-            </div>
-        </a>
-        <a asp-action="Index" asp-controller="OPD" asp-route-sortToggle="Not Admitted" class="btn btn-secondary @(sortToggle == "Not Admitted" ? "active" : "")">
-            <div class="custom-radio">
-                <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "Not Admitted" ? "checked" : "")>
-                <label style="margin-bottom: 0">Not Admitted</label>
-            </div>
-        </a>
-        <a asp-action="Index" asp-controller="OPD" asp-route-sortToggle="Admitted" class="btn btn-secondary @(sortToggle == "Admitted" ? "active" : "")">
-            <div class="custom-radio">
-                <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "Admitted" ? "checked" : "")>
-                <label style="margin-bottom: 0">Admitted</label>
-            </div>
-        </a>
-    </div>
 
 </div>
 
@@ -170,7 +181,7 @@
         <table class="table" style="min-width: 1200px;">
             <thead>
                 <tr>
-                    <th>DSS</th>
+                    <th id="dssTableHeader">DSS</th>
                     <th>Actions</th>
                     <th>Date</th>
                     <th>No</th>
@@ -211,7 +222,7 @@
                         var modalId = $"scoreBreakdownModal_{opd.Id}";
                         var modalLabelId = $"{modalId}_label";
                         <tr>
-                            <td>
+                            <td id="dssTableData">
                                 <button type="button"
                                         class="badge @(isEligible ? "bg-success" : "bg-danger") text-dark ms-2 border-0"
                                         data-bs-toggle="modal"
@@ -364,6 +375,50 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        // function updateDSSEnabled() {
+        //     const checkbox = document.getElementById('dssFlexSwitchCheckChecked');
+        //     const dssEnabled = checkbox.checked;
+        //     // You can add logic here to handle the DSS state change
+
+        //     const dssTableHeader = document.getElementById('dssTableHeader');
+        //     const dssTableData = document.querySelectorAll('#dssTableData');
+
+        //     if (dssEnabled) {
+        //         dssTableHeader.style.display = 'table-cell';
+        //         dssTableData.forEach(td => td.style.display = 'table-cell');
+        //     } else {
+        //         dssTableHeader.style.display = 'none';
+        //         dssTableData.forEach(td => td.style.display = 'none');
+        //     }
+        // }
+
+        window.onload = function () {
+            const checkbox = document.getElementById('dssFlexSwitchCheckChecked');
+            const dssEnabled = localStorage.getItem('dssEnabled') === 'true';
+            checkbox.checked = dssEnabled;
+            toggleDSSTable(dssEnabled);
+        };
+
+        function updateDSSEnabled() {
+            const checkbox = document.getElementById('dssFlexSwitchCheckChecked');
+            const dssEnabled = checkbox.checked;
+            localStorage.setItem('dssEnabled', dssEnabled); // store the state
+            toggleDSSTable(dssEnabled);
+        }
+
+        function toggleDSSTable(enabled) {
+            const dssTableHeader = document.getElementById('dssTableHeader');
+            const dssTableData = document.querySelectorAll('#dssTableData');
+
+            dssTableHeader.style.display = enabled ? 'table-cell' : 'none';
+            dssTableData.forEach(td => td.style.display = enabled ? 'table-cell' : 'none');
+        }
+
+    </script>
+}
 
 
 
