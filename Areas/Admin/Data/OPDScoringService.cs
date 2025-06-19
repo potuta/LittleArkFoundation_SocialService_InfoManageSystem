@@ -96,7 +96,7 @@ namespace LittleArkFoundation.Areas.Admin.Data
             }
 
             // ASSISTANCE REQUESTED
-            var highPriorityTests = new[] { "BUN/CREA", "ALT/AST", "K", "NA", "CA" };
+            var highPriorityTests = new[] { "BUN", "ALT", "K", "NA", "CA", "CREA", "AST" };
             var midPriorityTests = new[] { "CBC", "FBS", "LIPID PROFILE" };
             var lowPriorityTests = new[] { "URIC ACID", "UA" };
 
