@@ -54,6 +54,7 @@
 </div>
 <hr />
 
+@* Search *@
 <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
     <div class="search-container" style="width: 100%">
         <form asp-action="Search" asp-route-sortToggle="@sortToggle" asp-controller="OPD">
@@ -64,7 +65,46 @@
         </form>
         <a class="btn btn-primary" asp-action="Index" asp-controller="OPD">← Back to Full List</a>
     </div>
+</div>
 
+<div class="d-flex justify-content-between align-items-center">
+
+    @* Left toggles/buttons *@
+    <div class="d-flex align-items-center gap-3">
+        @if (sortToggle == "All" || sortToggle == "Not Admitted")
+        {
+            <a class="btn btn-success" asp-action="Create" asp-controller="OPD">Create New</a>
+        }
+
+        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <a asp-action="Index" asp-controller="OPD" asp-route-sortToggle="All" class="btn btn-secondary @(sortToggle == "All" ? "active" : "")">
+                <div class="custom-radio">
+                    <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "All" ? "checked" : "")>
+                    <label style="margin-bottom: 0">All</label>
+                </div>
+            </a>
+            <a asp-action="Index" asp-controller="OPD" asp-route-sortToggle="Not Admitted" class="btn btn-secondary @(sortToggle == "Not Admitted" ? "active" : "")">
+                <div class="custom-radio">
+                    <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "Not Admitted" ? "checked" : "")>
+                    <label style="margin-bottom: 0">Not Admitted</label>
+                </div>
+            </a>
+            <a asp-action="Index" asp-controller="OPD" asp-route-sortToggle="Admitted" class="btn btn-secondary @(sortToggle == "Admitted" ? "active" : "")">
+                <div class="custom-radio">
+                    <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "Admitted" ? "checked" : "")>
+                    <label style="margin-bottom: 0">Admitted</label>
+                </div>
+            </a>
+        </div>
+
+        <div class="form-check form-switch mb-0">
+          <input class="form-check-input" type="checkbox" role="switch" id="dssFlexSwitchCheckChecked" 
+          onchange="updateDSSEnabled()" checked>
+          <label class="form-check-label" for="dssFlexSwitchCheckChecked">Enable DSS</label>
+        </div>
+    </div>
+
+    @* Right toggles/buttons *@
     <div class="btn-group">
         <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-1 me-2" data-bs-toggle="dropdown" aria-expanded="false">
             @if (string.IsNullOrEmpty(sortBy))
@@ -117,41 +157,6 @@
             Download Excel
         </button>
 
-    </div>
-</div>
-
-<div class="d-flex align-items-center gap-3">
-
-    @if (sortToggle == "All" || sortToggle == "Not Admitted")
-    {
-        <a class="btn btn-success" asp-action="Create" asp-controller="OPD">Create New</a>
-    }
-
-    <div class="btn-group btn-group-toggle" data-toggle="buttons">
-        <a asp-action="Index" asp-controller="OPD" asp-route-sortToggle="All" class="btn btn-secondary @(sortToggle == "All" ? "active" : "")">
-            <div class="custom-radio">
-                <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "All" ? "checked" : "")>
-                <label style="margin-bottom: 0">All</label>
-            </div>
-        </a>
-        <a asp-action="Index" asp-controller="OPD" asp-route-sortToggle="Not Admitted" class="btn btn-secondary @(sortToggle == "Not Admitted" ? "active" : "")">
-            <div class="custom-radio">
-                <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "Not Admitted" ? "checked" : "")>
-                <label style="margin-bottom: 0">Not Admitted</label>
-            </div>
-        </a>
-        <a asp-action="Index" asp-controller="OPD" asp-route-sortToggle="Admitted" class="btn btn-secondary @(sortToggle == "Admitted" ? "active" : "")">
-            <div class="custom-radio">
-                <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "Admitted" ? "checked" : "")>
-                <label style="margin-bottom: 0">Admitted</label>
-            </div>
-        </a>
-    </div>
-
-    <div class="form-check form-switch mb-0">
-      <input class="form-check-input" type="checkbox" role="switch" id="dssFlexSwitchCheckChecked" 
-      onchange="updateDSSEnabled()" checked>
-      <label class="form-check-label" for="dssFlexSwitchCheckChecked">Enable DSS</label>
     </div>
 
 </div>
