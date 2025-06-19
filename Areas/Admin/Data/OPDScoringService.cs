@@ -92,7 +92,7 @@ namespace LittleArkFoundation.Areas.Admin.Data
 
             if (diagnosisScore > 0)
             {
-                scores.Add("Diagnosis_Critical", diagnosisScore);
+                scores.Add($"Diagnosis_Critical: {opd.Diagnosis}", diagnosisScore);
             }
 
             // ASSISTANCE REQUESTED
