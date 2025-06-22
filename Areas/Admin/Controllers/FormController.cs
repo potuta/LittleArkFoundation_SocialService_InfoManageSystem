@@ -1,31 +1,32 @@
-﻿using LittleArkFoundation.Areas.Admin.Models;
+﻿using DinkToPdf.Contracts;
+using DocumentFormat.OpenXml.InkML;
+using LittleArkFoundation.Areas.Admin.Data;
+using LittleArkFoundation.Areas.Admin.Models;
+using LittleArkFoundation.Areas.Admin.Models.Assessments;
+using LittleArkFoundation.Areas.Admin.Models.Diagnoses;
+using LittleArkFoundation.Areas.Admin.Models.FamilyComposition;
+using LittleArkFoundation.Areas.Admin.Models.FamilyHistory;
+using LittleArkFoundation.Areas.Admin.Models.Form;
+using LittleArkFoundation.Areas.Admin.Models.GeneralAdmission;
+using LittleArkFoundation.Areas.Admin.Models.HospitalizationHistory;
+using LittleArkFoundation.Areas.Admin.Models.MedicalHistory;
+using LittleArkFoundation.Areas.Admin.Models.Medications;
+using LittleArkFoundation.Areas.Admin.Models.MentalHealthHistory;
+using LittleArkFoundation.Areas.Admin.Models.MSWDClassification;
+using LittleArkFoundation.Areas.Admin.Models.Patients;
+using LittleArkFoundation.Areas.Admin.Models.ProgressNotes;
+using LittleArkFoundation.Areas.Admin.Models.Referrals;
 using LittleArkFoundation.Authorize;
 using LittleArkFoundation.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.EntityFrameworkCore;
-using System.Runtime.InteropServices;
-using DinkToPdf.Contracts;
-using LittleArkFoundation.Areas.Admin.Models.Form;
-using LittleArkFoundation.Areas.Admin.Data;
-using LittleArkFoundation.Areas.Admin.Models.Patients;
-using System.Data;
-using LittleArkFoundation.Areas.Admin.Models.FamilyComposition;
-using LittleArkFoundation.Areas.Admin.Models.Diagnoses;
-using LittleArkFoundation.Areas.Admin.Models.Medications;
-using LittleArkFoundation.Areas.Admin.Models.HospitalizationHistory;
-using LittleArkFoundation.Areas.Admin.Models.MentalHealthHistory;
-using LittleArkFoundation.Areas.Admin.Models.FamilyHistory;
-using LittleArkFoundation.Areas.Admin.Models.Assessments;
-using LittleArkFoundation.Areas.Admin.Models.MedicalHistory;
-using System.Security.Claims;
-using LittleArkFoundation.Areas.Admin.Models.ProgressNotes;
-using DocumentFormat.OpenXml.InkML;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
-using System.Text;
 using Microsoft.Data.SqlClient;
-using LittleArkFoundation.Areas.Admin.Models.Referrals;
-using LittleArkFoundation.Areas.Admin.Models.MSWDClassification;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using System.Data;
+using System.Runtime.InteropServices;
+using System.Security.Claims;
+using System.Text;
 // TODO: Implement logging for forms
 namespace LittleArkFoundation.Areas.Admin.Controllers
 {
@@ -448,6 +449,36 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                         }
                     };
 
+                    // GENERAL ADMISSION
+                    var generalAdmission = new GeneralAdmissionModel
+                    {
+                        AssessmentID = assessmentID,
+                        PatientID = patientID,
+                        Date = formViewModel.Assessments.DateOfInterview,
+                        isOld = false,
+                        HospitalNo = 0, // This will be set later
+                        FirstName = formViewModel.Patient.FirstName,
+                        MiddleName = formViewModel.Patient.MiddleName,
+                        LastName = formViewModel.Patient.LastName,
+                        Ward = formViewModel.Assessments.BasicWard,
+                        Class = formViewModel.MSWDClassification.SubClassification,
+                        Age = formViewModel.Patient.Age,
+                        Gender = formViewModel.Patient.Gender,
+                        Time = formViewModel.Assessments.TimeOfInterview,
+                        Diagnosis = formViewModel.MedicalHistory.AdmittingDiagnosis,
+                        CompleteAddress = formViewModel.Patient.PermanentAddress,
+                        ContactNumber = formViewModel.Patient.ContactNo,
+                        Referral = formViewModel.Referrals.ReferralType,
+                        Occupation = formViewModel.Patient.Occupation,
+                        MonthlyIncome = formViewModel.Patient.MonthlyIncome,
+                        HouseholdSize = formViewModel.Household.HouseholdSize,
+                        EducationalAttainment = formViewModel.Patient.EducationLevel,
+                        isInterviewed = true,
+                        MSW = User.FindFirstValue(ClaimTypes.Name), // Assuming the MSW is the user who is logged in
+                        UserID = int.Parse(userIdClaim.Value),
+                    };
+
+
                     await context.Assessments.AddAsync(formViewModel.Assessments);
                     await context.SaveChangesAsync();
 
@@ -486,6 +517,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     await context.StrengthsResources.AddAsync(formViewModel.StrengthsResources);
                     await context.Goals.AddAsync(formViewModel.Goals);
                     await context.ProgressNotes.AddRangeAsync(formViewModel.ProgressNotes);
+                    await context.GeneralAdmission.AddAsync(generalAdmission);
                     await context.SaveChangesAsync();
 
                     TempData["SuccessMessage"] = "Successfully created new form";
