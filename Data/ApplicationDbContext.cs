@@ -39,6 +39,7 @@ using LittleArkFoundation.Areas.Admin.Models.Goals;
 using LittleArkFoundation.Areas.Admin.Models.Discharges;
 using LittleArkFoundation.Areas.Admin.Models.ProgressNotes;
 using LittleArkFoundation.Areas.Admin.Models.OPD;
+using LittleArkFoundation.Areas.Admin.Models.GeneralAdmission;
 
 namespace LittleArkFoundation.Data
 {
@@ -104,6 +105,7 @@ namespace LittleArkFoundation.Data
         public DbSet<DischargesModel> Discharges { get; set; }
         public DbSet<ProgressNotesModel> ProgressNotes { get; set; }
         public DbSet<OPDModel> OPD { get; set; }
+        public DbSet<GeneralAdmissionModel> GeneralAdmission { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -496,6 +498,15 @@ namespace LittleArkFoundation.Data
 
             modelBuilder.Entity<OPDModel>()
                 .Property(o => o.Id)
+                .ValueGeneratedOnAdd();
+
+            // GeneralAdmission
+            modelBuilder.Entity<GeneralAdmissionModel>()
+                .ToTable("GeneralAdmission")
+                .HasKey(g => g.Id);
+
+            modelBuilder.Entity<GeneralAdmissionModel>()
+                .Property(g => g.Id)
                 .ValueGeneratedOnAdd();
         }
     }
