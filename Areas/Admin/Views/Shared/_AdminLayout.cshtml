@@ -83,7 +83,11 @@
                         <li>
                             @if (User.HasClaim("Permission", "ManageForm"))
                             {
-                                <a asp-area="Admin" asp-controller="Form" asp-action="Index" class="btn-left-sub @(ViewContext.RouteData.Values["controller"]?.ToString() == "Form" ? "active" : "")">
+                                <a asp-area="Admin" asp-controller="Form" asp-action="Index" 
+                                class="btn-left-sub @(
+                                ViewContext.RouteData.Values["controller"]?.ToString() == "Form" ||
+                                ViewContext.RouteData.Values["controller"]?.ToString() == "GeneralAdmission"
+                                ? "active" : "")">
                                     Admission
                                 </a> 
                             }
