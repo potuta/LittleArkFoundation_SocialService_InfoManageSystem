@@ -19,6 +19,7 @@ using LittleArkFoundation.Areas.Admin.Models.Referrals;
 using LittleArkFoundation.Authorize;
 using LittleArkFoundation.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -472,7 +473,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                         Occupation = formViewModel.Patient.Occupation,
                         MonthlyIncome = formViewModel.Patient.MonthlyIncome,
                         HouseholdSize = formViewModel.Household.HouseholdSize,
-                        EducationalAttainment = formViewModel.Patient.EducationLevel,
+                        //EducationalAttainment = formViewModel.Patient.EducationLevel,
                         isInterviewed = true,
                         MSW = User.FindFirstValue(ClaimTypes.Name), // Assuming the MSW is the user who is logged in
                         UserID = int.Parse(userIdClaim.Value),
@@ -921,6 +922,31 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     }
 
                     await context.ProgressNotes.AddRangeAsync(formViewModel.ProgressNotes);
+                }
+
+                // GENERAL ADMISSION
+                var generalAdmission = await context.GeneralAdmission
+                    .FirstOrDefaultAsync(s => s.AssessmentID == assessmentId && s.PatientID == id);
+
+                if (generalAdmission != null)
+                {
+                    generalAdmission.FirstName = formViewModel.Patient.FirstName;
+                    generalAdmission.MiddleName = formViewModel.Patient.MiddleName;
+                    generalAdmission.LastName = formViewModel.Patient.LastName;
+                    generalAdmission.Ward = formViewModel.Assessments.BasicWard;
+                    generalAdmission.Class = formViewModel.MSWDClassification.SubClassification;
+                    generalAdmission.Age = formViewModel.Patient.Age;
+                    generalAdmission.Gender = formViewModel.Patient.Gender;
+                    generalAdmission.Time = formViewModel.Assessments.TimeOfInterview;
+                    generalAdmission.Diagnosis = formViewModel.MedicalHistory.AdmittingDiagnosis;
+                    generalAdmission.CompleteAddress = formViewModel.Patient.PermanentAddress;
+                    generalAdmission.ContactNumber = formViewModel.Patient.ContactNo;
+                    generalAdmission.Referral = formViewModel.Referrals.ReferralType;
+                    generalAdmission.Occupation = formViewModel.Patient.Occupation;
+                    generalAdmission.MonthlyIncome = formViewModel.Patient.MonthlyIncome;
+                    generalAdmission.HouseholdSize = formViewModel.Household.HouseholdSize;
+                    // No need to call Update here unless using a detached context
+                    // context.GeneralAdmission.Update(generalAdmission);
                 }
 
                 // Update Patient first, avoids Forein Key constraint

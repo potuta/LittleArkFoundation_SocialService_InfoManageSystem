@@ -1,0 +1,718 @@
+﻿@model LittleArkFoundation.Areas.Admin.Models.GeneralAdmission.GeneralAdmissionViewModel
+@{
+    ViewData["Title"] = "General Admission Edit";
+    Layout = "_AdminLayout";
+}
+
+<style>
+    .form-container {
+        width: 100%;
+        max-width: 1200px;
+        margin: auto;
+        border: 1px solid #000;
+        padding: 20px;
+    }
+
+    table {
+        font-size: small;
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        border: 1px solid black;
+        padding: 5px;
+        text-align: left;
+        font-size: medium;
+    }
+
+    .section-title {
+        background-color: #f2f2f2;
+        font-weight: bold;
+        padding: 5px;
+        text-align: center;
+    }
+
+    input, select {
+        width: 98%;
+        font-size: medium;
+        padding: 5px;
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+    .required {
+        color: red;
+        font-weight: bold;
+    }
+
+    .checkbox-group, .radio-group {
+        display: flex;
+        align-items: center;
+        gap: 10px; /* Adjust spacing between checkbox/radio and text */
+        margin-bottom: 5px;
+    }
+
+        .checkbox-group input[type="checkbox"],
+        .radio-group input[type="radio"] {
+            transform: scale(1.2); /* Slightly increase size for better visibility */
+            padding: 0;
+            margin: 0;
+            width: 2rem;
+        }
+
+    .mentalhealth-input input:hover, .mentalhealth-input input:focus,
+    .mentalhealth-input select:hover, .mentalhealth-input select:focus,
+    .hospitalizaiton-input input:hover, .hospitalizaiton-input input:focus,
+    .hospitalizaiton-input select:hover, .hospitalizaiton-input select:focus,
+    .medication-input input:hover, .medication-input input:focus,
+    .medication-input select:hover, .medication-input select:focus,
+    .diagnosis-input input:hover, .diagnosis-input input:focus,
+    .diagnosis-input select:hover, .diagnosis-input select:focus,
+    .family-input input:hover, .family-input input:focus,
+    .family-input select:hover, .family-input select:focus {
+        transform: scale(1.2); /* Slightly enlarges the input field */
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.2); /* Adds a subtle glow */
+        z-index: 10; /* Ensures it appears above other elements */
+        position: relative;
+        width: 10rem;
+    }
+
+    textarea {
+        width: 100%;
+    }
+
+</style>
+
+<div class="mt-2">
+    <a class="btn btn-outline-secondary mb-3" asp-action="Index">← Back to List</a>
+</div>
+
+<form asp-action="Edit" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="GeneralAdmission.Id" />
+    <input type="hidden" asp-for="GeneralAdmission.AssessmentID" />
+    <input type="hidden" asp-for="GeneralAdmission.PatientID" />
+    <input type="hidden" asp-for="GeneralAdmission.MSW" />
+    <input type="hidden" asp-for="GeneralAdmission.UserID" />
+
+    <div class="form-container">
+        <h2 style="text-align: center;">General Admission</h2>
+        <!-- <h3 style="text-align: center;">MSWD Assessment Tool for Children/Adolescent</h3> -->
+
+        <table>
+            <tr>
+                <td>
+                    Date: <span class="required">*</span>
+                    <input type="date" asp-for="GeneralAdmission.Date" id="dateInput" readonly>
+
+                </td>
+                <td>
+                    Old/New: <span class="required">*</span>
+                    <select asp-for="GeneralAdmission.isOld" disabled>
+                        <option value="true">Old</option>
+                        <option value="false">New</option>
+                    </select>
+                </td>
+                <td>
+                    Hospital No: <span class="required">*</span>
+                    <input type="number" asp-for="GeneralAdmission.HospitalNo" required>
+
+                </td>
+
+            </tr>
+
+            <tr>
+                <td>
+                    First Name: <span class="required">*</span>
+                    <input type="text" asp-for="GeneralAdmission.FirstName" placeholder="Type N/A if No Answer" readonly>
+
+                </td>
+                <td>
+                    Middle Name: <span class="required">*</span>
+                    <input type="text" asp-for="GeneralAdmission.MiddleName" placeholder="Type N/A if No Answer" readonly>
+                </td>
+                <td>
+                    Last Name: <span class="required">*</span>
+                    <input type="text" asp-for="GeneralAdmission.LastName" placeholder="Type N/A if No Answer" readonly>
+
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    Basic Ward: <span class="required">*</span>
+                    <select asp-for="GeneralAdmission.Ward" disabled>
+                        <option>Ward 2</option>
+                        <option>Ward 3</option>
+                        <option>Ward 4</option>
+                        <option>Ward 5</option>
+                        <option>Ward 6</option>
+                        <option>Ward 7</option>
+                        <option>Ward 8</option>
+                        <option>Hema</option>
+                        <option>NICU</option>
+                        <option>PICU</option>
+                        <option>Inf.</option>
+                        <option>OB</option>
+                    </select>
+                </td>
+                <td>
+                    Class: <span class="required">*</span>
+                    <select asp-for="GeneralAdmission.Class" required>
+                        <option value="N/A">N/A</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C1">C1</option>
+                        <option value="C2">C2</option>
+                        <option value="C3">C3</option>
+                        <option value="D">D</option>
+                    </select>
+
+                </td>
+                <td>
+                    Age: <span class="required">*</span>
+                    <input type="number" asp-for="GeneralAdmission.Age" placeholder="Type N/A if No Answer" required>
+                </td>
+            </tr>
+
+            <tr>
+            </tr>
+            <td>
+                Gender: <span class="required">*</span>
+                <select asp-for="GeneralAdmission.Gender" disabled>
+                    <option>Male</option>
+                    <option>Female</option>
+                    <option>LGBTQIA+</option>
+                </select>
+            </td>
+            <td>
+                Time of Interview: <span class="required">*</span>
+                <input type="time" asp-for="GeneralAdmission.Time" id="timeInput" readonly>
+            </td>
+            <td>
+                Diagnosis: <span class="required">*</span>
+                <textarea type="text" asp-for="GeneralAdmission.Diagnosis" placeholder="Type N/A if No Answer" readonly></textarea>
+
+            </td>
+
+            <tr>
+                <td>
+                    Complete Address: <span class="required">*</span>
+                    <textarea type="text" asp-for="GeneralAdmission.CompleteAddress" placeholder="Type N/A if No Answer" readonly></textarea>
+
+                </td>
+                <td>
+                    Origin: <span class="required">*</span>
+                    <select asp-for="GeneralAdmission.Origin" required>
+                        <option>ABRA</option>
+                        <option>AGUSAN DEL NORTE</option>
+                        <option>AGUSAN DEL SUR</option>
+                        <option>AKLAN</option>
+                        <option>ALBAY</option>
+                        <option>ANTIQUE</option>
+                        <option>APAYAO</option>
+                        <option>AURORA</option>
+                        <option>BAGUIO</option>
+                        <option>BASILAN</option>
+                        <option>BATAAN</option>
+                        <option>BATANES</option>
+                        <option>BATANGAS</option>
+                        <option>BENGUET</option>
+                        <option>BILIRAN</option>
+                        <option>BOHOL</option>
+                        <option>BUKIDNON</option>
+                        <option>BULACAN</option>
+                        <option>BUTUAN</option>
+                        <option>CAGAYAN</option>
+                        <option>CAGAYAN DE ORO</option>
+                        <option>CALOOCAN</option>
+                        <option>CAMARINES NORTE</option>
+                        <option>CAMARINES SUR</option>
+                        <option>CAMIGUIN</option>
+                        <option>CAPIZ</option>
+                        <option>CATANDUANES</option>
+                        <option>CAVITE</option>
+                        <option>CEBU</option>
+                        <option>COMPOSTELA VALLEY</option>
+                        <option>COTABATO</option>
+                        <option>DAVAO</option>
+                        <option>EASTERN SAMAR</option>
+                        <option>GENERAL SANTOS</option>
+                        <option>GUIMARAS</option>
+                        <option>IFUGAO</option>
+                        <option>ILIGAN</option>
+                        <option>ILOCOS NORTE</option>
+                        <option>ILOCOS SUR</option>
+                        <option>ILOILO</option>
+                        <option>ISABELA</option>
+                        <option>KALINGA</option>
+                        <option>LA UNION</option>
+                        <option>LAGUNA</option>
+                        <option>LANAO DEL NORTE</option>
+                        <option>LANAO DEL SUR</option>
+                        <option>LAS PINAS</option>
+                        <option>LEGAZPI</option>
+                        <option>LEYTE</option>
+                        <option>MAGUINDANAO</option>
+                        <option>MAKATI</option>
+                        <option>MALABON</option>
+                        <option>MANDALUYONG</option>
+                        <option>MANILA</option>
+                        <option>MARIKINA</option>
+                        <option>MARINDUQUE</option>
+                        <option>MASBATE</option>
+                        <option>MISAMIS OCCIDENTAL</option>
+                        <option>MISAMIS ORIENTAL</option>
+                        <option>MOUNTAIN PROVINCE</option>
+                        <option>MUNTINLUPA</option>
+                        <option>NAVOTAS</option>
+                        <option>NEGROS OCCIDENTAL</option>
+                        <option>NEGROS ORIENTAL</option>
+                        <option>NORTH COTABATO</option>
+                        <option>NORTHERN SAMAR</option>
+                        <option>NUEVA ECIJA</option>
+                        <option>NUEVA VIZCAYA</option>
+                        <option>OCCIDENTAL MINDORO</option>
+                        <option>ORIENTAL MINDORO</option>
+                        <option>PALAWAN</option>
+                        <option>PAMPANGA</option>
+                        <option>PANGASINAN</option>
+                        <option>PARANAQUE</option>
+                        <option>PASAY</option>
+                        <option>PASIG</option>
+                        <option>PATEROS</option>
+                        <option>QUEZON</option>
+                        <option>QUIRINO</option>
+                        <option>RIZAL</option>
+                        <option>ROMBLON</option>
+                        <option>SAMAR</option>
+                        <option>SAN JUAN</option>
+                        <option>SIQUIJOR</option>
+                        <option>SORSOGON</option>
+                        <option>SOUTH COTABATO</option>
+                        <option>SURIGAO DEL NORTE</option>
+                        <option>SURIGAO DEL SUR</option>
+                        <option>TAGUIG</option>
+                        <option>TARLAC</option>
+                        <option>TAWI-TAWI</option>
+                        <option>VALENZUELA</option>
+                        <option>ZAMBALES</option>
+                        <option>ZAMBOANGA</option>
+                    </select>
+                </td>
+                <td>
+                    PWD: <span class="required">*</span>
+                    <select asp-for="GeneralAdmission.isPWD" required>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </td>
+
+            </tr>
+
+            <tr>
+                <td>
+                    Contact Number: <span class="required">*</span>
+                    <input type="number" asp-for="GeneralAdmission.ContactNumber" placeholder="Type 0 if No Answer" readonly>
+                </td>
+                <td>
+                    Source of Referral: <span class="required">*</span>
+                    <select asp-for="GeneralAdmission.Referral" disabled>
+                        <option>Walk in</option>
+                        <option>Govt. Hosp.</option>
+                        <option>Clinic/Private</option>
+                        <option>Politicians</option>
+                        <option>Media</option>
+                        <option>HCT</option>
+                        <option>NGOs</option>
+                        <option>Govt. Agencies</option>
+                        <option>Others</option>
+                    </select>
+                </td>
+
+                <td>
+                    Stat's Occupation: <span class="required">*</span>
+                    <select asp-for="GeneralAdmission.StatsOccupation" required>
+                        <option>EMPLOYEE</option>
+                        <option>GOVT EMPLOYEE</option>
+                        <option>BUSINESSMAN</option>
+                        <option>COOK</option>
+                        <option>DRIVER</option>
+                        <option>ENTERTAINER</option>
+                        <option>FACTORY WORKER</option>
+                        <option>FARMER/FISHERMAN</option>
+                        <option>HOUSEMAID</option>
+                        <option>JANITOR</option>
+                        <option>JOBLESS</option>
+                        <option>LABORER/HELPER</option>
+                        <option>LAUNDRY WOMAN</option>
+                        <option>MAINTENANCE</option>
+                        <option>MESSENGER</option>
+                        <option>OFW</option>
+                        <option>PASTOR</option>
+                        <option>PENSION</option>
+                        <option>SALESLADY/SALESMAN</option>
+                        <option>SCAVENGER</option>
+                        <option>SEWER</option>
+                        <option>SERVICE CREW</option>
+                        <option>SECURITY GUARD</option>
+                        <option>SELF-EMPLOYED</option>
+                        <option>SKILLED WORKER</option>
+                        <option>VENDOR</option>
+                        <option>WAITER/WAITRESS</option>
+                    </select>
+                </td>
+
+            </tr>
+
+            <tr>
+                <td>
+                    Income Range: <span class="required">*</span>
+                    <select asp-for="GeneralAdmission.IncomeRange" required>
+                        <option>1500</option>
+                        <option>1501-3500</option>
+                        <option>3501-5500</option>
+                        <option>5501-7500</option>
+                        <option>7501-9500</option>
+                        <option>9501-11500</option>
+                        <option>11501-13500</option>
+                        <option>13501-15500</option>
+                        <option>15501-17500</option>
+                        <option>17501-19500</option>
+                        <option>19501-21500</option>
+                        <option>21501-23500</option>
+                        <option>23501-25500</option>
+                        <option>25501-27500</option>
+                        <option>27501-29500</option>
+                        <option>29501-31500</option>
+                        <option>31501-33500</option>
+                        <option>33501-35500</option>
+                        <option>35501-37500</option>
+                        <option>37501-39500</option>
+                        <option>39501-UP</option>
+                        <option>JOBLESS</option>
+                    </select>
+                </td>
+
+                <td>
+                    Monthly Income: <span class="required">*</span>
+                    <input type="number" asp-for="GeneralAdmission.MonthlyIncome" placeholder="Type 0 if No Answer" readonly>
+                </td>
+
+                <td>
+                    Economic Status: <span class="required">*</span>
+                    <select asp-for="GeneralAdmission.EconomicStatus" required>
+                        <option>R</option>
+                        <option>I</option>
+                        <option>C</option>
+                        <option>J</option>
+                    </select>
+                </td>
+            </tr>
+
+            <tr>
+
+                <td>
+                    Household Size: <span class="required">*</span>
+                    <input type="number" asp-for="GeneralAdmission.HouseholdSize" placeholder="Type 0 if No Answer" readonly>
+                </td>
+
+                <td>
+                    Marital Status: <span class="required">*</span>
+                    <select asp-for="GeneralAdmission.MaritalStatus" required>
+                        <option>LM</option>
+                        <option>LI</option>
+                        <option>S</option>
+                        <option>W</option>
+                    </select>
+                </td>
+                <td>
+                    PWD: <span class="required">*</span>
+                    <select asp-for="GeneralAdmission.isPWD" required>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </td>
+            </tr>
+
+            <tr>
+
+                <td>
+                    Educational Attainment: <span class="required">*</span>
+                    <select asp-for="GeneralAdmission.EducationalAttainment" required>
+                        <option>Masters</option>
+                        <option>CG</option>
+                        <option>CL</option>
+                        <option>VG</option>
+                        <option>SHSL</option>
+                        <option>SHSG</option>
+                        <option>JHSL</option>
+                        <option>JHSG</option>
+                        <option>EG</option>
+                        <option>EL</option>
+                        <option>PRE-SCH.</option>
+                        <option>NO SCH.</option>
+                        <option>OS</option>
+                        <option>ILLITERATE</option>
+                        <option>ND</option>
+                    </select>
+                </td>
+
+                <td>
+                    Father's Educational Attainment: <span class="required">*</span>
+                    <select asp-for="GeneralAdmission.FatherEducationalAttainment" required>
+                        <option>Masters</option>
+                        <option>CG</option>
+                        <option>CL</option>
+                        <option>VG</option>
+                        <option>SHSL</option>
+                        <option>SHSG</option>
+                        <option>JHSL</option>
+                        <option>JHSG</option>
+                        <option>EG</option>
+                        <option>EL</option>
+                        <option>PRE-SCH.</option>
+                        <option>NO SCH.</option>
+                        <option>OS</option>
+                        <option>ILLITERATE</option>
+                        <option>ND</option>
+                    </select>
+                </td>
+                <td>
+                    Mother's Educational Attainment: <span class="required">*</span>
+                    <select asp-for="GeneralAdmission.MotherEducationalAttainment" required>
+                        <option>Masters</option>
+                        <option>CG</option>
+                        <option>CL</option>
+                        <option>VG</option>
+                        <option>SHSL</option>
+                        <option>SHSG</option>
+                        <option>JHSL</option>
+                        <option>JHSG</option>
+                        <option>EG</option>
+                        <option>EL</option>
+                        <option>PRE-SCH.</option>
+                        <option>NO SCH.</option>
+                        <option>OS</option>
+                        <option>ILLITERATE</option>
+                        <option>ND</option>
+                    </select>
+                </td>
+            </tr>
+
+            <tr>
+
+                <td>
+                    Interviewed: <span class="required">*</span>
+                    <select asp-for="GeneralAdmission.isInterviewed" required>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </td>
+
+                <td>
+                    Dwell: <span class="required">*</span>
+                    <select asp-for="GeneralAdmission.DwellingType" required>
+                        <option>O</option>
+                        <option>R</option>
+                        <option>S</option>
+                        <option>CT</option>
+                        <option>K</option>
+                    </select>
+                </td>
+
+                <td>
+                    Light: <span class="required">*</span>
+                    <select asp-for="GeneralAdmission.LightSource" required>
+                        <option>E</option>
+                        <option>C/L</option>
+                    </select>
+                </td>
+            </tr>
+
+            <tr>
+
+                <td>
+                    Water: <span class="required">*</span>
+                    <select asp-for="GeneralAdmission.WaterSource" required>
+                        <option>N</option>
+                        <option>DW</option>
+                        <option>S</option>
+                    </select>
+                </td>
+
+                <td>
+                    Fuel: <span class="required">*</span>
+                    <select asp-for="GeneralAdmission.FuelSource" required>
+                        <option>LPG</option>
+                        <option>C</option>
+                        <option>W</option>
+                        <option>K</option>
+                        <option>E</option>
+                    </select>
+                </td>
+
+                <td>
+                    PHIC: <span class="required">*</span>
+                    <select asp-for="GeneralAdmission.PHIC" required>
+                        <option>OWWA</option>
+                        <option>Emp.</option>
+                        <option>Vol.</option>
+                        <option>MASA</option>
+                        <option>None</option>
+                    </select>
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="3">
+                    MSW: <span class="required">*</span>
+                    @foreach (var msw in Model.GeneralAdmission.MSW)
+                    {
+                        <select asp-for="GeneralAdmission.MSW" disabled>
+                            <option>@msw</option>
+                        </select>
+                    }
+                </td>
+            </tr>
+
+        </table>
+
+        @* --- Add new here --- *@
+
+        <div class="mt-2" style="text-align: center;">
+            <button type="submit" class="btn btn-sm btn-primary">Submit</button>
+        </div>
+        <div class="mt-2" style="text-align: center;">
+            <a class="btn btn-sm btn-outline-primary" asp-action="Index">Back to List</a>
+        </div>
+    </div>
+
+</form>
+
+@section Scripts {
+    <script>
+        function handleFileUpload(input, index) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const previewContainer = document.getElementById(`previewContainer-${index}`);
+            const previewContent = document.getElementById(`filePreviewContent-${index}`);
+
+            const fileReader = new FileReader();
+
+            fileReader.onload = function (e) {
+                const fileUrl = e.target.result;
+
+                let previewHtml = '';
+                if (file.type.startsWith('image/')) {
+                    previewHtml = `<img src="${fileUrl}" class="img-fluid" alt="Preview Image" />`;
+                } else if (file.type === 'application/pdf') {
+                    previewHtml = `<embed src="${fileUrl}" type="application/pdf" width="100%" height="600px" />`;
+                } else {
+                    previewHtml = `<p>Preview not supported for this file type.</p>`;
+                }
+
+                previewContent.innerHTML = previewHtml;
+                previewContainer.style.display = 'block';
+            };
+
+            fileReader.readAsDataURL(file); // Convert file to base64 for preview
+        }
+
+        function toggleRequired(checkbox) {
+            let inputField = checkbox.nextElementSibling; // The input field next to the checkbox
+
+            if (checkbox.checked) {
+                inputField.required = true;
+                inputField.disabled = false;
+            } else {
+                inputField.required = false;
+                inputField.disabled = true;
+                inputField.value = ""; // Clear value when unchecked
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll('input[type="radio"][data-target]').forEach(radio => {
+                let inputField = document.getElementById(radio.getAttribute("data-target"));
+
+                if (radio.checked && radio.value !== "Others" && inputField) {
+                    inputField.disabled = false;
+                    inputField.required = true;
+                    inputField.value = radio.value; // Set stored value for "Others"
+                }
+            });
+        });
+
+        function toggleRequiredRadio(radio) {
+            let targetId = radio.getAttribute("data-target");
+            let inputField = document.getElementById(targetId);
+
+            // Disable all "Others" input fields within the same radio group
+            document.getElementsByName(radio.name).forEach(r => {
+                let field = document.getElementById(r.getAttribute("data-target"));
+                if (field) {
+                    field.disabled = true;
+                    field.required = false;
+                    field.value = ""; // Clear value when another radio is selected
+                }
+            });
+
+            // Enable the "Others" input field only when selected
+            if (inputField && radio.value === "Others") {
+                inputField.disabled = false;
+                inputField.required = true;
+            }
+            else if (inputField) {
+                inputField.disabled = false;
+                inputField.required = true;
+            }
+        }
+
+        function toggleRequiredCheckbox(checkbox) {
+            let targetId = checkbox.getAttribute("data-target");
+            let inputField = document.getElementById(targetId);
+
+            if (checkbox.checked) {
+                inputField.disabled = false;
+                inputField.required = true;
+            }
+            else {
+                inputField.disabled = true;
+                inputField.required = false;
+                inputField.value = ""; // Clear value when unchecked
+            }
+        }
+
+        function toggleRequiredGroupCheckbox(checkbox) {
+            const targetClass = checkbox.getAttribute("data-target");
+            const targets = document.querySelectorAll(`.${targetClass}`);
+
+            targets.forEach(el => {
+                if (checkbox.checked) {
+                    el.disabled = false;
+                    el.required = true;
+                } else {
+                    el.disabled = true;
+                    el.required = false;
+                    el.value = ""; // Clear value for inputs
+
+                    // Also uncheck radio buttons
+                    if (el.type === "radio") {
+                        el.checked = false;
+                    }
+                }
+            });
+        }
+
+        function updateOthersValue(input) {
+            let radio = document.querySelector(`input[data-target="${input.id}"]`);
+
+            if (radio.checked && input.value.trim() !== "") {
+                radio.value = input.value.trim(); // Update radio value dynamically
+            }
+        }
+
+    </script>
+}

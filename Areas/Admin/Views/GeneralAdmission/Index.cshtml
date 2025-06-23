@@ -198,6 +198,8 @@
                             @* <td style="white-space: nowrap;">@patient.AssessmentID</td>
                             <td style="white-space: nowrap;">@patient.PatientID</td> *@
                             <td class="d-flex gap-2" style="white-space: nowrap;">
+                                <a asp-action="ViewForm" asp-controller="Form" asp-route-Id="@patient.PatientID" asp-route-assessmentId="@patient.AssessmentID" class="btn btn-primary">View Form</a>
+                                <a asp-action="Edit" asp-controller="GeneralAdmission" asp-route-Id="@patient.Id" class="btn btn-success">Edit</a>
                             </td>
                             <td style="white-space: nowrap;">@patient.Date</td>
                             <td style="white-space: nowrap;">@patient.Id</td>
