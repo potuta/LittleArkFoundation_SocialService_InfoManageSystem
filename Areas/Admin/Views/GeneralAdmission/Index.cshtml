@@ -149,8 +149,11 @@
                 @if (Model != null)
                 {
                     <tr>
+                        @* <th>AssessmentID</th>
+                        <th>PatientID</th> *@
+                        <th>Actions</th>
                         <th>Date</th>
-                        <th>No.</th>
+                        <th>No</th>
                         <th>Old/New</th>
                         <th>Hosp No.</th>
                         <th>Name of Patient</th>
@@ -192,26 +195,74 @@
                     @foreach (var patient in Model.GeneralAdmissions)
                     {
                         <tr>
-                            <td class="d-flex gap-2" style="white-space: nowrap;"></td>
-                            <td style="white-space: nowrap;"></td>
-                            <td style="white-space: nowrap;"></td>
-                            <td style="white-space: nowrap;"></td>
-                            <td style="white-space: nowrap;"></td>
-                            <td style="white-space: nowrap;"></td>
-                            <td style="white-space: nowrap;"></td>
-                            <td style="white-space: nowrap;"></td>
-                            <td style="white-space: nowrap;"></td>
-                            <td style="white-space: nowrap;"></td>
-                            <td style="white-space: nowrap;"></td>
-                            <td style="white-space: nowrap;"></td>
-                            <td style="white-space: nowrap;"></td>
-                            <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Adress</td>
-                            <td style="white-space: nowrap;"></td>
-                            <td style="white-space: nowrap;"></td>
-                            <td style="white-space: nowrap;"></td>
-                            <td style="white-space: nowrap;"></td>
-                            <td style="white-space: nowrap;"></td>
-                            <td style="white-space: nowrap;"></td>
+                            @* <td style="white-space: nowrap;">@patient.AssessmentID</td>
+                            <td style="white-space: nowrap;">@patient.PatientID</td> *@
+                            <td class="d-flex gap-2" style="white-space: nowrap;">
+                                <a asp-action="ViewForm" asp-controller="Form" asp-route-Id="@patient.PatientID" asp-route-assessmentId="@patient.AssessmentID" class="btn btn-primary">View Form</a>
+                                <a asp-action="Edit" asp-controller="GeneralAdmission" asp-route-Id="@patient.Id" class="btn btn-success">Edit</a>
+                            </td>
+                            <td style="white-space: nowrap;">@patient.Date</td>
+                            <td style="white-space: nowrap;">@patient.Id</td>
+                            <td style="white-space: nowrap;">
+                                @if (patient.isOld)
+                                {
+                                    <label>Old</label>
+                                }
+                                else
+                                {
+                                    <label>New</label>
+                                }
+                            </td>
+                            <td style="white-space: nowrap;">@patient.HospitalNo</td>
+                            <td style="white-space: nowrap;">@patient.LastName, @patient.FirstName @patient.MiddleName</td>
+                            <td style="white-space: nowrap;">@patient.Ward</td>
+                            <td style="white-space: nowrap;">@patient.Class</td>
+                            <td style="white-space: nowrap;">@patient.Age</td>
+                            <td style="white-space: nowrap;">@patient.Gender</td>
+                            <td style="white-space: nowrap;">@patient.Time</td>
+                            <td style="white-space: nowrap;">@patient.Diagnosis</td>
+                            <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                @patient.CompleteAddress
+                            </td>
+                            <td style="white-space: nowrap;">@patient.Origin</td>
+                            <td style="white-space: nowrap;">@patient.ContactNumber</td>
+                            <td style="white-space: nowrap;">@patient.Referral</td>
+                            <td style="white-space: nowrap;">@patient.Occupation</td>
+                            <td style="white-space: nowrap;">@patient.StatsOccupation</td>
+                            <td style="white-space: nowrap;">@patient.IncomeRange</td>
+                            <td style="white-space: nowrap;">@patient.MonthlyIncome</td>
+                            <td style="white-space: nowrap;">@patient.EconomicStatus</td>
+                            <td style="white-space: nowrap;">@patient.HouseholdSize</td>
+                            <td style="white-space: nowrap;">@patient.MaritalStatus</td>
+                            <td style="white-space: nowrap;">
+                                @if (patient.isPWD)
+                                {
+                                    <label>Yes</label>
+                                }
+                                else
+                                {
+                                    <label>No</label>
+                                }
+                            </td>
+                            <td style="white-space: nowrap;">@patient.EducationalAttainment</td>
+                            <td style="white-space: nowrap;">@patient.FatherEducationalAttainment</td>
+                            <td style="white-space: nowrap;">@patient.MotherEducationalAttainment</td>
+                            @if (patient.isInterviewed)
+                            {
+                                <td style="white-space: nowrap;">✓</td>
+                                <td style="white-space: nowrap;"></td>
+                            }
+                            else
+                            {
+                                <td style="white-space: nowrap;"></td>
+                                <td style="white-space: nowrap;">✓</td>
+							}
+                            <td style="white-space: nowrap;">@patient.DwellingType</td>
+                            <td style="white-space: nowrap;">@patient.LightSource</td>
+                            <td style="white-space: nowrap;">@patient.WaterSource</td>
+                            <td style="white-space: nowrap;">@patient.FuelSource</td>
+                            <td style="white-space: nowrap;">@patient.PHIC</td>
+                            <td style="white-space: nowrap;">@patient.MSW</td>
                         </tr>
                     }
                 }
