@@ -107,11 +107,11 @@
 
                 </td>
                 <td>
-                    Old/New: <span class="required">*</span>
                     <select asp-for="GeneralAdmission.isOld" disabled>
                         <option value="true">Old</option>
                         <option value="false">New</option>
                     </select>
+                    <input type="hidden" asp-for="GeneralAdmission.isOld" />
                 </td>
                 <td>
                     Hospital No: <span class="required">*</span>
@@ -155,6 +155,7 @@
                         <option>Inf.</option>
                         <option>OB</option>
                     </select>
+                    <input type="hidden" asp-for="GeneralAdmission.Ward" />
                 </td>
                 <td>
                     Class: <span class="required">*</span>
@@ -184,6 +185,7 @@
                     <option>Female</option>
                     <option>LGBTQIA+</option>
                 </select>
+                <input type="hidden" asp-for="GeneralAdmission.Gender" />
             </td>
             <td>
                 Time of Interview: <span class="required">*</span>
@@ -328,6 +330,7 @@
                         <option>Govt. Agencies</option>
                         <option>Others</option>
                     </select>
+                    <input type="hidden" asp-for="GeneralAdmission.Referral" />
                 </td>
 
                 <td>
@@ -567,12 +570,14 @@
             <tr>
                 <td colspan="3">
                     MSW: <span class="required">*</span>
-                    @foreach (var msw in Model.GeneralAdmission.MSW)
+                    @* @foreach (var msw in Model.GeneralAdmission.MSW)
                     {
-                        <select asp-for="GeneralAdmission.MSW" disabled>
+                        <select asp-for="GeneralAdmission.MSW">
                             <option>@msw</option>
                         </select>
-                    }
+                    } *@
+                    <input type="text" asp-for="GeneralAdmission.MSW" readonly/>
+                    @* <input type="hidden" asp-for="GeneralAdmission.MSW" /> *@
                 </td>
             </tr>
 
