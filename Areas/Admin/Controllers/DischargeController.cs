@@ -918,7 +918,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                         AssessmentID = newAssessmentID,
                         PatientID = patientID,
                         Date = DateOnly.FromDateTime(DateTime.Now),
-                        isOld = generalAdmission.isOld,
+                        isOld = true,
                         HospitalNo = generalAdmission.HospitalNo,
                         FirstName = generalAdmission.FirstName,
                         MiddleName = generalAdmission.MiddleName,

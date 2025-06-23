@@ -25,9 +25,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
 
+            var generalAdmissions = await context.GeneralAdmission.ToListAsync();
+
             var viewModel = new GeneralAdmissionViewModel
             {
-                Users = users
+                Users = users,
+                GeneralAdmissions = generalAdmissions
             };
 
             return View(viewModel);
