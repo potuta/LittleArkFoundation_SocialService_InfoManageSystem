@@ -14,6 +14,7 @@ using LittleArkFoundation.Areas.Admin.Models.FamilyComposition;
 using LittleArkFoundation.Areas.Admin.Models.FamilyHistory;
 using LittleArkFoundation.Areas.Admin.Models.Form;
 using LittleArkFoundation.Areas.Admin.Models.FosterCare;
+using LittleArkFoundation.Areas.Admin.Models.GeneralAdmission;
 using LittleArkFoundation.Areas.Admin.Models.Goals;
 using LittleArkFoundation.Areas.Admin.Models.HistoryOfAbuse;
 using LittleArkFoundation.Areas.Admin.Models.HistoryOfViolence;
@@ -910,6 +911,49 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                         newProgressNotes.Add(newProgressNote);
                     }
 
+                    // GENERAL ADMISSION
+                    var generalAdmission = await context.GeneralAdmission.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
+                    var newGeneralAdmission = new GeneralAdmissionModel
+                    {
+                        AssessmentID = newAssessmentID,
+                        PatientID = patientID,
+                        Date = DateOnly.FromDateTime(DateTime.Now),
+                        isOld = true,
+                        HospitalNo = generalAdmission.HospitalNo,
+                        FirstName = generalAdmission.FirstName,
+                        MiddleName = generalAdmission.MiddleName,
+                        LastName = generalAdmission.LastName,
+                        Ward = generalAdmission.Ward,
+                        Class = generalAdmission.Class,
+                        Age = generalAdmission.Age,
+                        Gender = generalAdmission.Gender,
+                        Time = TimeOnly.FromDateTime(DateTime.Now),
+                        Diagnosis = generalAdmission.Diagnosis,
+                        CompleteAddress = generalAdmission.CompleteAddress,
+                        Origin = generalAdmission.Origin,
+                        ContactNumber = generalAdmission.ContactNumber,
+                        Referral = generalAdmission.Referral,
+                        Occupation = generalAdmission.Occupation,
+                        StatsOccupation = generalAdmission.StatsOccupation,
+                        IncomeRange = generalAdmission.IncomeRange,
+                        MonthlyIncome = generalAdmission.MonthlyIncome,
+                        EconomicStatus = generalAdmission.EconomicStatus,
+                        HouseholdSize = generalAdmission.HouseholdSize,
+                        MaritalStatus = generalAdmission.MaritalStatus,
+                        isPWD = generalAdmission.isPWD,
+                        EducationalAttainment = generalAdmission.EducationalAttainment,
+                        FatherEducationalAttainment = generalAdmission.FatherEducationalAttainment,
+                        MotherEducationalAttainment = generalAdmission.MotherEducationalAttainment,
+                        isInterviewed = generalAdmission.isInterviewed,
+                        DwellingType = generalAdmission.DwellingType,
+                        LightSource = generalAdmission.LightSource,
+                        WaterSource = generalAdmission.WaterSource,
+                        FuelSource = generalAdmission.FuelSource,
+                        PHIC = generalAdmission.PHIC,
+                        MSW = User.FindFirstValue(ClaimTypes.Name),
+                        UserID = int.Parse(userIdClaim.Value)
+                    };
+
                     // Change patient to active
                     patient.IsActive = true;
 
@@ -951,6 +995,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     await context.StrengthsResources.AddAsync(newStrengthsResources);
                     await context.Goals.AddAsync(newGoals);
                     await context.ProgressNotes.AddRangeAsync(newProgressNotes);
+                    await context.GeneralAdmission.AddAsync(newGeneralAdmission);
                     await context.SaveChangesAsync();
 
                     TempData["SuccessMessage"] = "Successfully re-admitted patient.";

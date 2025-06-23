@@ -33,17 +33,28 @@
     <h2>Admission</h2>
 
     <div class="menu-bar d-flex gap-2">
+        <!-- Main -->
         <a class="btn btn-outline-dark @(
-           ViewContext.RouteData.Values["action"]?.ToString() == "Index" ||
-           ViewContext.RouteData.Values["action"]?.ToString() == "SortBy"
-           ? "active" : "")"
+           ViewContext.RouteData.Values["controller"]?.ToString() == "Form" &&
+           (
+               ViewContext.RouteData.Values["action"]?.ToString() == "Index" ||
+               ViewContext.RouteData.Values["action"]?.ToString() == "SortBy" || 
+               ViewContext.RouteData.Values["action"]?.ToString() == "Search"
+           ) ? "active" : "")"
            asp-action="Index" asp-controller="Form">Main</a>
 
-        <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "General" ? "active" : "")"
-        asp-action="General" asp-controller="Form">General</a>
+        <!-- General -->
+        <a class="btn btn-outline-dark @(
+           ViewContext.RouteData.Values["controller"]?.ToString() == "GeneralAdmission"
+           ? "active" : "")"
+           asp-action="Index" asp-controller="GeneralAdmission">General</a>
 
-        <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "Statistics" ? "active" : "")" 
-        asp-action="Statistics" asp-controller="Form">Statistics</a>
+        <!-- Statistics -->
+        <a class="btn btn-outline-dark @(
+           ViewContext.RouteData.Values["controller"]?.ToString() == "Form" &&
+           ViewContext.RouteData.Values["action"]?.ToString() == "Statistics"
+           ? "active" : "")"
+           asp-action="Statistics" asp-controller="Form">Statistics</a>
     </div>
 </div>
 <hr />
