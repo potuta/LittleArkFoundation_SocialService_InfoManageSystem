@@ -231,6 +231,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     {
                         AssessmentID = newAssessmentID,
                         PatientID = patientID,
+                        Age = assessment.Age,
                         DateOfInterview = DateOnly.FromDateTime(DateTime.Now),
                         TimeOfInterview = TimeOnly.FromDateTime(DateTime.Now),
                         BasicWard = assessment.BasicWard,
