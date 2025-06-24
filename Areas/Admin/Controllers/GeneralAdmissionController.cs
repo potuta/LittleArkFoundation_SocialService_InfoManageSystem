@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using LittleArkFoundation.Areas.Admin.Data;
 using LittleArkFoundation.Areas.Admin.Models.GeneralAdmission;
 using LittleArkFoundation.Areas.Admin.Models.OPD;
 using LittleArkFoundation.Authorize;
@@ -37,6 +38,81 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             };
 
             return View(viewModel);
+        }
+
+        public async Task<IActionResult> Search(string searchString)
+        {
+            if (string.IsNullOrEmpty(searchString))
+            {
+                // If no search string, return all patients with the specified active flag
+                return RedirectToAction("Index");
+            }
+
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var searchWords = searchString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            var query = context.GeneralAdmission.AsQueryable();
+
+            foreach (var word in searchWords)
+            {
+                var term = word.Trim();
+
+                query = query.Where(u =>
+                    EF.Functions.Like(u.FirstName, $"%{term}%") ||
+                    EF.Functions.Like(u.MiddleName, $"%{term}%") ||
+                    EF.Functions.Like(u.LastName, $"%{term}%") ||
+                    EF.Functions.Like(u.Id.ToString(), $"%{term}%"));
+            }
+
+            var generalAdmissions = await query.ToListAsync();
+
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+
+            var viewModel = new GeneralAdmissionViewModel
+            {
+                Users = users,
+                GeneralAdmissions = generalAdmissions
+            };
+
+            return View("Index", viewModel);
+        }
+
+        public async Task<IActionResult> SortBy(string sortByUserID, string? sortByMonth)
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var query = context.GeneralAdmission.AsQueryable();
+
+            if (!string.IsNullOrEmpty(sortByUserID))
+            {
+                query = query.Where(patient => patient.UserID == int.Parse(sortByUserID));
+                var user = await context.Users.FindAsync(int.Parse(sortByUserID));
+                ViewBag.sortBy = user.Username;
+                ViewBag.sortByUserID = user.UserID.ToString();
+            }
+
+            if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
+            {
+                query = query.Where(patient => patient.Date.Month == month.Month && patient.Date.Year == month.Year);
+                ViewBag.sortByMonth = month.ToString("yyyy-MM");
+            }
+
+            var generalAdmissions = await query.ToListAsync();
+
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+
+            var viewModel = new GeneralAdmissionViewModel
+            {
+                Users = users,
+                GeneralAdmissions = generalAdmissions
+            };
+
+            return View("Index", viewModel);
         }
 
         public async Task<IActionResult> Edit(int id)

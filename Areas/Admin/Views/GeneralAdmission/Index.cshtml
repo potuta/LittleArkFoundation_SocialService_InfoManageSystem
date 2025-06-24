@@ -2,8 +2,6 @@
 @{
     ViewData["Title"] = "General Admission";
     Layout = "_AdminLayout";
-    bool isActive = ViewBag.isActive ?? true;
-    string? sortToggle = ViewBag.sortToggle ?? "All";
     string? sortBy = ViewBag.sortBy ?? "";
     string? sortByUserID = ViewBag.sortByUserID ?? "";
     string? sortByMonth = ViewBag.sortByMonth ?? "";
@@ -62,13 +60,13 @@
 <hr />
 
 <div class="search-container">
-    <form asp-action="Search" asp-route-isActive="@isActive" asp-controller="Form">
+    <form asp-action="Search" asp-controller="GeneralAdmission">
         <div class="input-group">
             <input type="search" name="searchString" class="form-control" placeholder="Search by Id/FullName" aria-label="Search">
             <button type="submit" class="btn btn-dark">Search</button>
         </div>
     </form>
-    <a class="btn btn-primary" asp-action="Index" asp-controller="Form">← Back to Full List</a>
+    <a class="btn btn-primary" asp-action="Index" asp-controller="GeneralAdmission">← Back to Full List</a>
 </div>
 
 <div class="d-flex justify-content-end align-items-center">
@@ -85,10 +83,10 @@
             }
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" asp-action="SortBy" asp-controller="OPD" asp-route-sortByUserID="" asp-route-sortByMonth="@sortByMonth" asp-route-sortToggle="@sortToggle">All</a></li>
+            <li><a class="dropdown-item" asp-action="SortBy" asp-controller="GeneralAdmission" asp-route-sortByUserID="" asp-route-sortByMonth="@sortByMonth">All</a></li>
             @foreach (var user in Model.Users)
             {
-                <li><a class="dropdown-item" asp-action="SortBy" asp-controller="OPD" asp-route-sortByUserID="@user.UserID" asp-route-sortByMonth="@sortByMonth" asp-route-sortToggle="@sortToggle">@user.Username</a></li>
+                <li><a class="dropdown-item" asp-action="SortBy" asp-controller="GeneralAdmission" asp-route-sortByUserID="@user.UserID" asp-route-sortByMonth="@sortByMonth">@user.Username</a></li>
             }
         </ul>
         @* @if (matchedUser)
