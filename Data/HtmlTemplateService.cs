@@ -160,7 +160,7 @@ namespace LittleArkFoundation.Data
             var patientage = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Age']");
             if (patientage != null)
             {
-                patientage.InnerHtml = patient.Age.ToString();
+                patientage.InnerHtml = assessment.Age.ToString();
             }
 
             switch (patient.Sex)
