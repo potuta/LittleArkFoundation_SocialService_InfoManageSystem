@@ -9,7 +9,6 @@
         public string MiddleName { get; set; }
         public string LastName { get; set; }
         public DateOnly DateOfBirth { get; set; }
-        public int Age { get; set; }
         public string Sex { get; set; }
         public string ContactNo { get; set; }
         public string PlaceOfBirth { get; set; }    
