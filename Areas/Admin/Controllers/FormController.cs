@@ -209,18 +209,20 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var opd = await context.OPD
                 .Where(o => o.Id == Id)
                 .FirstOrDefaultAsync();
-            opd.IsAdmitted = true;
-            await context.SaveChangesAsync();
 
             var patient = new PatientsModel
             {
                 FirstName = opd.FirstName,
                 MiddleName = opd.MiddleName,
                 LastName = opd.LastName,
-                Age = opd.Age,
                 Gender = opd.Gender,
                 PermanentAddress = opd.Address,
                 MonthlyIncome = opd.MonthlyIncome,
+            };
+
+            var assessment = new AssessmentsModel
+            {
+                Age = opd.Age,
             };
 
             var mswdClassification = new MSWDClassificationModel
@@ -252,8 +254,11 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 MSWDClassification = mswdClassification,
                 Referrals = referral,
                 MedicalHistory = medicalHistory,
-
+                Assessments = assessment,
             };
+
+            opd.IsAdmitted = true;
+            await context.SaveChangesAsync();
 
             return View("Create", viewModel);
         }
@@ -463,7 +468,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                         LastName = formViewModel.Patient.LastName,
                         Ward = formViewModel.Assessments.BasicWard,
                         Class = formViewModel.MSWDClassification.SubClassification,
-                        Age = formViewModel.Patient.Age,
+                        Age = formViewModel.Assessments.Age,
                         Gender = formViewModel.Patient.Gender,
                         Time = formViewModel.Assessments.TimeOfInterview,
                         Diagnosis = formViewModel.MedicalHistory.AdmittingDiagnosis,
@@ -935,7 +940,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     generalAdmission.LastName = formViewModel.Patient.LastName;
                     generalAdmission.Ward = formViewModel.Assessments.BasicWard;
                     generalAdmission.Class = formViewModel.MSWDClassification.SubClassification;
-                    generalAdmission.Age = formViewModel.Patient.Age;
+                    generalAdmission.Age = formViewModel.Assessments.Age;
                     generalAdmission.Gender = formViewModel.Patient.Gender;
                     generalAdmission.Time = formViewModel.Assessments.TimeOfInterview;
                     generalAdmission.Diagnosis = formViewModel.MedicalHistory.AdmittingDiagnosis;
