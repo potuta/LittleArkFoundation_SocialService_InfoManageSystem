@@ -255,10 +255,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 Referrals = referral,
                 MedicalHistory = medicalHistory,
                 Assessments = assessment,
+                OpdId = Id
             };
-
-            opd.IsAdmitted = true;
-            await context.SaveChangesAsync();
 
             return View("Create", viewModel);
         }
@@ -484,6 +482,15 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                         UserID = int.Parse(userIdClaim.Value),
                     };
 
+                    // OPD
+                    if (formViewModel.OpdId > 0)
+                    {
+                        var opd = await context.OPD.FindAsync(formViewModel.OpdId);
+                        if (opd != null)
+                        {
+                            opd.IsAdmitted = true;
+                        }
+                    }
 
                     await context.Assessments.AddAsync(formViewModel.Assessments);
                     await context.SaveChangesAsync();

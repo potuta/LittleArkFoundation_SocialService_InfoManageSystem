@@ -76,6 +76,7 @@ namespace LittleArkFoundation.Areas.Admin.Models.Form
         public StrengthsResourcesModel? StrengthsResources { get; set; }
         public GoalsModel? Goals { get; set; }
         public List<ProgressNotesModel>? ProgressNotes { get; set; } 
+        public int OpdId { get; set; } = 0;
 
     }
 }
