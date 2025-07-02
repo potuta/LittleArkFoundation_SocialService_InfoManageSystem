@@ -7,6 +7,15 @@
     string? sortBy = ViewBag.sortBy ?? null;
 }
 
+<style>
+    .sticky-col {
+        position: sticky;
+        left: 0;
+        background: white;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
 <h2>Users</h2>
 
 <div class="search-container">
@@ -45,7 +54,7 @@
         <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-1" data-bs-toggle="dropdown" aria-expanded="false">
             @if (string.IsNullOrEmpty(sortBy))
             {
-                <span class="mb-0">Sort by</span>
+                <span class="mb-0">Sort by Role</span>
             }
             else
             {
@@ -88,6 +97,7 @@
                     if (!isArchive)
                     {
                         <tr>
+                            <th class="sticky-col" style="width: 100%; left: 0; z-index: 2;">Actions</th>
                             <th>UserID</th>
                             <th>Username</th>
                             <th>Email</th>
@@ -95,12 +105,12 @@
                             <th>PasswordHash</th>
                             <th>RoleID</th>
                             <th>CreatedAt</th>
-                            <th></th>
                         </tr>
                     }
                     else
                     {
                         <tr>
+                            <th class="sticky-col" style="width: 100%; left: 0; z-index: 2;">Actions</th>
                             <th>UserID</th>
                             <th>Username</th>
                             <th>Email</th>
@@ -110,7 +120,6 @@
                             <th>CreatedAt</th>
                             <th>ArchivedAt</th>
                             <th>ArchivedBy</th>
-                            <th></th>
                         </tr>
                     }
                 }
@@ -124,6 +133,10 @@
                         @foreach (var user in Model.Users)
                         {
                             <tr>
+                                <td class="sticky-col d-flex gap-2" style="white-space: nowrap; left: 0; z-index: 1;">
+                                    <a href="@Url.Action("Edit", new { id = user.UserID })" class="btn btn-primary">Edit</a>
+                                    <a href="@Url.Action("Archive", new { id = user.UserID })" class="btn btn-danger" onclick="return confirm('Are you sure you want to archive this user?');">Move to Archive</a>
+                                </td>
                                 <td style="white-space: nowrap;">@user.UserID</td>
                                 <td style="white-space: nowrap;">@user.Username</td>
                                 <td style="white-space: nowrap;">@user.Email</td>
@@ -131,10 +144,6 @@
                                 <td class="td-password" style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">@user.PasswordHash</td>
                                 <td style="white-space: nowrap;">@user.RoleID</td>
                                 <td style="white-space: nowrap;">@user.CreatedAt</td>
-                                <td class="d-flex gap-2" style="white-space: nowrap;">
-                                    <a href="@Url.Action("Edit", new { id = user.UserID })" class="btn btn-primary">Edit</a>
-                                    <a href="@Url.Action("Archive", new { id = user.UserID })" class="btn btn-danger" onclick="return confirm('Are you sure you want to archive this user?');">Move to Archive</a>
-                                </td>
                             </tr>
                         }
                     }
@@ -143,6 +152,9 @@
                         @foreach (var user in Model.UsersArchives)
                         {
                             <tr>
+                                <td class="sticky-col d-flex gap-2" style="white-space: nowrap; left: 0; z-index: 1;">
+                                    <a href="@Url.Action("Unarchive", new { id = user.UserID })" class="btn btn-success" onclick="return confirm('Are you sure you want to unarchive this user?');">Unarchive</a>
+                                </td>
                                 <td style="white-space: nowrap;">@user.UserID</td>
                                 <td style="white-space: nowrap;">@user.Username</td>
                                 <td style="white-space: nowrap;">@user.Email</td>
@@ -152,9 +164,6 @@
                                 <td style="white-space: nowrap;">@user.CreatedAt</td>
                                 <td style="white-space: nowrap;">@user.ArchivedAt</td>
                                 <td style="white-space: nowrap;">@user.ArchivedBy</td>
-                                <td class="d-flex gap-2" style="white-space: nowrap;">
-                                    <a href="@Url.Action("Unarchive", new { id = user.UserID })" class="btn btn-success" onclick="return confirm('Are you sure you want to unarchive this user?');">Unarchive</a>
-                                </td>
                             </tr>
                         }
                     }

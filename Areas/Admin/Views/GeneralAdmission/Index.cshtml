@@ -26,6 +26,13 @@
             margin-bottom: 0;
         }
 
+    .sticky-col {
+        position: sticky;
+        left: 0;
+        background: white;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    }
+
 </style>
 
 
@@ -149,7 +156,7 @@
                     <tr>
                         @* <th>AssessmentID</th>
                         <th>PatientID</th> *@
-                        <th>Actions</th>
+                        <th class="sticky-col" style="width: 100%; left: 0; z-index: 2;">Actions</th>
                         <th>Date</th>
                         <th>No</th>
                         <th>Old/New</th>
@@ -195,7 +202,7 @@
                         <tr>
                             @* <td style="white-space: nowrap;">@patient.AssessmentID</td>
                             <td style="white-space: nowrap;">@patient.PatientID</td> *@
-                            <td class="d-flex gap-2" style="white-space: nowrap;">
+                            <td class="sticky-col d-flex gap-2" style="white-space: nowrap; left: 0; z-index: 1;">
                                 <a asp-action="ViewForm" asp-controller="Form" asp-route-Id="@patient.PatientID" asp-route-assessmentId="@patient.AssessmentID" class="btn btn-primary">View Form</a>
                                 <a asp-action="Edit" asp-controller="GeneralAdmission" asp-route-Id="@patient.Id" class="btn btn-success">Edit</a>
                             </td>
