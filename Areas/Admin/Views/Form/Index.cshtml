@@ -26,6 +26,14 @@
             margin-bottom: 0;
         }
 
+    .sticky-col {
+        position: sticky;
+        left: 0;
+        background: white;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+
 </style>
 
 
@@ -115,7 +123,7 @@
                 @if (Model != null)
                 {
                     <tr>
-                        <th style="width: 100%;">Actions</th>
+                        <th class="sticky-col" style="width: 100%; left: 0; z-index: 2;">Actions</th>
                         <th>PatientID</th>
                         <th>FirstName</th>
                         <th>MiddleName</th>
@@ -155,7 +163,7 @@
                         var userIdName = User.FindFirst(ClaimTypes.Name);
                         var userId = User.FindFirst(ClaimTypes.NameIdentifier);
                         <tr>
-                            <td class="d-flex gap-2" style="white-space: nowrap;">
+                            <td class="sticky-col d-flex gap-2" style="white-space: nowrap; left: 0; z-index: 1;">
                                 <a href="@Url.Action("ViewHistory", new { id = patient.PatientID })" class="btn btn-dark text-white">View History</a>
                                 @if (isActive)
                                 {

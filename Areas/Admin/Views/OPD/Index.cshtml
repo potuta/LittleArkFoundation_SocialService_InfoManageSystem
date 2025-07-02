@@ -28,6 +28,13 @@
             margin-bottom: 0;
         }
 
+    .sticky-col {
+        position: sticky;
+        left: 0;
+        background: white;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    }
+
 </style>
 
 
@@ -181,8 +188,8 @@
         <table class="table" style="min-width: 1200px;">
             <thead>
                 <tr>
+                    <th class="sticky-col" style="width: 100%; left: 0; z-index: 2;">Actions</th>
                     <th id="dssTableHeader">DSS</th>
-                    <th>Actions</th>
                     <th>Date</th>
                     <th>No</th>
                     <th>Old/New</th>
@@ -222,15 +229,7 @@
                         var modalId = $"scoreBreakdownModal_{opd.Id}";
                         var modalLabelId = $"{modalId}_label";
                         <tr>
-                            <td id="dssTableData">
-                                <button type="button"
-                                        class="badge @(isEligible ? "bg-success" : "bg-danger") text-dark ms-2 border-0"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#@modalId">
-                                    @(isEligible ? "Eligible" : "Not Eligible")
-                                </button>
-                            </td>
-                            <td class="d-flex gap-2" style="white-space: nowrap;">
+                            <td class="sticky-col d-flex gap-2" style="white-space: nowrap; left: 0; z-index: 1;">
 								@if (!opd.IsAdmitted)
 								{
                                     <a class="btn btn-primary" asp-action="AdmitOPD" asp-controller="Form" asp-route-id="@opd.Id" 
@@ -253,6 +252,14 @@
 								}
 		
 							</td>
+                            <td id="dssTableData">
+                                <button type="button"
+                                        class="badge @(isEligible ? "bg-success" : "bg-danger") text-dark ms-2 border-0"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#@modalId">
+                                    @(isEligible ? "Eligible" : "Not Eligible")
+                                </button>
+                            </td>
                             <td style="white-space: nowrap;">@opd.Date</td>
                             <td style="white-space: nowrap;">@opd.Id</td>
                             <td style="white-space: nowrap;">
