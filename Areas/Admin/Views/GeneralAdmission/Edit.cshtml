@@ -507,10 +507,11 @@
 
                 <td>
                     Interviewed: <span class="required">*</span>
-                    <select asp-for="GeneralAdmission.isInterviewed" required>
+                    <select asp-for="GeneralAdmission.isInterviewed" disabled>
                         <option value="true">Yes</option>
                         <option value="false">No</option>
                     </select>
+                    <input type="hidden" asp-for="GeneralAdmission.isInterviewed" />
                 </td>
 
                 <td>
