@@ -281,7 +281,14 @@
                             @* <td style="white-space: nowrap;">@patient.AssessmentID</td>
                             <td style="white-space: nowrap;">@patient.PatientID</td> *@
                             <td class="sticky-col d-flex gap-2" style="white-space: nowrap; left: 0; z-index: 1;">
-                                <a asp-action="ViewForm" asp-controller="Form" asp-route-Id="@patient.PatientID" asp-route-assessmentId="@patient.AssessmentID" class="btn btn-primary">View Form</a>
+                                @if (patient.isInterviewed)
+                                {
+                                    <a asp-action="ViewForm" asp-controller="Form" asp-route-Id="@patient.PatientID" asp-route-assessmentId="@patient.AssessmentID" class="btn btn-primary">View Form</a>
+                                }
+                                else
+                                {
+                                    <a asp-action="InterviewGeneral" asp-controller="Form" asp-route-Id="@patient.Id" class="btn btn-primary">Interview Patient</a>
+                                }
                                 <a asp-action="Edit" asp-controller="GeneralAdmission" asp-route-Id="@patient.Id" class="btn btn-success">Edit</a>
                             </td>
                             <td style="white-space: nowrap;">@patient.Date</td>

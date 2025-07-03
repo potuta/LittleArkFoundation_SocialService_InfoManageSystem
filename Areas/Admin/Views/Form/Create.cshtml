@@ -105,6 +105,7 @@
 <form asp-action="Create" method="post" enctype="multipart/form-data" novalidate>
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="OpdId" />
+	<input type="hidden" asp-for="GeneralAdmissionId" />
     <div class="form-container">
 
         <div class="accordion" id="formAccordion">

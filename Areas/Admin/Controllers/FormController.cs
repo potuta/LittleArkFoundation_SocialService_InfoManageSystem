@@ -27,6 +27,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using System.Data;
 using System.Runtime.InteropServices;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 // TODO: Implement logging for forms
 namespace LittleArkFoundation.Areas.Admin.Controllers
@@ -261,6 +262,76 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return View("Create", viewModel);
         }
 
+        public async Task<IActionResult> InterviewGeneral(int Id)
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            // USERS & SOCIAL WORKER ROLE ID
+            var socialWorkerRoleId = await context.Roles
+                .Where(r => r.RoleName == "Social Worker")
+                .Select(r => r.RoleID)
+                .FirstOrDefaultAsync();
+
+            var users = await context.Users
+                .Where(u => u.RoleID == socialWorkerRoleId)
+                .ToListAsync();
+
+            var generalAdmission = await context.GeneralAdmission
+                .FindAsync(Id);
+
+            var patient = new PatientsModel
+            {
+                FirstName = generalAdmission.FirstName,
+                MiddleName = generalAdmission.MiddleName,
+                LastName = generalAdmission.LastName,
+                Gender = generalAdmission.Gender,
+                PermanentAddress = generalAdmission.CompleteAddress,
+                MonthlyIncome = generalAdmission.MonthlyIncome,
+            };
+
+            var assessment = new AssessmentsModel
+            {
+                Age = generalAdmission.Age,
+            };
+
+            var mswdClassification = new MSWDClassificationModel
+            {
+                SubClassification = generalAdmission.Class
+            };
+
+            var referral = new ReferralsModel
+            {
+                ReferralType = generalAdmission.Referral
+            };
+
+            var medicalHistory = new MedicalHistoryModel
+            {
+                AdmittingDiagnosis = generalAdmission.Diagnosis,
+            };
+
+            var viewModel = new FormViewModel()
+            {
+                Users = users,
+                FamilyMembers = new List<FamilyCompositionModel>() { new FamilyCompositionModel() },
+                Diagnoses = new List<DiagnosesModel>() { new DiagnosesModel() },
+                Medications = new List<MedicationsModel> { new MedicationsModel() },
+                HospitalizationHistory = new List<HospitalizationHistoryModel> { new HospitalizationHistoryModel() },
+                MentalHealthHistory = new List<MentalHealthHistoryModel> { new MentalHealthHistoryModel() },
+                FamilyHistory = new List<FamilyHistoryModel> { new FamilyHistoryModel() },
+                ProgressNotes = new List<ProgressNotesModel> { new ProgressNotesModel() },
+                Patient = patient,
+                MSWDClassification = mswdClassification,
+                Referrals = referral,
+                MedicalHistory = medicalHistory,
+                Assessments = assessment,
+                GeneralAdmissionId = Id
+            };
+
+            return View("Create", viewModel);
+
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(FormViewModel formViewModel)
@@ -454,33 +525,49 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     };
 
                     // GENERAL ADMISSION
-                    var generalAdmission = new GeneralAdmissionModel
+                    if (formViewModel.GeneralAdmissionId > 0)
                     {
-                        AssessmentID = assessmentID,
-                        PatientID = patientID,
-                        Date = formViewModel.Assessments.DateOfInterview,
-                        isOld = false,
-                        HospitalNo = 0, // This will be set later
-                        FirstName = formViewModel.Patient.FirstName,
-                        MiddleName = formViewModel.Patient.MiddleName,
-                        LastName = formViewModel.Patient.LastName,
-                        Ward = formViewModel.Assessments.BasicWard,
-                        Class = formViewModel.MSWDClassification.SubClassification,
-                        Age = formViewModel.Assessments.Age,
-                        Gender = formViewModel.Patient.Gender,
-                        Time = formViewModel.Assessments.TimeOfInterview,
-                        Diagnosis = formViewModel.MedicalHistory.AdmittingDiagnosis,
-                        CompleteAddress = formViewModel.Patient.PermanentAddress,
-                        ContactNumber = formViewModel.Patient.ContactNo,
-                        Referral = formViewModel.Referrals.ReferralType,
-                        Occupation = formViewModel.Patient.Occupation,
-                        MonthlyIncome = formViewModel.Patient.MonthlyIncome,
-                        HouseholdSize = formViewModel.Household.HouseholdSize,
-                        //EducationalAttainment = formViewModel.Patient.EducationLevel,
-                        isInterviewed = true,
-                        MSW = User.FindFirstValue(ClaimTypes.Name), // Assuming the MSW is the user who is logged in
-                        UserID = int.Parse(userIdClaim.Value),
-                    };
+                        var existingAdmission = await context.GeneralAdmission.FindAsync(formViewModel.GeneralAdmissionId);
+                        if (existingAdmission != null)
+                        {
+                            // Update existing admission
+                            existingAdmission.AssessmentID = assessmentID;
+                            existingAdmission.PatientID = patientID;
+                            existingAdmission.isInterviewed = true;
+                        }
+                    }
+                    else
+                    {
+                        var generalAdmission = new GeneralAdmissionModel
+                        {
+                            AssessmentID = assessmentID,
+                            PatientID = patientID,
+                            Date = formViewModel.Assessments.DateOfInterview,
+                            isOld = false,
+                            HospitalNo = 0, // This will be set later
+                            FirstName = formViewModel.Patient.FirstName,
+                            MiddleName = formViewModel.Patient.MiddleName,
+                            LastName = formViewModel.Patient.LastName,
+                            Ward = formViewModel.Assessments.BasicWard,
+                            Class = formViewModel.MSWDClassification.SubClassification,
+                            Age = formViewModel.Assessments.Age,
+                            Gender = formViewModel.Patient.Gender,
+                            Time = formViewModel.Assessments.TimeOfInterview,
+                            Diagnosis = formViewModel.MedicalHistory.AdmittingDiagnosis,
+                            CompleteAddress = formViewModel.Patient.PermanentAddress,
+                            ContactNumber = formViewModel.Patient.ContactNo,
+                            Referral = formViewModel.Referrals.ReferralType,
+                            Occupation = formViewModel.Patient.Occupation,
+                            MonthlyIncome = formViewModel.Patient.MonthlyIncome,
+                            HouseholdSize = formViewModel.Household.HouseholdSize,
+                            //EducationalAttainment = formViewModel.Patient.EducationLevel,
+                            isInterviewed = true,
+                            MSW = User.FindFirstValue(ClaimTypes.Name), // Assuming the MSW is the user who is logged in
+                            UserID = int.Parse(userIdClaim.Value),
+                        };
+
+                        await context.GeneralAdmission.AddAsync(generalAdmission);
+                    }
 
                     // OPD
                     if (formViewModel.OpdId > 0)
@@ -530,7 +617,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     await context.StrengthsResources.AddAsync(formViewModel.StrengthsResources);
                     await context.Goals.AddAsync(formViewModel.Goals);
                     await context.ProgressNotes.AddRangeAsync(formViewModel.ProgressNotes);
-                    await context.GeneralAdmission.AddAsync(generalAdmission);
+                    //await context.GeneralAdmission.AddAsync(generalAdmission);
                     await context.SaveChangesAsync();
 
                     TempData["SuccessMessage"] = "Successfully created new form";
