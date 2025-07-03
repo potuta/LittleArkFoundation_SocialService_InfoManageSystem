@@ -110,7 +110,10 @@
                     <tr>
                         <td>
                             <a href="@Url.Action("ViewForm", new { id = assessment.PatientID, assessmentID = assessment.AssessmentID })" class="btn btn-primary">View Form</a>
-                            <a href="@Url.Action("Edit", new { id = assessment.PatientID, assessmentID = assessment.AssessmentID })" class="btn btn-success">Edit</a>
+                            @if (Model.Patient.IsActive)
+                            {
+                                <a href="@Url.Action("Edit", new { id = assessment.PatientID, assessmentID = assessment.AssessmentID })" class="btn btn-success">Edit</a>
+                            }
                         </td>
                         <td>
                             @assessment.AssessmentID

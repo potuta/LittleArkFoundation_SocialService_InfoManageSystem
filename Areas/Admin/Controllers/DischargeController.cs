@@ -1001,7 +1001,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                     TempData["SuccessMessage"] = "Successfully re-admitted patient.";
                     LoggingService.LogInformation($"Patient Re-admission successful. Created new AssessmentID: {newAssessmentID}. Re-admitted by UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
-                    return RedirectToAction("Edit", "Form", new { id = patient.PatientID, assessmentID = assessment.AssessmentID });
+                    return RedirectToAction("Edit", "Form", new { id = patientID, assessmentID = newAssessmentID });
 
                 }
             }
