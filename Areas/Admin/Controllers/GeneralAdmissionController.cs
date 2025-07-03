@@ -23,15 +23,31 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             _connectionService = connectionService;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? sortToggle)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
 
+            string sortToggleValue = sortToggle ?? "All";
+            ViewBag.sortToggle = sortToggleValue;
+
+            var generalAdmissions = new List<GeneralAdmissionModel>();
+
+            if (sortToggleValue == "All")
+            {
+                generalAdmissions = await context.GeneralAdmission.ToListAsync();
+            }
+            else if (sortToggleValue == "Interviewed")
+            {
+                generalAdmissions = await context.GeneralAdmission.Where(patient => patient.isInterviewed).ToListAsync();
+            }
+            else if (sortToggleValue == "Not Interviewed")
+            {
+                generalAdmissions = await context.GeneralAdmission.Where(patient => !patient.isInterviewed).ToListAsync();
+            }
+
             var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
-
-            var generalAdmissions = await context.GeneralAdmission.ToListAsync();
 
             var viewModel = new GeneralAdmissionViewModel
             {
@@ -42,12 +58,15 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return View(viewModel);
         }
 
-        public async Task<IActionResult> Search(string searchString)
+        public async Task<IActionResult> Search(string searchString, string? sortToggle)
         {
+            string sortToggleValue = sortToggle ?? "All";
+            ViewBag.sortToggle = sortToggleValue;
+
             if (string.IsNullOrEmpty(searchString))
             {
                 // If no search string, return all patients with the specified active flag
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", new { sortToggle = sortToggleValue });
             }
 
             string connectionString = _connectionService.GetCurrentConnectionString();
@@ -82,8 +101,11 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return View("Index", viewModel);
         }
 
-        public async Task<IActionResult> SortBy(string sortByUserID, string? sortByMonth)
+        public async Task<IActionResult> SortBy(string sortByUserID, string? sortByMonth, string? sortToggle)
         {
+            string sortToggleValue = sortToggle ?? "All";
+            ViewBag.sortToggle = sortToggleValue;
+
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
 
@@ -95,6 +117,15 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 var user = await context.Users.FindAsync(int.Parse(sortByUserID));
                 ViewBag.sortBy = user.Username;
                 ViewBag.sortByUserID = user.UserID.ToString();
+            }
+
+            if (sortToggleValue == "Interviewed")
+            {
+                query = query.Where(patient => patient.isInterviewed);
+            }
+            else if (sortToggleValue == "Not Interviewed")
+            {
+                query = query.Where(patient => !patient.isInterviewed);
             }
 
             if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
@@ -160,6 +191,55 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 LoggingService.LogError("Error: " + ex.Message);
                 return RedirectToAction("Index");
             }
+        }
+
+        public async Task<IActionResult> Create()
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            var viewModel = new GeneralAdmissionViewModel
+            {
+                Users = users,
+                GeneralAdmission = new GeneralAdmissionModel()
+            };
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(GeneralAdmissionViewModel viewModel)
+        {
+            try
+            {
+                string connectionString = _connectionService.GetCurrentConnectionString();
+                await using var context = new ApplicationDbContext(connectionString);
+
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var user = await context.Users.FindAsync(int.Parse(userIdClaim));
+
+                viewModel.GeneralAdmission.MSW = user?.Username ?? "N/A";
+                viewModel.GeneralAdmission.UserID = user?.UserID ?? 0;
+
+                await context.GeneralAdmission.AddAsync(viewModel.GeneralAdmission);
+                await context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "Successfully created General Admission record.";
+                LoggingService.LogInformation($"General Admission Patient creation successful. Created Id: {viewModel.GeneralAdmission.Id}. Created by UserID: {userIdClaim}, DateTime: {DateTime.Now}");
+                return RedirectToAction("Index");
+            }
+            catch (SqlException se)
+            {
+                TempData["ErrorMessage"] = "SQL Error: " + se.Message;
+                LoggingService.LogError("SQL Error: " + se.Message);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Error: " + ex.Message;
+                LoggingService.LogError("Error: " + ex.Message);
+            }
+            return View(viewModel);
         }
 
         public async Task<IActionResult> ExportLogsheetToExcel(int userID, string? month)
