@@ -1,6 +1,6 @@
 ﻿@model LittleArkFoundation.Areas.Admin.Models.GeneralAdmission.GeneralAdmissionViewModel
 @{
-    ViewData["Title"] = "General Admission Edit";
+    ViewData["Title"] = "General Admission Create";
     Layout = "_AdminLayout";
 }
 
@@ -88,13 +88,8 @@
        onclick="return confirm('Are you sure you want to exit this page?');">← Back to List</a>
 </div>
 
-<form asp-action="Edit" method="post">
+<form asp-action="Create" method="post">
     @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="GeneralAdmission.Id" />
-    <input type="hidden" asp-for="GeneralAdmission.AssessmentID" />
-    <input type="hidden" asp-for="GeneralAdmission.PatientID" />
-    <input type="hidden" asp-for="GeneralAdmission.MSW" />
-    <input type="hidden" asp-for="GeneralAdmission.UserID" />
 
     <div class="form-container">
         <h2 style="text-align: center;">General Admission</h2>
@@ -109,11 +104,10 @@
                 </td>
                 <td>
                     Old/New: <span class="required">*</span>
-                    <select asp-for="GeneralAdmission.isOld" disabled>
-                        <option value="true">Old</option>
+                    <select asp-for="GeneralAdmission.isOld" required>
+                        @* <option value="true">Old</option> *@
                         <option value="false">New</option>
                     </select>
-                    <input type="hidden" asp-for="GeneralAdmission.isOld" />
                 </td>
                 <td>
                     Hospital No: <span class="required">*</span>
@@ -126,16 +120,16 @@
             <tr>
                 <td>
                     First Name: <span class="required">*</span>
-                    <input type="text" asp-for="GeneralAdmission.FirstName" placeholder="Type N/A if No Answer" readonly>
+                    <input type="text" asp-for="GeneralAdmission.FirstName" placeholder="Type N/A if No Answer" required>
 
                 </td>
                 <td>
                     Middle Name: <span class="required">*</span>
-                    <input type="text" asp-for="GeneralAdmission.MiddleName" placeholder="Type N/A if No Answer" readonly>
+                    <input type="text" asp-for="GeneralAdmission.MiddleName" placeholder="Type N/A if No Answer" required>
                 </td>
                 <td>
                     Last Name: <span class="required">*</span>
-                    <input type="text" asp-for="GeneralAdmission.LastName" placeholder="Type N/A if No Answer" readonly>
+                    <input type="text" asp-for="GeneralAdmission.LastName" placeholder="Type N/A if No Answer" required>
 
                 </td>
             </tr>
@@ -143,7 +137,7 @@
             <tr>
                 <td>
                     Basic Ward: <span class="required">*</span>
-                    <select asp-for="GeneralAdmission.Ward" disabled>
+                    <select asp-for="GeneralAdmission.Ward" required>
                         <option>Ward 2</option>
                         <option>Ward 3</option>
                         <option>Ward 4</option>
@@ -157,7 +151,6 @@
                         <option>Inf.</option>
                         <option>OB</option>
                     </select>
-                    <input type="hidden" asp-for="GeneralAdmission.Ward" />
                 </td>
                 <td>
                     Class: <span class="required">*</span>
@@ -174,7 +167,7 @@
                 </td>
                 <td>
                     Age: <span class="required">*</span>
-                    <input type="number" asp-for="GeneralAdmission.Age" placeholder="Type N/A if No Answer" readonly>
+                    <input type="number" asp-for="GeneralAdmission.Age" placeholder="Type N/A if No Answer" required>
                 </td>
             </tr>
 
@@ -182,12 +175,11 @@
             </tr>
             <td>
                 Gender: <span class="required">*</span>
-                <select asp-for="GeneralAdmission.Gender" disabled>
+                <select asp-for="GeneralAdmission.Gender" required>
                     <option>Male</option>
                     <option>Female</option>
                     <option>LGBTQIA+</option>
                 </select>
-                <input type="hidden" asp-for="GeneralAdmission.Gender" />
             </td>
             <td>
                 Time of Interview: <span class="required">*</span>
@@ -195,14 +187,14 @@
             </td>
             <td>
                 Diagnosis: <span class="required">*</span>
-                <textarea type="text" asp-for="GeneralAdmission.Diagnosis" placeholder="Type N/A if No Answer" readonly></textarea>
+                <textarea type="text" asp-for="GeneralAdmission.Diagnosis" placeholder="Type N/A if No Answer" required></textarea>
 
             </td>
 
             <tr>
                 <td>
                     Complete Address: <span class="required">*</span>
-                    <textarea type="text" asp-for="GeneralAdmission.CompleteAddress" placeholder="Type N/A if No Answer" readonly></textarea>
+                    <textarea type="text" asp-for="GeneralAdmission.CompleteAddress" placeholder="Type N/A if No Answer" required></textarea>
 
                 </td>
                 <td>
@@ -317,11 +309,11 @@
             <tr>
                 <td>
                     Contact Number: <span class="required">*</span>
-                    <input type="number" asp-for="GeneralAdmission.ContactNumber" placeholder="Type 0 if No Answer" readonly>
+                    <input type="number" asp-for="GeneralAdmission.ContactNumber" placeholder="Type 0 if No Answer" required>
                 </td>
                 <td>
                     Source of Referral: <span class="required">*</span>
-                    <select asp-for="GeneralAdmission.Referral" disabled>
+                    <select asp-for="GeneralAdmission.Referral" required>
                         <option>Walk in</option>
                         <option>Govt. Hosp.</option>
                         <option>Clinic/Private</option>
@@ -332,7 +324,6 @@
                         <option>Govt. Agencies</option>
                         <option>Others</option>
                     </select>
-                    <input type="hidden" asp-for="GeneralAdmission.Referral" />
                 </td>
 
                 <td>
@@ -401,7 +392,7 @@
 
                 <td>
                     Monthly Income: <span class="required">*</span>
-                    <input type="number" asp-for="GeneralAdmission.MonthlyIncome" placeholder="Type 0 if No Answer" readonly>
+                    <input type="number" asp-for="GeneralAdmission.MonthlyIncome" placeholder="Type 0 if No Answer" required>
                 </td>
 
                 <td>
@@ -419,7 +410,7 @@
 
                 <td>
                     Household Size: <span class="required">*</span>
-                    <input type="number" asp-for="GeneralAdmission.HouseholdSize" placeholder="Type 0 if No Answer" readonly>
+                    <input type="number" asp-for="GeneralAdmission.HouseholdSize" placeholder="Type 0 if No Answer" required>
                 </td>
 
                 <td>
@@ -509,11 +500,10 @@
 
                 <td>
                     Interviewed: <span class="required">*</span>
-                    <select asp-for="GeneralAdmission.isInterviewed" disabled>
-                        <option value="true">Yes</option>
+                    <select asp-for="GeneralAdmission.isInterviewed" required>
+                        @* <option value="true">Yes</option> *@
                         <option value="false">No</option>
                     </select>
-                    <input type="hidden" asp-for="GeneralAdmission.isInterviewed" />
                 </td>
 
                 <td>
@@ -570,20 +560,6 @@
                 </td>
             </tr>
 
-            <tr>
-                <td colspan="3">
-                    MSW: <span class="required">*</span>
-                    @* @foreach (var msw in Model.GeneralAdmission.MSW)
-                    {
-                        <select asp-for="GeneralAdmission.MSW">
-                            <option>@msw</option>
-                        </select>
-                    } *@
-                    <input type="text" asp-for="GeneralAdmission.MSW" readonly/>
-                    @* <input type="hidden" asp-for="GeneralAdmission.MSW" /> *@
-                </td>
-            </tr>
-
         </table>
 
         @* --- Add new here --- *@
@@ -601,6 +577,16 @@
 
 @section Scripts {
     <script>
+        // Get today's date in YYYY-MM-DD format
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById("dateInput").value = today;
+
+        // Get current time in HH:MM format
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        document.getElementById("timeInput").value = `${hours}:${minutes}`;
+
         function handleFileUpload(input, index) {
             const file = input.files[0];
             if (!file) return;

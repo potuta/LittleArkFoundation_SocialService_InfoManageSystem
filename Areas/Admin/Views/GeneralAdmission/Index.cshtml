@@ -2,6 +2,7 @@
 @{
     ViewData["Title"] = "General Admission";
     Layout = "_AdminLayout";
+    string? sortToggle = ViewBag.sortToggle ?? "All";
     string? sortBy = ViewBag.sortBy ?? "";
     string? sortByUserID = ViewBag.sortByUserID ?? "";
     string? sortByMonth = ViewBag.sortByMonth ?? "";
@@ -52,9 +53,14 @@
 
         <!-- General -->
         <a class="btn btn-outline-dark @(
-              ViewContext.RouteData.Values["controller"]?.ToString() == "GeneralAdmission"
-              ? "active" : "")"
-           asp-action="Index" asp-controller="GeneralAdmission">General</a>
+            ViewContext.RouteData.Values["controller"]?.ToString() == "GeneralAdmission" &&
+            (
+                ViewContext.RouteData.Values["action"]?.ToString() == "Index" ||
+                ViewContext.RouteData.Values["action"]?.ToString() == "SortBy" ||
+                ViewContext.RouteData.Values["action"]?.ToString() == "Search"
+            )
+            ? "active" : "")"
+            asp-action="Index" asp-controller="GeneralAdmission">General</a>
 
         <!-- Statistics -->
         <a class="btn btn-outline-dark @(
@@ -66,17 +72,50 @@
 </div>
 <hr />
 
-<div class="search-container">
-    <form asp-action="Search" asp-controller="GeneralAdmission">
-        <div class="input-group">
-            <input type="search" name="searchString" class="form-control" placeholder="Search by Id/FullName" aria-label="Search">
-            <button type="submit" class="btn btn-dark">Search</button>
-        </div>
-    </form>
-    <a class="btn btn-primary" asp-action="Index" asp-controller="GeneralAdmission">← Back to Full List</a>
+@* Search *@
+<div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+    <div class="search-container" style="width: 100%">
+        <form asp-action="Search" asp-route-sortToggle="@sortToggle" asp-controller="GeneralAdmission">
+            <div class="input-group">
+                <input type="search" name="searchString" class="form-control" placeholder="Search by Id/FullName" aria-label="Search">
+                <button type="submit" class="btn btn-dark">Search</button>
+            </div>
+        </form>
+        <a class="btn btn-primary" asp-action="Index" asp-controller="GeneralAdmission">← Back to Full List</a>
+    </div>
 </div>
 
-<div class="d-flex justify-content-end align-items-center">
+<div class="d-flex justify-content-between align-items-center">
+    @* Left toggles/buttons *@
+    <div class="d-flex align-items-center gap-3">
+        @if (sortToggle == "All" || sortToggle == "Not Interviewed")
+        {
+            <a class="btn btn-success" asp-action="Create" asp-controller="GeneralAdmission">Create New</a>
+        }
+
+        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <a asp-action="Index" asp-controller="GeneralAdmission" asp-route-sortToggle="All" class="btn btn-secondary @(sortToggle == "All" ? "active" : "")">
+                <div class="custom-radio">
+                    <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "All" ? "checked" : "")>
+                    <label style="margin-bottom: 0">All</label>
+                </div>
+            </a>
+            <a asp-action="Index" asp-controller="GeneralAdmission" asp-route-sortToggle="Interviewed" class="btn btn-secondary @(sortToggle == "Interviewed" ? "active" : "")">
+                <div class="custom-radio">
+                    <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "Interviewed" ? "checked" : "")>
+                    <label style="margin-bottom: 0">Interviewed</label>
+                </div>
+            </a>
+            <a asp-action="Index" asp-controller="GeneralAdmission" asp-route-sortToggle="Not Interviewed" class="btn btn-secondary @(sortToggle == "Not Interviewed" ? "active" : "")">
+                <div class="custom-radio">
+                    <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "Not Interviewed" ? "checked" : "")>
+                    <label style="margin-bottom: 0">Not Interviewed</label>
+                </div>
+            </a>
+        </div>
+        
+    </div>
+
     @* Right toggles/buttons *@
     <div class="btn-group">
         <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-1 me-2" data-bs-toggle="dropdown" aria-expanded="false">
@@ -90,10 +129,10 @@
             }
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" asp-action="SortBy" asp-controller="GeneralAdmission" asp-route-sortByUserID="" asp-route-sortByMonth="@sortByMonth">All</a></li>
+            <li><a class="dropdown-item" asp-action="SortBy" asp-controller="GeneralAdmission" asp-route-sortByUserID="" asp-route-sortByMonth="@sortByMonth" asp-route-sortToggle="@sortToggle">All</a></li>
             @foreach (var user in Model.Users)
             {
-                <li><a class="dropdown-item" asp-action="SortBy" asp-controller="GeneralAdmission" asp-route-sortByUserID="@user.UserID" asp-route-sortByMonth="@sortByMonth">@user.Username</a></li>
+                <li><a class="dropdown-item" asp-action="SortBy" asp-controller="GeneralAdmission" asp-route-sortByUserID="@user.UserID" asp-route-sortByMonth="@sortByMonth" asp-route-sortToggle="@sortToggle">@user.Username</a></li>
             }
         </ul>
         @* @if (matchedUser)
@@ -121,6 +160,7 @@
         @* Month filter *@
         <form method="get" asp-action="SortBy" class="d-flex align-items-center gap-2">
             <input type="hidden" name="sortByUserID" value="@sortByUserID" />
+            <input type="hidden" name="sortToggle" value="@sortToggle" />
             <input type="month" name="sortByMonth" class="form-control form-control-sm" value="@sortByMonth" />
             <button type="submit" class="btn btn-secondary btn-sm" style="width: 100%;">Filter Month</button>
         </form>
@@ -241,7 +281,14 @@
                             @* <td style="white-space: nowrap;">@patient.AssessmentID</td>
                             <td style="white-space: nowrap;">@patient.PatientID</td> *@
                             <td class="sticky-col d-flex gap-2" style="white-space: nowrap; left: 0; z-index: 1;">
-                                <a asp-action="ViewForm" asp-controller="Form" asp-route-Id="@patient.PatientID" asp-route-assessmentId="@patient.AssessmentID" class="btn btn-primary">View Form</a>
+                                @if (patient.isInterviewed)
+                                {
+                                    <a asp-action="ViewForm" asp-controller="Form" asp-route-Id="@patient.PatientID" asp-route-assessmentId="@patient.AssessmentID" class="btn btn-primary">View Form</a>
+                                }
+                                else
+                                {
+                                    <a asp-action="InterviewGeneral" asp-controller="Form" asp-route-Id="@patient.Id" class="btn btn-primary">Interview Patient</a>
+                                }
                                 <a asp-action="Edit" asp-controller="GeneralAdmission" asp-route-Id="@patient.Id" class="btn btn-success">Edit</a>
                             </td>
                             <td style="white-space: nowrap;">@patient.Date</td>

@@ -77,6 +77,7 @@ namespace LittleArkFoundation.Areas.Admin.Models.Form
         public GoalsModel? Goals { get; set; }
         public List<ProgressNotesModel>? ProgressNotes { get; set; } 
         public int OpdId { get; set; } = 0;
+        public int GeneralAdmissionId { get; set; } = 0;
 
     }
 }
