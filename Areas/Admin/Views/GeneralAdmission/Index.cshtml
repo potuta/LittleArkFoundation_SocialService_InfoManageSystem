@@ -129,6 +129,44 @@
             Download Excel
         </button>
 
+        <!-- Download/Export Excel Modal -->
+        <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form asp-action="ExportLogsheetToExcel" asp-controller="GeneralAdmission" method="get">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exportModalLabel">Export to Excel</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="userID" class="form-label">MSW</label>
+                                <select class="form-select" id="userID" name="userID">
+                                    <option value="0">All</option>
+                                    @foreach (var user in Model.Users)
+                                    {
+                                        <option value="@user.UserID">@user.Username</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="month" class="form-label">Month</label>
+                                <input type="month" id="month" name="month" class="form-control">
+                                <div class="form-text">Leave empty for "All Time"</div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">Export</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
