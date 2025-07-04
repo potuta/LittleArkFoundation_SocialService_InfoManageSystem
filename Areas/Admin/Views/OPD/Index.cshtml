@@ -160,8 +160,12 @@
             <button type="submit" class="btn btn-secondary btn-sm" style="width: 100%;">Filter Month</button>
         </form>
 
-        <button type="button" class="btn btn-success btn-sm" style="margin-left:5px;" data-bs-toggle="modal" data-bs-target="#exportModal">
-            Download Excel
+        <button type="button" class="btn btn-success btn-sm" style="margin-left:5px;" 
+        data-bs-toggle="modal" 
+        data-bs-target="#exportModal"
+        data-bs-toggle="tooltip"
+        title="Download Excel">
+            <i class="bi bi-download"></i> Download Excel
         </button>
 
     </div>
@@ -229,12 +233,20 @@
                         var modalId = $"scoreBreakdownModal_{opd.Id}";
                         var modalLabelId = $"{modalId}_label";
                         <tr>
-                            <td class="sticky-col d-flex gap-2" style="white-space: nowrap; left: 0; z-index: 1;">
+                            <td class="sticky-col d-flex gap-1" style="white-space: nowrap; left: 0; z-index: 1;">
 								@if (!opd.IsAdmitted)
 								{
                                     <a class="btn btn-primary" asp-action="AdmitOPD" asp-controller="Form" asp-route-id="@opd.Id" 
-                                    onclick="return confirm('Are you sure you want to admit this OPD?');">Admit</a>
-									<a class="btn btn-success" asp-action="Edit" asp-route-id="@opd.Id">Edit</a>
+                                    onclick="return confirm('Are you sure you want to admit this OPD?');"
+                                    data-bs-toggle="tooltip"
+                                    title="Admit Patient">
+                                        <i class="bi bi-box-arrow-in-right"></i>
+                                    </a>
+									<a class="btn btn-success" asp-action="Edit" asp-route-id="@opd.Id"
+                                    data-bs-toggle="tooltip"
+                                    title="Edit">
+                                        <i class="bx bx-edit"></i>
+                                    </a>
                                     @* if (User.HasClaim("Permission", "DeleteOPD"))
                                     {
                                         <a class="btn btn-danger" asp-action="Delete" asp-route-id="@opd.Id" onclick="return confirm('Are you sure you want to delete this OPD?');">Delete</a>
