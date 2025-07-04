@@ -100,8 +100,16 @@ body.sidebar-collapsed .navbar-left {
     padding: 1.25rem; /* 20px */
     box-sizing: border-box;
 }
+    .main-content main .container-fluid {
+        max-width: 1650px !important;
+    }
+
     .main-content.collapsed {
         margin-left: -70px;
+    }
+
+    .main-content.collapsed main .container-fluid {
+        max-width: 1750px !important; 
     }
 
 .profile-icon {
