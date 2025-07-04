@@ -53,7 +53,7 @@
         <div>
 
             <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")">
-                Home
+                <i class="bi bi-house-door-fill"></i> Home
             </a>
             <hr />
 
@@ -61,7 +61,9 @@
                 <!-- Toggle Button for Collapsible Section -->
                 <a data-bs-toggle="collapse" href="#mswdCollapse" role="button" aria-expanded="false"
                 aria-controls="mswdCollapse" class="btn-left align-items-center gap-1 d-flex justify-content-between">
-                    <span class="mb-0">MSWD</span>
+                    <span class="mb-0">
+                        <i class="bi bi-gear-fill"></i> MSWD
+                    </span>
                     <i class="bx bx-chevron-down mswd-collapse-indicator"></i> <!-- Icon -->
                 </a>
 
@@ -72,13 +74,13 @@
                             @if (User.HasClaim("Permission", "ManageOPD"))
                             {
                                 <a asp-area="Admin" asp-controller="OPD" asp-action="Index" class="btn-left-sub @(ViewContext.RouteData.Values["controller"]?.ToString() == "OPD" ? "active" : "")">
-                                    OPD
+                                    <i class="bi bi-box-arrow-left"></i> OPD
                                 </a> 
                             }
                             else
                             {
                                 <a class="btn-left-sub text-muted" style="cursor: not-allowed;" title="You do not have permission">
-                                    OPD
+                                    <i class="bi bi-box-arrow-left"></i> OPD
                                 </a>
                             }
                         </li>
@@ -90,13 +92,13 @@
                                 ViewContext.RouteData.Values["controller"]?.ToString() == "Form" ||
                                 ViewContext.RouteData.Values["controller"]?.ToString() == "GeneralAdmission"
                                 ? "active" : "")">
-                                    Admission
+                                <i class="bi bi-box-arrow-in-right"></i> Admission
                                 </a> 
                             }
                             else
                             {
                                 <a class="btn-left-sub text-muted" style="cursor: not-allowed;" title="You do not have permission">
-                                    Admission
+                                    <i class="bi bi-box-arrow-in-right"></i> Admission
                                 </a>
                             }
                         </li>
@@ -104,13 +106,13 @@
                             @if (User.HasClaim("Permission", "ManageDischarge"))
                             {
                                 <a asp-area="Admin" asp-controller="Discharge" asp-action="Index" class="btn-left-sub @(ViewContext.RouteData.Values["controller"]?.ToString() == "Discharge" ? "active" : "")">
-                                    Discharge
+                                    <i class="bi bi-box-arrow-right"></i> Discharge
                                 </a>
                             }
                             else
                             {
                                 <a class="btn-left-sub text-muted" style="cursor: not-allowed;" title="You do not have permission">
-                                    Discharge
+                                    <i class="bi bi-box-arrow-right"></i> Discharge
                                 </a>
                             }
                         </li>
@@ -122,7 +124,9 @@
                 <!-- Toggle Button for Collapsible Section -->
                 <a data-bs-toggle="collapse" href="#usersCollapse" role="button" aria-expanded="false"
                 aria-controls="usersCollapse" class="btn-left align-items-center gap-1 d-flex justify-content-between">
-                    <span class="mb-0">Manage Users</span>
+                    <span class="mb-0">
+                        <i class="bi bi-people-fill"></i> Manage Users
+                    </span>
                     <i class="bx bx-chevron-down users-collapse-indicator"></i> <!-- Icon -->
                 </a>
 
@@ -135,13 +139,13 @@
                             {
                                 <a asp-area="Admin" asp-controller="Users" asp-action="Index"
                                 class="btn-left-sub @(ViewContext.RouteData.Values["controller"]?.ToString() == "Users" ? "active" : "")">
-                                    Users
+                                    <i class="bi bi-people"></i> Users
                                 </a>
                             }
                             else
                             {
                                 <a class="btn-left-sub text-muted" style="cursor: not-allowed;" title="You do not have permission">
-                                    Users
+                                    <i class="bi bi-people"></i> Users
                                 </a>
                             }
                         </li>
@@ -150,13 +154,13 @@
                             {
                                 <a asp-area="Admin" asp-controller="Roles" asp-action="Index"
                                 class="btn-left-sub @(ViewContext.RouteData.Values["controller"]?.ToString() == "Roles" ? "active" : "")">
-                                    Roles
+                                    <i class="bi bi-person-gear"></i> Roles
                                 </a>
                             }
                             else
                             {
                                 <a class="btn-left-sub text-muted" style="cursor: not-allowed;" title="You do not have permission">
-                                    Roles
+                                    <i class="bi bi-person-gear"></i> Roles
                                 </a>
                             }
                         </li>
@@ -165,13 +169,13 @@
                             {
                                 <a asp-area="Admin" asp-controller="Permissions" asp-action="Index"
                                 class="btn-left-sub @(ViewContext.RouteData.Values["controller"]?.ToString() == "Permissions" ? "active" : "")">
-                                    Permissions
+                                    <i class="bi bi-person-lock"></i> Permissions
                                 </a>
                             }
                             else
                             {
                                 <a class="btn-left-sub text-muted" style="cursor: not-allowed;" title="You do not have permission">
-                                    Permissions
+                                    <i class="bi bi-person-lock"></i> Permissions
                                 </a>
                             }
                         </li>
@@ -183,7 +187,9 @@
                 <!-- Toggle Button for Collapsible Section -->
                 <a data-bs-toggle="collapse" href="#databaseCollapse" role="button" aria-expanded="false"
                 aria-controls="databaseCollapse" class="btn-left align-items-center gap-1 d-flex justify-content-between">
-                    <span class="mb-0">Manage Database</span>
+                    <span class="mb-0">
+                        <i class="bi bi-database-fill"></i> Manage Database
+                    </span>
                     <i class="bx bx-chevron-down database-collapse-indicator"></i> <!-- Icon -->
                 </a>
 
@@ -194,13 +200,13 @@
                             @if (User.HasClaim("Permission", "ManageDatabase"))
                             {
                                 <a asp-area="Admin" asp-controller="Database" asp-action="Index" class="btn-left-sub @(ViewContext.RouteData.Values["controller"]?.ToString() == "Database" ? "active" : "")">
-                                    Backup & Restore
+                                    <i class="bi bi-database-gear"></i> Backup & Restore
                                 </a>
                             }
                             else
                             {
                                 <a class="btn-left-sub text-muted" style="cursor: not-allowed;" title="You do not have permission">
-                                    Backup & Restore
+                                    <i class="bi bi-database-gear"></i> Backup & Restore
                                 </a>
                             }
                         </li>
@@ -211,13 +217,13 @@
             @if (User.HasClaim("Permission", "ManageSystemLogs"))
             {
                 <a asp-area="Admin" asp-controller="SystemLogs" asp-action="Index" class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "SystemLogs" ? "active" : "")">
-                    Systems Logs
+                    <i class="bi bi-wrench-adjustable-circle-fill"></i> Systems Logs
                 </a>
             }
             else
             {
                 <a class="btn-left text-muted" style="cursor: not-allowed;" title="You do not have permission">
-                    Systems Logs
+                    <i class="bi bi-wrench-adjustable-circle-fill"></i> Systems Logs
                 </a>
             }
 
