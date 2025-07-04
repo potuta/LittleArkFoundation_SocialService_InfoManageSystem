@@ -58,7 +58,11 @@
         <form asp-action="Search" asp-controller="Discharge">
             <div class="input-group">
                 <input type="search" name="searchString" class="form-control" placeholder="Search by FullName" aria-label="Search">
-                <button type="submit" class="btn btn-dark">Search</button>
+                <button type="submit" class="btn btn-dark"
+                data-bs-toggle="tooltip"
+                title="Search">
+                    <i class="bi bi-search"></i>
+                </button>
             </div>
         </form>
         <a class="btn btn-primary" asp-action="Index" asp-controller="Discharge">← Back to Full List</a>
@@ -91,7 +95,7 @@
                     <a class="btn btn-sm btn-success" style="margin-left:5px;"
                        asp-action="ExportToExcel"
                        asp-route-userID="@user.UserID">
-                        Download Excel (@user.Username)
+                        <i class="bi bi-download"></i> Download Excel (@user.Username)
                     </a>
                 }
             }
@@ -100,7 +104,7 @@
         {
             <a class="btn btn-sm btn-success" style="margin-left:5px;"
                asp-action="ExportToExcel">
-                Download Excel (All)
+                <i class="bi bi-download"></i> Download Excel (All)
             </a>
         }
        @*  <a class="btn btn-sm btn-primary" style="margin-left:5px;"

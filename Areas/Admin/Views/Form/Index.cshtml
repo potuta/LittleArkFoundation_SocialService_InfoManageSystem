@@ -71,7 +71,11 @@
     <form asp-action="Search" asp-route-isActive="@isActive" asp-controller="Form">
         <div class="input-group">
             <input type="search" name="searchString" class="form-control" placeholder="Search by Id/FullName" aria-label="Search">
-            <button type="submit" class="btn btn-dark">Search</button>
+            <button type="submit" class="btn btn-dark"
+            data-bs-toggle="tooltip"
+            title="Search">
+                <i class="bi bi-search"></i> 
+            </button>
         </div>
     </form>
     <a class="btn btn-primary" asp-action="Index" asp-controller="Form">← Back to Full List</a>
@@ -81,7 +85,9 @@
 
     @if (isActive)
     {
-        <a class="btn btn-success" asp-action="Create" asp-controller="Form">Create New</a>
+        <a class="btn btn-success" asp-action="Create" asp-controller="Form">
+            <i class="bi bi-file-earmark-plus"></i> Create New
+        </a>
     }
 
     <div class="btn-group btn-group-toggle" data-toggle="buttons">

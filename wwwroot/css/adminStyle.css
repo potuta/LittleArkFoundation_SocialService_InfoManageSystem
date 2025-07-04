@@ -105,6 +105,25 @@ body.sidebar-collapsed .navbar-left {
         max-width: 1650px !important;
     }
 
+    .main-content main .container-fluid div {
+        max-height: calc(100vh - 250px) !important; /* adjust 100px to match your top nav/footer height */
+        overflow-y: auto !important; /* make it scrollable if needed */
+    }
+
+        .main-content main .container-fluid div table thead th {
+            position: sticky;
+            top: 0;
+            background-color: white; /* or your table header bg */
+            z-index: 2; /* ensures it stays above content */
+        }
+
+        .sticky-col {
+            position: sticky !important;
+            left: 0 !important;
+            background: white !important;
+            z-index: 3 !important; /* higher than header */
+        }
+
     .main-content.collapsed {
         margin-left: -70px;
     }
