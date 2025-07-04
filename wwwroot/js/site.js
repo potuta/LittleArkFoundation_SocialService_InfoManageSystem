@@ -2,9 +2,44 @@
     document.getElementById("dropdown-profile-menu").classList.toggle("show");
 }
 
+//function toggleSidebar() {
+//    document.body.classList.toggle('sidebar-collapsed');
+//}
+
+//function toggleSidebar() {
+//    const sidebar = document.querySelector('.navbar-left');
+//    const mainContent = document.querySelector('.main-content');
+//    sidebar.classList.toggle('collapsed');
+//    mainContent.classList.toggle('collapsed'); // Optional: shrink main content too
+//}
 function toggleSidebar() {
-    document.body.classList.toggle('sidebar-collapsed');
+    const sidebar = document.querySelector('.navbar-left');
+    const mainContent = document.querySelector('.main-content');
+
+    const isCollapsed = sidebar.classList.toggle('collapsed');
+    mainContent.classList.toggle('collapsed', isCollapsed); // sync both
+
+    // Save the state to localStorage
+    localStorage.setItem('sidebar-collapsed', isCollapsed);
 }
+
+window.addEventListener('DOMContentLoaded', () => {
+    const isCollapsed = localStorage.getItem('sidebar-collapsed') === 'true';
+
+    if (isCollapsed) {
+        const sidebar = document.querySelector('.navbar-left');
+        const mainContent = document.querySelector('.main-content');
+        sidebar.classList.add('collapsed');
+        mainContent.classList.add('collapsed');
+    }
+
+    // Attach the toggle function to your button
+    const toggleBtn = document.getElementById('toggleSidebar');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', toggleSidebar);
+    }
+});
+
 
 // Close the dropdown if the user clicks outside of it
 window.onclick = function (event) {

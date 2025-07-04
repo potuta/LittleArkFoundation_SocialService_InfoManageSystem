@@ -56,6 +56,36 @@ body {
     justify-content: space-between;
 }
 
+    .navbar-left.collapsed {
+        width: 85px;
+    }
+
+        .navbar-left.collapsed .btn-left span,
+        .navbar-left.collapsed .btn-left-sub span,
+        .navbar-left.collapsed .btn-group strong,
+        .navbar-left.collapsed .btn-group p {
+            display: none;
+        }
+
+    .navbar-left .btn-left i,
+    .navbar-left .btn-left-sub i {
+        margin-right: 8px;
+        font-size: 1.2rem;
+        transition: margin 0.3s ease;
+    }
+
+    .navbar-left.collapsed .btn-left i,
+    .navbar-left.collapsed .btn-left-sub i {
+        margin-right: 0;
+    }
+
+    /* Optional: reduce padding/margin in collapsed state */
+    .navbar-left.collapsed .btn-left,
+    .navbar-left.collapsed .btn-left-sub {
+        text-align: center;
+        padding: 5px;
+    }
+
 body.sidebar-collapsed .navbar-left {
     width: 0;
     padding: 0;
@@ -63,12 +93,16 @@ body.sidebar-collapsed .navbar-left {
 }
 
 .main-content {
+    transition: margin-left 0.3s ease;
     grid-column: 2;
     grid-row: 2;
     margin-left: 2rem;
     padding: 1.25rem; /* 20px */
     box-sizing: border-box;
 }
+    .main-content.collapsed {
+        margin-left: -70px;
+    }
 
 .profile-icon {
     width: 2.5rem; /* 40px */
@@ -239,6 +273,7 @@ h2 {
 .search-container a {
     white-space: nowrap;
 }
+
 
 /* Media Queries for Responsive Design */
 @media (max-width: 48rem) { /* 768px */
