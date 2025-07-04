@@ -117,7 +117,14 @@ body.sidebar-collapsed .navbar-left {
             z-index: 2; /* ensures it stays above content */
         }
 
-        .sticky-col {
+        th.sticky-col {
+            position: sticky !important;
+            left: 0 !important;
+            background: white !important;
+            z-index: 4 !important; /* higher than header */
+        }
+
+        td.sticky-col {
             position: sticky !important;
             left: 0 !important;
             background: white !important;
