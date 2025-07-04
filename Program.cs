@@ -18,7 +18,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LogoutPath = "/Account/Logout";
         options.AccessDeniedPath = "/Account/AccessDenied";
         options.ReturnUrlParameter = "returnUrl";
-        options.ExpireTimeSpan = TimeSpan.FromDays(7);
+        options.ExpireTimeSpan = TimeSpan.FromDays(1);
     });
 
 builder.Services.AddHttpContextAccessor();

@@ -26,6 +26,14 @@
             margin-bottom: 0;
         }
 
+    .sticky-col {
+        position: sticky;
+        left: 0;
+        background: white;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+
 </style>
 
 
@@ -63,7 +71,11 @@
     <form asp-action="Search" asp-route-isActive="@isActive" asp-controller="Form">
         <div class="input-group">
             <input type="search" name="searchString" class="form-control" placeholder="Search by Id/FullName" aria-label="Search">
-            <button type="submit" class="btn btn-dark">Search</button>
+            <button type="submit" class="btn btn-dark"
+            data-bs-toggle="tooltip"
+            title="Search">
+                <i class="bi bi-search"></i> 
+            </button>
         </div>
     </form>
     <a class="btn btn-primary" asp-action="Index" asp-controller="Form">← Back to Full List</a>
@@ -73,7 +85,9 @@
 
     @if (isActive)
     {
-        <a class="btn btn-success" asp-action="Create" asp-controller="Form">Create New</a>
+        <a class="btn btn-success" asp-action="Create" asp-controller="Form">
+            <i class="bi bi-file-earmark-plus"></i> Create New
+        </a>
     }
 
     <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -115,7 +129,7 @@
                 @if (Model != null)
                 {
                     <tr>
-                        <th style="width: 100%;">Actions</th>
+                        <th class="sticky-col" style="width: 100%; left: 0; z-index: 2;">Actions</th>
                         <th>PatientID</th>
                         <th>FirstName</th>
                         <th>MiddleName</th>
@@ -155,15 +169,32 @@
                         var userIdName = User.FindFirst(ClaimTypes.Name);
                         var userId = User.FindFirst(ClaimTypes.NameIdentifier);
                         <tr>
-                            <td class="d-flex gap-2" style="white-space: nowrap;">
-                                <a href="@Url.Action("ViewHistory", new { id = patient.PatientID })" class="btn btn-dark text-white">View History</a>
+                            <td class="sticky-col d-flex gap-1" style="white-space: nowrap; left: 0; z-index: 1;">
+                                <a href="@Url.Action("ViewHistory", new { id = patient.PatientID })" 
+                                    class="btn btn-dark text-white"
+                                    data-bs-toggle="tooltip"
+                                    title="View History">
+                                        <i class="bx bx-history"></i>
+                                </a>
                                 @if (isActive)
                                 {
-                                    <a href="@Url.Action("ViewForm", new { id = patient.PatientID, assessmentID = assessment.AssessmentID })" class="btn btn-primary">View Form</a>
-                                    <a href="@Url.Action("Edit", new { id = patient.PatientID, assessmentID = assessment.AssessmentID })" class="btn btn-success">Edit</a>
+                                    <a href="@Url.Action("ViewForm", new { id = patient.PatientID, assessmentID = assessment.AssessmentID })" 
+                                        class="btn btn-primary"
+                                        data-bs-toggle="tooltip"
+                                        title="View Form">
+                                            <i class="bx bx-file" ></i>
+                                    </a>
+                                    <a href="@Url.Action("Edit", new { id = patient.PatientID, assessmentID = assessment.AssessmentID })" 
+                                        class="btn btn-success"
+                                        data-bs-toggle="tooltip"
+                                        title="Edit">
+                                            <i class="bx bx-edit"></i>
+                                    </a>
                                     <a href="#"
                                        class="btn btn-danger"
                                        data-bs-toggle="modal"
+                                       data-bs-toggle="tooltip"
+                                       title="Discharge"
                                        data-bs-target="#dischargeModal"
                                        data-patient-id="@patient.PatientID"
                                        data-patient-assessmentID="@assessment.AssessmentID"
@@ -174,7 +205,7 @@
                                        data-patient-class="@mswdclassification.SubClassification"
                                        data-userID="@userId.Value"
                                        data-msw="@userIdName.Value">
-                                        Discharge
+                                        <i class="bi bi-box-arrow-right"></i> 
                                     </a>
 
                                 }

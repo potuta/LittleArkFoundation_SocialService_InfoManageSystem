@@ -5,7 +5,17 @@
     Layout = "_AdminLayout";
 }
 
+<style>
+    .sticky-col {
+        position: sticky;
+        left: 0;
+        background: white;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
 <h2>Roles</h2>
+<hr />
 
 <div>
     <!-- Button to Open Modal -->
@@ -35,9 +45,9 @@
         @if (Model != null)
         {
             <tr>
+                <th class="sticky-col" style="left: 0; z-index: 2;">Actions</th>
                 <th>RoleID</th>
                 <th>RoleName</th>
-                <th></th>
             </tr>
         }
     </thead>
@@ -47,9 +57,7 @@
             @foreach (var role in Model.Roles)
             {
                 <tr>
-                    <td>@role.RoleID</td>
-                    <td>@role.RoleName</td>
-                    <td>
+                    <td class="sticky-col d-flex gap-2" style="white-space: nowrap; left: 0; z-index: 1;">
                         <a href="@Url.Action("Edit", new { id = role.RoleID })" class="btn btn-primary">Edit</a>
 						@if (role.RoleName != "Admin" && role.RoleName != "Social Worker" && role.RoleName != "Billing")
 						{
@@ -57,6 +65,8 @@
 						}
 						
                     </td>
+                    <td style="white-space: nowrap;">@role.RoleID</td>
+                    <td style="white-space: nowrap;">@role.RoleName</td>
                 </tr>
             }
         }

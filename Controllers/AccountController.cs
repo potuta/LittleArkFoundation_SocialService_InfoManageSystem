@@ -65,16 +65,6 @@ namespace LittleArkFoundation.Controllers
 
                 LoggingService.LogInformation($"User logged in. UserID: {userID}, Role: {role}, DateTime: {DateTime.Now}");
 
-                // Redirect based on role
-                if (role == "Donor")
-                {
-                    return RedirectToAction("Index", "Dashboard", new { area = "Donor" });
-                }
-                else if (role == "Doctor")
-                {
-                    return RedirectToAction("Index", "Dashboard", new { area = "Doctor" });
-                }
-               
                 return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
             }
             catch (SqlException ex)
