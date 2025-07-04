@@ -2,8 +2,15 @@
     document.getElementById("dropdown-profile-menu").classList.toggle("show");
 }
 
+//function toggleSidebar() {
+//    document.body.classList.toggle('sidebar-collapsed');
+//}
+
 function toggleSidebar() {
-    document.body.classList.toggle('sidebar-collapsed');
+    const sidebar = document.querySelector('.navbar-left');
+    const mainContent = document.querySelector('.main-content');
+    sidebar.classList.toggle('collapsed');
+    mainContent.classList.toggle('collapsed'); // Optional: shrink main content too
 }
 
 // Close the dropdown if the user clicks outside of it
