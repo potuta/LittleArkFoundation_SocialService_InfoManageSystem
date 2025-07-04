@@ -67,7 +67,11 @@
         <form asp-action="Search" asp-route-sortToggle="@sortToggle" asp-controller="OPD">
             <div class="input-group">
                 <input type="search" name="searchString" class="form-control" placeholder="Search by Id/FullName" aria-label="Search">
-                <button type="submit" class="btn btn-dark">Search</button>
+                <button type="submit" class="btn btn-dark"
+                data-bs-toggle="tooltip"
+                title="Search">
+                    <i class="bi bi-search"></i> 
+                </button>
             </div>
         </form>
         <a class="btn btn-primary" asp-action="Index" asp-controller="OPD">← Back to Full List</a>
@@ -80,7 +84,9 @@
     <div class="d-flex align-items-center gap-3">
         @if (sortToggle == "All" || sortToggle == "Not Admitted")
         {
-            <a class="btn btn-success" asp-action="Create" asp-controller="OPD">Create New</a>
+            <a class="btn btn-success" asp-action="Create" asp-controller="OPD">
+                <i class="bi bi-file-earmark-plus"></i> Create New
+            </a>
         }
 
         <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -157,7 +163,9 @@
             <input type="hidden" name="sortByUserID" value="@sortByUserID" />
             <input type="hidden" name="sortToggle" value="@sortToggle" />
             <input type="month" name="sortByMonth" class="form-control form-control-sm" value="@sortByMonth" />
-            <button type="submit" class="btn btn-secondary btn-sm" style="width: 100%;">Filter Month</button>
+            <button type="submit" class="btn btn-secondary btn-sm" style="width: 100%;">
+                <i class="bi bi-filter"></i> Filter Month
+            </button>
         </form>
 
         <button type="button" class="btn btn-success btn-sm" style="margin-left:5px;" 
