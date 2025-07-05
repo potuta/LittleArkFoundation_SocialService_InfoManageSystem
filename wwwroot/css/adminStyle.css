@@ -102,7 +102,8 @@ body.sidebar-collapsed .navbar-left {
     box-sizing: border-box;
 }
     .main-content main .container-fluid {
-        max-width: 1650px !important;
+        /*        max-width: 1650px !important;*/
+        max-width: calc(100vw - 250px) !important;
     }
 
     .main-content main .container-fluid div {
@@ -136,7 +137,8 @@ body.sidebar-collapsed .navbar-left {
     }
 
     .main-content.collapsed main .container-fluid {
-        max-width: 1750px !important; 
+        /*        max-width: 1750px !important; */
+        max-width: calc(100vw - 125px) !important;
     }
 
 .profile-icon {
