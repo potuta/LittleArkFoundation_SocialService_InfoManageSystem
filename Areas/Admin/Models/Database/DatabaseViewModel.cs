@@ -12,5 +12,6 @@ namespace LittleArkFoundation.Areas.Admin.Models.Database
         public string? CurrentDatabaseName { get; set; }
         public Dictionary<string, string>? Databases { get; set; }
         public List<string>? DatabaseBackupFiles { get; set; }
+        public string[]? DatabaseBackupFileNames { get; set; }
     }
 }

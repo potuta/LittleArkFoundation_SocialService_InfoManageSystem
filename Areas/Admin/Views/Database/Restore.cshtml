@@ -8,40 +8,69 @@
 <h2>Restore Database</h2>
 <hr />
 
-<div class="table-responsive" style="width: 60%;">
-    <table class="table" style="width: max-content;">
-        <thead>
-            @if (Model != null)
-            {
-                <tr>
-                    <th>Select backup file</th>
-                    <th>Backup File Name</th>
-                </tr>
-            }
-        </thead>
-        <tbody>
-            @if (Model != null)
-            {
-                @foreach (var file in Model.DatabaseBackupFiles)
-                {
-                    <tr>
-                        <td>
-                            <form asp-action="Restore" method="post">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="name" value="@Model.DefaultDatabaseName" />
-                                <input type="hidden" name="backupFileName" value="@file" />
-                                <button type="submit" class="btn btn-primary">Select</button>
-                            </form>
-                        </td>
-                        <td>@file</td>
-                    </tr>
-                }
-            }
-        </tbody>
-    </table>
-
+<!-- Back to List -->
+<div class="mt-2">
+    <a class="btn btn-outline-secondary mb-3" asp-action="Index">← Back to List</a>
 </div>
 
-<div class="mt-2">
-    <a class="btn btn-sm btn-outline-primary" asp-action="Index">Back to List</a>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>Actions</th>
+                        <th>Database Name</th>
+                        <th>DateTime (<i>YYYYMMDD_HHMMSS</i>)</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    @foreach (var file in Model.DatabaseBackupFiles)
+                    {
+						var fileNameParts = file.Split('_');
+
+                        if (fileNameParts.Length < 3)
+                        {
+                            continue; // Skip files that do not have enough parts to be valid
+						}
+
+                        string namePart = "";
+						string datePart = "";
+
+                        if (fileNameParts.Length == 6)
+                        {
+                            namePart = $"{fileNameParts[0]}_{fileNameParts[1]}_{fileNameParts[2]}";
+							datePart = $"{fileNameParts[3]}_{fileNameParts[4]}";
+                        }
+                        else if (fileNameParts.Length == 5)
+                        {
+                            namePart = $"{fileNameParts[0]}_{fileNameParts[1]}";
+							datePart = $"{fileNameParts[2]}_{fileNameParts[3]}";
+                        }
+                        else
+                        {
+                            continue;
+                        }
+
+                        <tr>
+                            <td>
+                                <form asp-action="Restore" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="name" value="@Model.DefaultDatabaseName" />
+                                    <input type="hidden" name="backupFileName" value="@file" />
+                                    <button type="submit" class="btn btn-primary">Select</button>
+                                </form>
+                            </td>
+                            <td>@namePart</td>
+							<td>@datePart</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
