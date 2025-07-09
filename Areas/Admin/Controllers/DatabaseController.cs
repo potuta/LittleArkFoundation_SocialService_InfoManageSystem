@@ -26,13 +26,20 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         {
             try
             {
+                string originalDbName = _databaseService.GetSelectedDatabaseInConnectionString(_connectionService.GetDefaultConnectionString());
+                string newDbName = await _databaseService.GenerateNewDatabaseNameAsync(originalDbName);
+
                 var viewModel = new DatabaseViewModel
                 {
                     DefaultConnectionString = _connectionService.GetDefaultConnectionString(),
                     DefaultDatabaseName = _databaseService.GetSelectedDatabaseInConnectionString(_connectionService.GetDefaultConnectionString()),
                     CurrentConnectionString = _connectionService.GetCurrentConnectionString(),
                     CurrentDatabaseName = _databaseService.GetSelectedDatabaseInConnectionString(_connectionService.GetCurrentConnectionString()),
-                    Databases = await _databaseService.GetDatabaseConnectionStringsAsync()
+                    Databases = await _databaseService.GetDatabaseConnectionStringsAsync(),
+                    DatabaseBackupFileNames = new [] {
+                        $"{originalDbName}",
+                        $"{newDbName}"
+                    },
                 };
 
                 return View(viewModel);
@@ -49,9 +56,11 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 TempData["ErrorMessage"] = "Error: " + ex.Message;
                 return RedirectToAction("Index");
             }
-        } 
+        }
 
-        public async Task<IActionResult> CreateNewDatabaseYear()
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateNewDatabaseYear(bool? isArchive)
         {
             try
             {
