@@ -27,38 +27,37 @@
         </div>
 
         <h4 class="mt-2">Assign Permissions</h4>
-        <div class="form-group mt-2">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Permission</th>
-                        <th>Has Access</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for (int i = 0; i < Model.Permissions.Count; i++)
-                    {
+        <div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+            <div class="table-responsive" style="overflow-x: auto;">
+                <table class="table" style="min-width: 1200px;">
+                    <thead>
                         <tr>
-                            <td>@Model.Permissions[i].Name</td>
-                            <td>
-                                <input type="hidden" asp-for="Permissions[i].PermissionID" />
-                                <input type="hidden" asp-for="Permissions[i].Name" />
-                                <input type="checkbox" asp-for="Permissions[i].IsSelected" />
-                            </td>
+                            <th>Permission</th>
+                            <th>Has Access</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.Permissions.Count; i++)
+                        {
+                            <tr>
+                                <td>@Model.Permissions[i].Name</td>
+                                <td>
+                                    <input type="hidden" asp-for="Permissions[i].PermissionID" />
+                                    <input type="hidden" asp-for="Permissions[i].Name" />
+                                    <input type="checkbox" asp-for="Permissions[i].IsSelected" />
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <div class="form-group mt-2">
+        <div class="mt-4">
             <input type="submit" value="Save" class="btn btn-primary" />
+            <a class="btn btn-sm btn-outline-primary ms-2" asp-action="Index">Back to List</a>
         </div>
     </form>
-</div>
-
-<div class="mt-2">
-    <a class="btn btn-sm btn-outline-primary" asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
