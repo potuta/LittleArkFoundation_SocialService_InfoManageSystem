@@ -144,9 +144,10 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
-        public IActionResult Restore(string name)
+        public async Task<IActionResult> Restore(string name)
         {
-            string backupPath = @"C:\Program Files\Microsoft SQL Server\MSSQL16.SQLEXPRESS\MSSQL\Backup";
+            //string backupPath = @"C:\Program Files\Microsoft SQL Server\MSSQL16.SQLEXPRESS\MSSQL\Backup";
+            string backupPath = await _databaseService.GetSqlBackupPathAsync();
             string searchPattern = "MSWD_DB*.bak"; 
             string[] files = Directory.GetFiles(backupPath, searchPattern);
             string[] fileNames = Array.ConvertAll(files, Path.GetFileName); // Extract only file names
