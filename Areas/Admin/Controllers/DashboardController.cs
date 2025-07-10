@@ -10,7 +10,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 {
     [Area("Admin")]
     //[Authorize(Roles = "Admin")]
-    [HasPermission("ViewAdminDashboard")]
+    [HasPermission("ManageDashboard")]
     public class DashboardController : Controller
     {
         private readonly ConnectionService _connectionService;

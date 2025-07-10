@@ -114,7 +114,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                         {
                             PermissionID = p.PermissionID,
                             Name = p.Name,
-                            IsSelected = role.RolePermissions.Any(rp => rp.PermissionID == p.PermissionID)
+                            IsSelected = role.RolePermissions.Any(rp => rp.PermissionID == p.PermissionID),
+                            PermissionType = p.PermissionType,
+                            Module = p.Module
                         }).ToList()
                     };
 
