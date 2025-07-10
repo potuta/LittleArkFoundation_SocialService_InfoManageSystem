@@ -311,9 +311,15 @@ namespace LittleArkFoundation.Data
             {
                 Dictionary<string, string> databases = await GetDatabaseConnectionStringsAsync();
                 List<int> dbYearList = new List<int>();
-                string year = string.Empty;
+
                 foreach (string name in databases.Keys)
                 {
+                    if (name.Contains("Temp", StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue; // Skip temporary databases
+                    }
+
+                    // Get the year (the last part)
                     if (name.Contains("2"))
                     {
                         string[] nameParts = name.Split('_');
@@ -321,16 +327,26 @@ namespace LittleArkFoundation.Data
                     }
                     else
                     {
+                        // This is the base database like "MSWD_DB"
                         dbYearList.Add(DateTime.Now.Year);
                     }
                 }
 
+                string year;
+
                 if (databases.Count == 1)
                 {
+                    // Only "MSWD_DB" exists — need to create MSWD_DB_Temp
+                    year = $"Temp";
+                }
+                else if (databases.Count == 2)
+                {
+                    // Only base and Temp exist — now introduce first year (current year)
                     year = $"{dbYearList.Max()}";
                 }
                 else
                 {
+                    // Existing years found — get max and increment
                     year = $"{dbYearList.Max() + 1}";
                 }
 
