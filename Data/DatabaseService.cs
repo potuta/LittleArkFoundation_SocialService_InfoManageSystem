@@ -176,13 +176,13 @@ namespace LittleArkFoundation.Data
         }
 
         // Not working, but works in sql idk why
-        public async Task<string> GetSqlBackupPathAsync(string connectionString)
+        public async Task<string> GetSqlBackupPathAsync()
         {
             try
             {
                 string backupPath = "";
 
-                await using (var connection = new SqlConnection(connectionString))
+                await using (var connection = new SqlConnection(_connectionService.GetDefaultConnectionString()))
                 {
                     connection.Open();
                     await using (var command = new SqlCommand(@"
