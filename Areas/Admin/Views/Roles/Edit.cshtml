@@ -8,13 +8,18 @@
 <h2>Edit Role</h2>
 <hr />
 
+<!-- Back to List -->
+<div class="mt-2">
+    <a class="btn btn-outline-secondary mb-3" asp-controller="Roles" asp-action="Index">← Back to List</a>
+</div>
+
 <div>
     <form asp-action="Edit" asp-controller="Roles" method="post">
         @Html.AntiForgeryToken()
         <input type="hidden" asp-for="NewRole.RoleID" />
 
         <div class="form-group mt-2">
-            <label asp-for="NewRole.RoleName" class="control-label"></label>
+            <h6>Role Name</h6>
             @if (Model.NewRole.RoleID == 1 || Model.NewRole.RoleID == 2 || Model.NewRole.RoleID == 3)
             {
                 <input asp-for="NewRole.RoleName" class="form-control" id="roleNameField" required readonly/>
@@ -26,39 +31,112 @@
             <span asp-validation-for="NewRole.RoleName" class="text-danger"></span>
         </div>
 
-        <h4 class="mt-2">Assign Permissions</h4>
-        <div class="form-group mt-2">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Permission</th>
-                        <th>Has Access</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for (int i = 0; i < Model.Permissions.Count; i++)
-                    {
+        @* <h4 class="mt-2">Assign Permissions</h4>
+        <div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+            <div class="table-responsive" style="overflow-x: auto;">
+                <table class="table" style="min-width: 1200px;">
+                    <thead>
                         <tr>
-                            <td>@Model.Permissions[i].Name</td>
-                            <td>
-                                <input type="hidden" asp-for="Permissions[i].PermissionID" />
-                                <input type="hidden" asp-for="Permissions[i].Name" />
-                                <input type="checkbox" asp-for="Permissions[i].IsSelected" />
-                            </td>
+                            <th>Permission</th>
+                            <th>Has Access</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.Permissions.Count; i++)
+                        {
+                            <tr>
+                                <td>@Model.Permissions[i].Name</td>
+                                <td>
+                                    <input type="hidden" asp-for="Permissions[i].PermissionID" />
+                                    <input type="hidden" asp-for="Permissions[i].Name" />
+                                    <input type="checkbox" asp-for="Permissions[i].IsSelected" />
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div> *@
+
+        @{
+            var modules = new[]{
+                "OPD", "Admissions", "Discharge", "Dashboard", "Users", "Roles", "Permissions", "Backup/Restore", "SystemLogs",
+                "Profile"
+
+				};
+		}
+        
+        <h4 class="mt-2">Assign Permissions</h4>
+        <div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+            <div class="table-responsive" style="overflow-x: auto;">
+                <table class="table" style="min-width: 1200px;">
+                    <thead>
+                        <tr>
+                            <th>Module</th>
+                            <th>View</th>
+							<th>Edit</th>
+							<th>Admit/Discharge</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var module in modules)
+                        {
+							var permission = Model.Permissions.Where(m => m.Module == module).ToList();
+                            <tr>
+                                <td>@module</td>
+
+                                @* View *@
+                                <td>
+                                    @foreach (var perm in permission.Where(p => p.PermissionType == "View"))
+                                    {
+										var index = Model.Permissions.IndexOf(perm);
+                                        if (index != -1)
+                                        {
+                                            <input type="hidden" asp-for="Permissions[@index].PermissionID" />
+                                            <input type="hidden" asp-for="Permissions[@index].Name" />
+                                            <input type="checkbox" asp-for="Permissions[@index].IsSelected" />
+                                        }
+									}
+								</td>
+
+                                @* Edit *@
+                                <td>
+                                    @foreach (var perm in permission.Where(p => p.PermissionType == "Edit"))
+                                    {
+                                        var index = Model.Permissions.IndexOf(perm);
+                                        if (index != -1)
+                                        {
+                                            <input type="hidden" asp-for="Permissions[@index].PermissionID" />
+                                            <input type="hidden" asp-for="Permissions[@index].Name" />
+                                            <input type="checkbox" asp-for="Permissions[@index].IsSelected" />
+                                        }
+                                    }
+                                </td>
+
+                                @* Admit/Discharge *@
+                                <td>
+                                    @foreach (var perm in permission.Where(p => p.PermissionType == "Admit/Discharge"))
+                                    {
+                                        var index = Model.Permissions.IndexOf(perm);
+                                        if (index != -1)
+                                        {
+                                            <input type="hidden" asp-for="Permissions[@index].PermissionID" />
+                                            <input type="hidden" asp-for="Permissions[@index].Name" />
+                                            <input type="checkbox" asp-for="Permissions[@index].IsSelected" />
+                                        }
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <div class="form-group mt-2">
+        <div class="mt-4">
             <input type="submit" value="Save" class="btn btn-primary" />
         </div>
     </form>
-</div>
-
-<div class="mt-2">
-    <a class="btn btn-sm btn-outline-primary" asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
