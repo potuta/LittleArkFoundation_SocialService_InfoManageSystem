@@ -2,6 +2,7 @@
 using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
 using LittleArkFoundation.Areas.Admin.Data;
+using LittleArkFoundation.Areas.Admin.Models.Discharges;
 using LittleArkFoundation.Areas.Admin.Models.Form;
 using LittleArkFoundation.Areas.Admin.Models.OPD;
 using LittleArkFoundation.Authorize;
@@ -184,6 +185,35 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             };
             
             return View("Index", viewModel);
+        }
+
+        public async Task<IActionResult> SortByOPDAssisted(string sortByUserID)
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+            if (!string.IsNullOrEmpty(sortByUserID))
+            {
+                var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+                var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+                var opdList = await context.OPD
+                    .Where(d => d.UserID == int.Parse(sortByUserID))
+                    .OrderByDescending(d => d.Date)
+                    .ToListAsync();
+
+                var viewModel = new OPDViewModel
+                {
+                    Users = users,
+                    OPDList = opdList
+                };
+
+                var user = await context.Users.FindAsync(int.Parse(sortByUserID));
+
+                ViewBag.sortBy = user.Username;
+                return View("OPDAssisted", viewModel);
+
+            }
+
+            return RedirectToAction("OPDAssisted");
         }
 
         public async Task<IActionResult> Create()
@@ -703,6 +733,30 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                             $"{fileName}.xlsx");
             }
+        }
+
+        public async Task<IActionResult> OPDAssisted()
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var opdList = await context.OPD.ToListAsync();
+            if (opdList == null || !opdList.Any())
+            {
+                TempData["ErrorMessage"] = "No OPD records found.";
+                return RedirectToAction("Index");
+            }
+
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+
+            var viewModel = new OPDViewModel
+            {
+                OPDList = opdList,
+                Users = users
+            };
+
+            return View(viewModel);
         }
     }
 }
