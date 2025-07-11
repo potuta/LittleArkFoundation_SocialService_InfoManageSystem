@@ -12,6 +12,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 
 namespace LittleArkFoundation.Areas.Admin.Controllers
 {
@@ -381,8 +382,13 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             string monthLabel = filterByMonth ? parsedMonth.ToString("MMMM_yyyy") : opdList.First().Date.Year.ToString();
             string fileName = $"OPD_Logsheet_{monthLabel}_{mswName}";
 
+            // Sanitize sheet name (for Excel)
+            string safeSheetName = Regex.Replace(fileName, @"[\[\]\*\?/\\:]", "_");
+            if (safeSheetName.Length > 31)
+                safeSheetName = safeSheetName.Substring(0, 31);
+
             var workbook = new XLWorkbook();
-            var worksheet = workbook.Worksheets.Add(fileName);
+            var worksheet = workbook.Worksheets.Add(safeSheetName);
 
             // HEADERS
 
@@ -528,10 +534,15 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             // File name generation
             string mswName = userID > 0 ? opdList.First().MSW : "All MSW";
             string monthLabel = filterByMonth ? parsedMonth.ToString("MMMM_yyyy") : opdList.First().Date.Year.ToString();
-            string fileName = $"OPD_Reports_{monthLabel}_{mswName}";
+            string fileName = $"OPD_Reports_{monthLabel}";
+
+            // Sanitize sheet name (for Excel)
+            string safeSheetName = Regex.Replace(fileName, @"[\[\]\*\?/\\:]", "_");
+            if (safeSheetName.Length > 31)
+                safeSheetName = safeSheetName.Substring(0, 31);
 
             var workbook = new XLWorkbook();
-            var worksheet = workbook.Worksheets.Add(fileName);
+            var worksheet = workbook.Worksheets.Add(safeSheetName);
 
             var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
@@ -823,8 +834,13 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             string monthLabel = filterByMonth ? parsedMonth.ToString("MMMM_yyyy") : opdList.First().Date.Year.ToString();
             string fileName = $"OPD_OPDAssisted_{monthLabel}_{mswName}";
 
+            // Sanitize sheet name (for Excel)
+            string safeSheetName = Regex.Replace(fileName, @"[\[\]\*\?/\\:]", "_");
+            if (safeSheetName.Length > 31)
+                safeSheetName = safeSheetName.Substring(0, 31);
+
             var workbook = new XLWorkbook();
-            var worksheet = workbook.Worksheets.Add(fileName);
+            var worksheet = workbook.Worksheets.Add(safeSheetName);
 
             // HEADERS
 
