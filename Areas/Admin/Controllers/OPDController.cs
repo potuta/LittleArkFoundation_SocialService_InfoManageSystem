@@ -232,51 +232,6 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return View(viewName, viewModel);
         }
 
-        public async Task<IActionResult> SortByReports(string sortByUserID, string? sortByMonth)
-        {
-            string connectionString = _connectionService.GetCurrentConnectionString();
-            await using var context = new ApplicationDbContext(connectionString);
-
-            IQueryable<OPDModel> query = context.OPD.AsQueryable();
-
-            if (!string.IsNullOrEmpty(sortByUserID))
-            {
-                query = query.Where(opd => opd.UserID == int.Parse(sortByUserID));
-                var user = await context.Users.FindAsync(int.Parse(sortByUserID));
-                ViewBag.sortBy = user.Username;
-                ViewBag.sortByUserID = user.UserID.ToString();
-            }
-
-            if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
-            {
-                query = query.Where(opd => opd.Date.Month == month.Month && opd.Date.Year == month.Year);
-                ViewBag.sortByMonth = month.ToString("yyyy-MM");
-            }
-
-            var opdList = await query.ToListAsync();
-
-            var scoredList = new List<(OPDModel opd, Dictionary<string, int> scores, bool isEligible)>();
-            var _scoreService = new OPDScoringService(connectionString);
-            foreach (var opd in opdList)
-            {
-                var scores = await _scoreService.GetWeightedScoresAsync(opd);
-                var isEligible = await _scoreService.IsEligibleForAdmissionAsync(scores.Values.Sum());
-                scoredList.Add((opd, scores, isEligible));
-            }
-
-            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
-            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
-
-            var viewModel = new OPDViewModel
-            {
-                OPDList = opdList,
-                OPDScoringList = scoredList,
-                Users = users
-            };
-
-            return View("Reports", viewModel);
-        }
-
         public async Task<IActionResult> Create()
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
