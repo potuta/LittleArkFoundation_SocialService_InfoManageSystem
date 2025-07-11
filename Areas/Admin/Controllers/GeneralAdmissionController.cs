@@ -10,6 +10,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 
 namespace LittleArkFoundation.Areas.Admin.Controllers
 {
@@ -275,8 +276,13 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             string monthLabel = filterByMonth ? parsedMonth.ToString("MMMM_yyyy") : generalAdmissions.First().Date.Year.ToString();
             string fileName = $"GA_Logsheet_{monthLabel}_{mswName}";
 
+            // Sanitize sheet name (for Excel)
+            string safeSheetName = Regex.Replace(fileName, @"[\[\]\*\?/\\:]", "_");
+            if (safeSheetName.Length > 31)
+                safeSheetName = safeSheetName.Substring(0, 31);
+
             var workbook = new XLWorkbook();
-            var worksheet = workbook.Worksheets.Add(fileName);
+            var worksheet = workbook.Worksheets.Add(safeSheetName);
 
             // HEADERS
             var headers = new[]
