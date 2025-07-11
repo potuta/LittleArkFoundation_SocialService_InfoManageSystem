@@ -187,33 +187,49 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return View("Index", viewModel);
         }
 
-        public async Task<IActionResult> SortByOPDAssisted(string sortByUserID)
+        public async Task<IActionResult> SortByOPDAssisted(string sortByUserID, string? sortByMonth)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
+
+            IQueryable<OPDModel> query = context.OPD.AsQueryable();
+
             if (!string.IsNullOrEmpty(sortByUserID))
             {
-                var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
-                var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
-                var opdList = await context.OPD
-                    .Where(d => d.UserID == int.Parse(sortByUserID))
-                    .OrderByDescending(d => d.Date)
-                    .ToListAsync();
-
-                var viewModel = new OPDViewModel
-                {
-                    Users = users,
-                    OPDList = opdList
-                };
-
+                query = query.Where(opd => opd.UserID == int.Parse(sortByUserID));
                 var user = await context.Users.FindAsync(int.Parse(sortByUserID));
-
                 ViewBag.sortBy = user.Username;
-                return View("OPDAssisted", viewModel);
-
+                ViewBag.sortByUserID = user.UserID.ToString();
             }
 
-            return RedirectToAction("OPDAssisted");
+            if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
+            {
+                query = query.Where(opd => opd.Date.Month == month.Month && opd.Date.Year == month.Year);
+                ViewBag.sortByMonth = month.ToString("yyyy-MM");
+            }
+
+            var opdList = await query.ToListAsync();
+
+            var scoredList = new List<(OPDModel opd, Dictionary<string, int> scores, bool isEligible)>();
+            var _scoreService = new OPDScoringService(connectionString);
+            foreach (var opd in opdList)
+            {
+                var scores = await _scoreService.GetWeightedScoresAsync(opd);
+                var isEligible = await _scoreService.IsEligibleForAdmissionAsync(scores.Values.Sum());
+                scoredList.Add((opd, scores, isEligible));
+            }
+
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+
+            var viewModel = new OPDViewModel
+            {
+                OPDList = opdList,
+                OPDScoringList = scoredList,
+                Users = users
+            };
+
+            return View("OPDAssisted", viewModel);
         }
 
         public async Task<IActionResult> Create()
@@ -757,6 +773,109 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             };
 
             return View(viewModel);
+        }
+
+        public async Task<IActionResult> ExportOPDAssistedToExcel(int userID, string? month)
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            // Parse the month input if provided
+            bool filterByMonth = DateTime.TryParseExact(month, "yyyy-MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedMonth);
+
+            IQueryable<OPDModel> query = context.OPD;
+
+            if (userID > 0)
+            {
+                query = query.Where(opd => opd.UserID == userID);
+            }
+
+            if (filterByMonth)
+            {
+                query = query.Where(opd => opd.Date.Month == parsedMonth.Month && opd.Date.Year == parsedMonth.Year);
+            }
+
+            var opdList = await query.ToListAsync();
+
+            if (opdList == null || !opdList.Any())
+            {
+                TempData["ErrorMessage"] = "No OPD records found for selected filters.";
+                return RedirectToAction("OPDAssisted");
+            }
+
+            // File name generation
+            string mswName = userID > 0 ? opdList.First().MSW : "All MSW";
+            string monthLabel = filterByMonth ? parsedMonth.ToString("MMMM_yyyy") : opdList.First().Date.Year.ToString();
+            string fileName = $"OPD_OPDAssisted_{monthLabel}_{mswName}";
+
+            var workbook = new XLWorkbook();
+            var worksheet = workbook.Worksheets.Add(fileName);
+
+            // HEADERS
+
+            var headers = new[]
+            {
+                "MSW", "Date", "Name of Patient", "Assistance Needed", "Amount",
+                "Amount Extended", "Resources"
+            };
+
+            // Column 1
+            var cell1 = worksheet.Cell(1, 1);
+            cell1.Value = mswName;
+            cell1.Style.Font.Bold = true;
+            cell1.Style.Font.FontSize = 14;
+            cell1.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            worksheet.Range(1, 1, 1, headers.Count()).Merge(); // Merge across desired columns
+
+            // Column 2
+            var cell2 = worksheet.Cell(2, 1);
+            cell2.Value = "OPD Assisted";
+            cell2.Style.Font.Bold = true;
+            cell2.Style.Font.FontSize = 12;
+            cell2.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            worksheet.Range(2, 1, 2, headers.Count()).Merge();
+
+            // Column 3
+            var cell3 = worksheet.Cell(3, 1);
+            cell3.Value = $"{monthLabel} OPD";
+            cell3.Style.Font.Bold = true;
+            cell3.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            worksheet.Range(3, 1, 3, headers.Count()).Merge();
+
+            // Rest of columns
+            int headerRow = 4;
+            for (int i = 0; i < headers.Length; i++)
+            {
+                worksheet.Cell(headerRow, i + 1).Value = headers[i];
+                worksheet.Cell(headerRow, i + 1).Style.Font.Bold = true;
+                worksheet.Cell(headerRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            }
+
+            int dataRow = headerRow + 1;
+            foreach (var opd in opdList)
+            {
+                worksheet.Cell(dataRow, 1).Value = opd.MSW;
+                worksheet.Cell(dataRow, 2).Value = opd.Date.ToShortDateString();
+                worksheet.Cell(dataRow, 3).Value = $"{opd.LastName}, {opd.FirstName} {opd.MiddleName}";
+                worksheet.Cell(dataRow, 4).Value = opd.AssistanceNeeded;
+                worksheet.Cell(dataRow, 5).Value = opd.Amount;
+                worksheet.Cell(dataRow, 6).Value = opd.AmountExtended;
+                worksheet.Cell(dataRow, 7).Value = opd.Resources;
+
+                dataRow++;
+            }
+
+            // Autofit for better presentation
+            worksheet.Columns().AdjustToContents();
+
+            using (var stream = new MemoryStream())
+            {
+                workbook.SaveAs(stream);
+                stream.Position = 0;
+                return File(stream.ToArray(),
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            $"{fileName}.xlsx");
+            }
         }
     }
 }
