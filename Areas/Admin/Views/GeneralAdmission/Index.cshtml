@@ -66,10 +66,9 @@
             ViewContext.RouteData.Values["controller"]?.ToString() == "GeneralAdmission" &&
             (
                 ViewContext.RouteData.Values["action"]?.ToString() == "Reports" ||
-                ViewContext.RouteData.Values["action"]?.ToString() == "SortByReports" ||
-                ViewContext.RouteData.Values["action"]?.ToString() == "Search"
+                ViewContext.RouteData.Values["action"]?.ToString() == "SortByReports"
             ) ? "active" : "")"
-            asp-action="Reports" asp-controller="GeneralAdmission">Reports</a>
+           asp-action="Reports" asp-controller="GeneralAdmission">Reports</a>
 
         <!-- Statistics -->
         <a class="btn btn-outline-dark @(

@@ -58,9 +58,11 @@
            asp-action="Index" asp-controller="GeneralAdmission">General</a>
 
         <a class="btn btn-outline-dark @(
-            ViewContext.RouteData.Values["action"]?.ToString() == "Reports" ||
-            ViewContext.RouteData.Values["action"]?.ToString() == "SortbyReports"
-            ? "active" : "")"
+            ViewContext.RouteData.Values["controller"]?.ToString() == "GeneralAdmission" &&
+            (
+                ViewContext.RouteData.Values["action"]?.ToString() == "Reports" ||
+                ViewContext.RouteData.Values["action"]?.ToString() == "SortByReports"
+            ) ? "active" : "")"
            asp-action="Reports" asp-controller="GeneralAdmission">Reports</a>
 
         <!-- Statistics -->

@@ -150,7 +150,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return View("Index", viewModel);
         }
 
-        public async Task<IActionResult> SortbyReports(string sortByUserID, string? sortByMonth, string? viewName = "Index")
+        public async Task<IActionResult> SortByReports(string sortByUserID, string? sortByMonth, string? viewName = "Index")
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
