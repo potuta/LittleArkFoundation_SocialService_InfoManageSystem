@@ -210,22 +210,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             var opdList = await query.ToListAsync();
 
-            var scoredList = new List<(OPDModel opd, Dictionary<string, int> scores, bool isEligible)>();
-            var _scoreService = new OPDScoringService(connectionString);
-            foreach (var opd in opdList)
-            {
-                var scores = await _scoreService.GetWeightedScoresAsync(opd);
-                var isEligible = await _scoreService.IsEligibleForAdmissionAsync(scores.Values.Sum());
-                scoredList.Add((opd, scores, isEligible));
-            }
-
             var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
 
             var viewModel = new OPDViewModel
             {
                 OPDList = opdList,
-                OPDScoringList = scoredList,
                 Users = users
             };
 
