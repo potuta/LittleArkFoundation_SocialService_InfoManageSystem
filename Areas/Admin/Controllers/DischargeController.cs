@@ -119,7 +119,42 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return View("Index", viewModel);
         }
 
-        public async Task<IActionResult> SortBy(string sortByUserID, string? sortByMonth, string? viewName = "Index")
+        public async Task<IActionResult> SortBy(string sortByUserID, string? sortByMonth)
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var query = context.Discharges.AsQueryable();
+
+            if (!string.IsNullOrEmpty(sortByUserID))
+            {
+                query = query.Where(d => d.UserID == int.Parse(sortByUserID));
+                var user = await context.Users.FindAsync(int.Parse(sortByUserID));
+                ViewBag.sortBy = user.Username;
+                ViewBag.sortByUserID = user.UserID.ToString();
+            }
+
+            if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
+            {
+                query = query.Where(d => d.DischargedDate.Month == month.Month && d.DischargedDate.Year == month.Year);
+                ViewBag.sortByMonth = month.ToString("yyyy-MM");
+            }
+
+            var discharges = await query.ToListAsync();
+
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+
+            var viewModel = new DischargeViewModel
+            {
+                Discharges = discharges,
+                Users = users
+            };
+
+            return View("Index", viewModel);
+        }
+
+        public async Task<IActionResult> SortbyReports(string sortByUserID, string? sortByMonth, string? viewName = "Index")
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
@@ -1187,7 +1222,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             // File name generation
             string mswName = userID > 0 ? discharges.First().MSW : "All MSW";
             string monthLabel = filterByMonth ? parsedMonth.ToString("MMMM_yyyy") : discharges.First().DischargedDate.Year.ToString();
-            string fileName = $"OPD_Reports_{monthLabel}_{mswName}";
+            string fileName = $"Discharge_Reports_{monthLabel}";
 
             var workbook = new XLWorkbook();
             var worksheet = workbook.Worksheets.Add(fileName);

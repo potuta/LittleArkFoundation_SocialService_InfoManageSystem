@@ -68,7 +68,7 @@
 
         <a class="btn btn-outline-dark @(
             ViewContext.RouteData.Values["action"]?.ToString() == "Reports" ||
-            ViewContext.RouteData.Values["action"]?.ToString() == "Sortby" 
+            ViewContext.RouteData.Values["action"]?.ToString() == "SortbyReports" 
             ? "active" : "")"
            asp-action="Reports" asp-controller="Discharge">Reports</a>
     </div>
@@ -131,7 +131,7 @@
         } *@
 
         @* Month filter *@
-        <form method="get" asp-action="SortBy" class="d-flex align-items-center gap-2">
+        <form method="get" asp-action="SortbyReports" class="d-flex align-items-center gap-2">
             <input type="hidden" name="sortByUserID" value="@sortByUserID" />
             <input type="hidden" name="viewName" value="Reports" />
             <input type="month" name="sortByMonth" class="form-control form-control-sm" value="@sortByMonth" />
