@@ -48,6 +48,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 
 namespace LittleArkFoundation.Areas.Admin.Controllers
 {
@@ -1089,8 +1090,16 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 fileName = $"Discharges_{discharges[0].DischargedDate.Year}_{discharges[0].MSW}";
             }
 
+            // Sanitize file name (for download)
+            string safeFileName = Regex.Replace(fileName, @"[^\w\-]", "_");
+
+            // Sanitize sheet name (for Excel)
+            string safeSheetName = Regex.Replace(fileName, @"[\[\]\*\?/\\:]", "_");
+            if (safeSheetName.Length > 31)
+                safeSheetName = safeSheetName.Substring(0, 31);
+
             var workbook = new XLWorkbook();
-            var worksheet = workbook.Worksheets.Add(fileName);
+            var worksheet = workbook.Worksheets.Add(safeSheetName);
 
             // HEADERS
             // Column 1
@@ -1220,12 +1229,20 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
 
             // File name generation
-            string mswName = userID > 0 ? discharges.First().MSW : "All MSW";
+            string mswName = userID > 0 ? discharges.First().MSW : "All";
             string monthLabel = filterByMonth ? parsedMonth.ToString("MMMM_yyyy") : discharges.First().DischargedDate.Year.ToString();
             string fileName = $"Discharge_Reports_{monthLabel}";
 
+            // Sanitize file name (for download)
+            string safeFileName = Regex.Replace(fileName, @"[^\w\-]", "_");
+
+            // Sanitize sheet name (for Excel)
+            string safeSheetName = Regex.Replace(fileName, @"[\[\]\*\?/\\:]", "_");
+            if (safeSheetName.Length > 31)
+                safeSheetName = safeSheetName.Substring(0, 31);
+
             var workbook = new XLWorkbook();
-            var worksheet = workbook.Worksheets.Add(fileName);
+            var worksheet = workbook.Worksheets.Add(safeSheetName);
 
             var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
