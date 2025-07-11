@@ -1,6 +1,7 @@
 ﻿using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using LittleArkFoundation.Areas.Admin.Data;
+using LittleArkFoundation.Areas.Admin.Models.Discharges;
 using LittleArkFoundation.Areas.Admin.Models.GeneralAdmission;
 using LittleArkFoundation.Areas.Admin.Models.OPD;
 using LittleArkFoundation.Authorize;
@@ -147,6 +148,41 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             };
 
             return View("Index", viewModel);
+        }
+
+        public async Task<IActionResult> SortbyReports(string sortByUserID, string? sortByMonth, string? viewName = "Index")
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var query = context.GeneralAdmission.AsQueryable();
+
+            if (!string.IsNullOrEmpty(sortByUserID))
+            {
+                query = query.Where(d => d.UserID == int.Parse(sortByUserID));
+                var user = await context.Users.FindAsync(int.Parse(sortByUserID));
+                ViewBag.sortBy = user.Username;
+                ViewBag.sortByUserID = user.UserID.ToString();
+            }
+
+            if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
+            {
+                query = query.Where(d => d.Date.Month == month.Month && d.Date.Year == month.Year);
+                ViewBag.sortByMonth = month.ToString("yyyy-MM");
+            }
+
+            var generalAdmissions = await query.ToListAsync();
+
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+
+            var viewModel = new GeneralAdmissionViewModel
+            {
+                GeneralAdmissions = generalAdmissions,
+                Users = users
+            };
+
+            return View(viewName, viewModel);
         }
 
         public async Task<IActionResult> Edit(int id)
@@ -380,6 +416,30 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                             $"{fileName}.xlsx");
             }
+        }
+
+        public async Task<IActionResult> Reports()
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var generalAdmissions = await context.GeneralAdmission.ToListAsync();
+            if (generalAdmissions == null || !generalAdmissions.Any())
+            {
+                TempData["ErrorMessage"] = "No General Admission records found.";
+                return RedirectToAction("Index");
+            }
+
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+
+            var viewModel = new GeneralAdmissionViewModel
+            {
+                Users = users,
+                GeneralAdmissions = generalAdmissions
+            };
+
+            return View(viewModel);
         }
     }
 }
