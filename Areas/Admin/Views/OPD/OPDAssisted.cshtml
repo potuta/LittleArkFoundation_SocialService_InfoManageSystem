@@ -50,7 +50,7 @@
 
         <a class="btn btn-outline-dark @(
             ViewContext.RouteData.Values["action"]?.ToString() == "OPDAssisted" ||
-            ViewContext.RouteData.Values["action"]?.ToString() == "SortByOPDAssisted" 
+            ViewContext.RouteData.Values["action"]?.ToString() == "SortByOPDAssistedAndReports"
             ? "active" : "")"
            asp-action="OPDAssisted" asp-controller="OPD">OPD Assisted</a> 
 
@@ -82,10 +82,14 @@
             }
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" asp-action="SortByOPDAssisted" asp-controller="OPD" asp-route-sortByUserID="" asp-route-sortByMonth="@sortByMonth" >All</a></li>
+            <li><a class="dropdown-item" asp-action="SortByOPDAssistedAndReports" 
+                asp-controller="OPD" asp-route-sortByUserID="" asp-route-sortByMonth="@sortByMonth" 
+                asp-route-viewName="OPDAssisted">All</a></li>
             @foreach (var user in Model.Users)
             {
-                <li><a class="dropdown-item" asp-action="SortByOPDAssisted" asp-controller="OPD" asp-route-sortByUserID="@user.UserID" asp-route-sortByMonth="@sortByMonth" >@user.Username</a></li>
+                <li><a class="dropdown-item" asp-action="SortByOPDAssistedAndReports" 
+                    asp-controller="OPD" asp-route-sortByUserID="@user.UserID" asp-route-sortByMonth="@sortByMonth" 
+                    asp-route-viewName="OPDAssisted">@user.Username</a></li>
             }
         </ul>
         @* @if (matchedUser)
@@ -111,8 +115,9 @@
         } *@
 
         @* Month filter *@
-        <form method="get" asp-action="SortByOPDAssisted" class="d-flex align-items-center gap-2">
+        <form method="get" asp-action="SortByOPDAssistedAndReports" class="d-flex align-items-center gap-2">
             <input type="hidden" name="sortByUserID" value="@sortByUserID" />
+			<input type="hidden" name="viewName" value="OPDAssisted" />
             <input type="month" name="sortByMonth" class="form-control form-control-sm" value="@sortByMonth" />
             <button type="submit" class="btn btn-secondary btn-sm" style="width: 100%;">
                 <i class="bi bi-filter"></i> Filter Month

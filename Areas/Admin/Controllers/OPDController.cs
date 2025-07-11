@@ -187,7 +187,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return View("Index", viewModel);
         }
 
-        public async Task<IActionResult> SortByOPDAssisted(string sortByUserID, string? sortByMonth)
+        public async Task<IActionResult> SortByOPDAssistedAndReports(string sortByUserID, string? sortByMonth, string? viewName)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
@@ -229,7 +229,52 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 Users = users
             };
 
-            return View("OPDAssisted", viewModel);
+            return View(viewName, viewModel);
+        }
+
+        public async Task<IActionResult> SortByReports(string sortByUserID, string? sortByMonth)
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            IQueryable<OPDModel> query = context.OPD.AsQueryable();
+
+            if (!string.IsNullOrEmpty(sortByUserID))
+            {
+                query = query.Where(opd => opd.UserID == int.Parse(sortByUserID));
+                var user = await context.Users.FindAsync(int.Parse(sortByUserID));
+                ViewBag.sortBy = user.Username;
+                ViewBag.sortByUserID = user.UserID.ToString();
+            }
+
+            if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
+            {
+                query = query.Where(opd => opd.Date.Month == month.Month && opd.Date.Year == month.Year);
+                ViewBag.sortByMonth = month.ToString("yyyy-MM");
+            }
+
+            var opdList = await query.ToListAsync();
+
+            var scoredList = new List<(OPDModel opd, Dictionary<string, int> scores, bool isEligible)>();
+            var _scoreService = new OPDScoringService(connectionString);
+            foreach (var opd in opdList)
+            {
+                var scores = await _scoreService.GetWeightedScoresAsync(opd);
+                var isEligible = await _scoreService.IsEligibleForAdmissionAsync(scores.Values.Sum());
+                scoredList.Add((opd, scores, isEligible));
+            }
+
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+
+            var viewModel = new OPDViewModel
+            {
+                OPDList = opdList,
+                OPDScoringList = scoredList,
+                Users = users
+            };
+
+            return View("Reports", viewModel);
         }
 
         public async Task<IActionResult> Create()
@@ -507,19 +552,44 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return View(viewModel);
         }
 
-        public async Task<IActionResult> ExportReportsToExcel()
+        public async Task<IActionResult> ExportReportsToExcel(int userID, string? month)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
 
-            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
-            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            // Parse the month input if provided
+            bool filterByMonth = DateTime.TryParseExact(month, "yyyy-MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedMonth);
 
-            var opdList = await context.OPD.ToListAsync();
-            var fileName = $"OPDReports_{opdList[0].Date.Year}";
+            IQueryable<OPDModel> query = context.OPD;
+
+            if (userID > 0)
+            {
+                query = query.Where(opd => opd.UserID == userID);
+            }
+
+            if (filterByMonth)
+            {
+                query = query.Where(opd => opd.Date.Month == parsedMonth.Month && opd.Date.Year == parsedMonth.Year);
+            }
+
+            var opdList = await query.ToListAsync();
+
+            if (opdList == null || !opdList.Any())
+            {
+                TempData["ErrorMessage"] = "No OPD records found for selected filters.";
+                return RedirectToAction("Reports");
+            }
+
+            // File name generation
+            string mswName = userID > 0 ? opdList.First().MSW : "All MSW";
+            string monthLabel = filterByMonth ? parsedMonth.ToString("MMMM_yyyy") : opdList.First().Date.Year.ToString();
+            string fileName = $"OPD_Reports_{monthLabel}_{mswName}";
 
             var workbook = new XLWorkbook();
             var worksheet = workbook.Worksheets.Add(fileName);
+
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
 
             // HEADERS
             // COUNTA OF DATE PROCESSED BY MSW
