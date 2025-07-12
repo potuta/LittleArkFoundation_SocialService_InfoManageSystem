@@ -35,17 +35,20 @@ namespace LittleArkFoundation.Data
                         new ObjectSettings
                         {
                             HtmlContent = htmlContent,
-                            WebSettings =
+                            WebSettings = new WebSettings
                             {
                                 DefaultEncoding = "utf-8",
                                 LoadImages = true,
                                 PrintMediaType = true
                             },
                             UseExternalLinks = true,
-                            LoadSettings =
+                            UseLocalLinks = true,
+                            LoadSettings = new LoadSettings
                             {
                                 ZoomFactor = 1.5
-                            }
+                            },
+                            HeaderSettings = { HtmUrl = "", Spacing = 0 },
+                            FooterSettings = { HtmUrl = "", Spacing = 0 },
                         }
                     }
                 };
@@ -94,17 +97,22 @@ namespace LittleArkFoundation.Data
                     <html>
                         <head>
                             <style>
-                                body {{
+                                @page {{
+                                    margin: 0;
+                                }}
+                                html, body {{
                                     margin: 0;
                                     padding: 0;
-                                    display: flex;
-                                    justify-content: center;
-                                    align-items: center;
-                                    height: 100vh;
+                                    height: 100%;
+                                    width: 100%;
                                 }}
                                 img {{
+                                    display: block;
+                                    width: 100%;
+                                    height: auto;
                                     max-width: 100%;
                                     max-height: 100%;
+                                    object-fit: contain;
                                 }}
                             </style>
                         </head>
