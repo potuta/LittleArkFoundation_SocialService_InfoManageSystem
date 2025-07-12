@@ -106,13 +106,18 @@ namespace LittleArkFoundation.Data
                                     height: 100%;
                                     width: 100%;
                                 }}
+                                body {{
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                }}
                                 img {{
                                     display: block;
-                                    width: 100%;
-                                    height: auto;
+                                    margin: auto;
                                     max-width: 100%;
-                                    max-height: 100%;
-                                    object-fit: contain;
+                                    max-height: 100vh;
+                                    width: auto;
+                                    height: auto;
                                 }}
                             </style>
                         </head>
