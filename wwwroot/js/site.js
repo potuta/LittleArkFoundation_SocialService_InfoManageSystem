@@ -23,7 +23,7 @@ function toggleSidebar() {
     localStorage.setItem('sidebar-collapsed', isCollapsed);
 }
 
-window.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     const isCollapsed = localStorage.getItem('sidebar-collapsed') === 'true';
 
     if (isCollapsed) {
@@ -42,7 +42,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
 // Close the dropdown if the user clicks outside of it
-window.onclick = function (event) {
+document.onclick = function (event) {
     if (!event.target.matches('.profile-icon') && !event.target.matches('.profile-label')) {
         var dropdowns = document.getElementsByClassName("dropdown-profile-content");
         for (var i = 0; i < dropdowns.length; i++) {
@@ -68,6 +68,119 @@ document.addEventListener("DOMContentLoaded", function () {
         loginModal.show();
     }
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const body = document.body;
+    const controller = body.dataset.controller;
+    const action = body.dataset.action;
+
+    console.log("Controller:", controller);
+    console.log("Action:", action);
+
+    if (controller === "Dashboard") {
+        const h2 = document.getElementsByTagName("h2")[0];
+        if (h2) {
+            // Create the icon element
+            const icon = document.createElement("i");
+            icon.className = "bi bi-house-door-fill";
+            icon.style.marginRight = "8px"; // spacing between icon and text
+
+            // Insert icon before the text
+            h2.prepend(icon);
+        }
+    }
+    else if (controller === "OPD") {
+        const h2 = document.getElementsByTagName("h2")[0];
+        if (h2) {
+            // Create the icon element
+            const icon = document.createElement("i");
+            icon.className = "bi bi-box-arrow-left";
+            icon.style.marginRight = "8px"; // spacing between icon and text
+
+            // Insert icon before the text
+            h2.prepend(icon);
+        }
+    }
+    else if (controller === "Form" || controller === "GeneralAdmission") {
+        const h2 = document.getElementsByTagName("h2")[0];
+        if (h2) {
+            // Create the icon element
+            const icon = document.createElement("i");
+            icon.className = "bi bi-box-arrow-in-right";
+            icon.style.marginRight = "8px"; // spacing between icon and text
+
+            // Insert icon before the text
+            h2.prepend(icon);
+        }
+    }
+    else if (controller === "Discharge") {
+        const h2 = document.getElementsByTagName("h2")[0];
+        if (h2) {
+            // Create the icon element
+            const icon = document.createElement("i");
+            icon.className = "bi bi-box-arrow-right";
+            icon.style.marginRight = "8px"; // spacing between icon and text
+            // Insert icon before the text
+            h2.prepend(icon);
+        }
+    }
+    else if (controller === "Users") {
+        const h2 = document.getElementsByTagName("h2")[0];
+        if (h2) {
+            // Create the icon element
+            const icon = document.createElement("i");
+            icon.className = "bi bi-people";
+            icon.style.marginRight = "8px"; // spacing between icon and text
+            // Insert icon before the text
+            h2.prepend(icon);
+        }
+    }
+    else if (controller === "Roles") {
+        const h2 = document.getElementsByTagName("h2")[0];
+        if (h2) {
+            // Create the icon element
+            const icon = document.createElement("i");
+            icon.className = "bi bi-person-gear";
+            icon.style.marginRight = "8px"; // spacing between icon and text
+            // Insert icon before the text
+            h2.prepend(icon);
+        }
+    }
+    else if (controller === "Permissions") {
+        const h2 = document.getElementsByTagName("h2")[0];
+        if (h2) {
+            // Create the icon element
+            const icon = document.createElement("i");
+            icon.className = "bi bi-person-lock";
+            icon.style.marginRight = "8px"; // spacing between icon and text
+            // Insert icon before the text
+            h2.prepend(icon);
+        }
+    }
+    else if (controller === "Database") {
+        const h2 = document.getElementsByTagName("h2")[0];
+        if (h2) {
+            // Create the icon element
+            const icon = document.createElement("i");
+            icon.className = "bi bi-database-gear";
+            icon.style.marginRight = "8px"; // spacing between icon and text
+            // Insert icon before the text
+            h2.prepend(icon);
+        }
+    }
+    else if (controller === "SystemLogs") {
+        const h2 = document.getElementsByTagName("h2")[0];
+        if (h2) {
+            // Create the icon element
+            const icon = document.createElement("i");
+            icon.className = "bi bi-tools";
+            icon.style.marginRight = "8px"; // spacing between icon and text
+            // Insert icon before the text
+            h2.prepend(icon);
+        }
+    }
+});
+
 
 
 
