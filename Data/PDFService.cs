@@ -124,7 +124,7 @@ namespace LittleArkFoundation.Data
                                     display: block;
                                     margin: auto;
                                     max-width: 100%;
-                                    max-height: 80vh;
+                                    max-height: 674px; /* 80% of A4 height, 842 * 0.8 */
                                     object-fit: contain;
                                     margin-bottom: 10px;
                                 }}
