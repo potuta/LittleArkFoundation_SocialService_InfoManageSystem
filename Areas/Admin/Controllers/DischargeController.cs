@@ -29,6 +29,7 @@ using LittleArkFoundation.Areas.Admin.Models.Medications;
 using LittleArkFoundation.Areas.Admin.Models.MentalHealthHistory;
 using LittleArkFoundation.Areas.Admin.Models.MonthlyExpenses;
 using LittleArkFoundation.Areas.Admin.Models.MSWDClassification;
+using LittleArkFoundation.Areas.Admin.Models.OPD;
 using LittleArkFoundation.Areas.Admin.Models.ParentChildRelationship;
 using LittleArkFoundation.Areas.Admin.Models.Patients;
 using LittleArkFoundation.Areas.Admin.Models.PregnancyBirthHistory;
@@ -44,8 +45,10 @@ using LittleArkFoundation.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using System.Linq.Expressions;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 
 namespace LittleArkFoundation.Areas.Admin.Controllers
 {
@@ -117,34 +120,74 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return View("Index", viewModel);
         }
 
-        public async Task<IActionResult> SortBy(string sortByUserID)
+        public async Task<IActionResult> SortBy(string sortByUserID, string? sortByMonth)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
+
+            var query = context.Discharges.AsQueryable();
+
             if (!string.IsNullOrEmpty(sortByUserID))
             {
-                var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
-                var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
-                var discharges = await context.Discharges
-                    .Where(d => d.UserID == int.Parse(sortByUserID))
-                    .OrderByDescending(d => d.DischargedDate)
-                    .ToListAsync();
-
-
-                var viewModel = new DischargeViewModel
-                {
-                    Users = users,
-                    Discharges = discharges
-                };
-
+                query = query.Where(d => d.UserID == int.Parse(sortByUserID));
                 var user = await context.Users.FindAsync(int.Parse(sortByUserID));
-
                 ViewBag.sortBy = user.Username;
-                return View("Index", viewModel);
-
+                ViewBag.sortByUserID = user.UserID.ToString();
             }
 
-            return RedirectToAction("Index");
+            if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
+            {
+                query = query.Where(d => d.DischargedDate.Month == month.Month && d.DischargedDate.Year == month.Year);
+                ViewBag.sortByMonth = month.ToString("yyyy-MM");
+            }
+
+            var discharges = await query.ToListAsync();
+
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+
+            var viewModel = new DischargeViewModel
+            {
+                Discharges = discharges,
+                Users = users
+            };
+
+            return View("Index", viewModel);
+        }
+
+        public async Task<IActionResult> SortbyReports(string sortByUserID, string? sortByMonth, string? viewName = "Index")
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var query = context.Discharges.AsQueryable();
+
+            if (!string.IsNullOrEmpty(sortByUserID))
+            {
+                query = query.Where(d => d.UserID == int.Parse(sortByUserID));
+                var user = await context.Users.FindAsync(int.Parse(sortByUserID));
+                ViewBag.sortBy = user.Username;
+                ViewBag.sortByUserID = user.UserID.ToString();
+            }
+
+            if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
+            {
+                query = query.Where(d => d.DischargedDate.Month == month.Month && d.DischargedDate.Year == month.Year);
+                ViewBag.sortByMonth = month.ToString("yyyy-MM");
+            }
+
+            var discharges = await query.ToListAsync();
+
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+
+            var viewModel = new DischargeViewModel
+            {
+                Discharges = discharges,
+                Users = users
+            };
+
+            return View(viewName, viewModel);
         }
 
         [HttpPost]
@@ -1047,8 +1090,16 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 fileName = $"Discharges_{discharges[0].DischargedDate.Year}_{discharges[0].MSW}";
             }
 
+            // Sanitize file name (for download)
+            string safeFileName = Regex.Replace(fileName, @"[^\w\-]", "_");
+
+            // Sanitize sheet name (for Excel)
+            string safeSheetName = Regex.Replace(fileName, @"[\[\]\*\?/\\:]", "_");
+            if (safeSheetName.Length > 31)
+                safeSheetName = safeSheetName.Substring(0, 31);
+
             var workbook = new XLWorkbook();
-            var worksheet = workbook.Worksheets.Add(fileName);
+            var worksheet = workbook.Worksheets.Add(safeSheetName);
 
             // HEADERS
             // Column 1
@@ -1149,19 +1200,52 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return View(viewModel);
         }
 
-        public async Task<IActionResult> ExportReportsToExcel()
+        public async Task<IActionResult> ExportReportsToExcel(int userID, string? month)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
 
-            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
-            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            // Parse the month input if provided
+            bool filterByMonth = DateTime.TryParseExact(month, "yyyy-MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedMonth);
 
-            var discharges = await context.Discharges.ToListAsync();
-            var fileName = $"DischargesReports_{discharges[0].DischargedDate.Year}";
+            var query = context.Discharges.AsQueryable();
+
+            if (userID > 0)
+            {
+                query = query.Where(d => d.UserID == userID);
+            }
+
+            if (filterByMonth)
+            {
+                query = query.Where(d => d.DischargedDate.Month == parsedMonth.Month && d.DischargedDate.Year == parsedMonth.Year);
+            }
+
+            var discharges = await query.ToListAsync();
+
+            if (discharges == null || !discharges.Any())
+            {
+                TempData["ErrorMessage"] = "No Discharge records found for selected filters.";
+                return RedirectToAction("Reports");
+            }
+
+            // File name generation
+            string mswName = userID > 0 ? discharges.First().MSW : "All";
+            string monthLabel = filterByMonth ? parsedMonth.ToString("MMMM_yyyy") : discharges.First().DischargedDate.Year.ToString();
+            string fileName = $"Discharge_Reports_{monthLabel}";
+
+            // Sanitize file name (for download)
+            string safeFileName = Regex.Replace(fileName, @"[^\w\-]", "_");
+
+            // Sanitize sheet name (for Excel)
+            string safeSheetName = Regex.Replace(fileName, @"[\[\]\*\?/\\:]", "_");
+            if (safeSheetName.Length > 31)
+                safeSheetName = safeSheetName.Substring(0, 31);
 
             var workbook = new XLWorkbook();
-            var worksheet = workbook.Worksheets.Add(fileName);
+            var worksheet = workbook.Worksheets.Add(safeSheetName);
+
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
 
             // HEADERS
             // COUNTA OF DATE PROCESSED BY MSW

@@ -23,7 +23,8 @@
     <!-- Custom Styles -->
     <link rel="stylesheet" href="~/css/adminStyle.css">
 </head>
-<body>
+<body data-controller ="@ViewContext.RouteData.Values["controller"]"
+                     data-action="@ViewContext.RouteData.Values["action"]">
     <nav class="navbar-top">
         <div class="left-buttons">
             <img src="~/resources/NCH-Logo.png" alt="logo" class="profile-icon">

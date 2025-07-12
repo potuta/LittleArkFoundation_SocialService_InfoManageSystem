@@ -6,6 +6,7 @@
 }
 
 <h2>Permissions</h2>
+<hr />
 
 <div>
     <!-- Button to Open Modal -->
@@ -65,6 +66,29 @@
                     <div class="mb-3">
                         <label for="permissionName" class="form-label">Permission Name</label>
                         <input type="text" class="form-control" id="permissionName" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="permissionType" class="form-label">Permission Type</label>
+                        <select id="permissionType" name="permissionType" class="form-control">
+                            <option>View</option>
+							<option>Edit</option>
+                            <option>Delete</option>
+							<option>Admit/Discharge</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="module" class="form-label">Module</label>
+                        <select id="module" name="module" class="form-control">
+                            <option>OPD</option>
+                            <option>Admissions</option>
+                            <option>Discharge</option>
+                            <option>Users</option>
+                            <option>Roles</option>
+                            <option>Permissions</option>
+                            <option>Backup/Restore</option>
+                            <option>SystemLogs</option>
+                            <option>Profile</option>
+                        </select>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

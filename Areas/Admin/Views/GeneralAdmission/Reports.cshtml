@@ -1,0 +1,1228 @@
+﻿@model LittleArkFoundation.Areas.Admin.Models.GeneralAdmission.GeneralAdmissionViewModel
+@{
+    ViewData["Title"] = "General Admission Reports";
+    Layout = "_AdminLayout";
+
+    string? sortBy = ViewBag.sortBy ?? "";
+    string? sortByUserID = ViewBag.sortByUserID ?? "";
+    string? sortByMonth = ViewBag.sortByMonth ?? "";
+    bool matchedUser = Model.Users.Any(u => u.Username == sortBy);
+
+    // Unique MSWs
+    var msws = Model.Users.Select(u => u.Username).Distinct().ToList();
+
+    // Group discharges by ProcessedDate
+    var grouped = Model.GeneralAdmissions
+        .GroupBy(d => d.Date)
+        .OrderBy(g => g.Key)
+        .ToList();
+    var mswTotals = msws.ToDictionary(msw => msw, msw => Model.GeneralAdmissions.Count(d => d.MSW == msw));
+    var overallTotal = Model.GeneralAdmissions.Count;
+
+    var groupedClass = new List<string>
+    {
+        "A", "B", "C1", "C2", "C3", "D"
+    };
+
+    var groupedByClass = Model.GeneralAdmissions
+        .Where(d => !string.IsNullOrEmpty(d.Class))
+        .GroupBy(d => d.Class)
+        .ToDictionary(g => g.Key, g => g.ToList());
+
+    var classTotals = msws.ToDictionary(msw => msw, msw => Model.GeneralAdmissions.Count(d => d.MSW == msw));
+    var overallClassTotal = Model.GeneralAdmissions.Count;
+}
+
+<style>
+    .menu-bar a {
+        min-width: 100px;
+        text-align: center;
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .header-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+    }
+
+        .header-bar h2 {
+            margin-bottom: 0;
+        }
+
+</style>
+
+<div class="header-bar">
+    <h2>General Admission Reports</h2>
+
+    <div class="menu-bar d-flex gap-2">
+        <!-- Main -->
+        <a class="btn btn-outline-dark @(
+           ViewContext.RouteData.Values["controller"]?.ToString() == "Form" &&
+           (
+               ViewContext.RouteData.Values["action"]?.ToString() == "Index" ||
+               ViewContext.RouteData.Values["action"]?.ToString() == "SortBy" ||
+               ViewContext.RouteData.Values["action"]?.ToString() == "Search"
+           ) ? "active" : "")"
+           asp-action="Index" asp-controller="Form">Main</a>
+
+        <!-- General -->
+        <a class="btn btn-outline-dark @(
+            ViewContext.RouteData.Values["controller"]?.ToString() == "GeneralAdmission" &&
+            (
+                ViewContext.RouteData.Values["action"]?.ToString() == "Index" ||
+                ViewContext.RouteData.Values["action"]?.ToString() == "SortBy" ||
+                ViewContext.RouteData.Values["action"]?.ToString() == "Search"
+            ) ? "active" : "")"
+           asp-action="Index" asp-controller="GeneralAdmission">General</a>
+
+        <a class="btn btn-outline-dark @(
+            ViewContext.RouteData.Values["controller"]?.ToString() == "GeneralAdmission" &&
+            (
+                ViewContext.RouteData.Values["action"]?.ToString() == "Reports" ||
+                ViewContext.RouteData.Values["action"]?.ToString() == "SortByReports" 
+            ) ? "active" : "")"
+           asp-action="Reports" asp-controller="GeneralAdmission">Reports</a>
+
+        <!-- Statistics -->
+        <a class="btn btn-outline-dark @(
+                      ViewContext.RouteData.Values["controller"]?.ToString() == "Form" &&
+                      ViewContext.RouteData.Values["action"]?.ToString() == "Statistics"
+                      ? "active" : "")"
+           asp-action="Statistics" asp-controller="Form">Statistics</a>
+    </div>
+</div>
+<hr />
+
+<!-- Back to List -->
+<div class="mt-2">
+    <a class="btn btn-outline-secondary mb-3" asp-controller="Form" asp-action="Index">← Back to List</a>
+</div>
+
+<div class="d-flex justify-content-end align-items-start flex-wrap gap-2 mb-3">
+    @* Right toggles/buttons *@
+    <div class="btn-group">
+        @* <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-1 me-2" data-bs-toggle="dropdown" aria-expanded="false">
+            @if (string.IsNullOrEmpty(sortBy))
+            {
+                <span class="mb-0">Sort by MSW</span>
+            }
+            else
+            {
+                <span class="mb-0">@sortBy</span>
+            }
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+                <a class="dropdown-item" asp-action="SortByOPDAssistedAndReports"
+                   asp-controller="OPD" asp-route-sortByUserID="" asp-route-sortByMonth="@sortByMonth"
+                   asp-route-viewName="Reports">All</a>
+            </li>
+            @foreach (var user in Model.Users)
+            {
+                <li>
+                    <a class="dropdown-item" asp-action="SortByOPDAssistedAndReports"
+                       asp-controller="OPD" asp-route-sortByUserID="@user.UserID" asp-route-sortByMonth="@sortByMonth"
+                       asp-route-viewName="Reports">@user.Username</a>
+                </li>
+            }
+        </ul> *@
+        @* @if (matchedUser)
+        {
+            foreach (var user in Model.Users)
+            {
+                if (user.Username == sortBy)
+                {
+                    <a class="btn btn-sm btn-success" style="margin-left:5px;"
+                       asp-action="ExportLogsheetToExcel"
+                       asp-route-userID="@user.UserID">
+                        Download Excel (@user.Username)
+                    </a>
+                }
+            }
+        }
+        else
+        {
+            <a class="btn btn-sm btn-success" style="margin-left:5px;"
+               asp-action="ExportLogsheetToExcel">
+                Download Excel (All)
+            </a>
+        } *@
+
+        @* Month filter *@
+        <form method="get" asp-action="SortbyReports" class="d-flex align-items-center gap-2">
+            <input type="hidden" name="sortByUserID" value="@sortByUserID" />
+            <input type="hidden" name="viewName" value="Reports" />
+            <input type="month" name="sortByMonth" class="form-control form-control-sm" value="@sortByMonth" />
+            <button type="submit" class="btn btn-secondary btn-sm" style="width: 100%;">
+                <i class="bi bi-filter"></i> Filter Month
+            </button>
+        </form>
+
+        <button type="button" class="btn btn-success btn-sm" style="margin-left:5px;"
+                data-bs-toggle="modal"
+                data-bs-target="#exportModal"
+                data-bs-toggle="tooltip"
+                title="Download Excel">
+            <i class="bi bi-download"></i> Download Excel
+        </button>
+
+        <!-- Download/Export Excel Modal -->
+        <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form asp-action="ExportReportsToExcel" asp-controller="GeneralAdmission" method="get">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exportModalLabel">Export to Excel</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            @* <div class="mb-3">
+                                <label for="userID" class="form-label">MSW</label>
+                                <select class="form-select" id="userID" name="userID">
+                                    <option value="0">All</option>
+                                    @foreach (var user in Model.Users)
+                                    {
+                                        <option value="@user.UserID">@user.Username</option>
+                                    }
+                                </select>
+                            </div> *@
+
+                            <div class="mb-3">
+                                <label for="month" class="form-label">Month</label>
+                                <input type="month" id="month" name="month" class="form-control">
+                                <div class="form-text">Leave empty for "All Time"</div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">Export</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert" style="width: 60%;">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="width: 60%;">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<h5 style="margin-top: 15px;">COUNTA of Date Processed by MSW</h5>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>Date Processed</th>
+                        @foreach (var msw in msws)
+                        {
+                            <th>@msw</th>
+                        }
+                        <th>Grand Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    @foreach (var group in grouped)
+                    {
+                        <tr>
+                            <td>@group.Key.ToShortDateString()</td>
+
+                            @foreach (var msw in msws)
+                            {
+                                var count = group.Count(d => d.MSW == msw);
+                                <td>@count</td>
+                            }
+
+                            <td>@group.Count()</td>
+                        </tr>
+                    }
+
+                    <tr class="fw-bold">
+                        <td>Total</td>
+                        @foreach (var msw in msws)
+                        {
+                            <td>@mswTotals[msw]</td>
+                        }
+                        <td>@overallTotal</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h5 style="margin-top: 15px;">COUNTA of Class</h5>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>Class</th>
+                        @foreach (var msw in msws)
+                        {
+                            <th>@msw</th>
+                        }
+                        <th>Grand Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    @foreach (var cls in groupedClass)
+                    {
+                        <tr>
+                            <td>@cls</td>
+
+                            @foreach (var msw in msws)
+                            {
+                                var count = groupedByClass.ContainsKey(cls)
+                                ? groupedByClass[cls].Count(d => d.MSW == msw)
+                                : 0;
+                                <td>@count</td>
+                            }
+
+                            <td>
+                                @(groupedByClass.ContainsKey(cls) ? groupedByClass[cls].Count : 0)
+                            </td>
+                        </tr>
+                    }
+
+                    <tr class="fw-bold">
+                        <td>Total</td>
+                        @foreach (var msw in msws)
+                        {
+                            <td>@classTotals[msw]</td>
+                        }
+                        <td>@overallClassTotal</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h5 style="margin-top: 15px;">COUNTA of Class by Gender</h5>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>Class</th>
+                        <th>F</th>
+                        <th>M</th>
+                        <th>Grand Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    foreach (var cls in groupedClass)
+                    {
+                        var femaleCount = Model.GeneralAdmissions.Count(d => d.Class == cls && d.Gender == "Female");
+                        var maleCount = Model.GeneralAdmissions.Count(d => d.Class == cls && d.Gender == "Male");
+                        <tr>
+                            <td>@cls</td>
+                            <td>@femaleCount</td>
+                            <td>@maleCount</td>
+                            @* <td>@Model.OPDList.Count(d => d.Class == cls)</td> *@
+                            <td>@(femaleCount + maleCount)</td>
+                        </tr>
+                    }
+
+                    var femaleCountAll = Model.GeneralAdmissions.Count(d => d.Gender == "Female");
+                    var maleCountAll = Model.GeneralAdmissions.Count(d => d.Gender == "Male");
+                    var totalCountAll = femaleCountAll + maleCountAll;
+                    <tr class="fw-bold">
+                        <td>Total</td>
+                        <td>@femaleCountAll</td>
+                        <td>@maleCountAll</td>
+                        <td>@totalCountAll</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@* <h5 style="margin-top: 15px;">COUNTA of Old/New</h5>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>MSW</th>
+                        <th>Old</th>
+                        <th>New</th>
+                        <th>Grand Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    @foreach (var msw in msws)
+                    {
+                        var oldCount = Model.GeneralAdmissions.Count(d => d.isOld == true && d.MSW == msw);
+                        var newCount = Model.GeneralAdmissions.Count(d => d.isOld == false && d.MSW == msw);
+                        var totalCount = oldCount + newCount;
+                        <tr>
+                            <td>@msw</td>
+                            <td>@oldCount</td>
+                            <td>@newCount</td>
+                            <td>@totalCount</td>
+                        </tr>
+                    }
+
+                    var oldCountAll = Model.GeneralAdmissions.Count(d => d.isOld == true);
+                    var newCountAll = Model.GeneralAdmissions.Count(d => d.isOld == false);
+                    var totalCountAll = oldCountAll + newCountAll;
+                    <tr class="fw-bold">
+                        <td>Total</td>
+                        <td>@oldCountAll</td>
+                        <td>@newCountAll</td>
+                        <td>@totalCountAll</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h5 style="margin-top: 15px;">COUNTA of PWD</h5>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>MSW</th>
+                        <th>PWD</th>
+                        <th>Non-PWD</th>
+                        <th>Grand Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    @foreach (var msw in msws)
+                    {
+                        var pwdCount = Model.GeneralAdmissions.Count(d => d.isPWD == true && d.MSW == msw);
+                        var nonPwdCount = Model.GeneralAdmissions.Count(d => d.isPWD == false && d.MSW == msw);
+                        var totalCount = pwdCount + nonPwdCount;
+                        <tr>
+                            <td>@msw</td>
+                            <td>@pwdCount</td>
+                            <td>@nonPwdCount</td>
+                            <td>@totalCount</td>
+                        </tr>
+                    }
+                    var pwdCountAll = Model.GeneralAdmissions.Count(d => d.isPWD == true);
+                    var nonPwdCountAll = Model.GeneralAdmissions.Count(d => d.isPWD == false);
+                    var totalCountAll = pwdCountAll + nonPwdCountAll;
+                    <tr class="fw-bold">
+                        <td>Total</td>
+                        <td>@pwdCountAll</td>
+                        <td>@nonPwdCountAll</td>
+                        <td>@totalCountAll</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div> *@
+
+<h5 style="margin-top: 15px;">COUNTA of Eco. Stat</h5>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>Eco. Stat</th>
+                        <th>Grand Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+					var economicStatuses = new[] { "C", "I", "J", "R" };
+                    int totalCount = 0;
+                    @foreach (var eco in economicStatuses)
+                    {
+                        <tr>
+                            <td>@eco</td>
+                            <td>@Model.GeneralAdmissions.Count(d => d.EconomicStatus.ToUpper() == eco.ToUpper())</td>
+                        </tr>
+                        totalCount += Model.GeneralAdmissions.Count(d => d.EconomicStatus.ToUpper() == eco.ToUpper());
+					}
+                    <tr class="fw-bold">
+                        <td>Total</td>
+                        <td>@totalCount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h5 style="margin-top: 15px;">COUNTA of M. Stat</h5>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>M. Stat</th>
+                        <th>Grand Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    var statuses = new[] { "LI", "LM", "S", "W" };
+                    int totalCount = 0;
+                    @foreach (var stats in statuses)
+                    {
+                        <tr>
+                            <td>@stats</td>
+                            <td>@Model.GeneralAdmissions.Count(d => d.MaritalStatus.ToUpper() == stats.ToUpper())</td>
+                        </tr>
+                        totalCount += Model.GeneralAdmissions.Count(d => d.MaritalStatus.ToUpper() == stats.ToUpper());
+                    }
+                    <tr class="fw-bold">
+                        <td>Total</td>
+                        <td>@totalCount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h5 style="margin-top: 15px;">COUNTA of Referral</h5>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>Referral</th>
+                        <th>Grand Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    var statuses = new[] { "Clinic/Private", "Govt. Agencies", "Govt. Hosp.", "HCT",
+                    "NGOs", "Others", "Walk in"};
+                    int totalCount = 0;
+                    @foreach (var stats in statuses)
+                    {
+                        <tr>
+                            <td>@stats</td>
+                            <td>@Model.GeneralAdmissions.Count(d => d.Referral.ToUpper() == stats.ToUpper())</td>
+                        </tr>
+                        totalCount += Model.GeneralAdmissions.Count(d => d.Referral.ToUpper() == stats.ToUpper());
+                    }
+                    <tr class="fw-bold">
+                        <td>Total</td>
+                        <td>@totalCount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h5 style="margin-top: 15px;">COUNTA of Origin</h5>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>Origin</th>
+                        <th>Grand Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    @* var statuses = new[] {
+						"ABRA", "AGUSAN DEL NORTE", "AGUSAN DEL SUR", "AKLAN", "ALBAY", "ANTIQUE", "APAYAO",
+                                "AURORA", "BAGUIO", "BASILAN", "BATAAN", "BATANES", "BATANGAS", "BENGUET", "BILIRAN", "BOHOL", "BUKIDNON",
+								"BULACAN", "BUTUAN", "CAGAYAN", "CAGAYAN DE ORO", "CALOOCAN", "CAMARINES NORTE", "CAMARINES SUR", "CAMIGUIN",
+								"CAPIZ", "CATANDUANES", "CAVITE", "CEBU", "COMPOSTELA VALLEY", "COTABATO", "DAVAO", "EASTERN SAMAR", "GENERAL SANTOS",
+                                "GUIMARAS", "IFUGAO", "ILIGAN", "ILOCOS NORTE", "ILOCOS SUR", "ILOILO", "ISABELA", "KALINGA", "LA UNION", "LAGUNA", "LEYTE", "MAGUINDANAO",
+                    }; *@
+                    var groupedOrigins = Model.GeneralAdmissions
+                        .Where(g => !string.IsNullOrWhiteSpace(g.Origin))
+                        .GroupBy(g => g.Origin.Trim().ToUpper())
+                        .OrderBy(g => g.Key)
+                        .ToList();
+
+                    int totalCount = 0;
+                    @foreach (var group in groupedOrigins)
+                    {
+                        <tr>
+                            <td>@group.Key</td>
+                            <td>@group.Count()</td>
+                        </tr>
+                        totalCount += group.Count();
+                    }
+                    <tr class="fw-bold">
+                        <td>Total</td>
+                        <td>@totalCount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h5 style="margin-top: 15px;">COUNTA of Age</h5>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>Age</th>
+                        <th>Grand Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    
+                    var groupedAge = Model.GeneralAdmissions
+                    .GroupBy(g => g.Age)
+                    .OrderBy(g => g.Key)
+                    .ToList();
+
+                    int totalCount = 0;
+                    @foreach (var group in groupedAge)
+                    {
+                        <tr>
+                            <td>@group.Key</td>
+                            <td>@group.Count()</td>
+                        </tr>
+                        totalCount += group.Count();
+                    }
+                    <tr class="fw-bold">
+                        <td>Total</td>
+                        <td>@totalCount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h5 style="margin-top: 15px;">COUNTA of Patient Educ.</h5>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>Patient</th>
+                        <th>Grand Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+
+                    var groupedPatient = Model.GeneralAdmissions
+                    .GroupBy(g => g.EducationalAttainment)
+                    .OrderBy(g => g.Key)
+                    .ToList();
+
+                    int totalCount = 0;
+                    @foreach (var group in groupedPatient)
+                    {
+                        <tr>
+                            <td>@group.Key</td>
+                            <td>@group.Count()</td>
+                        </tr>
+                        totalCount += group.Count();
+                    }
+                    <tr class="fw-bold">
+                        <td>Total</td>
+                        <td>@totalCount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h5 style="margin-top: 15px;">COUNTA of Father Educ.</h5>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>Father</th>
+                        <th>Grand Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+
+                    var groupedPatient = Model.GeneralAdmissions
+                    .GroupBy(g => g.FatherEducationalAttainment)
+                    .OrderBy(g => g.Key)
+                    .ToList();
+
+                    int totalCount = 0;
+                    @foreach (var group in groupedPatient)
+                    {
+                        <tr>
+                            <td>@group.Key</td>
+                            <td>@group.Count()</td>
+                        </tr>
+                        totalCount += group.Count();
+                    }
+                    <tr class="fw-bold">
+                        <td>Total</td>
+                        <td>@totalCount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h5 style="margin-top: 15px;">COUNTA of Mother Educ.</h5>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>Mother</th>
+                        <th>Grand Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+
+                    var groupedPatient = Model.GeneralAdmissions
+                    .GroupBy(g => g.MotherEducationalAttainment)
+                    .OrderBy(g => g.Key)
+                    .ToList();
+
+                    int totalCount = 0;
+                    @foreach (var group in groupedPatient)
+                    {
+                        <tr>
+                            <td>@group.Key</td>
+                            <td>@group.Count()</td>
+                        </tr>
+                        totalCount += group.Count();
+                    }
+                    <tr class="fw-bold">
+                        <td>Total</td>
+                        <td>@totalCount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h5 style="margin-top: 15px;">COUNTA of Old/New</h5>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>Old/New</th>
+                        <th>Grand Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    <tr>
+                        <td>New</td>
+                        <td>@Model.GeneralAdmissions.Count(g => !g.isOld)</td>
+                    </tr>
+
+                    <tr>
+                        <td>Old</td>
+                        <td>@Model.GeneralAdmissions.Count(g => g.isOld)</td>
+                    </tr>
+
+                    <tr class="fw-bold">
+                        <td>Total</td>
+                        <td>@Model.GeneralAdmissions.Count()</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h5 style="margin-top: 15px;">COUNTA of PWD</h5>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>PWD</th>
+                        <th>Grand Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    <tr>
+                        <td>No</td>
+                        <td>@Model.GeneralAdmissions.Count(g => !g.isPWD)</td>
+                    </tr>
+
+                    <tr>
+                        <td>Yes</td>
+                        <td>@Model.GeneralAdmissions.Count(g => g.isPWD)</td>
+                    </tr>
+
+                    <tr class="fw-bold">
+                        <td>Total</td>
+                        <td>@Model.GeneralAdmissions.Count()</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h5 style="margin-top: 15px;">COUNTA of HH Size</h5>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>HH Size</th>
+                        <th>Grand Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+
+                    var groupedPatient = Model.GeneralAdmissions
+                    .GroupBy(g => g.HouseholdSize)
+                    .OrderBy(g => g.Key)
+                    .ToList();
+
+                    int totalCount = 0;
+                    @foreach (var group in groupedPatient)
+                    {
+                        <tr>
+                            <td>@group.Key</td>
+                            <td>@group.Count()</td>
+                        </tr>
+                        totalCount += group.Count();
+                    }
+                    <tr class="fw-bold">
+                        <td>Total</td>
+                        <td>@totalCount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h5 style="margin-top: 15px;">COUNTA of Light</h5>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>Light</th>
+                        <th>Grand Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+
+                    var groupedPatient = Model.GeneralAdmissions
+                    .GroupBy(g => g.LightSource)
+                    .OrderBy(g => g.Key)
+                    .ToList();
+
+                    int totalCount = 0;
+                    @foreach (var group in groupedPatient)
+                    {
+                        <tr>
+                            <td>@group.Key</td>
+                            <td>@group.Count()</td>
+                        </tr>
+                        totalCount += group.Count();
+                    }
+                    <tr class="fw-bold">
+                        <td>Total</td>
+                        <td>@totalCount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h5 style="margin-top: 15px;">COUNTA of Water</h5>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>Water</th>
+                        <th>Grand Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+
+                    var groupedPatient = Model.GeneralAdmissions
+                    .GroupBy(g => g.WaterSource)
+                    .OrderBy(g => g.Key)
+                    .ToList();
+
+                    int totalCount = 0;
+                    @foreach (var group in groupedPatient)
+                    {
+                        <tr>
+                            <td>@group.Key</td>
+                            <td>@group.Count()</td>
+                        </tr>
+                        totalCount += group.Count();
+                    }
+                    <tr class="fw-bold">
+                        <td>Total</td>
+                        <td>@totalCount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h5 style="margin-top: 15px;">COUNTA of Fuel</h5>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>Fuel</th>
+                        <th>Grand Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+
+                    var groupedPatient = Model.GeneralAdmissions
+                    .GroupBy(g => g.FuelSource)
+                    .OrderBy(g => g.Key)
+                    .ToList();
+
+                    int totalCount = 0;
+                    @foreach (var group in groupedPatient)
+                    {
+                        <tr>
+                            <td>@group.Key</td>
+                            <td>@group.Count()</td>
+                        </tr>
+                        totalCount += group.Count();
+                    }
+                    <tr class="fw-bold">
+                        <td>Total</td>
+                        <td>@totalCount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h5 style="margin-top: 15px;">COUNTA of Dwell</h5>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>Dwell</th>
+                        <th>Grand Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+
+                    var groupedPatient = Model.GeneralAdmissions
+                    .GroupBy(g => g.DwellingType)
+                    .OrderBy(g => g.Key)
+                    .ToList();
+
+                    int totalCount = 0;
+                    @foreach (var group in groupedPatient)
+                    {
+                        <tr>
+                            <td>@group.Key</td>
+                            <td>@group.Count()</td>
+                        </tr>
+                        totalCount += group.Count();
+                    }
+                    <tr class="fw-bold">
+                        <td>Total</td>
+                        <td>@totalCount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h5 style="margin-top: 15px;">COUNTA of Stat's Occupation</h5>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>Stat's Occupation</th>
+                        <th>Grand Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+
+                    var groupedPatient = Model.GeneralAdmissions
+                    .GroupBy(g => g.StatsOccupation)
+                    .OrderBy(g => g.Key)
+                    .ToList();
+
+                    int totalCount = 0;
+                    @foreach (var group in groupedPatient)
+                    {
+                        <tr>
+                            <td>@group.Key</td>
+                            <td>@group.Count()</td>
+                        </tr>
+                        totalCount += group.Count();
+                    }
+                    <tr class="fw-bold">
+                        <td>Total</td>
+                        <td>@totalCount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h5 style="margin-top: 15px;">COUNTA of Income Range</h5>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>Income Range</th>
+                        <th>Grand Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+
+                    var groupedPatient = Model.GeneralAdmissions
+                    .GroupBy(g => g.IncomeRange)
+                    .OrderBy(g => g.Key)
+                    .ToList();
+
+                    int totalCount = 0;
+                    @foreach (var group in groupedPatient)
+                    {
+                        <tr>
+                            <td>@group.Key</td>
+                            <td>@group.Count()</td>
+                        </tr>
+                        totalCount += group.Count();
+                    }
+                    <tr class="fw-bold">
+                        <td>Total</td>
+                        <td>@totalCount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h5 style="margin-top: 15px;">COUNTA of Occupation</h5>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>Occupation</th>
+                        <th>Grand Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+
+                    var groupedPatient = Model.GeneralAdmissions
+                    .GroupBy(g => g.Occupation)
+                    .OrderBy(g => g.Key)
+                    .ToList();
+
+                    int totalCount = 0;
+                    @foreach (var group in groupedPatient)
+                    {
+                        <tr>
+                            <td>@group.Key</td>
+                            <td>@group.Count()</td>
+                        </tr>
+                        totalCount += group.Count();
+                    }
+                    <tr class="fw-bold">
+                        <td>Total</td>
+                        <td>@totalCount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h5 style="margin-top: 15px;">COUNTA of Monthly Income</h5>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>Monthly Income</th>
+                        <th>Grand Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+
+                    var groupedPatient = Model.GeneralAdmissions
+                    .GroupBy(g => g.MonthlyIncome)
+                    .OrderBy(g => g.Key)
+                    .ToList();
+
+                    int totalCount = 0;
+                    @foreach (var group in groupedPatient)
+                    {
+                        <tr>
+                            <td>@group.Key</td>
+                            <td>@group.Count()</td>
+                        </tr>
+                        totalCount += group.Count();
+                    }
+                    <tr class="fw-bold">
+                        <td>Total</td>
+                        <td>@totalCount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

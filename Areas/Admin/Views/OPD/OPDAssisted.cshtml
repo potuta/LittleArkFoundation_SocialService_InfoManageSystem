@@ -1,38 +1,12 @@
-﻿@using LittleArkFoundation.Areas.Admin.Models.Discharges
-@model DischargeViewModel
-
+﻿@model LittleArkFoundation.Areas.Admin.Models.OPD.OPDViewModel
 @{
-    ViewData["Title"] = "Discharge Reports";
-    Layout = "_AdminLayout";
-
+	ViewData["Title"] = "OPDAssisted";
+	Layout = "_AdminLayout";
     string? sortBy = ViewBag.sortBy ?? "";
     string? sortByUserID = ViewBag.sortByUserID ?? "";
     string? sortByMonth = ViewBag.sortByMonth ?? "";
     bool matchedUser = Model.Users.Any(u => u.Username == sortBy);
 
-    // Unique MSWs
-    var msws = Model.Users.Select(u => u.Username).Distinct().ToList();
-
-    // Group discharges by ProcessedDate
-    var grouped = Model.Discharges
-        .GroupBy(d => d.ProcessedDate)
-        .OrderBy(g => g.Key)
-        .ToList();
-    var mswTotals = msws.ToDictionary(msw => msw, msw => Model.Discharges.Count(d => d.MSW == msw));
-    var overallTotal = Model.Discharges.Count;
-
-    var groupedClass = new List<string>
-    {
-        "A", "B", "C1", "C2", "C3", "D"
-    };
-
-    var groupedByClass = Model.Discharges
-        .Where(d => !string.IsNullOrEmpty(d.Class))
-        .GroupBy(d => d.Class)
-        .ToDictionary(g => g.Key, g => g.ToList());
-
-    var classTotals = msws.ToDictionary(msw => msw, msw => Model.Discharges.Count(d => d.MSW == msw));
-	var overallClassTotal = Model.Discharges.Count;
 }
 
 <style>
@@ -57,33 +31,47 @@
 </style>
 
 <div class="header-bar">
-    <h2>Discharge Reports</h2>
+    <h2>OPD Assisted</h2>
 
     <div class="menu-bar d-flex gap-2">
         <a class="btn btn-outline-dark @(
            ViewContext.RouteData.Values["action"]?.ToString() == "Index" ||
-           ViewContext.RouteData.Values["action"]?.ToString() == "SortBy"
+           ViewContext.RouteData.Values["action"]?.ToString() == "SortBy" ||
+           ViewContext.RouteData.Values["action"]?.ToString() == "Search"
            ? "active" : "")"
-           asp-action="Index" asp-controller="Discharge">Main</a>
+           asp-action="Index" asp-controller="OPD">Main</a>
+
+        @* <a class="btn btn-outline-dark @(
+           ViewContext.RouteData.Values["action"]?.ToString() == "General" ||
+           ViewContext.RouteData.Values["action"]?.ToString() == "SortByGeneral" ||
+           ViewContext.RouteData.Values["action"]?.ToString() == "SearchGeneral"
+           ? "active" : "")"
+           asp-action="General" asp-controller="OPD">General</a> *@
 
         <a class="btn btn-outline-dark @(
-            ViewContext.RouteData.Values["action"]?.ToString() == "Reports" ||
-            ViewContext.RouteData.Values["action"]?.ToString() == "SortbyReports" 
+            ViewContext.RouteData.Values["action"]?.ToString() == "OPDAssisted" ||
+            ViewContext.RouteData.Values["action"]?.ToString() == "SortByOPDAssistedAndReports"
             ? "active" : "")"
-           asp-action="Reports" asp-controller="Discharge">Reports</a>
+           asp-action="OPDAssisted" asp-controller="OPD">OPD Assisted</a> 
+
+        <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "Reports" ? "active" : "")"
+           asp-action="Reports" asp-controller="OPD">Reports</a>
+
+        <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "Statistics" ? "active" : "")"
+           asp-action="Statistics" asp-controller="OPD">Statistics</a>
     </div>
 </div>
 <hr />
 
 <!-- Back to List -->
 <div class="mt-2">
-    <a class="btn btn-outline-secondary mb-3" asp-controller="Discharge" asp-action="Index">← Back to List</a>
+    <a class="btn btn-outline-secondary mb-3" asp-controller="OPD" asp-action="Index">← Back to List</a>
 </div>
 
 <div class="d-flex justify-content-end align-items-start flex-wrap gap-2 mb-3">
     @* Right toggles/buttons *@
     <div class="btn-group">
-        @* <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-1 me-2" data-bs-toggle="dropdown" aria-expanded="false">
+        <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-1 me-2" data-bs-toggle="dropdown" aria-expanded="false">
             @if (string.IsNullOrEmpty(sortBy))
             {
                 <span class="mb-0">Sort by MSW</span>
@@ -94,20 +82,16 @@
             }
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
-            <li>
-                <a class="dropdown-item" asp-action="SortByOPDAssistedAndReports"
-                   asp-controller="Discharge" asp-route-sortByUserID="" 
-                   asp-route-sortByMonth="@sortByMonth">All</a>
-            </li>
+            <li><a class="dropdown-item" asp-action="SortByOPDAssistedAndReports" 
+                asp-controller="OPD" asp-route-sortByUserID="" asp-route-sortByMonth="@sortByMonth" 
+                asp-route-viewName="OPDAssisted">All</a></li>
             @foreach (var user in Model.Users)
             {
-                <li>
-                    <a class="dropdown-item" asp-action="SortByOPDAssistedAndReports"
-                       asp-controller="Discharge" asp-route-sortByUserID="@user.UserID" 
-                       asp-route-sortByMonth="@sortByMonth">@user.Username</a>
-                </li>
+                <li><a class="dropdown-item" asp-action="SortByOPDAssistedAndReports" 
+                    asp-controller="OPD" asp-route-sortByUserID="@user.UserID" asp-route-sortByMonth="@sortByMonth" 
+                    asp-route-viewName="OPDAssisted">@user.Username</a></li>
             }
-        </ul> *@
+        </ul>
         @* @if (matchedUser)
         {
             foreach (var user in Model.Users)
@@ -131,9 +115,9 @@
         } *@
 
         @* Month filter *@
-        <form method="get" asp-action="SortbyReports" class="d-flex align-items-center gap-2">
+        <form method="get" asp-action="SortByOPDAssistedAndReports" class="d-flex align-items-center gap-2">
             <input type="hidden" name="sortByUserID" value="@sortByUserID" />
-            <input type="hidden" name="viewName" value="Reports" />
+			<input type="hidden" name="viewName" value="OPDAssisted" />
             <input type="month" name="sortByMonth" class="form-control form-control-sm" value="@sortByMonth" />
             <button type="submit" class="btn btn-secondary btn-sm" style="width: 100%;">
                 <i class="bi bi-filter"></i> Filter Month
@@ -152,14 +136,14 @@
         <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <form asp-action="ExportReportsToExcel" asp-controller="Discharge" method="get">
+                    <form asp-action="ExportOPDAssistedToExcel" asp-controller="OPD" method="get">
                         <div class="modal-header">
                             <h5 class="modal-title" id="exportModalLabel">Export to Excel</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
 
                         <div class="modal-body">
-                            @* <div class="mb-3">
+                            <div class="mb-3">
                                 <label for="userID" class="form-label">MSW</label>
                                 <select class="form-select" id="userID" name="userID">
                                     <option value="0">All</option>
@@ -168,7 +152,7 @@
                                         <option value="@user.UserID">@user.Username</option>
                                     }
                                 </select>
-                            </div> *@
+                            </div>
 
                             <div class="mb-3">
                                 <label for="month" class="form-label">Month</label>
@@ -205,14 +189,6 @@
     </div>
 }
 
-@* <div class="w-100 text-end mb-3">
-    <a class="btn btn-sm btn-success" style="margin-left:5px;"
-       asp-action="ExportReportsToExcel">
-        <i class="bi bi-download"></i> Download Excel
-    </a>
-</div> *@
-
-<h4 style="margin-top: 15px;">COUNTA of Date Processed by MSW</h4>
 <div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
     <div class="table-responsive" style="overflow-x: auto;">
         <table class="table" style="min-width: 1200px;">
@@ -220,94 +196,31 @@
                 @if (Model != null)
                 {
                     <tr>
-                        <th>Date Processed</th>
-                        @foreach (var msw in msws)
-                        {
-                            <th>@msw</th>
-                        }
-                        <th>Grand Total</th>
+                        <th>MSW</th>
+                        <th>Date</th>
+                        <th>Name of Patient</th>
+                        <th>Assistance Needed</th>
+                        <th>Amount</th>
+                        <th>Amount Extended</th>
+                        <th>Resources</th>
                     </tr>
                 }
             </thead>
             <tbody>
                 @if (Model != null)
                 {
-                    @foreach (var group in grouped)
+                    @foreach (var opd in Model.OPDList)
                     {
                         <tr>
-                            <td>@group.Key.ToShortDateString()</td>
-
-                            @foreach (var msw in msws)
-                            {
-                                var count = group.Count(d => d.MSW == msw);
-                                <td>@count</td>
-                            }
-
-                            <td>@group.Count()</td>
+                            <td style="white-space: nowrap;">@opd.MSW</td>
+                            <td style="white-space: nowrap;">@opd.Date</td>
+                            <td style="white-space: nowrap;">@opd.LastName, @opd.FirstName @opd.MiddleName</td>
+                            <td style="white-space: nowrap;">@opd.AssistanceNeeded</td>
+                            <td style="white-space: nowrap;">@opd.Amount</td>
+                            <td style="white-space: nowrap;">@opd.AmountExtended</td>
+                            <td style="white-space: nowrap;">@opd.Resources</td>
                         </tr>
                     }
-
-                    <tr class="fw-bold">
-                        <td>Total</td>
-                        @foreach (var msw in msws)
-                        {
-                            <td>@mswTotals[msw]</td>
-                        }
-                        <td>@overallTotal</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<h4 style="margin-top: 15px;">COUNTA of Class</h4>
-<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
-    <div class="table-responsive" style="overflow-x: auto;">
-        <table class="table" style="min-width: 1200px;">
-            <thead>
-                @if (Model != null)
-                {
-                    <tr>
-                        <th>Date Processed</th>
-                        @foreach (var msw in msws)
-                        {
-                            <th>@msw</th>
-                        }
-                        <th>Grand Total</th>
-                    </tr>
-                }
-            </thead>
-            <tbody>
-                @if (Model != null)
-                {
-                    @foreach (var cls in groupedClass)
-                    {
-                        <tr>
-                            <td>@cls</td>
-
-                            @foreach (var msw in msws)
-                            {
-                                var count = groupedByClass.ContainsKey(cls)
-                                ? groupedByClass[cls].Count(d => d.MSW == msw)
-                                : 0;
-                                <td>@count</td>
-                            }
-
-                            <td>
-                                @(groupedByClass.ContainsKey(cls) ? groupedByClass[cls].Count : 0)
-                            </td>
-                        </tr>
-                    }
-
-                    <tr class="fw-bold">
-                        <td>Total</td>
-                        @foreach (var msw in msws)
-                        {
-                            <td>@classTotals[msw]</td>
-                        }
-                        <td>@overallClassTotal</td>
-                    </tr>
                 }
             </tbody>
         </table>

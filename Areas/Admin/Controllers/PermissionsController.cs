@@ -42,7 +42,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(string name)
+        public async Task<IActionResult> Create(string name, string permissionType, string module)
         {
             try
             {
@@ -53,13 +53,15 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                 await using (var context = new ApplicationDbContext(connectionString))
                 {
-                    if (!string.IsNullOrEmpty(name))
+                    if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(permissionType) && !string.IsNullOrEmpty(module))
                     {
                         int newID = await new PermissionsRepository(connectionString).GenerateID();
                         var permission = new PermissionsModel()
                         {
                             PermissionID = newID,
-                            Name = name
+                            Name = name,
+                            PermissionType = permissionType,
+                            Module = module
                         };
 
                         await context.Permissions.AddAsync(permission);
