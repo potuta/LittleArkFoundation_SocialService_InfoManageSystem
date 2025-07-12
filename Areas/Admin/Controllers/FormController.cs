@@ -1231,7 +1231,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     {
                         if (progressNote.AttachmentContentType != null && progressNote.AttachmentContentType.StartsWith("image/"))
                         {
-                            var imagePdf = await new PDFService(_pdfConverter).ConvertImageToPdfAsync(progressNote.Attachment);
+                            var imagePdf = await new PDFService(_pdfConverter).ConvertImageToPdfAsync(progressNote.Attachment, progressNote.Date.ToShortDateString(), progressNote.ProgressNotes);
                             pdfList.Add(imagePdf);
                         }
                         else if (progressNote.AttachmentContentType == "application/pdf")

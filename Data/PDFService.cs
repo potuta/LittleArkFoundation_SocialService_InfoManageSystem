@@ -1,7 +1,8 @@
 ﻿using DinkToPdf;
 using DinkToPdf.Contracts;
-using PdfSharp.Pdf.IO;
+using DocumentFormat.OpenXml.Drawing.Diagrams;
 using PdfSharp.Pdf;
+using PdfSharp.Pdf.IO;
 
 namespace LittleArkFoundation.Data
 {
@@ -35,17 +36,20 @@ namespace LittleArkFoundation.Data
                         new ObjectSettings
                         {
                             HtmlContent = htmlContent,
-                            WebSettings =
+                            WebSettings = new WebSettings
                             {
                                 DefaultEncoding = "utf-8",
                                 LoadImages = true,
                                 PrintMediaType = true
                             },
                             UseExternalLinks = true,
-                            LoadSettings =
+                            UseLocalLinks = true,
+                            LoadSettings = new LoadSettings
                             {
                                 ZoomFactor = 1.5
-                            }
+                            },
+                            HeaderSettings = { HtmUrl = "", Spacing = 0 },
+                            FooterSettings = { HtmUrl = "", Spacing = 0 },
                         }
                     }
                 };
@@ -81,7 +85,7 @@ namespace LittleArkFoundation.Data
             });
         }
 
-        public async Task<byte[]> ConvertImageToPdfAsync(byte[] imageBytes, string imageFormat = "png")
+        public async Task<byte[]> ConvertImageToPdfAsync(byte[] imageBytes, string? date, string? text, string imageFormat = "png")
         {
             return await Task.Run(() =>
             {
@@ -94,22 +98,58 @@ namespace LittleArkFoundation.Data
                     <html>
                         <head>
                             <style>
-                                body {{
+                                @page {{
+                                    margin: 0;
+                                }}
+                                html, body {{
                                     margin: 0;
                                     padding: 0;
+                                    height: 100%;
+                                    width: 100%;
+                                    font-family: Arial, sans-serif;
+                                    font-size: 9px;
+                                }}
+                                body {{
                                     display: flex;
                                     justify-content: center;
                                     align-items: center;
-                                    height: 100vh;
+                                    flex-direction: column;
+                                }}
+                                * {{
+                                    -webkit-print-color-adjust: exact;
+                                    print-color-adjust: exact;
+                                    box-sizing: border-box;
                                 }}
                                 img {{
+                                    display: block;
+                                    margin: auto;
                                     max-width: 100%;
-                                    max-height: 100%;
+                                    max-height: 674px; /* 80% of A4 height, 842 * 0.8 */
+                                    object-fit: contain;
+                                    margin-bottom: 10px;
+                                }}
+                                .note-container {{
+                                    border: 1px solid black;
+                                    width: 100%;
+                                    padding: 8px;
+                                    margin: 0px auto;
+                                     
                                 }}
                             </style>
                         </head>
                         <body>
-                            <img src='{imageSrc}' alt='Image'/>
+                            <img src='{imageSrc}' alt='Image' />
+
+                            <div class=""note-container"">
+                                <p style=""font-weight: bold; margin: 0; text-align: center;"">DATE: {date?? "N/A"}</p>
+                            </div>
+
+                            <div class=""note-container"">
+                                <p style=""font-weight: bold; margin: 0 0 -5px; text-align: center;"">PROGRESS NOTES</p>
+                                <p>
+                                    {text?? "N/A"}
+                                </p>
+                            </div>
                         </body>
                     </html>";
 

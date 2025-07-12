@@ -77,6 +77,10 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("Controller:", controller);
     console.log("Action:", action);
 
+    if (action === "Create" || action === "Edit") {
+        return;
+    }
+
     if (controller === "Dashboard") {
         const h2 = document.getElementsByTagName("h2")[0];
         if (h2) {
