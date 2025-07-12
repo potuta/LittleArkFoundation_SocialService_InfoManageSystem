@@ -1,7 +1,8 @@
 ﻿using DinkToPdf;
 using DinkToPdf.Contracts;
-using PdfSharp.Pdf.IO;
+using DocumentFormat.OpenXml.Drawing.Diagrams;
 using PdfSharp.Pdf;
+using PdfSharp.Pdf.IO;
 
 namespace LittleArkFoundation.Data
 {
@@ -84,7 +85,7 @@ namespace LittleArkFoundation.Data
             });
         }
 
-        public async Task<byte[]> ConvertImageToPdfAsync(byte[] imageBytes, string imageFormat = "png")
+        public async Task<byte[]> ConvertImageToPdfAsync(byte[] imageBytes, string? date, string? text, string imageFormat = "png")
         {
             return await Task.Run(() =>
             {
@@ -105,24 +106,50 @@ namespace LittleArkFoundation.Data
                                     padding: 0;
                                     height: 100%;
                                     width: 100%;
+                                    font-family: Arial, sans-serif;
+                                    font-size: 9px;
                                 }}
                                 body {{
                                     display: flex;
                                     justify-content: center;
                                     align-items: center;
+                                    flex-direction: column;
+                                }}
+                                * {{
+                                    -webkit-print-color-adjust: exact;
+                                    print-color-adjust: exact;
+                                    box-sizing: border-box;
                                 }}
                                 img {{
                                     display: block;
                                     margin: auto;
                                     max-width: 100%;
-                                    max-height: 100vh;
-                                    width: auto;
-                                    height: auto;
+                                    max-height: 80vh;
+                                    object-fit: contain;
+                                    margin-bottom: 10px;
+                                }}
+                                .note-container {{
+                                    border: 1px solid black;
+                                    width: 100%;
+                                    padding: 8px;
+                                    margin: 0px auto;
+                                     
                                 }}
                             </style>
                         </head>
                         <body>
-                            <img src='{imageSrc}' alt='Image'/>
+                            <img src='{imageSrc}' alt='Image' />
+
+                            <div class=""note-container"">
+                                <p style=""font-weight: bold; margin: 0; text-align: center;"">DATE: {date?? "N/A"}</p>
+                            </div>
+
+                            <div class=""note-container"">
+                                <p style=""font-weight: bold; margin: 0 0 -5px; text-align: center;"">PROGRESS NOTES</p>
+                                <p>
+                                    {text?? "N/A"}
+                                </p>
+                            </div>
                         </body>
                     </html>";
 
