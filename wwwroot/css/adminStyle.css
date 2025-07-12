@@ -8,6 +8,10 @@
     padding: 0;
 }
 
+html, body {
+    overflow: hidden;
+}
+
 body {
     display: grid;
     grid-template-columns: 9.375rem 1fr; /* 150px */
@@ -55,6 +59,7 @@ body {
     padding: 0.625rem; /* 10px */
     justify-content: space-between;
     transition: width 0.3s ease, padding 0.3s ease;
+    overflow-y: auto; /* allows scrolling if content overflows */
 }
 
     .navbar-left.collapsed {
@@ -100,7 +105,10 @@ body.sidebar-collapsed .navbar-left {
     margin-left: 2rem;
     padding: 1.25rem; /* 20px */
     box-sizing: border-box;
+    overflow-y: auto; /* allows scrolling if content overflows */
+    height: calc(100vh - var(--navbar-top-height));
 }
+
     .main-content main .container-fluid {
         /*        max-width: 1650px !important;*/
         max-width: calc(100vw - 250px) !important;
