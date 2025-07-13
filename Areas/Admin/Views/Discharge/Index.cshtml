@@ -5,8 +5,9 @@
     ViewData["Title"] = "Discharge";
     Layout = "_AdminLayout";
     string? sortBy = ViewBag.sortBy ?? "";
+    string? sortByUserID = ViewBag.sortByUserID ?? "";
+    string? sortByMonth = ViewBag.sortByMonth ?? "";
     bool matchedUser = Model.Users.Any(u => u.Username == sortBy);
-
 }
 
 <style>
@@ -53,6 +54,7 @@
 </div>
 <hr />
 
+@* Search *@
 <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
     <div class="search-container" style="width: 100%">
         <form asp-action="Search" asp-controller="Discharge">
@@ -67,9 +69,12 @@
         </form>
         <a class="btn btn-primary" asp-action="Index" asp-controller="Discharge">← Back to Full List</a>
     </div>
+</div>
 
+<div class="d-flex justify-content-end align-items-start flex-wrap gap-2 mb-3">
+    @* Right toggles/buttons *@
     <div class="btn-group">
-        <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-1" data-bs-toggle="dropdown" aria-expanded="false">
+        <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-1 me-2" data-bs-toggle="dropdown" aria-expanded="false">
             @if (string.IsNullOrEmpty(sortBy))
             {
                 <span class="mb-0">Sort by MSW</span>
@@ -80,13 +85,17 @@
             }
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" asp-action="SortBy" asp-controller="Discharge" asp-route-sortByUserID="">All</a></li>
+            <li><a class="dropdown-item" asp-action="SortBy" asp-controller="Discharge"
+                   asp-route-sortByUserID="" asp-route-sortByMonth="@sortByMonth">All</a>
+            </li>
             @foreach (var user in Model.Users)
             {
-                <li><a class="dropdown-item" asp-action="SortBy" asp-controller="Discharge" asp-route-sortByUserID="@user.UserID">@user.Username</a></li>
+                <li><a class="dropdown-item" asp-action="SortBy" asp-controller="Discharge"
+                       asp-route-sortByUserID="@user.UserID" asp-route-sortByMonth="@sortByMonth">@user.Username</a>
+                </li>
             }
         </ul>
-        @if (matchedUser)
+        @* @if (matchedUser)
         {
             foreach (var user in Model.Users)
             {
@@ -106,11 +115,63 @@
                asp-action="ExportToExcel">
                 <i class="bi bi-download"></i> Download Excel (All)
             </a>
-        }
-       @*  <a class="btn btn-sm btn-primary" style="margin-left:5px;"
-            asp-action="ViewStats">
-            View Stats
-        </a> *@
+        } *@
+
+        @* Month filter *@
+        <form method="get" asp-action="SortBy" class="d-flex align-items-center gap-2">
+            <input type="hidden" name="sortByUserID" value="@sortByUserID" />
+            <input type="month" name="sortByMonth" class="form-control form-control-sm" value="@sortByMonth" />
+            <button type="submit" class="btn btn-secondary btn-sm" style="width: 100%;">
+                <i class="bi bi-filter"></i> Filter Month
+            </button>
+        </form>
+
+        <button type="button" class="btn btn-success btn-sm" style="margin-left:5px;"
+                data-bs-toggle="modal"
+                data-bs-target="#exportModal"
+                data-bs-toggle="tooltip"
+                title="Download Excel">
+            <i class="bi bi-download"></i> Download Excel
+        </button>
+
+        <!-- Download/Export Excel Modal -->
+        <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form asp-action="ExportLogsheetToExcel" asp-controller="Discharge" method="get">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exportModalLabel">Export to Excel</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="userID" class="form-label">MSW</label>
+                                <select class="form-select" id="userID" name="userID">
+                                    <option value="0">All</option>
+                                    @foreach (var user in Model.Users)
+                                    {
+                                        <option value="@user.UserID">@user.Username</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="month" class="form-label">Month</label>
+                                <input type="month" id="month" name="month" class="form-control">
+                                <div class="form-text">Leave empty for "All Time"</div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">Export</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+       
     </div>
 
 </div>

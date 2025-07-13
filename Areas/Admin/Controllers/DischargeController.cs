@@ -1064,36 +1064,38 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
-        public async Task<IActionResult> ExportToExcel(int userID)
+        public async Task<IActionResult> ExportLogsheetToExcel(int userID, string? month)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
 
-            List<DischargesModel> discharges;
-            string fileName;
+            // Parse the month input if provided
+            bool filterByMonth = DateTime.TryParseExact(month, "yyyy-MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedMonth);
 
-            if (userID == 0)
+            var query = context.Discharges.AsQueryable();
+
+            if (userID > 0)
             {
-                discharges = await context.Discharges.ToListAsync();
-                fileName = $"Discharges_{discharges[0].DischargedDate.Year}_All";
-            }
-            else
-            {
-                discharges = await context.Discharges
-                    .Where(d => d.UserID == userID)
-                    .ToListAsync();
-
-                if (discharges == null || !discharges.Any())
-                {
-                    TempData["ErrorMessage"] = "No discharges found for the selected user.";
-                    return RedirectToAction("Index");
-                }
-
-                fileName = $"Discharges_{discharges[0].DischargedDate.Year}_{discharges[0].MSW}";
+                query = query.Where(p => p.UserID == userID);
             }
 
-            // Sanitize file name (for download)
-            string safeFileName = Regex.Replace(fileName, @"[^\w\-]", "_");
+            if (filterByMonth)
+            {
+                query = query.Where(p => p.DischargedDate.Month == parsedMonth.Month && p.DischargedDate.Year == parsedMonth.Year);
+            }
+
+            var discharges = await query.ToListAsync();
+
+            if (discharges == null || !discharges.Any())
+            {
+                TempData["ErrorMessage"] = "No Discharges found for the specified filter.";
+                return RedirectToAction("Index");
+            }
+
+            // File name generation
+            string mswName = userID > 0 ? discharges.First().MSW : "All MSW";
+            string monthLabel = filterByMonth ? parsedMonth.ToString("MMMM_yyyy") : discharges.First().DischargedDate.Year.ToString();
+            string fileName = $"Discharges_Logsheet_{monthLabel}_{mswName}";
 
             // Sanitize sheet name (for Excel)
             string safeSheetName = Regex.Replace(fileName, @"[\[\]\*\?/\\:]", "_");
