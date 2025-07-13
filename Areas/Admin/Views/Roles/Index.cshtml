@@ -17,11 +17,16 @@
 <h2>Roles</h2>
 <hr />
 
-<div>
-    <!-- Button to Open Modal -->
-    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createRoleModal">
-        Create New
-    </button>
+<div class="d-flex justify-content-between align-items-center">
+    @* Left toggles/buttons *@
+    <div class="d-flex align-items-center gap-3">
+        <!-- Button to Open Modal -->
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createRoleModal"
+                data-bs-toggle="tooltip"
+                title="Create New">
+            <i class="bi bi-file-earmark-plus"></i> Create New
+        </button>
+    </div>
 </div>
 
 @if (TempData["SuccessMessage"] != null)
@@ -58,10 +63,18 @@
             {
                 <tr>
                     <td class="sticky-col d-flex gap-2" style="white-space: nowrap; left: 0; z-index: 1;">
-                        <a href="@Url.Action("Edit", new { id = role.RoleID })" class="btn btn-primary">Edit</a>
+                        <a href="@Url.Action("Edit", new { id = role.RoleID })" class="btn btn-primary"
+                           data-bs-toggle="tooltip"
+                           title="Edit">
+                            <i class="bx bx-edit"></i>
+                        </a>
 						@if (role.RoleName != "Admin" && role.RoleName != "Social Worker" && role.RoleName != "Billing")
 						{
-                            <a href="@Url.Action("Delete", new { id = role.RoleID })" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this role?');">Delete</a>
+                            <a href="@Url.Action("Delete", new { id = role.RoleID })" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this role?');"
+                               data-bs-toggle="tooltip"
+                               title="Delete">
+                                <i class="bi bi-trash3"></i>
+                            </a>
 						}
 						
                     </td>

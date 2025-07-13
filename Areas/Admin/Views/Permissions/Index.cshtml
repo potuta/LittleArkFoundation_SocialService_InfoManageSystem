@@ -8,11 +8,16 @@
 <h2>Permissions</h2>
 <hr />
 
-<div>
-    <!-- Button to Open Modal -->
-    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createPermissionModal">
-        Create New
-    </button>
+<div class="d-flex justify-content-between align-items-center">
+    @* Left toggles/buttons *@
+    <div class="d-flex align-items-center gap-3">
+        <!-- Button to Open Modal -->
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createPermissionModal"
+                data-bs-toggle="tooltip"
+                title="Create New">
+            <i class="bi bi-file-earmark-plus"></i> Create New
+        </button>
+    </div>
 </div>
 
 @if (TempData["CreateSuccess"] != null)
@@ -28,9 +33,9 @@
         @if (Model != null)
         {
             <tr>
+                <th class="sticky-col" style="left: 0; z-index: 2;">Actions</th>
                 <th>PermissionID</th>
                 <th>Name</th>
-                <th></th>
             </tr>
         }
     </thead>
@@ -40,12 +45,20 @@
             @foreach (var permission in Model.Permissions)
             {
                 <tr>
+                    <td class="sticky-col d-flex gap-1" style="white-space: nowrap; left: 0; z-index: 1;">
+                        <a href="@Url.Action("Edit", new { id = permission.PermissionID })" class="btn btn-primary"
+                           data-bs-toggle="tooltip"
+                           title="Edit">
+                            <i class="bx bx-edit"></i>
+                        </a>
+                        <a href="@Url.Action("Delete", new { id = permission.PermissionID })" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this permission?');"
+                           data-bs-toggle="tooltip"
+                           title="Delete">
+                            <i class="bi bi-trash3"></i>
+                        </a>
+                    </td>
                     <td>@permission.PermissionID</td>
                     <td>@permission.Name</td>
-                    <td>
-                        <a href="@Url.Action("Edit", new { id = permission.PermissionID })" class="btn btn-primary">Edit</a>
-                        <a href="@Url.Action("Delete", new { id = permission.PermissionID })" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this permission?');">Delete</a>
-                    </td>
                 </tr>
             }
         }

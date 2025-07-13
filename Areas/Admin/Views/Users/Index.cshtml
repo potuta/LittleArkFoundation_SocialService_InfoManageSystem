@@ -29,29 +29,36 @@
     <a class="btn btn-primary" asp-action="Index" asp-controller="Users" asp-route-isArchive="@isArchive">Back to Full List</a>
 </div>
 
-<div>
+<div class="d-flex justify-content-between align-items-center">
+    @* Left toggles/buttons *@
+    <div class="d-flex align-items-center gap-3">
+        @if (!isArchive)
+        {
+            <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createUserModal"
+               data-bs-toggle="tooltip"
+               title="Create New">
+                <i class="bi bi-file-earmark-plus"></i> Create New
+            </a>
+        }
 
-    @if (!isArchive)
-    {
-        <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createUserModal">Create New</a>
-    }
-
-    <div class="btn-group btn-group-toggle" data-toggle="buttons">
-        <a asp-action="Index" asp-controller="Users" asp-route-isArchive="false" class="btn btn-secondary @(isArchive ? "" : "active")">
-            <div class="custom-radio">
-                <input type="radio" style="accent-color: dodgerblue" value="main" @(isArchive ? "" : "checked")>
-                <label style="margin-bottom: 0">Active</label>
-            </div>
-        </a>
-        <a asp-action="Index" asp-controller="Users" asp-route-isArchive="true" class="btn btn-secondary @(isArchive ? "active" : "")">
-            <div class="custom-radio">
-                <input type="radio" style="accent-color: dodgerblue" value="archive" @(isArchive ? "checked" : "")>
-                <label style="margin-bottom: 0">Archived</label>
-            </div>
-        </a>
+        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <a asp-action="Index" asp-controller="Users" asp-route-isArchive="false" class="btn btn-secondary @(isArchive ? "" : "active")">
+                <div class="custom-radio">
+                    <input type="radio" style="accent-color: dodgerblue" value="main" @(isArchive ? "" : "checked")>
+                    <label style="margin-bottom: 0">Active</label>
+                </div>
+            </a>
+            <a asp-action="Index" asp-controller="Users" asp-route-isArchive="true" class="btn btn-secondary @(isArchive ? "active" : "")">
+                <div class="custom-radio">
+                    <input type="radio" style="accent-color: dodgerblue" value="archive" @(isArchive ? "checked" : "")>
+                    <label style="margin-bottom: 0">Archived</label>
+                </div>
+            </a>
+        </div>
     </div>
 
-    <div class="btn-group float-end">
+    @* Right toggles/buttons *@
+    <div class="btn-group">
         <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-1" data-bs-toggle="dropdown" aria-expanded="false">
             @if (string.IsNullOrEmpty(sortBy))
             {
@@ -136,9 +143,17 @@
 							var roleName = Model.Roles.FirstOrDefault(r => r.RoleID == user.RoleID)?.RoleName ?? "Unknown";
 
                             <tr>
-                                <td class="sticky-col d-flex gap-2" style="white-space: nowrap; left: 0; z-index: 1;">
-                                    <a href="@Url.Action("Edit", new { id = user.UserID })" class="btn btn-primary">Edit</a>
-                                    <a href="@Url.Action("Archive", new { id = user.UserID })" class="btn btn-danger" onclick="return confirm('Are you sure you want to archive this user?');">Move to Archive</a>
+                                <td class="sticky-col d-flex gap-1" style="white-space: nowrap; left: 0; z-index: 1;">
+                                    <a href="@Url.Action("Edit", new { id = user.UserID })" class="btn btn-primary"
+                                       data-bs-toggle="tooltip"
+                                       title="Edit">
+                                        <i class="bx bx-edit"></i>
+                                    </a>
+                                    <a href="@Url.Action("Archive", new { id = user.UserID })" class="btn btn-danger" onclick="return confirm('Are you sure you want to archive this user?');"
+                                       data-bs-toggle="tooltip"
+                                       title="Archive User">
+                                        <i class="bi bi-archive"></i>
+                                    </a>
                                 </td>
                                 <td style="white-space: nowrap;">@user.UserID</td>
                                 <td style="white-space: nowrap;">@user.Username</td>
@@ -157,8 +172,12 @@
                             var roleName = Model.Roles.FirstOrDefault(r => r.RoleID == user.RoleID)?.RoleName ?? "Unknown";
 
                             <tr>
-                                <td class="sticky-col d-flex gap-2" style="white-space: nowrap; left: 0; z-index: 1;">
-                                    <a href="@Url.Action("Unarchive", new { id = user.UserID })" class="btn btn-success" onclick="return confirm('Are you sure you want to unarchive this user?');">Unarchive</a>
+                                <td class="sticky-col d-flex gap-1" style="white-space: nowrap; left: 0; z-index: 1;">
+                                    <a href="@Url.Action("Unarchive", new { id = user.UserID })" class="btn btn-success" onclick="return confirm('Are you sure you want to unarchive this user?');"
+                                       data-bs-toggle="tooltip"
+                                       title="Unarchive User">
+                                        <i class="bi bi-box-arrow-in-left"></i>
+                                    </a>
                                 </td>
                                 <td style="white-space: nowrap;">@user.UserID</td>
                                 <td style="white-space: nowrap;">@user.Username</td>
