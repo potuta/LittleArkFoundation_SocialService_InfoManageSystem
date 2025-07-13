@@ -197,7 +197,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     await context.Users.AddAsync(viewModel.NewUser);
                     await context.SaveChangesAsync();
 
-                    TempData["CreateSuccess"] = $"Successfully added new user! UserID: {viewModel.NewUser.UserID} Username: {viewModel.NewUser.Username}";
+                    TempData["SuccessMessage"] = $"Successfully added new user! UserID: {viewModel.NewUser.UserID} Username: {viewModel.NewUser.Username}";
                     LoggingService.LogInformation($"User creation successful. Created new user UserID: {viewModel.NewUser.UserID}. Created by UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
                 }
             }
@@ -293,6 +293,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     context.Users.Update(user.NewUser);
                     await context.SaveChangesAsync();
 
+                    TempData["SuccessMessage"] = $"Successfully edited user! UserID: {user.NewUser.UserID} Username: {user.NewUser.Username}";
                     LoggingService.LogInformation($"User edit sucessful. Edited UserID: {user.NewUser.UserID}. Edited by UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
                 }
             }
@@ -321,7 +322,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                     if (user.UserID.ToString() == userIdClaim.Value)
                     {
-                        TempData["ArchiveError"] = "Can't archive the user you're currently using.";
+                        TempData["ErrorMessage"] = "Can't archive the user you're currently using.";
                         return RedirectToAction("Index", new { isArchive = false });
                     }
 
@@ -343,6 +344,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     context.Users.Remove(user);
 
                     await context.SaveChangesAsync();
+
+                    TempData["SuccessMessage"] = $"Successfully archived user! UserID: {userArchive.UserID} Username: {userArchive.Username}";
                     LoggingService.LogInformation($"User archive successful. Archived UserID: {userArchive.UserID}. Archived by UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
                 }
             }
@@ -387,6 +390,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                     await context.SaveChangesAsync();
 
+                    TempData["SuccessMessage"] = $"Successfully unarchived user! UserID: {user.UserID} Username: {user.Username}";
                     LoggingService.LogInformation($"User unarchive successful. Unarchived UserID: {user.UserID}. Archived by UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
                 }
             }
