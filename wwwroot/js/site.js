@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("Controller:", controller);
     console.log("Action:", action);
 
-    if (action === "Create" || action === "Edit") {
+    if (action === "Create" || action === "Edit" || action === "InterviewGeneral" || action === "AdmitOPD") {
         return;
     }
 
