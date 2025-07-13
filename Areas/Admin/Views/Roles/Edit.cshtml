@@ -74,6 +74,7 @@
                         <tr>
                             <th>Module</th>
                             <th>View</th>
+                            <th>Create</th>
 							<th>Edit</th>
 							<th>Admit/Discharge</th>
                         </tr>
@@ -98,6 +99,20 @@
                                         }
 									}
 								</td>
+
+                                @* Create *@
+                                <td>
+                                    @foreach (var perm in permission.Where(p => p.PermissionType == "Create"))
+                                    {
+                                        var index = Model.Permissions.IndexOf(perm);
+                                        if (index != -1)
+                                        {
+                                            <input type="hidden" asp-for="Permissions[@index].PermissionID" />
+                                            <input type="hidden" asp-for="Permissions[@index].Name" />
+                                            <input type="checkbox" asp-for="Permissions[@index].IsSelected" />
+                                        }
+                                    }
+                                </td>
 
                                 @* Edit *@
                                 <td>
