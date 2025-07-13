@@ -771,11 +771,24 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
             }
 
+            var latestAssessment = await context.Assessments
+                .Where(a => a.PatientID == id)
+                .OrderByDescending(a => a.DateOfInterview)
+                .ThenByDescending(a => a.TimeOfInterview)
+                .FirstOrDefaultAsync();
+
+            var currentAssessment = await context.Assessments
+                .FirstOrDefaultAsync(a => a.PatientID == id && a.AssessmentID == assessmentID);
+
+            bool isLatestAssessment = latestAssessment != null && currentAssessment != null &&
+                                      latestAssessment.AssessmentID == currentAssessment.AssessmentID;
+
             return View(new HtmlFormViewModel
             {
                 Id = id,
                 AssessmentID = assessmentID,
-                HtmlPages = htmlResults
+                HtmlPages = htmlResults,
+                isLatestAssessment = isLatestAssessment
             });
         }
 

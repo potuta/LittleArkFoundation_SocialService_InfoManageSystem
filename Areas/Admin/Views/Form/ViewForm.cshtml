@@ -96,11 +96,16 @@
     @Html.AntiForgeryToken()
     <input type="hidden" name="id" value="@Model.Id" />
     <input type="hidden" name="assessmentID" value="@Model.AssessmentID" />
-    <a class="btn btn-sm btn-success" asp-action="Edit" asp-route-id="@Model.Id" asp-route-assessmentID="@Model.AssessmentID"
-       data-bs-toggle="tooltip"
-       title="Edit">
-        <i class="bx bx-edit"></i>
-    </a>
+
+    @if (Model.isLatestAssessment)
+    {
+        <a class="btn btn-sm btn-success" asp-action="Edit" asp-route-id="@Model.Id" asp-route-assessmentID="@Model.AssessmentID"
+           data-bs-toggle="tooltip"
+           title="Edit">
+            <i class="bx bx-edit"></i>
+        </a>
+    }
+
     <button type="submit" class="btn btn-sm btn-primary"
         data-bs-toggle="tooltip"
         title="Download PDF">
