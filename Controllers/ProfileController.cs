@@ -38,7 +38,8 @@ namespace LittleArkFoundation.Controllers
             }
             catch (Exception ex)
             {
-                LoggingService.LogError("Error: " + ex.Message);
+                LoggingService.LogError("Error: " + ex);
+                TempData["ErrorMessage"] = "Error: " + ex.Message;
                 return RedirectToAction("Index", id);
             }
         }
@@ -87,7 +88,7 @@ namespace LittleArkFoundation.Controllers
             }
             catch (Exception ex)
             {
-                LoggingService.LogError("Error: " + ex.Message);
+                LoggingService.LogError("Error: " + ex);
                 TempData["ErrorMessage"] = "Error: " + ex.Message;
                 return RedirectToAction("Index", user.NewUser.UserID);
             }

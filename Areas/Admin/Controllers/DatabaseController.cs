@@ -46,13 +46,13 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
             catch (SqlException ex)
             {
-                LoggingService.LogError("SQL Error: " + ex.Message);
+                LoggingService.LogError("SQL Error: " + ex);
                 TempData["ErrorMessage"] = " SQL Error: " + ex.Message;
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                LoggingService.LogError("Error: " + ex.Message);
+                LoggingService.LogError("Error: " + ex);
                 TempData["ErrorMessage"] = "Error: " + ex.Message;
                 return RedirectToAction("Index");
             }
@@ -84,13 +84,13 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
             catch (SqlException ex)
             {
-                LoggingService.LogError("SQL Error: " + ex.Message);
+                LoggingService.LogError("SQL Error: " + ex);
                 TempData["ErrorMessage"] = " SQL Error: " + ex.Message;
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                LoggingService.LogError("Error: " + ex.Message);
+                LoggingService.LogError("Error: " + ex);
                 TempData["ErrorMessage"] = "Error: " + ex.Message;
                 return RedirectToAction("Index");
             }
@@ -109,7 +109,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                LoggingService.LogError("Error: " + ex.Message);
+                LoggingService.LogError("Error: " + ex);
                 TempData["ErrorMessage"] = "Error: " + ex.Message;
                 return RedirectToAction("Index");
             }
@@ -132,13 +132,13 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
             catch (SqlException ex)
             {
-                LoggingService.LogError("SQL Error: " + ex.Message);
+                LoggingService.LogError("SQL Error: " + ex);
                 TempData["ErrorMessage"] = " SQL Error: " + ex.Message;
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                LoggingService.LogError("Error: " + ex.Message);
+                LoggingService.LogError("Error: " + ex);
                 TempData["ErrorMessage"] = "Error: " + ex.Message;
                 return RedirectToAction("Index");
             }
@@ -180,13 +180,13 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
             catch (SqlException ex)
             {
-                LoggingService.LogError("SQL Error: " + ex.Message);
+                LoggingService.LogError("SQL Error: " + ex);
                 TempData["ErrorMessage"] = " SQL Error: " + ex.Message;
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                LoggingService.LogError("Error: " + ex.Message);
+                LoggingService.LogError("Error: " + ex);
                 TempData["ErrorMessage"] = "Error: " + ex.Message;
                 return RedirectToAction("Index");
             }
@@ -222,13 +222,13 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
             catch (SqlException ex)
             {
-                LoggingService.LogError("SQL Error: " + ex.Message);
+                LoggingService.LogError("SQL Error: " + ex);
                 TempData["ErrorMessage"] = " SQL Error: " + ex.Message;
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                LoggingService.LogError("Error: " + ex.Message);
+                LoggingService.LogError("Error: " + ex);
                 TempData["ErrorMessage"] = "Error: " + ex.Message;
                 return RedirectToAction("Index");
             }

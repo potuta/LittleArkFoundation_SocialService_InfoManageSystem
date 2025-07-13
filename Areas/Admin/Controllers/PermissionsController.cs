@@ -74,7 +74,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                LoggingService.LogError("Error: " + ex.Message);
+                LoggingService.LogError("Error: " + ex);
                 return RedirectToAction("Index");
             }
 
@@ -112,7 +112,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                LoggingService.LogError("Error: " + ex.Message);
+                LoggingService.LogError("Error: " + ex);
                 return RedirectToAction("Index");
             }
 

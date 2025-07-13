@@ -37,7 +37,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                LoggingService.LogError("Error: " + ex.Message);
+                LoggingService.LogError("Error: " + ex);
                 TempData["ErrorMessage"] = "Error: " + ex.Message;
                 return View("Index");
             }
@@ -69,7 +69,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                LoggingService.LogError("Error: " + ex.Message);
+                LoggingService.LogError("Error: " + ex);
                 TempData["ErrorMessage"] = "Error: " + ex.Message;
                 return View("Index");
             }
