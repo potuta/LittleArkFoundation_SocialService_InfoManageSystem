@@ -89,28 +89,31 @@
     <a class="btn btn-primary" asp-action="Index" asp-controller="Form">← Back to Full List</a>
 </div>
 
-<div>
+<div class="d-flex justify-content-between align-items-center">
 
-    @if (isActive)
-    {
-        <a class="btn btn-success" asp-action="Create" asp-controller="Form">
-            <i class="bi bi-file-earmark-plus"></i> Create New
-        </a>
-    }
+    @* Left toggles/buttons *@
+    <div class="d-flex align-items-center gap-3">
+        @if (isActive)
+        {
+            <a class="btn btn-success" asp-action="Create" asp-controller="Form">
+                <i class="bi bi-file-earmark-plus"></i> Create New
+            </a>
+        }
 
-    <div class="btn-group btn-group-toggle" data-toggle="buttons">
-        <a asp-action="Index" asp-controller="Form" asp-route-isActive="true" class="btn btn-secondary @(isActive ? "active" : "")">
-            <div class="custom-radio">
-                <input type="radio" style="accent-color: dodgerblue" value="main" @(isActive ? "checked" : "")>
-                <label style="margin-bottom: 0">Active</label>
-            </div>
-        </a>
-        <a asp-action="Index" asp-controller="Form" asp-route-isActive="false" class="btn btn-secondary @(isActive ? "" : "active")">
-            <div class="custom-radio">
-                <input type="radio" style="accent-color: dodgerblue" value="archive" @(isActive ? "" : "checked")>
-                <label style="margin-bottom: 0">Discharged</label>
-            </div>
-        </a>
+        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <a asp-action="Index" asp-controller="Form" asp-route-isActive="true" class="btn btn-secondary @(isActive ? "active" : "")">
+                <div class="custom-radio">
+                    <input type="radio" style="accent-color: dodgerblue" value="main" @(isActive ? "checked" : "")>
+                    <label style="margin-bottom: 0">Active</label>
+                </div>
+            </a>
+            <a asp-action="Index" asp-controller="Form" asp-route-isActive="false" class="btn btn-secondary @(isActive ? "" : "active")">
+                <div class="custom-radio">
+                    <input type="radio" style="accent-color: dodgerblue" value="archive" @(isActive ? "" : "checked")>
+                    <label style="margin-bottom: 0">Discharged</label>
+                </div>
+            </a>
+        </div>
     </div>
 
 </div>
