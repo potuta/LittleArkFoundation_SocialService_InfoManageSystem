@@ -194,6 +194,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return View(viewModel);
         }
 
+        [HasPermission("CreateForm")]
         public async Task<IActionResult> AdmitOPD(int Id)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
@@ -264,6 +265,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return View("Create", viewModel);
         }
 
+        [HasPermission("CreateForm")]
         public async Task<IActionResult> InterviewGeneral(int Id)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
