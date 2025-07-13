@@ -787,12 +787,18 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             bool isLatestAssessment = latestAssessment != null && currentAssessment != null &&
                                       latestAssessment.AssessmentID == currentAssessment.AssessmentID;
 
+            var patient = await context.Patients
+                .FirstOrDefaultAsync(p => p.PatientID == id);
+
+            bool isActive = patient != null && patient.IsActive;
+
             return View(new HtmlFormViewModel
             {
                 Id = id,
                 AssessmentID = assessmentID,
                 HtmlPages = htmlResults,
-                isLatestAssessment = isLatestAssessment
+                isLatestAssessment = isLatestAssessment,
+                isActive = isActive
             });
         }
 

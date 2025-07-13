@@ -97,25 +97,28 @@
     <input type="hidden" name="id" value="@Model.Id" />
     <input type="hidden" name="assessmentID" value="@Model.AssessmentID" />
 
-    @if (Model.isLatestAssessment)
+    @if (Model.isActive)
     {
-        @if (User.HasClaim("Permission", "EditForm"))
+        if (Model.isLatestAssessment)
         {
-            <a class="btn btn-sm btn-success" asp-action="Edit" asp-route-id="@Model.Id" asp-route-assessmentID="@Model.AssessmentID"
-               data-bs-toggle="tooltip"
-               title="Edit">
-                <i class="bx bx-edit"></i>
-            </a>
-        }
-        else
-        {
-            <a class="btn btn-success text-muted"
-               style="cursor: not-allowed;"
-               aria-disabled="true"
-               tabindex="-1"
-               title="You do not have permission to Edit">
-                <i class="bx bx-edit"></i>
-            </a>
+            if (User.HasClaim("Permission", "EditForm"))
+            {
+                <a class="btn btn-sm btn-success" asp-action="Edit" asp-route-id="@Model.Id" asp-route-assessmentID="@Model.AssessmentID"
+                   data-bs-toggle="tooltip"
+                   title="Edit">
+                    <i class="bx bx-edit"></i>
+                </a>
+            }
+            else
+            {
+                <a class="btn btn-success text-muted"
+                   style="cursor: not-allowed;"
+                   aria-disabled="true"
+                   tabindex="-1"
+                   title="You do not have permission to Edit">
+                    <i class="bx bx-edit"></i>
+                </a>
+            }
         }
     }
 
