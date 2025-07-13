@@ -24,6 +24,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using PdfSharp.Drawing;
 using System.Data;
 using System.Runtime.InteropServices;
 using System.Security.Claims;
@@ -1231,12 +1232,15 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     {
                         if (progressNote.AttachmentContentType != null && progressNote.AttachmentContentType.StartsWith("image/"))
                         {
-                            var imagePdf = await new PDFService(_pdfConverter).ConvertImageToPdfAsync(progressNote.Attachment, progressNote.Date.ToShortDateString(), progressNote.ProgressNotes);
+                            var parts = progressNote.AttachmentContentType.Split('/');
+                            var imageFormat = parts.Length > 1 ? parts[1] : "png"; // Default to png if format is not specified
+                            var imagePdf = await new PDFService(_pdfConverter).ConvertImageToPdfAsync(progressNote.Attachment, progressNote.Date.ToShortDateString(), progressNote.ProgressNotes, imageFormat);
                             pdfList.Add(imagePdf);
                         }
                         else if (progressNote.AttachmentContentType == "application/pdf")
                         {
-                            pdfList.Add(progressNote.Attachment);
+                            var imagePdf = await new PDFService(_pdfConverter).ConvertImageToPdfAsync(progressNote.Attachment, progressNote.Date.ToShortDateString(), progressNote.ProgressNotes, "pdf");
+                            pdfList.Add(imagePdf);
                         }
 
                     }

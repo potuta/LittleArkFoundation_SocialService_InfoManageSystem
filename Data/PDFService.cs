@@ -85,76 +85,85 @@ namespace LittleArkFoundation.Data
             });
         }
 
-        public async Task<byte[]> ConvertImageToPdfAsync(byte[] imageBytes, string? date, string? text, string imageFormat = "png")
+        public async Task<byte[]> ConvertImageToPdfAsync(byte[] bytes, string? date, string? text, string? format = "png")
         {
-            return await Task.Run(() =>
+            // Convert image bytes to base64 string
+            string base64 = Convert.ToBase64String(bytes);
+            string src, html, srcTag;
+
+            // WIP pdf handling
+            if (format?.ToLower() == "pdf") {
+                //src = $"data:application/{format};base64,{base64}";
+                //srcTag = $"<iframe src='{src}' width='100%' height='674px' frameborder='0' ></iframe>";
+                return bytes; // Return the original bytes if format is PDF
+            }
+            else
             {
-                // Convert image bytes to base64 string
-                string base64 = Convert.ToBase64String(imageBytes);
-                string imageSrc = $"data:image/{imageFormat};base64,{base64}";
+                src = $"data:image/{format};base64,{base64}";
+                srcTag = $"<img src='{src}' alt='Image' />";
+            }
 
-                // Basic HTML that embeds the image
-                string html = $@"
-                    <html>
-                        <head>
-                            <style>
-                                @page {{
-                                    margin: 0;
-                                }}
-                                html, body {{
-                                    margin: 0;
-                                    padding: 0;
-                                    height: 100%;
-                                    width: 100%;
-                                    font-family: Arial, sans-serif;
-                                    font-size: 9px;
-                                }}
-                                body {{
-                                    display: flex;
-                                    justify-content: center;
-                                    align-items: center;
-                                    flex-direction: column;
-                                }}
-                                * {{
-                                    -webkit-print-color-adjust: exact;
-                                    print-color-adjust: exact;
-                                    box-sizing: border-box;
-                                }}
-                                img {{
-                                    display: block;
-                                    margin: auto;
-                                    max-width: 100%;
-                                    max-height: 674px; /* 80% of A4 height, 842 * 0.8 */
-                                    object-fit: contain;
-                                    margin-bottom: 10px;
-                                }}
-                                .note-container {{
-                                    border: 1px solid black;
-                                    width: 100%;
-                                    padding: 8px;
-                                    margin: 0px auto;
+            // Basic HTML that embeds the image
+            html = $@"
+                <html>
+                    <head>
+                        <style>
+                            @page {{
+                                margin: 0;
+                            }}
+                            html, body {{
+                                margin: 0;
+                                padding: 0;
+                                height: 100%;
+                                width: 100%;
+                                font-family: Arial, sans-serif;
+                                font-size: 9px;
+                            }}
+                            body {{
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                flex-direction: column;
+                            }}
+                            * {{
+                                -webkit-print-color-adjust: exact;
+                                print-color-adjust: exact;
+                                box-sizing: border-box;
+                            }}
+                            img, iframe {{
+                                display: block;
+                                margin: auto;
+                                max-width: 100%;
+                                max-height: 674px; /* 80% of A4 height, 842 * 0.8 */
+                                object-fit: contain;
+                                margin-bottom: 10px;
+                            }}
+                            .note-container {{
+                                border: 1px solid black;
+                                width: 100%;
+                                padding: 8px;
+                                margin: 0px auto;
                                      
-                                }}
-                            </style>
-                        </head>
-                        <body>
-                            <img src='{imageSrc}' alt='Image' />
+                            }}
+                        </style>
+                    </head>
+                    <body>
+                        {srcTag}
 
-                            <div class=""note-container"">
-                                <p style=""font-weight: bold; margin: 0; text-align: center;"">DATE: {date?? "N/A"}</p>
-                            </div>
+                        <div class=""note-container"">
+                            <p style=""font-weight: bold; margin: 0; text-align: center;"">DATE: {date?? "N/A"}</p>
+                        </div>
 
-                            <div class=""note-container"">
-                                <p style=""font-weight: bold; margin: 0 0 -5px; text-align: center;"">PROGRESS NOTES</p>
-                                <p>
-                                    {text?? "N/A"}
-                                </p>
-                            </div>
-                        </body>
-                    </html>";
+                        <div class=""note-container"">
+                            <p style=""font-weight: bold; margin: 0 0 -5px; text-align: center;"">PROGRESS NOTES</p>
+                            <p>
+                                {text?? "N/A"}
+                            </p>
+                        </div>
+                    </body>
+                </html>";
 
-                return GeneratePdfAsync(html, "Image Attachment");
-            });
+            return await GeneratePdfAsync(html, "Image Attachment");
         }
 
     }
