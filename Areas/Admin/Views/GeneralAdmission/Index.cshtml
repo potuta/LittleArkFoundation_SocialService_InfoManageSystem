@@ -312,12 +312,23 @@
                                 }
                                 else
                                 {
-                                    <a asp-action="InterviewGeneral" asp-controller="Form" asp-route-Id="@patient.Id" 
+                                    @* <a asp-action="InterviewGeneral" asp-controller="Form" asp-route-Id="@patient.Id" 
                                        class="btn btn-secondary"
                                        data-bs-toggle="tooltip"
                                        title="Interview Patient">
                                         <i class="bi bi-box-arrow-in-left"></i>
-                                    </a>
+                                    </a> *@
+
+                                    @await Html.PartialAsync("_PermissionButton", (
+                                        "CreateForm",
+                                        "InterviewGeneral",
+                                        "Form",
+                                        (object)new { Id = patient.Id },
+                                        "bi bi-box-arrow-in-left",
+                                        "Interview Patient",
+                                        "secondary"
+                                        ))
+
                                 }
                                 <a asp-action="Edit" asp-controller="GeneralAdmission" asp-route-Id="@patient.Id" 
                                    class="btn btn-success"
