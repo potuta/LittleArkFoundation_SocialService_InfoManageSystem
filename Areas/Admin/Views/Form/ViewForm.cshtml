@@ -99,11 +99,24 @@
 
     @if (Model.isLatestAssessment)
     {
-        <a class="btn btn-sm btn-success" asp-action="Edit" asp-route-id="@Model.Id" asp-route-assessmentID="@Model.AssessmentID"
-           data-bs-toggle="tooltip"
-           title="Edit">
-            <i class="bx bx-edit"></i>
-        </a>
+        @if (User.HasClaim("Permission", "EditForm"))
+        {
+            <a class="btn btn-sm btn-success" asp-action="Edit" asp-route-id="@Model.Id" asp-route-assessmentID="@Model.AssessmentID"
+               data-bs-toggle="tooltip"
+               title="Edit">
+                <i class="bx bx-edit"></i>
+            </a>
+        }
+        else
+        {
+            <a class="btn btn-success text-muted"
+               style="cursor: not-allowed;"
+               aria-disabled="true"
+               tabindex="-1"
+               title="You do not have permission to Edit">
+                <i class="bx bx-edit"></i>
+            </a>
+        }
     }
 
     <button type="submit" class="btn btn-sm btn-primary"

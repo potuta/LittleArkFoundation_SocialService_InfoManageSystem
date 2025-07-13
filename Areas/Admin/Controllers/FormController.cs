@@ -796,6 +796,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             });
         }
 
+        [HasPermission("EditForm")]
         public async Task<IActionResult> Edit(int id, int assessmentID)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
@@ -909,6 +910,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [HasPermission("EditForm")]
         public async Task<IActionResult> Edit(FormViewModel formViewModel)
         {
             try

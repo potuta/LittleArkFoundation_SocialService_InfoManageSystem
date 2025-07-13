@@ -244,22 +244,26 @@
                             <td class="sticky-col d-flex gap-1" style="white-space: nowrap; left: 0; z-index: 1;">
 								@if (!opd.IsAdmitted)
 								{
-                                    @* <a class="btn btn-primary" asp-action="AdmitOPD" asp-controller="Form" asp-route-id="@opd.Id" 
-                                    onclick="return confirm('Are you sure you want to admit this OPD?');"
-                                    data-bs-toggle="tooltip"
-                                    title="Admit Patient">
-                                        <i class="bi bi-box-arrow-in-right"></i>
-                                    </a> *@
 
-                                    @await Html.PartialAsync("_PermissionButton", (
-                                                "CreateForm",
-                                                "AdmitOPD",
-                                                "Form",
-                                                (object)new { Id = opd.Id },
-                                                "bi bi-box-arrow-in-right",
-                                                "Admit Patient",
-                                                "primary"
-                                        ))
+                                    @if (User.HasClaim("Permission", "CreateForm"))
+                                    {
+                                        <a class="btn btn-primary" asp-action="AdmitOPD" asp-controller="Form" asp-route-id="@opd.Id" 
+                                        onclick="return confirm('Are you sure you want to admit this OPD?');"
+                                        data-bs-toggle="tooltip"
+                                        title="Admit Patient">
+                                            <i class="bi bi-box-arrow-in-right"></i>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a class="btn btn-primary text-muted"
+                                           style="cursor: not-allowed;"
+                                           aria-disabled="true"
+                                           tabindex="-1"
+                                           title="You do not have permission to Admit OPD">
+                                            <i class="bi bi-box-arrow-in-right"></i>
+                                        </a>
+                                    }
 
 									<a class="btn btn-success" asp-action="Edit" asp-route-id="@opd.Id"
                                     data-bs-toggle="tooltip"

@@ -185,6 +185,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return View(viewName, viewModel);
         }
 
+        [HasPermission("EditForm")]
         public async Task<IActionResult> Edit(int id)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
@@ -202,6 +203,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [HasPermission("EditForm")]
         public async Task<IActionResult> Edit(GeneralAdmissionViewModel viewModel)
         {
             try
@@ -230,6 +232,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
+        [HasPermission("CreateForm")]
         public async Task<IActionResult> Create()
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
@@ -246,6 +249,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [HasPermission("CreateForm")]
         public async Task<IActionResult> Create(GeneralAdmissionViewModel viewModel)
         {
             try
