@@ -1124,7 +1124,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             // Column 3
             var cell3 = worksheet.Cell(3, 1);
-            cell3.Value = $"{discharges[0].DischargedDate.Year} Discharges";
+            cell3.Value = $"{monthLabel} Discharges";
             cell3.Style.Font.Bold = true;
             cell3.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             worksheet.Range(3, 1, 3, 13).Merge();
