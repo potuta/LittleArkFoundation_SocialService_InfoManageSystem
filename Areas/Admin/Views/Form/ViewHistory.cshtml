@@ -125,12 +125,15 @@
                             </a>
                             @if (Model.Patient.IsActive)
                             {
-                                <a href="@Url.Action("Edit", new { id = assessment.PatientID, assessmentID = assessment.AssessmentID })" 
-                                   class="btn btn-success"
-                                   data-bs-toggle="tooltip"
-                                   title="Edit">
-                                        <i class="bx bx-edit"></i>
-                                </a>
+                                if (isFirst)
+                                {
+                                    <a href="@Url.Action("Edit", new { id = assessment.PatientID, assessmentID = assessment.AssessmentID })" 
+                                       class="btn btn-success"
+                                       data-bs-toggle="tooltip"
+                                       title="Edit">
+                                            <i class="bx bx-edit"></i>
+                                    </a>
+                                }
                             }
                         </td>
                         <td>
