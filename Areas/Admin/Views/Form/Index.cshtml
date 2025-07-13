@@ -229,29 +229,55 @@
                                         </a>
                                     }
 
-                                    <a href="#"
-                                       class="btn btn-danger"
-                                       data-bs-toggle="modal"
-                                       data-bs-toggle="tooltip"
-                                       title="Discharge"
-                                       data-bs-target="#dischargeModal"
-                                       data-patient-id="@patient.PatientID"
-                                       data-patient-assessmentID="@assessment.AssessmentID"
-                                       data-patient-fn="@patient.FirstName"
-                                       data-patient-mn="@patient.MiddleName"
-                                       data-patient-ln="@patient.LastName"
-                                       data-patient-ward="@assessment.BasicWard"
-                                       data-patient-class="@mswdclassification.SubClassification"
-                                       data-userID="@userId.Value"
-                                       data-msw="@userIdName.Value">
-                                        <i class="bi bi-box-arrow-right"></i> 
-                                    </a>
+                                    @if (User.HasClaim("Permission", "DischargePatient"))
+                                    {
+                                        <a href="#"
+                                           class="btn btn-danger"
+                                           data-bs-toggle="modal"
+                                           data-bs-toggle="tooltip"
+                                           title="Discharge"
+                                           data-bs-target="#dischargeModal"
+                                           data-patient-id="@patient.PatientID"
+                                           data-patient-assessmentID="@assessment.AssessmentID"
+                                           data-patient-fn="@patient.FirstName"
+                                           data-patient-mn="@patient.MiddleName"
+                                           data-patient-ln="@patient.LastName"
+                                           data-patient-ward="@assessment.BasicWard"
+                                           data-patient-class="@mswdclassification.SubClassification"
+                                           data-userID="@userId.Value"
+                                           data-msw="@userIdName.Value">
+                                            <i class="bi bi-box-arrow-right"></i> 
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a class="btn btn-danger text-muted"
+                                           style="cursor: not-allowed;"
+                                           aria-disabled="true"
+                                           tabindex="-1"
+                                           title="You do not have permission to Discharge Patient">
+                                            <i class="bi bi-box-arrow-right"></i>
+                                        </a>
+                                    }
 
                                 }
                                 else
                                 {
-                                    <a href="@Url.Action("ReAdmitPatient", "Discharge", new { area = "Admin", id = patient.PatientID, assessmentID = assessment.AssessmentID })" class="btn btn-success" 
-                                    onclick="return confirm('Are you sure you want to re-admit this patient?');">Re-Admit</a>
+                                    @if (User.HasClaim("Permission", "CreateForm"))
+                                    {
+                                        <a href="@Url.Action("ReAdmitPatient", "Discharge", new { area = "Admin", id = patient.PatientID, assessmentID = assessment.AssessmentID })" class="btn btn-success" 
+                                        onclick="return confirm('Are you sure you want to re-admit this patient?');">Re-Admit</a>
+                                    }
+                                    else
+                                    {
+                                        <a class="btn btn-success text-muted"
+                                           style="cursor: not-allowed;"
+                                           aria-disabled="true"
+                                           tabindex="-1"
+                                           title="You do not have permission to Re-Admit Patient">
+                                            Re-Admit
+                                        </a>
+                                    }
                                 }
                             </td>
                             <td style="white-space: nowrap;">@patient.PatientID</td>

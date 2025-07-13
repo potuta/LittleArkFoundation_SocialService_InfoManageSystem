@@ -192,6 +192,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [HasPermission("DischargePatient")]
         public async Task<IActionResult> DischargePatient(PatientsViewModel patientsViewModel)
         {
             try
@@ -250,6 +251,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
+        [HasPermission("CreateForm")]
         public async Task<IActionResult> ReAdmitPatient(int id, int assessmentID)
         {
             try
