@@ -223,6 +223,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return View(viewName, viewModel);
         }
 
+        [HasPermission("CreateOPD")]
         public async Task<IActionResult> Create()
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
@@ -242,6 +243,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [HasPermission("CreateOPD")]
         public async Task<IActionResult> Create(OPDViewModel viewModel)
         {
             try
@@ -271,6 +273,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
+        [HasPermission("EditOPD")]
         public async Task<IActionResult> Edit(int id)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
@@ -290,6 +293,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [HasPermission("EditOPD")]
         public async Task<IActionResult> Edit(OPDViewModel viewModel)
         {
             try
