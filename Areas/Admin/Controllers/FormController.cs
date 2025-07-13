@@ -162,6 +162,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
+        [HasPermission("CreateForm")]
         public async Task<IActionResult> Create()
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
@@ -335,6 +336,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [HasPermission("CreateForm")]
         public async Task<IActionResult> Create(FormViewModel formViewModel)
         {
             try

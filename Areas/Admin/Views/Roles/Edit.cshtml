@@ -49,6 +49,8 @@
                                 <td>
                                     <input type="hidden" asp-for="Permissions[i].PermissionID" />
                                     <input type="hidden" asp-for="Permissions[i].Name" />
+                                    <input type="hidden" asp-for="Permissions[i].PermissionType" />
+                                    <input type="hidden" asp-for="Permissions[i].Module" />
                                     <input type="checkbox" asp-for="Permissions[i].IsSelected" />
                                 </td>
                             </tr>
@@ -58,15 +60,7 @@
             </div>
         </div> *@
 
-        @{
-            var modules = new[]{
-                "OPD", "Admissions", "Discharge", "Dashboard", "Users", "Roles", "Permissions", "Backup/Restore", "SystemLogs",
-                "Profile"
-
-				};
-		}
-        
-        <h4 class="mt-2">Assign Permissions</h4>
+        @* <h4 class="mt-2">Assign Permissions</h4>
         <div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
             <div class="table-responsive" style="overflow-x: auto;">
                 <table class="table" style="min-width: 1200px;">
@@ -75,72 +69,100 @@
                             <th>Module</th>
                             <th>View</th>
                             <th>Create</th>
-							<th>Edit</th>
-							<th>Admit/Discharge</th>
+                            <th>Edit</th>
+                            <th>Admit/Discharge</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            var modules = new[]{
+                                                "OPD", "Admissions", "Discharge", "Dashboard", "Users", "Roles", "Permissions", "Backup/Restore", "SystemLogs", "Profile"
+                                                };
+                        }
+
+                        foreach (var module in modules)
+                        {
+                        <tr>
+                            <td>@module</td>
+                            @foreach (var action in new[] { "View", "Create", "Edit", "Admit/Discharge" })
+                            {
+                                <td>
+                                    @for (int i = 0; i < Model.Permissions.Count; i++)
+                                    {
+                                        var p = Model.Permissions[i];
+                                        if (p.Module == module && p.PermissionType == action)
+                                        {
+                                            <input type="hidden" asp-for="Permissions[i].PermissionID" />
+                                            <input type="hidden" asp-for="Permissions[i].Name" />
+                                            <input type="hidden" asp-for="Permissions[i].PermissionType" />
+                                            <input type="hidden" asp-for="Permissions[i].Module" />
+                                            <input type="checkbox" asp-for="Permissions[i].IsSelected" />
+                                        }
+                                    }
+                                </td>
+                            }
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div> *@
+
+        @{
+            var modules = new[] {
+                "OPD", "Admissions", "Discharge", "Dashboard",
+                "Users", "Roles", "Permissions", "Backup/Restore", "SystemLogs", "Profile"
+                };
+            var actions = new[] { "View", "Create", "Edit", "Delete", "Admit/Discharge" };
+
+            // Build a lookup from (module+action) to index in Permissions list
+            var permissionMap = new Dictionary<string, int>();
+            for (int i = 0; i < Model.Permissions.Count; i++)
+            {
+                var key = $"{Model.Permissions[i].Module}_{Model.Permissions[i].PermissionType}";
+                permissionMap[key] = i;
+            }
+        }
+
+        <h4 class="mt-2">Assign Permissions</h4>
+        <div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+            <div class="table-responsive" style="overflow-x: auto;">
+                <table class="table" style="min-width: 1200px;">
+                    <thead>
+                        <tr>
+                            <th>Module</th>
+                            @foreach (var action in actions)
+                            {
+                                <th>@action</th>
+                            }
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var module in modules)
                         {
-							var permission = Model.Permissions.Where(m => m.Module == module).ToList();
                             <tr>
                                 <td>@module</td>
-
-                                @* View *@
-                                <td>
-                                    @foreach (var perm in permission.Where(p => p.PermissionType == "View"))
-                                    {
-										var index = Model.Permissions.IndexOf(perm);
-                                        if (index != -1)
-                                        {
-                                            <input type="hidden" asp-for="Permissions[@index].PermissionID" />
-                                            <input type="hidden" asp-for="Permissions[@index].Name" />
-                                            <input type="checkbox" asp-for="Permissions[@index].IsSelected" />
+                                @foreach (var action in actions)
+                                {
+                                    <td>
+                                        @{
+                                            var key = $"{module}_{action}";
+                                            if (permissionMap.ContainsKey(key))
+                                            {
+                                                var i = permissionMap[key];
+                                                <input type="hidden" asp-for="Permissions[@i].PermissionID" />
+                                                <input type="hidden" asp-for="Permissions[@i].Name" />
+                                                <input type="hidden" asp-for="Permissions[@i].PermissionType" />
+                                                <input type="hidden" asp-for="Permissions[@i].Module" />
+                                                <input type="checkbox" asp-for="Permissions[@i].IsSelected" />
+                                            }
+                                            else
+                                            {
+                                                <span>-</span> @* no permission for this module+action *@
+                                            }
                                         }
-									}
-								</td>
-
-                                @* Create *@
-                                <td>
-                                    @foreach (var perm in permission.Where(p => p.PermissionType == "Create"))
-                                    {
-                                        var index = Model.Permissions.IndexOf(perm);
-                                        if (index != -1)
-                                        {
-                                            <input type="hidden" asp-for="Permissions[@index].PermissionID" />
-                                            <input type="hidden" asp-for="Permissions[@index].Name" />
-                                            <input type="checkbox" asp-for="Permissions[@index].IsSelected" />
-                                        }
-                                    }
-                                </td>
-
-                                @* Edit *@
-                                <td>
-                                    @foreach (var perm in permission.Where(p => p.PermissionType == "Edit"))
-                                    {
-                                        var index = Model.Permissions.IndexOf(perm);
-                                        if (index != -1)
-                                        {
-                                            <input type="hidden" asp-for="Permissions[@index].PermissionID" />
-                                            <input type="hidden" asp-for="Permissions[@index].Name" />
-                                            <input type="checkbox" asp-for="Permissions[@index].IsSelected" />
-                                        }
-                                    }
-                                </td>
-
-                                @* Admit/Discharge *@
-                                <td>
-                                    @foreach (var perm in permission.Where(p => p.PermissionType == "Admit/Discharge"))
-                                    {
-                                        var index = Model.Permissions.IndexOf(perm);
-                                        if (index != -1)
-                                        {
-                                            <input type="hidden" asp-for="Permissions[@index].PermissionID" />
-                                            <input type="hidden" asp-for="Permissions[@index].Name" />
-                                            <input type="checkbox" asp-for="Permissions[@index].IsSelected" />
-                                        }
-                                    }
-                                </td>
+                                    </td>
+                                }
                             </tr>
                         }
                     </tbody>
