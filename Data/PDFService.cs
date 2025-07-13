@@ -3,6 +3,8 @@ using DinkToPdf.Contracts;
 using DocumentFormat.OpenXml.Drawing.Diagrams;
 using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
+using static System.Net.Mime.MediaTypeNames;
+using System.Drawing;
 
 namespace LittleArkFoundation.Data
 {
@@ -87,24 +89,24 @@ namespace LittleArkFoundation.Data
 
         public async Task<byte[]> ConvertImageToPdfAsync(byte[] bytes, string? date, string? text, string? format = "png")
         {
-            // Convert image bytes to base64 string
-            string base64 = Convert.ToBase64String(bytes);
-            string src, html, srcTag;
-
-            // WIP pdf handling
             if (format?.ToLower() == "pdf") {
                 //src = $"data:application/{format};base64,{base64}";
                 //srcTag = $"<iframe src='{src}' width='100%' height='674px' frameborder='0' ></iframe>";
-                return bytes; // Return the original bytes if format is PDF
-            }
-            else
-            {
-                src = $"data:image/{format};base64,{base64}";
-                srcTag = $"<img src='{src}' alt='Image' />";
+                //return bytes; // Return the original bytes if format is PDF
+
+                using var image = ConvertPdfToImage(bytes);
+                using var ms = new MemoryStream();
+                image.Save(ms, System.Drawing.Imaging.ImageFormat.Png); // Save as PNG
+                bytes = ms.ToArray(); // Update bytes to PNG format
+                format = "png"; // Update format to PNG for further processing
             }
 
+            string base64 = Convert.ToBase64String(bytes);
+            string src = $"data:image/{format};base64,{base64}";
+            string srcTag = $"<img src='{src}' alt='Image' />";
+
             // Basic HTML that embeds the image
-            html = $@"
+            string html = $@"
                 <html>
                     <head>
                         <style>
@@ -164,6 +166,14 @@ namespace LittleArkFoundation.Data
                 </html>";
 
             return await GeneratePdfAsync(html, "Image Attachment");
+        }
+
+        public System.Drawing.Image ConvertPdfToImage(byte[] pdfBytes, int dpi = 150)
+        {
+            using var stream = new MemoryStream(pdfBytes);
+            using var document = PdfiumViewer.PdfDocument.Load(stream);
+            return document.Render(0, dpi, dpi, true); // Render first page only
+
         }
 
     }
