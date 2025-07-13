@@ -95,9 +95,22 @@
     <div class="d-flex align-items-center gap-3">
         @if (isActive)
         {
-            <a class="btn btn-success" asp-action="Create" asp-controller="Form">
-                <i class="bi bi-file-earmark-plus"></i> Create New
-            </a>
+            @if (User.HasClaim("Permission", "CreateForm"))
+            {
+                <a class="btn btn-success" asp-action="Create" asp-controller="Form">
+                    <i class="bi bi-file-earmark-plus"></i> Create New
+                </a>
+            }
+            else
+            {
+                <a class="btn btn-success text-muted"
+                   style="cursor: not-allowed;"
+                   aria-disabled="true"
+                   tabindex="-1"
+                   title="You do not have permission to Create New">
+                    <i class="bi bi-file-earmark-plus"></i> Create New
+                </a>
+            }
         }
 
         <div class="btn-group btn-group-toggle" data-toggle="buttons">
