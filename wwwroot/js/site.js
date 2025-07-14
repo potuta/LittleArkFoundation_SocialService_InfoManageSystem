@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (h2) {
             // Create the icon element
             const icon = document.createElement("i");
-            icon.className = "bi bi-people";
+            icon.className = "bi bi-person-gear";
             icon.style.marginRight = "8px"; // spacing between icon and text
             // Insert icon before the text
             h2.prepend(icon);
@@ -144,7 +144,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (h2) {
             // Create the icon element
             const icon = document.createElement("i");
-            icon.className = "bi bi-person-gear";
+            icon.className = "bi bi-person-lock";
             icon.style.marginRight = "8px"; // spacing between icon and text
             // Insert icon before the text
             h2.prepend(icon);

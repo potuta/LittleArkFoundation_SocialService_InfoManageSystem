@@ -159,13 +159,13 @@
                                 class="btn-left-sub @(ViewContext.RouteData.Values["controller"]?.ToString() == "Users" ? "active" : "")"
                                    data-bs-toggle="tooltip"
                                    title="Users">
-                                    <i class="bi bi-people"></i> <span>Users</span>
+                                    <i class="bi bi-person-gear"></i> <span>Users</span>
                                 </a>
                             }
                             else
                             {
                                 <a class="btn-left-sub text-muted" style="cursor: not-allowed;" title="You do not have permission">
-                                    <i class="bi bi-people"></i> <span>Users</span>
+                                    <i class="bi bi-person-gear"></i> <span>Users</span>
                                 </a>
                             }
                         </li>
@@ -176,13 +176,13 @@
                                 class="btn-left-sub @(ViewContext.RouteData.Values["controller"]?.ToString() == "Roles" ? "active" : "")"
                                    data-bs-toggle="tooltip"
                                    title="Roles">
-                                    <i class="bi bi-person-gear"></i> <span>Roles & Permissions</span>
+                                    <i class="bi bi-person-lock"></i> <span>Roles & Permissions</span>
                                 </a>
                             }
                             else
                             {
                                 <a class="btn-left-sub text-muted" style="cursor: not-allowed;" title="You do not have permission">
-                                    <i class="bi bi-person-gear"></i> <span>Roles & Permissions</span>
+                                    <i class="bi bi-person-lock"></i> <span>Roles & Permissions</span>
                                 </a>
                             }
                         </li>
