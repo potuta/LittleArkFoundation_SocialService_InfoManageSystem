@@ -159,6 +159,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         // CREATE: Create a new user
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [HasPermission("CreateUser")]
         public async Task<IActionResult> Create(UsersViewModel viewModel)
         {
             //Console.WriteLine($"viewModel is null: {viewModel == null}");
@@ -231,6 +232,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         }
 
         // 🟡 EDIT: Show edit page
+        [HasPermission("EditUser")]
         public async Task<IActionResult> Edit(int id)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
@@ -253,6 +255,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         // 🔵 UPDATE: Save changes
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [HasPermission("EditUser")]
         public async Task<IActionResult> Edit(UsersViewModel user, bool isEditPasswordEnabled)
         {
             Console.WriteLine($"viewModel is null: {user == null}");
@@ -308,6 +311,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         }
 
         // 🟡 ARCHIVE: Archive the user
+        [HasPermission("ArchiveUser")]
         public async Task<IActionResult> Archive(int id)
         {
             try
@@ -360,6 +364,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         }
 
         // 🟡 UNARCHIVE: Unarchive the user
+        [HasPermission("UnarchiveUser")]
         public async Task<IActionResult> Unarchive(int id)
         {
             try
