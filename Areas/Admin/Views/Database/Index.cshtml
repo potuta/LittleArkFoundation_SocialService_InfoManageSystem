@@ -13,12 +13,25 @@
 <div>
     @if (Model.CurrentDatabaseName == Model.DefaultDatabaseName)
     {
-        @* <a href="@Url.Action("CreateNewDatabaseYear")" class="btn btn-success" onclick="return confirm('Warning! creating a new database year will automatically archive this years database, do you still want to continue?');">
-            Create New Database Year
-        </a> *@
-        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createYearModal">
-            Create New Database Year
-        </button>
+        @if (User.HasClaim("Permission", "CreateDatabase"))
+        {
+            @* <a href="@Url.Action("CreateNewDatabaseYear")" class="btn btn-success" onclick="return confirm('Warning! creating a new database year will automatically archive this years database, do you still want to continue?');">
+                Create New Database Year
+            </a> *@
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createYearModal">
+                <i class="bi bi-database-add"></i> Create New Database Year
+            </button>
+        }
+        else
+        {
+            <a class="btn btn-success text-muted"
+               style="cursor: not-allowed;"
+               aria-disabled="true"
+               tabindex="-1"
+               title="You do not have permission to create a new database">
+                <i class="bi bi-database-add"></i> Create New Database Year
+            </a>
+        }
 
     }
 
@@ -124,13 +137,54 @@
                         </td>
                         <td>@database.Key</td>
                         <td>
-                            <a href="@Url.Action("Backup", new { name = database.Key })" class="btn btn-success" onclick="return confirm('Are you sure you want to backup this database?');">Backup</a>
+                            @if (User.HasClaim("Permission", "BackupRestoreDatabase"))
+                            {
+                                <a href="@Url.Action("Backup", new { name = database.Key })" 
+                                class="btn btn-success" 
+                                onclick="return confirm('Are you sure you want to backup this database?');">
+                                    <i class="bi bi-database-up"></i> Backup
+                                </a>
+                            }
+                            else
+                            {
+                                <a class="btn btn-success text-muted"
+                                   style="cursor: not-allowed;"
+                                   aria-disabled="true"
+                                   tabindex="-1"
+                                   title="You do not have permission to backup database">
+                                    <i class="bi bi-database-up"></i> Backup
+                                </a>
+                            }
+
                             @if (database.Key != Model.DefaultDatabaseName)
                             {
-                                <a href="@Url.Action("Restore", new { name = database.Key })" class="btn btn-secondary" onclick="return confirm('Are you sure you want to restore this database?');">Restore</a>
+                                @if (User.HasClaim("Permission", "BackupRestoreDatabase"))
+                                {
+                                    <a href="@Url.Action("Restore", new { name = database.Key })" 
+                                    class="btn btn-secondary" 
+                                    onclick="return confirm('Are you sure you want to restore this database?');">
+                                        <i class="bi bi-database-gear"></i> Restore
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a class="btn btn-secondary text-muted"
+                                       style="cursor: not-allowed;"
+                                       aria-disabled="true"
+                                       tabindex="-1"
+                                       title="You do not have permission to restore database">
+                                        <i class="bi bi-database-gear"></i> Restore
+                                    </a>
+                                }
                                 if (database.Key != "MSWD_DB_Temp")
                                 {
-                                    <a href="@Url.Action("Delete", new { name = database.Key })" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this database?');">Delete</a>
+                                    <a href="@Url.Action("Delete", new { name = database.Key })" 
+                                    class="btn btn-danger" 
+                                    onclick="return confirm('Are you sure you want to delete this database?');"
+                                    data-bs-toggle="tooltip"
+                                    title="Delete (temporary feature for devs only)">
+                                        <i class="bi bi-trash3"></i>
+                                    </a>
                                 }
                             }
                         </td>
