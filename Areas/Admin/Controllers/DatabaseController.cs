@@ -79,6 +79,11 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 await _databaseService.RestoreDatabaseAsync(backupFilePath, newDbName);
                 await _databaseService.BackupDatabaseAsync(newBackupFilePath, newDbName);
 
+                if (isArchive.HasValue && isArchive.Value)
+                {
+                    await _databaseService.RemoveAllCurrentData();
+                }
+
                 TempData["SuccessMessage"] = $"Successfully created new database year {newDbName}.";
                 LoggingService.LogInformation($"Database creation attempt successful. Database: {newDbName}, UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
                 return RedirectToAction("Index");
