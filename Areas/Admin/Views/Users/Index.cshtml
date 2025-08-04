@@ -34,11 +34,24 @@
     <div class="d-flex align-items-center gap-3">
         @if (!isArchive)
         {
-            <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createUserModal"
-               data-bs-toggle="tooltip"
-               title="Create New">
-                <i class="bi bi-person-add"></i> Create New
-            </a>
+            @if (User.HasClaim("Permission", "CreateUser"))
+            {
+                <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createUserModal"
+                   data-bs-toggle="tooltip"
+                   title="Create New">
+                    <i class="bi bi-person-add"></i> Create New
+                </a>
+            }
+            else
+            {
+                <a class="btn btn-success text-muted"
+                   style="cursor: not-allowed;"
+                   aria-disabled="true"
+                   tabindex="-1"
+                   title="You do not have permission to create a new user">
+                    <i class="bi bi-person-add"></i> Create New
+                </a>
+            }
         }
 
         <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -143,16 +156,43 @@
 
                             <tr>
                                 <td class="sticky-col d-flex gap-1" style="white-space: nowrap; left: 0; z-index: 1;">
-                                    <a href="@Url.Action("Edit", new { id = user.UserID })" class="btn btn-primary"
-                                       data-bs-toggle="tooltip"
-                                       title="Edit">
-                                        <i class="bx bx-edit"></i>
-                                    </a>
-                                    <a href="@Url.Action("Archive", new { id = user.UserID })" class="btn btn-danger" onclick="return confirm('Are you sure you want to archive this user?');"
-                                       data-bs-toggle="tooltip"
-                                       title="Archive User">
-                                        <i class="bi bi-archive"></i>
-                                    </a>
+                                    @if (User.HasClaim("Permission", "EditUser"))
+                                    {
+                                        <a href="@Url.Action("Edit", new { id = user.UserID })" class="btn btn-primary"
+                                           data-bs-toggle="tooltip"
+                                           title="Edit">
+                                            <i class="bx bx-edit"></i>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a class="btn btn-primary text-muted"
+                                           style="cursor: not-allowed;"
+                                           aria-disabled="true"
+                                           tabindex="-1"
+                                           title="You do not have permission to edit user">
+                                            <i class="bx bx-edit"></i>
+                                        </a>
+                                    }
+
+                                    @if (User.HasClaim("Permission", "ArchiveUnarchiveUser"))
+                                    {
+                                        <a href="@Url.Action("Archive", new { id = user.UserID })" class="btn btn-danger" onclick="return confirm('Are you sure you want to archive this user?');"
+                                           data-bs-toggle="tooltip"
+                                           title="Archive User">
+                                            <i class="bi bi-archive"></i>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a class="btn btn-danger text-muted"
+                                           style="cursor: not-allowed;"
+                                           aria-disabled="true"
+                                           tabindex="-1"
+                                           title="You do not have permission to archive user">
+                                            <i class="bi bi-archive"></i>
+                                        </a>
+                                    }
                                 </td>
                                 <td style="white-space: nowrap;">@user.UserID</td>
                                 <td style="white-space: nowrap;">@user.Username</td>
@@ -172,11 +212,24 @@
 
                             <tr>
                                 <td class="sticky-col d-flex gap-1" style="white-space: nowrap; left: 0; z-index: 1;">
-                                    <a href="@Url.Action("Unarchive", new { id = user.UserID })" class="btn btn-success" onclick="return confirm('Are you sure you want to unarchive this user?');"
-                                       data-bs-toggle="tooltip"
-                                       title="Unarchive User">
-                                        <i class="bi bi-box-arrow-in-left"></i>
-                                    </a>
+                                    @if (User.HasClaim("Permission", "ArchiveUnarchiveUser"))
+                                    {
+                                            <a href="@Url.Action("Unarchive", new { id = user.UserID })" class="btn btn-success" onclick="return confirm('Are you sure you want to unarchive this user?');"
+                                               data-bs-toggle="tooltip"
+                                               title="Unarchive User">
+                                                <i class="bi bi-box-arrow-in-left"></i>
+                                            </a>
+                                    }
+                                    else
+                                    {
+                                            <a class="btn btn-success text-muted"
+                                               style="cursor: not-allowed;"
+                                               aria-disabled="true"
+                                               tabindex="-1"
+                                               title="You do not have permission to unarchive user">
+                                                <i class="bi bi-box-arrow-in-left"></i>
+                                            </a>
+                                    }
                                 </td>
                                 <td style="white-space: nowrap;">@user.UserID</td>
                                 <td style="white-space: nowrap;">@user.Username</td>

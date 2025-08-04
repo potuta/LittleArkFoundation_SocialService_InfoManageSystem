@@ -175,7 +175,6 @@ namespace LittleArkFoundation.Data
             return defaultDataDirectory;
         }
 
-        // Not working, but works in sql idk why
         public async Task<string> GetSqlBackupPathAsync()
         {
             try
@@ -377,10 +376,39 @@ namespace LittleArkFoundation.Data
             }
         }
 
-        // TODO: add truncate database method
-        public async Task<bool> TruncateDatabaseAsync(string databaseName)
+        public async Task<bool> RemoveAllCurrentData()
         {
-            return false;
+            try
+            {
+                await using var connection = new SqlConnection(_connectionService.GetDefaultConnectionString());
+                await connection.OpenAsync();
+
+                // Executes each command separately to handle errors more clearly
+                var commands = new[]
+                {
+                    "DELETE FROM Patients;",
+                    "TRUNCATE TABLE GeneralAdmission;",
+                    "TRUNCATE TABLE OPD;",
+                    "TRUNCATE TABLE Logs;"
+                };
+
+                foreach (var query in commands)
+                {
+                    await using var command = new SqlCommand(query, connection);
+                    await command.ExecuteNonQueryAsync();
+                }
+
+                return true;
+
+            }
+            catch (SqlException ex)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
     }
 

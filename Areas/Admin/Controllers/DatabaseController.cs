@@ -60,6 +60,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [HasPermission("CreateDatabase")]
         public async Task<IActionResult> CreateNewDatabaseYear(bool? isArchive)
         {
             try
@@ -77,6 +78,11 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 await _databaseService.BackupDatabaseAsync(backupFilePath, originalDbName);
                 await _databaseService.RestoreDatabaseAsync(backupFilePath, newDbName);
                 await _databaseService.BackupDatabaseAsync(newBackupFilePath, newDbName);
+
+                if (isArchive.HasValue && isArchive.Value)
+                {
+                    await _databaseService.RemoveAllCurrentData();
+                }
 
                 TempData["SuccessMessage"] = $"Successfully created new database year {newDbName}.";
                 LoggingService.LogInformation($"Database creation attempt successful. Database: {newDbName}, UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
@@ -115,6 +121,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
+        [HasPermission("BackupRestoreDatabase")]
         public async Task<IActionResult> Backup(string name)
         {
             try
@@ -144,6 +151,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
+        [HasPermission("BackupRestoreDatabase")]
         public async Task<IActionResult> Restore(string name)
         {
             //string backupPath = @"C:\Program Files\Microsoft SQL Server\MSSQL16.SQLEXPRESS\MSSQL\Backup";
@@ -163,6 +171,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [HasPermission("BackupRestoreDatabase")]
         public async Task<IActionResult> Restore(string name, string backupFileName)
         {
             try

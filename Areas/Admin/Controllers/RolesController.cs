@@ -50,8 +50,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
-        // TODO: Implement search role
-
+        [HasPermission("CreateRole")]
         public async Task<IActionResult> Create(string name)
         {
             try
@@ -89,6 +88,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
+        [HasPermission("EditRole")]
         public async Task<IActionResult> Edit(int id)
         {
             try
@@ -133,6 +133,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [HasPermission("EditRole")]
         public async Task<IActionResult> Edit(RolesViewModel roleViewModel)
         {
             if (!ModelState.IsValid)
