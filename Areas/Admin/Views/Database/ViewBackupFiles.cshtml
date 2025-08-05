@@ -1,21 +1,16 @@
 ﻿@using LittleArkFoundation.Areas.Admin.Models.Database
 @model DatabaseViewModel
 @{
-	ViewData["Title"] = "Restore Database";
-	Layout = "_AdminLayout";
+    ViewData["Title"] = "View Backup Files";
+    Layout = "_AdminLayout";
 }
 
-<h2>Restore Database</h2>
+<h2>View Backup Files</h2>
 <hr />
 
 <!-- Back to List -->
 <div class="mt-2">
     <a class="btn btn-outline-secondary mb-3" asp-action="Index">← Back to List</a>
-</div>
-
-<div class="mb-3">
-    <label class="form-label">You are restoring:</label>
-    <input type="text" class="form-control" value="@Model.DefaultDatabaseName" readonly disabled />
 </div>
 
 <div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
@@ -25,7 +20,6 @@
                 @if (Model != null)
                 {
                     <tr>
-                        <th class="sticky-col" style="left: 0; z-index: 2;">Actions</th>
                         <th>Database Name</th>
                         <th>Date (<i>YYYY/MM/DD</i>)</th>
                         <th>Time (<i>HH:MM:SS</i>)</th>
@@ -35,7 +29,7 @@
             <tbody>
                 @if (Model != null)
                 {
-					var latestFiles = new Dictionary<string, DateTime>();
+                    var latestFiles = new Dictionary<string, DateTime>();
 
                     // First pass: build latestFiles dictionary
                     foreach (var file in Model.DatabaseBackupFiles)
@@ -75,16 +69,16 @@
                     // Second pass: render the table
                     @foreach (var file in Model.DatabaseBackupFiles)
                     {
-						var fileNameParts = file.Split('_');
+                        var fileNameParts = file.Split('_');
 
                         if (fileNameParts.Length < 3)
                         {
                             continue; // Skip files that do not have enough parts to be valid (e.g. "MSWD_DB")
-						}
+                        }
 
                         string namePart = "";
-						string datePart = "";
-						string timePart = "";
+                        string datePart = "";
+                        string timePart = "";
                         DateTime fullDateTime;
 
                         try
@@ -110,21 +104,10 @@
                         }
                         catch
                         {
-							continue; // Skip files that do not match the expected format
+                            continue; // Skip files that do not match the expected format
                         }
 
                         <tr>
-                            <td class="sticky-col d-flex gap-1" style="white-space: nowrap; left: 0; z-index: 1;">
-                                <form asp-action="Restore" method="post">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="name" value="@Model.DefaultDatabaseName" />
-                                    <input type="hidden" name="backupFileName" value="@file" />
-                                    <button type="submit" class="btn btn-primary"
-                                        onclick="return confirm('Are you sure you want to select this database?');">
-                                        Select
-                                    </button>
-                                </form>
-                            </td>
                             <td style="white-space: nowrap;">
                                 @namePart
                                 @{
