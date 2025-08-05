@@ -111,89 +111,90 @@
     </div>
 }
 
-<div class="table-responsive" style="width: 60%;">
-    <table class="table" style="width: max-content;">
-        <thead>
-            @if (Model != null)
-            {
-                <tr>
-                    <th>Connect to database</th>
-                    <th>Database Name</th>
-                    <th>Actions</th>
-                </tr>
-            }
-        </thead>
-        <tbody>
-            @if (Model != null)
-            {
-                @foreach (var database in Model.Databases)
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
                 {
                     <tr>
-                        <td>
-                            <a href="@Url.Action("Connect", new { connectionString = database.Value })"
-                               class="btn btn-primary @(database.Key == Model.CurrentDatabaseName ? "disabled" : "")">
-                                Connect
-                            </a>
-                        </td>
-                        <td>@database.Key</td>
-                        <td>
-                            @if (User.HasClaim("Permission", "BackupRestoreDatabase"))
-                            {
-                                <a href="@Url.Action("Backup", new { name = database.Key })" 
-                                class="btn btn-success" 
-                                onclick="return confirm('Are you sure you want to backup this database?');">
-                                    <i class="bi bi-database-up"></i> Backup
+                        <th class="sticky-col" style="left: 0; z-index: 2;">Connect to database</th>
+                        <th>Database Name</th>
+                        <th>Actions</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    @foreach (var database in Model.Databases)
+                    {
+                        <tr>
+                            <td class="sticky-col d-flex gap-1" style="white-space: nowrap; left: 0; z-index: 1;">
+                                <a href="@Url.Action("Connect", new { connectionString = database.Value })"
+                                   class="btn btn-primary @(database.Key == Model.CurrentDatabaseName ? "disabled" : "")">
+                                    Connect
                                 </a>
-                            }
-                            else
-                            {
-                                <a class="btn btn-success text-muted"
-                                   style="cursor: not-allowed;"
-                                   aria-disabled="true"
-                                   tabindex="-1"
-                                   title="You do not have permission to backup database">
-                                    <i class="bi bi-database-up"></i> Backup
-                                </a>
-                            }
-
-                            @if (database.Key != Model.DefaultDatabaseName)
-                            {
+                            </td>
+                            <td style="white-space: nowrap;">@database.Key</td>
+                            <td style="white-space: nowrap;">
                                 @if (User.HasClaim("Permission", "BackupRestoreDatabase"))
                                 {
-                                    <a href="@Url.Action("Restore", new { name = database.Key })" 
-                                    class="btn btn-secondary" 
-                                    onclick="return confirm('Are you sure you want to restore this database?');">
-                                        <i class="bi bi-database-gear"></i> Restore
+                                    <a href="@Url.Action("Backup", new { name = database.Key })" 
+                                    class="btn btn-success" 
+                                    onclick="return confirm('Are you sure you want to backup this database?');">
+                                        <i class="bi bi-database-up"></i> Backup
                                     </a>
                                 }
                                 else
                                 {
-                                    <a class="btn btn-secondary text-muted"
+                                    <a class="btn btn-success text-muted"
                                        style="cursor: not-allowed;"
                                        aria-disabled="true"
                                        tabindex="-1"
-                                       title="You do not have permission to restore database">
-                                        <i class="bi bi-database-gear"></i> Restore
+                                       title="You do not have permission to backup database">
+                                        <i class="bi bi-database-up"></i> Backup
                                     </a>
                                 }
-                                if (database.Key != "MSWD_DB_Temp")
-                                {
-                                    <a href="@Url.Action("Delete", new { name = database.Key })" 
-                                    class="btn btn-danger" 
-                                    onclick="return confirm('Are you sure you want to delete this database?');"
-                                    data-bs-toggle="tooltip"
-                                    title="Delete (temporary feature for devs only)">
-                                        <i class="bi bi-trash3"></i>
-                                    </a>
-                                }
-                            }
-                        </td>
-                    </tr>
-                }
-            }
-        </tbody>
-    </table>
 
+                                @if (database.Key != Model.DefaultDatabaseName)
+                                {
+                                    @if (User.HasClaim("Permission", "BackupRestoreDatabase"))
+                                    {
+                                        <a href="@Url.Action("Restore", new { name = database.Key })" 
+                                        class="btn btn-secondary" 
+                                        onclick="return confirm('Are you sure you want to restore this database?');">
+                                            <i class="bi bi-database-gear"></i> Restore
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a class="btn btn-secondary text-muted"
+                                           style="cursor: not-allowed;"
+                                           aria-disabled="true"
+                                           tabindex="-1"
+                                           title="You do not have permission to restore database">
+                                            <i class="bi bi-database-gear"></i> Restore
+                                        </a>
+                                    }
+                                    if (database.Key != "MSWD_DB_Temp")
+                                    {
+                                        <a href="@Url.Action("Delete", new { name = database.Key })" 
+                                        class="btn btn-danger" 
+                                        onclick="return confirm('Are you sure you want to delete this database?');"
+                                        data-bs-toggle="tooltip"
+                                        title="Delete (temporary feature for devs only)">
+                                            <i class="bi bi-trash3"></i>
+                                        </a>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
 
 
