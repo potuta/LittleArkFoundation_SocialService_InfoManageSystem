@@ -10,89 +10,98 @@
 <h2>Manage Database</h2>
 <hr />
 
-<div>
-    @if (Model.CurrentDatabaseName == Model.DefaultDatabaseName)
-    {
-        @if (User.HasClaim("Permission", "CreateDatabase"))
+<div class="d-flex justify-content-between align-items-center">
+    @* Left toggles/buttons *@
+    <div class="d-flex align-items-center gap-3">
+        @if (Model.CurrentDatabaseName == Model.DefaultDatabaseName)
         {
-            @* <a href="@Url.Action("CreateNewDatabaseYear")" class="btn btn-success" onclick="return confirm('Warning! creating a new database year will automatically archive this years database, do you still want to continue?');">
-                Create New Database Year
-            </a> *@
-            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createYearModal">
-                <i class="bi bi-database-add"></i> Create New Database Year
-            </button>
+            @if (User.HasClaim("Permission", "CreateDatabase"))
+            {
+                @* <a href="@Url.Action("CreateNewDatabaseYear")" class="btn btn-success" onclick="return confirm('Warning! creating a new database year will automatically archive this years database, do you still want to continue?');">
+                    Create New Database Year
+                </a> *@
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createYearModal">
+                    <i class="bi bi-database-add"></i> Create New Database Year
+                </button>
+            }
+            else
+            {
+                <a class="btn btn-success text-muted"
+                   style="cursor: not-allowed;"
+                   aria-disabled="true"
+                   tabindex="-1"
+                   title="You do not have permission to create a new database">
+                    <i class="bi bi-database-add"></i> Create New Database Year
+                </a>
+            }
+
         }
-        else
-        {
-            <a class="btn btn-success text-muted"
-               style="cursor: not-allowed;"
-               aria-disabled="true"
-               tabindex="-1"
-               title="You do not have permission to create a new database">
-                <i class="bi bi-database-add"></i> Create New Database Year
-            </a>
-        }
 
-    }
+        <!-- Modal -->
+        <div class="modal fade" id="createYearModal" tabindex="-1" aria-labelledby="createYearModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form method="post" asp-action="CreateNewDatabaseYear">
 
-    <!-- Modal -->
-    <div class="modal fade" id="createYearModal" tabindex="-1" aria-labelledby="createYearModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form method="post" asp-action="CreateNewDatabaseYear">
-
-                    <!-- Update ASP.NET action if needed -->
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="createYearModalLabel">Create New Database Year</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-
-                    <div class="modal-body">
-                        <div class="alert alert-warning d-flex align-items-center gap-3" role="alert">
-                            <i class="bi bi-exclamation-triangle-fill" style="font-size: 30px;"></i>                            
-                            <div style="font-size: small; font-style: italic;">
-								Creating a new database year will automatically archive this years database unless you choose to keep the current data.
-                            </div>
-                        </div>
-                        @* <div class="mb-3">
-                            <label class="form-label">Latest DB Name</label>
-                            <input type="text" class="form-control" value="@Model.DatabaseBackupFileNames[0]" readonly>
-                        </div> *@
-
-                        <div class="mb-3">
-                            <label class="form-label">New DB Name</label>
-                            <input type="text" class="form-control" value="@Model.DatabaseBackupFileNames[1]" disabled>
+                        <!-- Update ASP.NET action if needed -->
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="createYearModalLabel">Create New Database Year</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Choose Action for Current Data</label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="isArchive" value="true" id="radioArchive" checked>
-                                <label class="form-check-label" for="radioArchive">
-                                    Archive current data
-                                </label>
+                        <div class="modal-body">
+                            <div class="alert alert-warning d-flex align-items-center gap-3" role="alert">
+                                <i class="bi bi-exclamation-triangle-fill" style="font-size: 30px;"></i>                            
+                                <div style="font-size: small; font-style: italic;">
+								    Creating a new database year will automatically archive this years database unless you choose to keep the current data.
+                                </div>
                             </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="isArchive" value="false" id="radioKeep">
-                                <label class="form-check-label" for="radioKeep">
-                                    Keep current data
-                                </label>
+                            @* <div class="mb-3">
+                                <label class="form-label">Latest DB Name</label>
+                                <input type="text" class="form-control" value="@Model.DatabaseBackupFileNames[0]" readonly>
+                            </div> *@
+
+                            <div class="mb-3">
+                                <label class="form-label">New DB Name</label>
+                                <input type="text" class="form-control" value="@Model.DatabaseBackupFileNames[1]" disabled>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Choose Action for Current Data</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="isArchive" value="true" id="radioArchive" checked>
+                                    <label class="form-check-label" for="radioArchive">
+                                        Archive current data
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="isArchive" value="false" id="radioKeep">
+                                    <label class="form-check-label" for="radioKeep">
+                                        Keep current data
+                                    </label>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary"
-                            onclick="return confirm('Are you sure you want to create a new database?');">
-                            Confirm
-                        </button>
-                    </div>
-                </form>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary"
+                                onclick="return confirm('Are you sure you want to create a new database?');">
+                                Confirm
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
 
+        <a href="@Url.Action("ViewBackupFiles", new { name = Model.DefaultDatabaseName })"
+           class="btn btn-dark"
+           data-bs-toggle="tooltip"
+           title="View Backup Files">
+            <i class="bi bi-eye"></i> View Backup Files
+        </a>
+    </div>
 </div>
 
 @if (TempData["SuccessMessage"] != null)
@@ -138,6 +147,13 @@
                             </td>
                             <td style="white-space: nowrap;">@database.Key</td>
                             <td style="white-space: nowrap;">
+                                @* <a href="@Url.Action("ViewBackupFiles", new { name = database.Key })"
+                                   class="btn btn-dark"
+                                   data-bs-toggle="tooltip"
+                                   title="View Backup Files">
+                                    <i class="bi bi-eye"></i>
+                                </a> *@
+
                                 @if (User.HasClaim("Permission", "BackupRestoreDatabase"))
                                 {
                                     <a href="@Url.Action("Backup", new { name = database.Key })" 

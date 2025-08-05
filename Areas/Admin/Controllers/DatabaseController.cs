@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using LittleArkFoundation.Data;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
 using LittleArkFoundation.Areas.Admin.Models.Database;
 using LittleArkFoundation.Authorize;
+using LittleArkFoundation.Data;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using System.Security.Claims;
 
@@ -241,6 +242,22 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 TempData["ErrorMessage"] = "Error: " + ex.Message;
                 return RedirectToAction("Index");
             }
+        }
+
+        public async Task<IActionResult> ViewBackupFiles(string name)
+        {
+            string backupPath = await _databaseService.GetSqlBackupPathAsync();
+            string searchPattern = "MSWD_DB*.bak";
+            string[] files = Directory.GetFiles(backupPath, searchPattern);
+            string[] fileNames = Array.ConvertAll(files, Path.GetFileName); // Extract only file names
+
+            var viewModel = new DatabaseViewModel
+            {
+                DefaultDatabaseName = name,
+                DatabaseBackupFiles = fileNames.ToList()
+            };
+
+            return View(viewModel);
         }
     }
 }
