@@ -13,6 +13,11 @@
     <a class="btn btn-outline-secondary mb-3" asp-action="Index">← Back to List</a>
 </div>
 
+<div class="mb-3">
+    <label class="form-label">You are restoring:</label>
+    <input type="text" class="form-control" value="@Model.DefaultDatabaseName" readonly disabled />
+</div>
+
 <div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
     <div class="table-responsive" style="overflow-x: auto;">
         <table class="table" style="min-width: 1200px;">
@@ -114,7 +119,10 @@
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="name" value="@Model.DefaultDatabaseName" />
                                     <input type="hidden" name="backupFileName" value="@file" />
-                                    <button type="submit" class="btn btn-primary">Select</button>
+                                    <button type="submit" class="btn btn-primary"
+                                        onclick="return confirm('Are you sure you want to select this database?');">
+                                        Select
+                                    </button>
                                 </form>
                             </td>
                             <td style="white-space: nowrap;">
