@@ -20,7 +20,7 @@
                 @if (Model != null)
                 {
                     <tr>
-                        <th>Actions</th>
+                        <th class="sticky-col" style="left: 0; z-index: 2;">Actions</th>
                         <th>Database Name</th>
                         <th>Date (<i>YYYY/MM/DD</i>)</th>
                         <th>Time (<i>HH:MM:SS</i>)</th>
@@ -30,50 +30,86 @@
             <tbody>
                 @if (Model != null)
                 {
+					var latestFiles = new Dictionary<string, DateTime>();
+
+                    // First pass: build latestFiles dictionary
+                    foreach (var file in Model.DatabaseBackupFiles)
+                    {
+                        var fileNameParts = file.Split('_');
+
+                        if (fileNameParts.Length < 3)
+                            continue;
+
+                        string namePart;
+                        DateTime fullDateTime;
+
+                        try
+                        {
+                            if (fileNameParts.Length == 6)
+                            {
+                                namePart = $"{fileNameParts[0]}_{fileNameParts[1]}_{fileNameParts[2]}";
+                                fullDateTime = DateTime.ParseExact(fileNameParts[3] + fileNameParts[4], "yyyyMMddHHmmss", null);
+                            }
+                            else
+                            {
+                                namePart = $"{fileNameParts[0]}_{fileNameParts[1]}";
+                                fullDateTime = DateTime.ParseExact(fileNameParts[2] + fileNameParts[3], "yyyyMMddHHmmss", null);
+                            }
+
+                            if (!latestFiles.ContainsKey(namePart) || latestFiles[namePart] < fullDateTime)
+                            {
+                                latestFiles[namePart] = fullDateTime;
+                            }
+                        }
+                        catch
+                        {
+                            continue;
+                        }
+                    }
+
+                    // Second pass: render the table
                     @foreach (var file in Model.DatabaseBackupFiles)
                     {
 						var fileNameParts = file.Split('_');
 
                         if (fileNameParts.Length < 3)
                         {
-                            continue; // Skip files that do not have enough parts to be valid
+                            continue; // Skip files that do not have enough parts to be valid (e.g. "MSWD_DB")
 						}
 
                         string namePart = "";
 						string datePart = "";
 						string timePart = "";
+                        DateTime fullDateTime;
 
-                        if (fileNameParts.Length == 6)
+                        try
                         {
-                            namePart = $"{fileNameParts[0]}_{fileNameParts[1]}_{fileNameParts[2]}";
-
-                            DateTime parsedDate = DateTime.ParseExact(fileNameParts[3], "yyyyMMdd", null);
-							string formattedDate = parsedDate.ToString("yyyy/MM/dd");
-							datePart = $"{formattedDate}";
-
-							DateTime parsedTime = DateTime.ParseExact(fileNameParts[4], "HHmmss", null);
-							string formattedTime = parsedTime.ToString("HH:mm:ss");
-                            timePart = $"{formattedTime}";
+                            if (fileNameParts.Length == 6)
+                            {
+                                namePart = $"{fileNameParts[0]}_{fileNameParts[1]}_{fileNameParts[2]}";
+                                fullDateTime = DateTime.ParseExact(fileNameParts[3] + fileNameParts[4], "yyyyMMddHHmmss", null);
+                                datePart = DateTime.ParseExact(fileNameParts[3], "yyyyMMdd", null).ToString("yyyy/MM/dd");
+                                timePart = DateTime.ParseExact(fileNameParts[4], "HHmmss", null).ToString("HH:mm:ss");
+                            }
+                            else if (fileNameParts.Length == 5)
+                            {
+                                namePart = $"{fileNameParts[0]}_{fileNameParts[1]}";
+                                fullDateTime = DateTime.ParseExact(fileNameParts[2] + fileNameParts[3], "yyyyMMddHHmmss", null);
+                                datePart = DateTime.ParseExact(fileNameParts[2], "yyyyMMdd", null).ToString("yyyy/MM/dd");
+                                timePart = DateTime.ParseExact(fileNameParts[3], "HHmmss", null).ToString("HH:mm:ss");
+                            }
+                            else
+                            {
+                                continue;
+                            }
                         }
-                        else if (fileNameParts.Length == 5)
+                        catch
                         {
-                            namePart = $"{fileNameParts[0]}_{fileNameParts[1]}";
-
-                            DateTime parsedDate = DateTime.ParseExact(fileNameParts[2], "yyyyMMdd", null);
-                            string formattedDate = parsedDate.ToString("yyyy/MM/dd");
-                            datePart = $"{formattedDate}";
-
-                            DateTime parsedTime = DateTime.ParseExact(fileNameParts[3], "HHmmss", null);
-                            string formattedTime = parsedTime.ToString("HH:mm:ss");
-                            timePart = $"{formattedTime}";
-                        }
-                        else
-                        {
-                            continue;
+							continue; // Skip files that do not match the expected format
                         }
 
                         <tr>
-                            <td>
+                            <td class="sticky-col d-flex gap-1" style="white-space: nowrap; left: 0; z-index: 1;">
                                 <form asp-action="Restore" method="post">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="name" value="@Model.DefaultDatabaseName" />
@@ -81,9 +117,24 @@
                                     <button type="submit" class="btn btn-primary">Select</button>
                                 </form>
                             </td>
-                            <td>@namePart</td>
-							<td>@datePart</td>
-							<td>@timePart</td>
+                            <td style="white-space: nowrap;">
+                                @namePart
+                                @{
+                                    if (fileNameParts.Length == 6 || fileNameParts.Length == 5)
+                                    {
+                                        if (latestFiles.ContainsKey(namePart) && latestFiles[namePart] == fullDateTime)
+                                        {
+                                            <span class="badge bg-success ms-2">Latest</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary ms-2">Old</span>
+                                        }
+                                    }
+                                }
+                            </td>
+                            <td style="white-space: nowrap;">@datePart</td>
+                            <td style="white-space: nowrap;">@timePart</td>
                         </tr>
                     }
                 }
