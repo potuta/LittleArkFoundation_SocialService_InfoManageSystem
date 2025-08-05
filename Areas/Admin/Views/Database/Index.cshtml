@@ -145,7 +145,21 @@
                                     Connect
                                 </a>
                             </td>
-                            <td style="white-space: nowrap;">@database.Key</td>
+                            <td style="white-space: nowrap;">
+                                @database.Key
+                                @if (database.Key == Model.DefaultDatabaseName)
+                                {
+                                    <span class="badge bg-success ms-2">Main</span>
+                                }
+                                else if(database.Key == Model.DefaultDatabaseName + "_Temp")
+                                {
+                                    <span class="badge bg-warning ms-2">Template (Restore this to verify backup files)</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary ms-2">Archive</span>
+                                }
+                            </td>
                             <td style="white-space: nowrap;">
                                 @* <a href="@Url.Action("ViewBackupFiles", new { name = database.Key })"
                                    class="btn btn-dark"
