@@ -30,7 +30,7 @@ using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-// TODO: Implement logging for forms
+
 namespace LittleArkFoundation.Areas.Admin.Controllers
 {
     [Area("Admin")]

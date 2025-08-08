@@ -38,8 +38,6 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
-        // TODO: Implement search permissions
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(string name, string permissionType, string module)
@@ -81,7 +79,6 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return RedirectToAction("Index");
         }
 
-        // TODO: Implement permissions edit
         public async Task<IActionResult> Edit()
         {
             return View();

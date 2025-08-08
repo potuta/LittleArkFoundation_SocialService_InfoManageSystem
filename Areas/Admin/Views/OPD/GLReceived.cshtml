@@ -1,7 +1,7 @@
 ﻿@model LittleArkFoundation.Areas.Admin.Models.OPD.OPDViewModel
 @{
-	ViewData["Title"] = "OPDAssisted";
-	Layout = "_AdminLayout";
+    ViewData["Title"] = "GLReceived";
+    Layout = "_AdminLayout";
     string? sortBy = ViewBag.sortBy ?? "";
     string? sortByUserID = ViewBag.sortByUserID ?? "";
     string? sortByMonth = ViewBag.sortByMonth ?? "";
@@ -31,7 +31,7 @@
 </style>
 
 <div class="header-bar">
-    <h2>OPD Assisted</h2>
+    <h2>OPD GL Received</h2>
 
     <div class="menu-bar d-flex gap-2">
         <a class="btn btn-outline-dark @(
@@ -49,16 +49,16 @@
            asp-action="General" asp-controller="OPD">General</a> *@
 
         <a class="btn btn-outline-dark @(
-            ViewContext.RouteData.Values["action"]?.ToString() == "OPDAssisted" ||
-            ViewContext.RouteData.Values["action"]?.ToString() == "SortByOPDAssistedAndReports"
-            ? "active" : "")"
+                       ViewContext.RouteData.Values["action"]?.ToString() == "OPDAssisted" ||
+                       ViewContext.RouteData.Values["action"]?.ToString() == "SortByOPDAssistedAndReports"
+                       ? "active" : "")"
            asp-action="OPDAssisted" asp-controller="OPD">OPD Assisted</a>
 
         <a class="btn btn-outline-dark @(
-            ViewContext.RouteData.Values["action"]?.ToString() == "GLReceived" ||
-            ViewContext.RouteData.Values["action"]?.ToString() == "SortByGLReceivedAndReports"
-            ? "active" : "")"
-        asp-action="GLReceived" asp-controller="OPD">GL Received</a>
+                        ViewContext.RouteData.Values["action"]?.ToString() == "GLReceived" ||
+                        ViewContext.RouteData.Values["action"]?.ToString() == "SortByGLReceivedAndReports"
+                        ? "active" : "")"
+           asp-action="GLReceived" asp-controller="OPD">GL Received</a>
 
         <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "Reports" ? "active" : "")"
            asp-action="Reports" asp-controller="OPD">Reports</a>
@@ -88,14 +88,18 @@
             }
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" asp-action="SortByOPDAssistedAndReports" 
-                asp-controller="OPD" asp-route-sortByUserID="" asp-route-sortByMonth="@sortByMonth" 
-                asp-route-viewName="OPDAssisted">All</a></li>
+            <li>
+                <a class="dropdown-item" asp-action="SortByGLReceivedAndReports"
+                   asp-controller="OPD" asp-route-sortByUserID="" asp-route-sortByMonth="@sortByMonth"
+                   asp-route-viewName="GLReceived">All</a>
+            </li>
             @foreach (var user in Model.Users)
             {
-                <li><a class="dropdown-item" asp-action="SortByOPDAssistedAndReports" 
-                    asp-controller="OPD" asp-route-sortByUserID="@user.UserID" asp-route-sortByMonth="@sortByMonth" 
-                    asp-route-viewName="OPDAssisted">@user.Username</a></li>
+                <li>
+                    <a class="dropdown-item" asp-action="SortByGLReceivedAndReports"
+                       asp-controller="OPD" asp-route-sortByUserID="@user.UserID" asp-route-sortByMonth="@sortByMonth"
+                       asp-route-viewName="GLReceived">@user.Username</a>
+                </li>
             }
         </ul>
         @* @if (matchedUser)
@@ -121,9 +125,9 @@
         } *@
 
         @* Month filter *@
-        <form method="get" asp-action="SortByOPDAssistedAndReports" class="d-flex align-items-center gap-2">
+        <form method="get" asp-action="SortByGLReceivedAndReports" class="d-flex align-items-center gap-2">
             <input type="hidden" name="sortByUserID" value="@sortByUserID" />
-			<input type="hidden" name="viewName" value="OPDAssisted" />
+            <input type="hidden" name="viewName" value="GLReceived" />
             <input type="month" name="sortByMonth" class="form-control form-control-sm" value="@sortByMonth" />
             <button type="submit" class="btn btn-secondary btn-sm" style="width: 100%;">
                 <i class="bi bi-filter"></i> Filter Month
@@ -142,7 +146,7 @@
         <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <form asp-action="ExportOPDAssistedToExcel" asp-controller="OPD" method="get">
+                    <form asp-action="ExportOPDGLReceivedToExcel" asp-controller="OPD" method="get">
                         <div class="modal-header">
                             <h5 class="modal-title" id="exportModalLabel">Export to Excel</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -205,10 +209,9 @@
                         <th>MSW</th>
                         <th>Date</th>
                         <th>Name of Patient</th>
-                        <th>Assistance Needed</th>
-                        <th>Amount</th>
-                        <th>Amount Extended</th>
                         <th>Resources</th>
+                        <th>Proponent of GL</th>
+                        <th>Received GL</th>
                     </tr>
                 }
             </thead>
@@ -221,10 +224,9 @@
                             <td style="white-space: nowrap;">@opd.MSW</td>
                             <td style="white-space: nowrap;">@opd.Date</td>
                             <td style="white-space: nowrap;">@opd.LastName, @opd.FirstName @opd.MiddleName</td>
-                            <td style="white-space: nowrap;">@opd.AssistanceNeeded</td>
-                            <td style="white-space: nowrap;">@opd.Amount</td>
-                            <td style="white-space: nowrap;">@opd.AmountExtended</td>
                             <td style="white-space: nowrap;">@opd.Resources</td>
+                            <td style="white-space: nowrap;">@opd.GLProponent</td>
+                            <td style="white-space: nowrap;">@opd.GLAmountReceived</td>
                         </tr>
                     }
                 }
