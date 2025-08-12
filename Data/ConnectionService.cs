@@ -19,7 +19,7 @@
 
         public string GetDefaultConnectionString()
         {
-            return _configuration.GetConnectionString("DefaultConnection3");
+            return _configuration.GetConnectionString("DefaultConnection");
         }
 
         public string GetCurrentConnectionString()
@@ -29,7 +29,7 @@
             {
                 return session.GetString("ConnectionString");
             }
-            return _configuration.GetConnectionString("DefaultConnection3"); 
+            return _configuration.GetConnectionString("DefaultConnection"); 
         }
     }
 }
