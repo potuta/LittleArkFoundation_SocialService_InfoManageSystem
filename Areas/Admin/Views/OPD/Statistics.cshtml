@@ -241,38 +241,32 @@ else
                 {
                     <tr>
                         <td style="white-space: nowrap; font-weight: bold;">I. SOURCE OF REFERRAL</td>
-                        <td style="white-space: nowrap;"></td>
-                        <td style="white-space: nowrap;"></td>
-                        <td style="white-space: nowrap;"></td>
-                        <td style="white-space: nowrap;"></td>
-                        <td style="white-space: nowrap;"></td>
-                        <td style="white-space: nowrap;"></td>
-                        <td style="white-space: nowrap;">0</td>
-                        <td style="white-space: nowrap;"></td>
-                        <td style="white-space: nowrap;"></td>
-                        <td style="white-space: nowrap;"></td>
-                        <td style="white-space: nowrap;"></td>
-                        <td style="white-space: nowrap;"></td>
-                        <td style="white-space: nowrap;"></td>
-                        <td style="white-space: nowrap;">0</td>
+                        @for (int i = 1; i <= 14; i++)
+                        {
+                            if (i == 7 || i == 14)
+                            {
+                                <td style="white-space: nowrap;">0</td>
+                            }
+                            else
+                            {
+                                <td style="white-space: nowrap;"></td>
+                            }
+                        }
                     </tr>
 
                     <tr>
                         <td style="white-space: nowrap;">Referring Party</td>
-                        <td style="white-space: nowrap;"></td>
-                        <td style="white-space: nowrap;"></td>
-                        <td style="white-space: nowrap;"></td>
-                        <td style="white-space: nowrap;"></td>
-                        <td style="white-space: nowrap;"></td>
-                        <td style="white-space: nowrap;"></td>
-                        <td style="white-space: nowrap;">0</td>
-                        <td style="white-space: nowrap;"></td>
-                        <td style="white-space: nowrap;"></td>
-                        <td style="white-space: nowrap;"></td>
-                        <td style="white-space: nowrap;"></td>
-                        <td style="white-space: nowrap;"></td>
-                        <td style="white-space: nowrap;"></td>
-                        <td style="white-space: nowrap;">0</td>
+                        @for (int i = 1; i <= 14; i++)
+                        {
+                            if (i == 7 || i == 14)
+                            {
+                                <td style="white-space: nowrap;">0</td>
+                            }
+                            else
+                            {
+                                <td style="white-space: nowrap;"></td>
+                            }
+                        }
                     </tr>
 
                     var sourceOfReferral = new Dictionary<string, string>
