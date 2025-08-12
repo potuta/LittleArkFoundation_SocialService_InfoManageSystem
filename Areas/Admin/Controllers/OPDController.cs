@@ -11,7 +11,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
+using System.Reflection.Metadata.Ecma335;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 
 namespace LittleArkFoundation.Areas.Admin.Controllers
@@ -224,6 +226,41 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         }
 
         public async Task<IActionResult> SortByGLReceivedAndReports(string sortByUserID, string? sortByMonth, string? viewName)
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            IQueryable<OPDModel> query = context.OPD.AsQueryable();
+
+            if (!string.IsNullOrEmpty(sortByUserID))
+            {
+                query = query.Where(opd => opd.UserID == int.Parse(sortByUserID));
+                var user = await context.Users.FindAsync(int.Parse(sortByUserID));
+                ViewBag.sortBy = user.Username;
+                ViewBag.sortByUserID = user.UserID.ToString();
+            }
+
+            if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
+            {
+                query = query.Where(opd => opd.Date.Month == month.Month && opd.Date.Year == month.Year);
+                ViewBag.sortByMonth = month.ToString("yyyy-MM");
+            }
+
+            var opdList = await query.ToListAsync();
+
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+
+            var viewModel = new OPDViewModel
+            {
+                OPDList = opdList,
+                Users = users
+            };
+
+            return View(viewName, viewModel);
+        }
+
+        public async Task<IActionResult> SortByStatistics(string sortByUserID, string? sortByMonth, string? viewName)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
@@ -1064,6 +1101,227 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 worksheet.Cell(dataRow, 6).Value = opd.GLAmountReceived;
 
                 dataRow++;
+            }
+
+            // Autofit for better presentation
+            worksheet.Columns().AdjustToContents();
+
+            using (var stream = new MemoryStream())
+            {
+                workbook.SaveAs(stream);
+                stream.Position = 0;
+                return File(stream.ToArray(),
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            $"{fileName}.xlsx");
+            }
+        }
+
+        public async Task<IActionResult> Statistics()
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var opdList = await context.OPD.ToListAsync();
+            if (opdList == null || !opdList.Any())
+            {
+                TempData["ErrorMessage"] = "No OPD records found.";
+                return RedirectToAction("Index");
+            }
+
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+
+            var viewModel = new OPDViewModel
+            {
+                OPDList = opdList,
+                Users = users
+            };
+
+            return View(viewModel);
+        }
+
+        public async Task<IActionResult> ExportOPDStatisticsToExcel(int userID, string? month)
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            // Parse the month input if provided
+            bool filterByMonth = DateTime.TryParseExact(month, "yyyy-MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedMonth);
+
+            var query = context.OPD.AsQueryable();
+
+            if (userID > 0)
+            {
+                query = query.Where(opd => opd.UserID == userID);
+            }
+
+            if (filterByMonth)
+            {
+                query = query.Where(opd => opd.Date.Month == parsedMonth.Month && opd.Date.Year == parsedMonth.Year);
+            }
+
+            var opdList = await query.ToListAsync();
+
+            if (opdList == null || !opdList.Any())
+            {
+                TempData["ErrorMessage"] = "No OPD records found for selected filters.";
+                return RedirectToAction("Statistics");
+            }
+
+            // File name generation
+            string mswName = userID > 0 ? opdList.First().MSW : "All MSW";
+            string monthLabel = filterByMonth ? parsedMonth.ToString("MMMM_yyyy") : opdList.First().Date.Year.ToString();
+            string fileName = $"OPD_Statistics_{monthLabel}_{mswName}";
+
+            // Sanitize sheet name (for Excel)
+            string safeSheetName = Regex.Replace(fileName, @"[\[\]\*\?/\\:]", "_");
+            if (safeSheetName.Length > 31)
+                safeSheetName = safeSheetName.Substring(0, 31);
+
+            var workbook = new XLWorkbook();
+            var worksheet = workbook.Worksheets.Add(safeSheetName);
+
+            // HEADERS
+
+            var headers = new[]
+            {
+                "MONTH", "JAN", "FEB", "MARCH", "APRIL",
+                "MAY", "JUNE", "TOTAL", "JULY", "AUG", "SEPT",
+                "OCT", "NOV", "DEC", "TOTAL"
+            };
+
+            // Column 1
+            var cell1 = worksheet.Cell(1, 1);
+            cell1.Value = mswName;
+            cell1.Style.Font.Bold = true;
+            cell1.Style.Font.FontSize = 14;
+            cell1.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            worksheet.Range(1, 1, 1, headers.Count()).Merge(); // Merge across desired columns
+
+            // Column 2
+            var cell2 = worksheet.Cell(2, 1);
+            cell2.Value = "OPD Statistics";
+            cell2.Style.Font.Bold = true;
+            cell2.Style.Font.FontSize = 12;
+            cell2.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            worksheet.Range(2, 1, 2, headers.Count()).Merge();
+
+            // Column 3
+            var cell3 = worksheet.Cell(3, 1);
+            cell3.Value = $"{monthLabel} OPD";
+            cell3.Style.Font.Bold = true;
+            cell3.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            worksheet.Range(3, 1, 3, headers.Count()).Merge();
+
+            // Rest of columns
+            int headerRow = 4;
+            for (int i = 0; i < headers.Length; i++)
+            {
+                worksheet.Cell(headerRow, i + 1).Value = headers[i];
+                worksheet.Cell(headerRow, i + 1).Style.Font.Bold = true;
+                worksheet.Cell(headerRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            }
+
+            // SOURCE OF REFERRAL
+            int referralRow = headerRow + 1;
+
+            worksheet.Cell(referralRow, 1).Value = "I. SOURCE OF REFERRAL";
+            worksheet.Cell(referralRow, 1).Style.Font.Bold = true;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(referralRow, i + 1).Value = 0;
+                    worksheet.Cell(referralRow, i + 1).Style.Font.Bold = true;
+                }
+                else
+                {
+                    worksheet.Cell(referralRow, i + 1).Value = "";
+                }
+            }
+            
+            referralRow++;
+
+            worksheet.Cell(referralRow, 1).Value = "Referring Party";
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(referralRow, i + 1).Value = 0;
+                    worksheet.Cell(referralRow, i + 1).Style.Font.Bold = true;
+                }
+                else
+                {
+                    worksheet.Cell(referralRow, i + 1).Value = "";
+                }
+            }
+
+            referralRow++;
+
+            var sourceOfReferral = new Dictionary<string, string>
+                    {
+                                { "1. Government Hospital", "Govt. Hosp." },
+                                { "2. Private Hospital", "Private/Clinic" },
+                                { "3. Politicians", "Politicians" },
+                                { "4. Media", "Media" },
+                                { "5. Health Care Team", "Health Care Team" },
+                                { "6. NGOs/Private Welfare Agencies", "NGO/Private Welfare" },
+                                { "7. Government Agencies (DSWD, DOH Officials)", "Govt. Agencies" },
+                                { "8. Walk-in", "Walk in" },
+                                { "9. Others (employers, former pts, colleagues, friends)", "Others" },
+
+                    };
+
+            foreach (var referral in sourceOfReferral)
+            {
+                var key = referral.Key;
+                var value = referral.Value;
+
+                worksheet.Cell(referralRow, 1).Value = key;
+                for (int i = 1; i <= headers.Length; i++)
+                {
+                    if (i == 7)
+                    {
+                        worksheet.Cell(referralRow, i + 1).Value = 
+                            Enumerable.Range(1, 6).Sum(i => opdList.Count(opd => opd.SourceOfReferral.Equals(value, StringComparison.OrdinalIgnoreCase) && opd.Date.Month == i));
+                        worksheet.Cell(referralRow, i + 1).Style.Font.Bold = true;
+                    }
+                    else if (i == 14)
+                    {
+                        worksheet.Cell(referralRow, i + 1).Value = 
+                            Enumerable.Range(7, 12).Sum(i => opdList.Count(opd => opd.SourceOfReferral.Equals(value, StringComparison.OrdinalIgnoreCase) && opd.Date.Month == i));
+                        worksheet.Cell(referralRow, i + 1).Style.Font.Bold = true;
+                    }
+                    else
+                    {
+                        var count = opdList.Count(opd => opd.SourceOfReferral.Equals(value, StringComparison.OrdinalIgnoreCase) && opd.Date.Month == i);
+                        worksheet.Cell(referralRow, i + 1).Value = count == 0 ? "" : count;
+                    }
+                }
+
+                referralRow++;
+            }
+
+            worksheet.Cell(referralRow, 1).Value = "TOTAL";
+            worksheet.Cell(referralRow, 1).Style.Font.Bold = true;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                worksheet.Cell(referralRow, i + 1).Style.Font.Bold = true;
+                if (i == 7)
+                {
+                    worksheet.Cell(referralRow, i + 1).Value =
+                        Enumerable.Range(1, 6).Sum(i => opdList.Count(opd => opd.Date.Month == i));
+                }
+                else if (i == 14)
+                {
+                    worksheet.Cell(referralRow, i + 1).Value =
+                        Enumerable.Range(7, 12).Sum(i => opdList.Count(opd => opd.Date.Month == i));
+                }
+                else
+                {
+                    var count = opdList.Count(opd => opd.Date.Month == i);
+                    worksheet.Cell(referralRow, i + 1).Value = count == 0 ? "" : count;
+                }
             }
 
             // Autofit for better presentation
