@@ -1233,6 +1233,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 {
                     worksheet.Cell(referralRow, i + 1).Value = 0;
                     worksheet.Cell(referralRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(referralRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                 }
                 else
                 {
@@ -1243,12 +1244,15 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             referralRow++;
 
             worksheet.Cell(referralRow, 1).Value = "Referring Party";
+            worksheet.Cell(referralRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(referralRow, 1).Style.Alignment.Indent = 1;
             for (int i = 1; i <= headers.Length; i++)
             {
                 if (i == 7 || i == 14)
                 {
                     worksheet.Cell(referralRow, i + 1).Value = 0;
                     worksheet.Cell(referralRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(referralRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                 }
                 else
                 {
@@ -1278,24 +1282,32 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 var value = referral.Value;
 
                 worksheet.Cell(referralRow, 1).Value = key;
+                worksheet.Cell(referralRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                worksheet.Cell(referralRow, 1).Style.Alignment.Indent = 2;
                 for (int i = 1; i <= headers.Length; i++)
                 {
                     if (i == 7)
                     {
                         worksheet.Cell(referralRow, i + 1).Value = 
                             Enumerable.Range(1, 6).Sum(i => opdList.Count(opd => opd.SourceOfReferral.Equals(value, StringComparison.OrdinalIgnoreCase) && opd.Date.Month == i));
+
                         worksheet.Cell(referralRow, i + 1).Style.Font.Bold = true;
+                        worksheet.Cell(referralRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                     }
                     else if (i == 14)
                     {
                         worksheet.Cell(referralRow, i + 1).Value = 
                             Enumerable.Range(7, 12).Sum(i => opdList.Count(opd => opd.SourceOfReferral.Equals(value, StringComparison.OrdinalIgnoreCase) && opd.Date.Month == i));
+
                         worksheet.Cell(referralRow, i + 1).Style.Font.Bold = true;
+                        worksheet.Cell(referralRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                     }
                     else
                     {
                         var count = opdList.Count(opd => opd.SourceOfReferral.Equals(value, StringComparison.OrdinalIgnoreCase) && opd.Date.Month == i);
                         worksheet.Cell(referralRow, i + 1).Value = count == 0 ? "" : count;
+
+                        worksheet.Cell(referralRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                     }
                 }
 
@@ -1304,9 +1316,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             worksheet.Cell(referralRow, 1).Value = "TOTAL";
             worksheet.Cell(referralRow, 1).Style.Font.Bold = true;
+            worksheet.Cell(referralRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             for (int i = 1; i <= headers.Length; i++)
             {
                 worksheet.Cell(referralRow, i + 1).Style.Font.Bold = true;
+                worksheet.Cell(referralRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
                 if (i == 7)
                 {
                     worksheet.Cell(referralRow, i + 1).Value =
@@ -1324,8 +1339,219 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
             }
 
+            // CASELOAD ACCORDING TO SERVICES
+            int caseloadRow = referralRow + 1;
+
+            worksheet.Cell(caseloadRow, 1).Value = "II. CASELOAD ACCORDING TO SERVICES";
+            worksheet.Cell(caseloadRow, 1).Style.Font.Bold = true;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(caseloadRow, i + 1).Value = 0;
+                    worksheet.Cell(caseloadRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(caseloadRow, i + 1).Value = "";
+                }
+            }
+
+            caseloadRow++;
+
+            worksheet.Cell(caseloadRow, 1).Value = "1. During Census";
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Indent = 1;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(caseloadRow, i + 1).Value = 0;
+                    worksheet.Cell(caseloadRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(caseloadRow, i + 1).Value = "";
+                }
+            }
+
+            caseloadRow++;
+
+            worksheet.Cell(caseloadRow, 1).Value = "1.1 New Cases";
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Indent = 2;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7)
+                {
+                    worksheet.Cell(caseloadRow, i + 1).Value =
+                        Enumerable.Range(1, 6).Sum(i => opdList.Count(opd => !opd.IsOld && opd.Date.Month == i));
+
+                    worksheet.Cell(caseloadRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else if (i == 14)
+                {
+                    worksheet.Cell(caseloadRow, i + 1).Value =
+                        Enumerable.Range(7, 12).Sum(i => opdList.Count(opd => !opd.IsOld && opd.Date.Month == i));
+
+                    worksheet.Cell(caseloadRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    var count = opdList.Count(opd => !opd.IsOld && opd.Date.Month == i);
+                    worksheet.Cell(caseloadRow, i + 1).Value = count == 0 ? "" : count;
+
+                    worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+            }
+
+            caseloadRow++;
+
+            worksheet.Cell(caseloadRow, 1).Value = "1.2 Old Cases";
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Indent = 2;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7)
+                {
+                    worksheet.Cell(caseloadRow, i + 1).Value =
+                        Enumerable.Range(1, 6).Sum(i => opdList.Count(opd => opd.IsOld && opd.Date.Month == i));
+
+                    worksheet.Cell(caseloadRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else if (i == 14)
+                {
+                    worksheet.Cell(caseloadRow, i + 1).Value =
+                        Enumerable.Range(7, 12).Sum(i => opdList.Count(opd => opd.IsOld && opd.Date.Month == i));
+
+                    worksheet.Cell(caseloadRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    var count = opdList.Count(opd => opd.IsOld && opd.Date.Month == i);
+                    worksheet.Cell(caseloadRow, i + 1).Value = count == 0 ? "" : count;
+
+                    worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+            }
+
+            caseloadRow++;
+
+            worksheet.Cell(caseloadRow, 1).Value = "2. Closed Summary";
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Indent = 1;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(caseloadRow, i + 1).Value = 0;
+                    worksheet.Cell(caseloadRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(caseloadRow, i + 1).Value = "";
+                }
+            }
+
+            caseloadRow++;
+
+            worksheet.Cell(caseloadRow, 1).Value = "3. Number of patients based on sectoral groupings mandated by law/policies:";
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.WrapText = true;
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Indent = 1;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(caseloadRow, i + 1).Value = 0;
+                    worksheet.Cell(caseloadRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(caseloadRow, i + 1).Value = "";
+                }
+            }
+
+            caseloadRow++;
+
+            worksheet.Cell(caseloadRow, 1).Value = "a. PWD";
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Indent = 2;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7)
+                {
+                    worksheet.Cell(caseloadRow, i + 1).Value =
+                        Enumerable.Range(1, 6).Sum(i => opdList.Count(opd => opd.IsPWD && opd.Date.Month == i));
+
+                    worksheet.Cell(caseloadRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else if (i == 14)
+                {
+                    worksheet.Cell(caseloadRow, i + 1).Value =
+                        Enumerable.Range(7, 12).Sum(i => opdList.Count(opd => opd.IsPWD && opd.Date.Month == i));
+
+                    worksheet.Cell(caseloadRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    var count = opdList.Count(opd => opd.IsPWD && opd.Date.Month == i);
+                    worksheet.Cell(caseloadRow, i + 1).Value = count == 0 ? "" : count;
+
+                    worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+            }
+
+            caseloadRow++;
+
+            worksheet.Cell(caseloadRow, 1).Value = "b. Indigenous People";
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Indent = 2;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(caseloadRow, i + 1).Value = 0;
+                    worksheet.Cell(caseloadRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(caseloadRow, i + 1).Value = "";
+                }
+            }
+
+            caseloadRow++;
+
+            worksheet.Cell(caseloadRow, 1).Value = "c. Government Workers";
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Indent = 2;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(caseloadRow, i + 1).Value = 0;
+                    worksheet.Cell(caseloadRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(caseloadRow, i + 1).Value = "";
+                }
+            }
+
             // Autofit for better presentation
-            worksheet.Columns().AdjustToContents();
+            worksheet.Column(1).AdjustToContents();
 
             using (var stream = new MemoryStream())
             {
