@@ -1550,6 +1550,101 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
             }
 
+            // SERVICES
+            int serviceRow = caseloadRow + 1;
+
+            worksheet.Cell(serviceRow, 1).Value = "SERVICES";
+            worksheet.Cell(serviceRow, 1).Style.Font.Bold = true;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "1. Planning, Screening and Eligibility Study / PSE";
+            worksheet.Cell(serviceRow, 1).Style.Font.Bold = true;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "1.1 Socio Economic Classification";
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "1.2 Pre-admission Planning";
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "1.3 Information Services/Orientation";
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+
             // Autofit for better presentation
             worksheet.Column(1).AdjustToContents();
 
