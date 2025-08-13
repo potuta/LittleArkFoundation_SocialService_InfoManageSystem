@@ -218,7 +218,7 @@ else
                 @if (Model != null)
                 {
                     <tr>
-                        <th>MONTH</th>
+                        <th style="white-space: nowrap; font-weight: bold; text-align:center;">MONTH</th>
                         <th>JAN</th>
                         <th>FEB</th>
                         <th>MARCH</th>
@@ -314,27 +314,188 @@ else
 					}
 
                     <tr>
-                        <td style="white-space: nowrap;">TOTAL</td>
+                        <td style="white-space: nowrap; font-weight: bold; text-align:center;">TOTAL</td>
 
                         @for (int i = 1; i <= 6; i++)
                         {
-                            <td style="white-space: nowrap;">@Model.OPDList.Count(m => m.Date.Month == i)</td>
+                            <td style="white-space: nowrap; font-weight: bold;">@Model.OPDList.Count(m => m.Date.Month == i)</td>
                         }
 
-                        <td style="white-space: nowrap;">
+                        <td style="white-space: nowrap; font-weight: bold;">
                             @(Enumerable.Range(1, 6).Sum(i => Model.OPDList.Count(m => m.Date.Month == i)))
                         </td>
 
                         @for (int i = 7; i <= 12; i++)
                         {
-                            <td style="white-space: nowrap;">@Model.OPDList.Count(m => m.Date.Month == i)</td>
+                            <td style="white-space: nowrap; font-weight: bold;">@Model.OPDList.Count(m => m.Date.Month == i)</td>
                         }
 
-                        <td style="white-space: nowrap;">
+                        <td style="white-space: nowrap; font-weight: bold;">
                             @(Enumerable.Range(7, 12).Sum(i => Model.OPDList.Count(m => m.Date.Month == i)))
                         </td>
                     </tr>
-                    
+
+                    <tr>
+                        <td style="white-space: nowrap; font-weight: bold;">II. CASELOAD ACCORDING TO SERVICES</td>
+                        @for (int i = 1; i <= 14; i++)
+                        {
+                            if (i == 7 || i == 14)
+                            {
+                                <td style="white-space: nowrap;">0</td>
+                            }
+                            else
+                            {
+                                <td style="white-space: nowrap;"></td>
+                            }
+                        }
+                    </tr>
+
+                    <tr>
+                        <td style="white-space: nowrap;">1. During Census</td>
+                        @for (int i = 1; i <= 14; i++)
+                        {
+                            if (i == 7 || i == 14)
+                            {
+                                <td style="white-space: nowrap;">0</td>
+                            }
+                            else
+                            {
+                                <td style="white-space: nowrap;"></td>
+                            }
+                        }
+                    </tr>
+
+                    <tr>
+                        <td style="white-space: nowrap;">1.1 New Cases</td>
+
+                        @for (int i = 1; i <= 6; i++)
+                        {
+                            var count = Model.OPDList.Count(m => !m.IsOld && m.Date.Month == i);
+                            <td style="white-space: nowrap;">@(count == 0 ? "" : count)</td>
+                        }
+
+                        <td style="white-space: nowrap;">
+                            @(Enumerable.Range(1, 6).Sum(i => Model.OPDList.Count(m => !m.IsOld && m.Date.Month == i)))
+                        </td>
+
+                        @for (int i = 7; i <= 12; i++)
+                        {
+                            var count = Model.OPDList.Count(m => !m.IsOld && m.Date.Month == i);
+                            <td style="white-space: nowrap;">@(count == 0 ? "" : count)</td>
+                        }
+
+                        <td style="white-space: nowrap;">
+                            @(Enumerable.Range(7, 12).Sum(i => Model.OPDList.Count(m => !m.IsOld && m.Date.Month == i)))
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="white-space: nowrap;">1.2 Old Cases</td>
+
+                        @for (int i = 1; i <= 6; i++)
+                        {
+                            var count = Model.OPDList.Count(m => m.IsOld && m.Date.Month == i);
+                            <td style="white-space: nowrap;">@(count == 0 ? "" : count)</td>
+                        }
+
+                        <td style="white-space: nowrap;">
+                            @(Enumerable.Range(1, 6).Sum(i => Model.OPDList.Count(m => m.IsOld && m.Date.Month == i)))
+                        </td>
+
+                        @for (int i = 7; i <= 12; i++)
+                        {
+                            var count = Model.OPDList.Count(m => m.IsOld && m.Date.Month == i);
+                            <td style="white-space: nowrap;">@(count == 0 ? "" : count)</td>
+                        }
+
+                        <td style="white-space: nowrap;">
+                            @(Enumerable.Range(7, 12).Sum(i => Model.OPDList.Count(m => m.IsOld && m.Date.Month == i)))
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="white-space: nowrap;">2. Closed Summary</td>
+                        @for (int i = 1; i <= 14; i++)
+                        {
+                            if (i == 7 || i == 14)
+                            {
+                                <td style="white-space: nowrap;">0</td>
+                            }
+                            else
+                            {
+                                <td style="white-space: nowrap;"></td>
+                            }
+                        }
+                    </tr>
+
+                    <tr>
+                        <td style="white-space: nowrap;">3. Number of patients based on sectoral groupings mandated by law/policies:</td>
+                        @for (int i = 1; i <= 14; i++)
+                        {
+                            if (i == 7 || i == 14)
+                            {
+                                <td style="white-space: nowrap;">0</td>
+                            }
+                            else
+                            {
+                                <td style="white-space: nowrap;"></td>
+                            }
+                        }
+                    </tr>
+
+                    <tr>
+                        <td style="white-space: nowrap;">a. PWD</td>
+
+                        @for (int i = 1; i <= 6; i++)
+                        {
+                            var count = Model.OPDList.Count(m => m.IsPWD && m.Date.Month == i);
+                            <td style="white-space: nowrap;">@(count == 0 ? "" : count)</td>
+                        }
+
+                        <td style="white-space: nowrap;">
+                            @(Enumerable.Range(1, 6).Sum(i => Model.OPDList.Count(m => m.IsPWD && m.Date.Month == i)))
+                        </td>
+
+                        @for (int i = 7; i <= 12; i++)
+                        {
+                            var count = Model.OPDList.Count(m => m.IsPWD && m.Date.Month == i);
+                            <td style="white-space: nowrap;">@(count == 0 ? "" : count)</td>
+                        }
+
+                        <td style="white-space: nowrap;">
+                            @(Enumerable.Range(7, 12).Sum(i => Model.OPDList.Count(m => m.IsPWD && m.Date.Month == i)))
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="white-space: nowrap;">b. Indigenous People</td>
+                        @for (int i = 1; i <= 14; i++)
+                        {
+                            if (i == 7 || i == 14)
+                            {
+                                <td style="white-space: nowrap;">0</td>
+                            }
+                            else
+                            {
+                                <td style="white-space: nowrap;"></td>
+                            }
+                        }
+                    </tr>
+
+                    <tr>
+                        <td style="white-space: nowrap;">c. Government Workers</td>
+                        @for (int i = 1; i <= 14; i++)
+                        {
+                            if (i == 7 || i == 14)
+                            {
+                                <td style="white-space: nowrap;">0</td>
+                            }
+                            else
+                            {
+                                <td style="white-space: nowrap;"></td>
+                            }
+                        }
+                    </tr>
                 }
             </tbody>
         </table>
