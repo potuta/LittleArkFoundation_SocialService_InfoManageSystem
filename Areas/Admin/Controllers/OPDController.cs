@@ -2259,6 +2259,122 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
             }
 
+            var caseManagements = new List<string>
+            {
+                "1.1 Pre admission Counselling",
+                "1.2 Intake Interview",
+                "1.3 Collateral Interview",
+                "1.4 Issuance of MSS Card",
+                "1.5 Indicate classification in the chart (in pts only)",
+                "1.6 Psychosocial Assessment",
+                "1.7 Psychosocial Counselling",
+                "1.8 Coordination w/ Multidiciplinary Team",
+                "1.9 Completion of Intake Form",
+                "1.10 Health Education",
+                "1.11 Crisis Intervention",
+                "1.12 Concrete Services"
+            };
+
+            foreach (var value in caseManagements)
+            {
+                serviceRow++;
+
+                worksheet.Cell(serviceRow, 1).Value = value;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+                for (int i = 1; i <= headers.Length; i++)
+                {
+                    if (i == 7 || i == 14)
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = 0;
+                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    }
+                    else
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = "";
+                    }
+                }
+            }
+
+            var concreteServices = new List<string>
+            {
+                "1.12.1 Facilitaion/Provision of Meds/Procedures",
+                "1.12.2 Transportation Assistance (w/in MSS resources)",
+                "1.12.3 Material Assistance (food, clothing)",
+                "1.12.4 Financial Assistance (w/in MSS resources)"
+            };
+
+            foreach (var value in concreteServices)
+            {
+                serviceRow++;
+
+                worksheet.Cell(serviceRow, 1).Value = value;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 2;
+                for (int i = 1; i <= headers.Length; i++)
+                {
+                    if (i == 7 || i == 14)
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = 0;
+                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    }
+                    else
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = "";
+                    }
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "1.13 Referral";
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            var referralServices = new List<string>
+            {
+                "1.13.1 Facilitating Incoming Referral",
+                "1.13.2 Preparing the Referral",
+                "1.13.3 Coordination w/ the Receiveing Agency"
+            };
+
+            foreach (var value in referralServices)
+            {
+                serviceRow++;
+
+                worksheet.Cell(serviceRow, 1).Value = value;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 2;
+                for (int i = 1; i <= headers.Length; i++)
+                {
+                    if (i == 7 || i == 14)
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = 0;
+                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    }
+                    else
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = "";
+                    }
+                }
+            }
+
             // Autofit for better presentation
             worksheet.Column(1).AdjustToContents();
 

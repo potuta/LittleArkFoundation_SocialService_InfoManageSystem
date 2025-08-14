@@ -1091,6 +1091,106 @@ else
                             }
                         }
                     </tr>
+
+                    var caseManagements = new List<string>
+                    {
+                        "1.1 Pre admission Counselling",
+                        "1.2 Intake Interview",
+                        "1.3 Collateral Interview",
+                        "1.4 Issuance of MSS Card",
+                        "1.5 Indicate classification in the chart (in pts only)",
+                        "1.6 Psychosocial Assessment",
+                        "1.7 Psychosocial Counselling",
+                        "1.8 Coordination w/ Multidiciplinary Team",
+                        "1.9 Completion of Intake Form",
+                        "1.10 Health Education",
+                        "1.11 Crisis Intervention",
+                        "1.12 Concrete Services"
+                    };
+
+                    foreach (var value in caseManagements)
+                    {
+                        <tr>
+                            <td style="white-space: nowrap;">@value</td>
+                            @for (int i = 1; i <= 14; i++)
+                            {
+                                if (i == 7 || i == 14)
+                                {
+                                    <td style="white-space: nowrap;">0</td>
+                                }
+                                else
+                                {
+                                    <td style="white-space: nowrap;"></td>
+                                }
+                            }
+                        </tr>
+                    }
+
+                    var concreteServices = new List<string>
+                    {
+                        "1.12.1 Facilitaion/Provision of Meds/Procedures",
+                        "1.12.2 Transportation Assistance (w/in MSS resources)",
+                        "1.12.3 Material Assistance (food, clothing)",
+                        "1.12.4 Financial Assistance (w/in MSS resources)"
+                    };
+
+                    foreach (var value in concreteServices)
+                    {
+                        <tr>
+                            <td style="white-space: nowrap;">@value</td>
+                            @for (int i = 1; i <= 14; i++)
+                            {
+                                if (i == 7 || i == 14)
+                                {
+                                    <td style="white-space: nowrap;">0</td>
+                                }
+                                else
+                                {
+                                    <td style="white-space: nowrap;"></td>
+                                }
+                            }
+                        </tr>
+                    }
+
+                    <tr>
+                        <td style="white-space: nowrap;">1.13 Referral</td>
+                        @for (int i = 1; i <= 14; i++)
+                        {
+                            if (i == 7 || i == 14)
+                            {
+                                <td style="white-space: nowrap;">0</td>
+                            }
+                            else
+                            {
+                                <td style="white-space: nowrap;"></td>
+                            }
+                        }
+                    </tr>
+
+                    var referralServices = new List<string>
+                    {
+                        "1.13.1 Facilitating Incoming Referral",
+                        "1.13.2 Preparing the Referral",
+                        "1.13.3 Coordination w/ the Receiveing Agency"
+                    };
+
+                    foreach (var value in referralServices)
+                    {
+                        <tr>
+                            <td style="white-space: nowrap;">@value</td>
+                            @for (int i = 1; i <= 14; i++)
+                            {
+                                if (i == 7 || i == 14)
+                                {
+                                    <td style="white-space: nowrap;">0</td>
+                                }
+                                else
+                                {
+                                    <td style="white-space: nowrap;"></td>
+                                }
+                            }
+                        </tr>
+                    }
                 }
             </tbody>
         </table>
