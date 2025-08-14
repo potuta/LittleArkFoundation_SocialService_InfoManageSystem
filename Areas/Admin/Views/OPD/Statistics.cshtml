@@ -738,6 +738,72 @@ else
                         </tr>
                     }
 
+                    <tr>
+                        <td style="white-space: nowrap;">3.2 Family Counselling</td>
+                        @for (int i = 1; i <= 14; i++)
+                        {
+                            if (i == 7 || i == 14)
+                            {
+                                <td style="white-space: nowrap;">0</td>
+                            }
+                            else
+                            {
+                                <td style="white-space: nowrap;"></td>
+                            }
+                        }
+                    </tr>
+
+                    var familyCounseling = new List<string>
+                    {
+                        "a. Social Worker",
+                        "b. Health Care Team"
+                    };
+
+                    foreach (var value in familyCounseling)
+                    {
+                        <tr>
+                            <td style="white-space: nowrap;">@value</td>
+                            @for (int i = 1; i <= 14; i++)
+                            {
+                                if (i == 7 || i == 14)
+                                {
+                                    <td style="white-space: nowrap;">0</td>
+                                }
+                                else
+                                {
+                                    <td style="white-space: nowrap;"></td>
+                                }
+                            }
+                        </tr>
+                    }
+
+                    var psychologicalCounseling = new List<string>
+                    {
+                        "3.3 Psychosocial Crisis Intervention",
+                        "3.4 Group Work/Per Session",
+                        "3.5 Patients/Watchers Education",
+                        "3.6 Mutual Support Group Session",
+                        "3.7 Advocacy Group"
+                    };
+
+                    foreach (var value in psychologicalCounseling)
+                    {
+                        <tr>
+                            <td style="white-space: nowrap;">@value</td>
+                            @for (int i = 1; i <= 14; i++)
+                            {
+                                if (i == 7 || i == 14)
+                                {
+                                    <td style="white-space: nowrap;">0</td>
+                                }
+                                else
+                                {
+                                    <td style="white-space: nowrap;"></td>
+                                }
+                            }
+                        </tr>
+                    }
+
                 }
             </tbody>
         </table>
