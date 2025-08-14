@@ -2176,6 +2176,89 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
             }
 
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "9. Consultative and Advisory Services";
+            worksheet.Cell(serviceRow, 1).Style.Font.Bold = true;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            var consultatives = new List<string>
+            {
+                "a. Physicians",
+                "b. Office Staff",
+                "c. Outside Hospital"
+            };
+
+            foreach (var value in consultatives)
+            {
+                serviceRow++;
+
+                worksheet.Cell(serviceRow, 1).Value = value;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+                for (int i = 1; i <= headers.Length; i++)
+                {
+                    if (i == 7 || i == 14)
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = 0;
+                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    }
+                    else
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = "";
+                    }
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "10. Community Outreach";
+            worksheet.Cell(serviceRow, 1).Style.Font.Bold = true;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "III. CASE MANAGEMENT SERVICES";
+            worksheet.Cell(serviceRow, 1).Style.Font.Bold = true;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
             // Autofit for better presentation
             worksheet.Column(1).AdjustToContents();
 

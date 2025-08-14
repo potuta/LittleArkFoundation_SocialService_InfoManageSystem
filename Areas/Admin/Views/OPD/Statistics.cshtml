@@ -1021,6 +1021,76 @@ else
                             }
                         </tr>
                     }
+
+                    <tr>
+                        <td style="white-space: nowrap; font-weight: bold;">9. Consultative and Advisory Services</td>
+                        @for (int i = 1; i <= 14; i++)
+                        {
+                            if (i == 7 || i == 14)
+                            {
+                                <td style="white-space: nowrap;">0</td>
+                            }
+                            else
+                            {
+                                <td style="white-space: nowrap;"></td>
+                            }
+                        }
+                    </tr>
+
+                    var consultatives = new List<string>
+                    {
+                        "a. Physicians",
+                        "b. Office Staff",
+                        "c. Outside Hospital"
+                    };
+
+                    foreach (var value in consultatives)
+                    {
+                        <tr>
+                            <td style="white-space: nowrap;">@value</td>
+                            @for (int i = 1; i <= 14; i++)
+                            {
+                                if (i == 7 || i == 14)
+                                {
+                                    <td style="white-space: nowrap;">0</td>
+                                }
+                                else
+                                {
+                                    <td style="white-space: nowrap;"></td>
+                                }
+                            }
+                        </tr>
+                    }
+
+                    <tr>
+                        <td style="white-space: nowrap; font-weight: bold;">10. Community Outreach</td>
+                        @for (int i = 1; i <= 14; i++)
+                        {
+                            if (i == 7 || i == 14)
+                            {
+                                <td style="white-space: nowrap;">0</td>
+                            }
+                            else
+                            {
+                                <td style="white-space: nowrap;"></td>
+                            }
+                        }
+                    </tr>
+
+                    <tr>
+                        <td style="white-space: nowrap; font-weight: bold;">III. CASE MANAGEMENT SERVICES</td>
+                        @for (int i = 1; i <= 14; i++)
+                        {
+                            if (i == 7 || i == 14)
+                            {
+                                <td style="white-space: nowrap;">0</td>
+                            }
+                            else
+                            {
+                                <td style="white-space: nowrap;"></td>
+                            }
+                        }
+                    </tr>
                 }
             </tbody>
         </table>
