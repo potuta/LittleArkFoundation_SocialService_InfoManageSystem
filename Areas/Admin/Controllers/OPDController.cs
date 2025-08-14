@@ -1919,6 +1919,119 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
             }
 
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "4. Discharges Services";
+            worksheet.Cell(serviceRow, 1).Style.Font.Bold = true;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            var dischargesServices = new List<string>
+            {
+                "a. Discharge Planning",
+                "b. Facilitation of Discharge",
+                "c. Pre-termination Counseling",
+                "d. Home Conduction"
+            };
+
+            foreach (var value in dischargesServices)
+            {
+                serviceRow++;
+
+                worksheet.Cell(serviceRow, 1).Value = value;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+                for (int i = 1; i <= headers.Length; i++)
+                {
+                    if (i == 7 || i == 14)
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = 0;
+                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    }
+                    else
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = "";
+                    }
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "5. Support Services";
+            worksheet.Cell(serviceRow, 1).Style.Font.Bold = true;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "5.1 Ward Visitation";
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            var wardVisitation = new List<string>
+            {
+                "a. Individual",
+                "b. Team"
+            };
+
+            foreach (var value in wardVisitation)
+            {
+                serviceRow++;
+
+                worksheet.Cell(serviceRow, 1).Value = value;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 2;
+                for (int i = 1; i <= headers.Length; i++)
+                {
+                    if (i == 7 || i == 14)
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = 0;
+                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    }
+                    else
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = "";
+                    }
+                }
+            }
+
             // Autofit for better presentation
             worksheet.Column(1).AdjustToContents();
 

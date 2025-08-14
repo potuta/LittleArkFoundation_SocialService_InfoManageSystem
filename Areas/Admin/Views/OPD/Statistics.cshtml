@@ -804,6 +804,100 @@ else
                         </tr>
                     }
 
+                    <tr>
+                        <td style="white-space: nowrap; font-weight: bold;">4. Discharges Services</td>
+                        @for (int i = 1; i <= 14; i++)
+                        {
+                            if (i == 7 || i == 14)
+                            {
+                                <td style="white-space: nowrap;">0</td>
+                            }
+                            else
+                            {
+                                <td style="white-space: nowrap;"></td>
+                            }
+                        }
+                    </tr>
+
+                    var dischargesServices = new List<string>
+                    {
+                        "a. Discharge Planning",
+                        "b. Facilitation of Discharge",
+                        "c. Pre-termination Counseling",
+                        "d. Home Conduction"
+                    };
+
+                    foreach (var value in dischargesServices)
+                    {
+                        <tr>
+                            <td style="white-space: nowrap;">@value</td>
+                            @for (int i = 1; i <= 14; i++)
+                            {
+                                if (i == 7 || i == 14)
+                                {
+                                    <td style="white-space: nowrap;">0</td>
+                                }
+                                else
+                                {
+                                    <td style="white-space: nowrap;"></td>
+                                }
+                            }
+                        </tr>
+                    }
+
+                    <tr>
+                        <td style="white-space: nowrap; font-weight: bold;">5. Support Services</td>
+                        @for (int i = 1; i <= 14; i++)
+                        {
+                            if (i == 7 || i == 14)
+                            {
+                                <td style="white-space: nowrap;">0</td>
+                            }
+                            else
+                            {
+                                <td style="white-space: nowrap;"></td>
+                            }
+                        }
+                    </tr>
+
+                    <tr>
+                        <td style="white-space: nowrap;">5.1 Ward Visitation</td>
+                        @for (int i = 1; i <= 14; i++)
+                        {
+                            if (i == 7 || i == 14)
+                            {
+                                <td style="white-space: nowrap;">0</td>
+                            }
+                            else
+                            {
+                                <td style="white-space: nowrap;"></td>
+                            }
+                        }
+                    </tr>
+
+                    var wardVisitation = new List<string>
+                    {
+                        "a. Individual",
+                        "b. Team"
+                    };
+
+                    foreach (var value in wardVisitation)
+                    {
+                        <tr>
+                            <td style="white-space: nowrap;">@value</td>
+                            @for (int i = 1; i <= 14; i++)
+                            {
+                                if (i == 7 || i == 14)
+                                {
+                                    <td style="white-space: nowrap;">0</td>
+                                }
+                                else
+                                {
+                                    <td style="white-space: nowrap;"></td>
+                                }
+                            }
+                        </tr>
+                    }
                 }
             </tbody>
         </table>
