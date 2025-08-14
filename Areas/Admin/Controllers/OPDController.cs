@@ -2126,6 +2126,56 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
             }
 
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "8. Coordination/Initiated by MSW";
+            worksheet.Cell(serviceRow, 1).Style.Font.Bold = true;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            var coordinationsByMSW = new List<string>
+            {
+                "a. Physicians",
+                "b. Nurses",
+                "c. Pharmacist",
+                "d. Nutritionist",
+                "e. Other Staff",
+                "f. Management"
+            };
+
+            foreach (var value in coordinationsByMSW)
+            {
+                serviceRow++;
+
+                worksheet.Cell(serviceRow, 1).Value = value;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+                for (int i = 1; i <= headers.Length; i++)
+                {
+                    if (i == 7 || i == 14)
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = 0;
+                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    }
+                    else
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = "";
+                    }
+                }
+            }
+
             // Autofit for better presentation
             worksheet.Column(1).AdjustToContents();
 

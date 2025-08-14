@@ -978,6 +978,49 @@ else
                             }
                         </tr>
                     }
+
+                    <tr>
+                        <td style="white-space: nowrap; font-weight: bold;">8. Coordination/Initiated by MSW</td>
+                        @for (int i = 1; i <= 14; i++)
+                        {
+                            if (i == 7 || i == 14)
+                            {
+                                <td style="white-space: nowrap;">0</td>
+                            }
+                            else
+                            {
+                                <td style="white-space: nowrap;"></td>
+                            }
+                        }
+                    </tr>
+
+                    var coordinationsByMSW = new List<string>
+                    {
+                        "a. Physicians",
+                        "b. Nurses",
+                        "c. Pharmacist",
+                        "d. Nutritionist",
+                        "e. Other Staff",
+                        "f. Management"
+                    };
+
+                    foreach (var value in coordinationsByMSW)
+                    {
+                        <tr>
+                            <td style="white-space: nowrap;">@value</td>
+                            @for (int i = 1; i <= 14; i++)
+                            {
+                                if (i == 7 || i == 14)
+                                {
+                                    <td style="white-space: nowrap;">0</td>
+                                }
+                                else
+                                {
+                                    <td style="white-space: nowrap;"></td>
+                                }
+                            }
+                        </tr>
+                    }
                 }
             </tbody>
         </table>
