@@ -3,19 +3,55 @@
 @{
 	ViewData["Title"] = "System Logs";
 	Layout = "_AdminLayout";
+    string? sortBy = ViewBag.sortBy ?? "";
+    string? sortByMonth = ViewBag.sortByMonth ?? "";
 }
 
 <h2>System Logs</h2>
 <hr />
 
-<div class="search-container">
-    <form asp-action="Search" asp-controller="SystemLogs" >
-        <div class="input-group">
-            <input type="date" name="searchString" class="form-control" placeholder="Search by Date" aria-label="Search">
-            <button type="submit" class="btn btn-dark">Search</button>
-        </div>
-    </form>
-    <a class="btn btn-primary" asp-action="Index" asp-controller="SystemLogs">Back to Full List</a>
+@* Search *@
+<div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+    <div class="search-container" style="width: 100%">
+        <form asp-action="Search" asp-controller="SystemLogs" >
+            <div class="input-group">
+                <input type="date" name="searchString" class="form-control" placeholder="Search by Date" aria-label="Search">
+                <button type="submit" class="btn btn-dark">Search</button>
+            </div>
+        </form>
+        <a class="btn btn-primary" asp-action="Index" asp-controller="SystemLogs">Back to Full List</a>
+    </div>
+</div>
+
+<div class="d-flex justify-content-end align-items-center">
+@* Right toggles/buttons *@
+    <div class="btn-group">
+        <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-1 me-2" data-bs-toggle="dropdown" aria-expanded="false">
+            @if (string.IsNullOrEmpty(sortBy))
+            {
+                <span class="mb-0">Sort by Level</span>
+            }
+            else
+            {
+                <span class="mb-0">@sortBy</span>
+            }
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" asp-action="SortBy" asp-controller="SystemLogs" asp-route-level="" asp-route-sortByMonth="@sortByMonth">All</a></li>
+            @{
+                var levels = new List<string>
+                {
+                    "Information",
+                    "Error",
+                    "Warning"
+                };
+            }
+            @foreach (var level in levels)
+            {
+                <li><a class="dropdown-item" asp-action="SortBy" asp-controller="SystemLogs" asp-route-level="@level" asp-route-sortByMonth="@sortByMonth">@level</a></li>
+            }
+        </ul>
+    </div>
 </div>
 
 @if (TempData["SuccessMessage"] != null)

@@ -1,4 +1,5 @@
-﻿using LittleArkFoundation.Areas.Admin.Models.SystemLogs;
+﻿using LittleArkFoundation.Areas.Admin.Models.GeneralAdmission;
+using LittleArkFoundation.Areas.Admin.Models.SystemLogs;
 using LittleArkFoundation.Authorize;
 using LittleArkFoundation.Data;
 using Microsoft.AspNetCore.Mvc;
@@ -73,6 +74,37 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 TempData["ErrorMessage"] = "Error: " + ex.Message;
                 return View("Index");
             }
+        }
+
+        public async Task<IActionResult> SortBy(string? level, string? sortByMonth, string? viewName = "Index")
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var query = context.Logs.AsQueryable();
+
+            if (!string.IsNullOrEmpty(level))
+            {
+                query = query.Where(d => d.Level.Equals(level));
+                ViewBag.sortBy = level;
+            }
+
+            if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
+            {
+                query = query.Where(d => d.TimeStamp.Month == month.Month && d.TimeStamp.Year == month.Year);
+                ViewBag.sortByMonth = month.ToString("yyyy-MM");
+            }
+
+            var logs = await query.OrderByDescending(l => l.TimeStamp).ToListAsync();
+
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+
+            var viewModel = new LogsViewModel
+            {
+                LogsList = logs
+            };
+
+            return View(viewName, viewModel);
         }
     }
 }
