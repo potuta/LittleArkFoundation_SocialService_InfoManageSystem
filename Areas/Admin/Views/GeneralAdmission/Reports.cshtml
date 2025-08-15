@@ -88,10 +88,12 @@
 
         <!-- Statistics -->
         <a class="btn btn-outline-dark @(
-                      ViewContext.RouteData.Values["controller"]?.ToString() == "Form" &&
-                      ViewContext.RouteData.Values["action"]?.ToString() == "Statistics"
-                      ? "active" : "")"
-           asp-action="Statistics" asp-controller="Form">Statistics</a>
+                               ViewContext.RouteData.Values["controller"]?.ToString() == "GeneralAdmission" &&
+                                   (
+                                       ViewContext.RouteData.Values["action"]?.ToString() == "Statistics" ||
+                                       ViewContext.RouteData.Values["action"]?.ToString() == "SortByStatistics"
+                                   ) ? "active" : "")"
+           asp-action="Statistics" asp-controller="GeneralAdmission">Statistics</a>
     </div>
 </div>
 <hr />

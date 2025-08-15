@@ -185,6 +185,41 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return View(viewName, viewModel);
         }
 
+        public async Task<IActionResult> SortByStatistics(string sortByUserID, string? sortByMonth, string? viewName = "Index")
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var query = context.GeneralAdmission.AsQueryable();
+
+            if (!string.IsNullOrEmpty(sortByUserID))
+            {
+                query = query.Where(d => d.UserID == int.Parse(sortByUserID));
+                var user = await context.Users.FindAsync(int.Parse(sortByUserID));
+                ViewBag.sortBy = user.Username;
+                ViewBag.sortByUserID = user.UserID.ToString();
+            }
+
+            if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
+            {
+                query = query.Where(d => d.Date.Month == month.Month && d.Date.Year == month.Year);
+                ViewBag.sortByMonth = month.ToString("yyyy-MM");
+            }
+
+            var generalAdmissions = await query.ToListAsync();
+
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+
+            var viewModel = new GeneralAdmissionViewModel
+            {
+                GeneralAdmissions = generalAdmissions,
+                Users = users
+            };
+
+            return View(viewName, viewModel);
+        }
+
         [HasPermission("EditForm")]
         public async Task<IActionResult> Edit(int id)
         {
@@ -1126,5 +1161,1588 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
 
         }
+
+        public async Task<IActionResult> Statistics()
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var generalAdmissions = await context.GeneralAdmission.ToListAsync();
+            if (generalAdmissions == null || !generalAdmissions.Any())
+            {
+                TempData["ErrorMessage"] = "No General Admission records found.";
+                return RedirectToAction("Index");
+            }
+
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+
+            var viewModel = new GeneralAdmissionViewModel
+            {
+                Users = users,
+                GeneralAdmissions = generalAdmissions
+            };
+
+            return View(viewModel);
+        }
+
+        public async Task<IActionResult> ExportStatisticsToExcel(int userID, string? month)
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            // Parse the month input if provided
+            bool filterByMonth = DateTime.TryParseExact(month, "yyyy-MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedMonth);
+
+            var query = context.GeneralAdmission.AsQueryable();
+
+            if (userID > 0)
+            {
+                query = query.Where(ga => ga.UserID == userID);
+            }
+
+            if (filterByMonth)
+            {
+                query = query.Where(ga => ga.Date.Month == parsedMonth.Month && ga.Date.Year == parsedMonth.Year);
+            }
+
+            var generalAdmissions = await query.ToListAsync();
+
+            if (generalAdmissions == null || !generalAdmissions.Any())
+            {
+                TempData["ErrorMessage"] = "No Admission records found for selected filters.";
+                return RedirectToAction("Statistics");
+            }
+
+            // File name generation
+            string mswName = userID > 0 ? generalAdmissions.First().MSW : "All MSW";
+            string monthLabel = filterByMonth ? parsedMonth.ToString("MMMM_yyyy") : generalAdmissions.First().Date.Year.ToString();
+            string fileName = $"GA_Statistics_{monthLabel}_{mswName}";
+
+            // Sanitize sheet name (for Excel)
+            string safeSheetName = Regex.Replace(fileName, @"[\[\]\*\?/\\:]", "_");
+            if (safeSheetName.Length > 31)
+                safeSheetName = safeSheetName.Substring(0, 31);
+
+            var workbook = new XLWorkbook();
+            var worksheet = workbook.Worksheets.Add(safeSheetName);
+
+            // HEADERS
+
+            var headers = new[]
+            {
+                "MONTH", "JAN", "FEB", "MARCH", "APRIL",
+                "MAY", "JUNE", "TOTAL", "JULY", "AUG", "SEPT",
+                "OCT", "NOV", "DEC", "TOTAL"
+            };
+
+            // Column 1
+            var cell1 = worksheet.Cell(1, 1);
+            cell1.Value = mswName;
+            cell1.Style.Font.Bold = true;
+            cell1.Style.Font.FontSize = 14;
+            cell1.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            worksheet.Range(1, 1, 1, headers.Count()).Merge(); // Merge across desired columns
+
+            // Column 2
+            var cell2 = worksheet.Cell(2, 1);
+            cell2.Value = "General Admission Statistics";
+            cell2.Style.Font.Bold = true;
+            cell2.Style.Font.FontSize = 12;
+            cell2.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            worksheet.Range(2, 1, 2, headers.Count()).Merge();
+
+            // Column 3
+            var cell3 = worksheet.Cell(3, 1);
+            cell3.Value = $"{monthLabel} General Admission";
+            cell3.Style.Font.Bold = true;
+            cell3.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            worksheet.Range(3, 1, 3, headers.Count()).Merge();
+
+            // Rest of columns
+            int headerRow = 4;
+            for (int i = 0; i < headers.Length; i++)
+            {
+                worksheet.Cell(headerRow, i + 1).Value = headers[i];
+                worksheet.Cell(headerRow, i + 1).Style.Font.Bold = true;
+                worksheet.Cell(headerRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            }
+
+            // SOURCE OF REFERRAL
+            int referralRow = headerRow + 1;
+
+            worksheet.Cell(referralRow, 1).Value = "I. SOURCE OF REFERRAL";
+            worksheet.Cell(referralRow, 1).Style.Font.Bold = true;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(referralRow, i + 1).Value = 0;
+                    worksheet.Cell(referralRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(referralRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(referralRow, i + 1).Value = "";
+                }
+            }
+
+            referralRow++;
+
+            worksheet.Cell(referralRow, 1).Value = "Referring Party";
+            worksheet.Cell(referralRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(referralRow, 1).Style.Alignment.Indent = 1;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(referralRow, i + 1).Value = 0;
+                    worksheet.Cell(referralRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(referralRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(referralRow, i + 1).Value = "";
+                }
+            }
+
+            referralRow++;
+
+            var sourceOfReferral = new Dictionary<string, string>
+                    {
+                                { "1. Government Hospital", "Govt. Hosp." },
+                                { "2. Private Hospital", "Private/Clinic" },
+                                { "3. Politicians", "Politicians" },
+                                { "4. Media", "Media" },
+                                { "5. Health Care Team", "Health Care Team" },
+                                { "6. NGOs/Private Welfare Agencies", "NGO/Private Welfare" },
+                                { "7. Government Agencies (DSWD, DOH Officials)", "Govt. Agencies" },
+                                { "8. Walk-in", "Walk in" },
+                                { "9. Others (employers, former pts, colleagues, friends)", "Others" },
+
+                    };
+
+            foreach (var referral in sourceOfReferral)
+            {
+                var key = referral.Key;
+                var value = referral.Value;
+
+                worksheet.Cell(referralRow, 1).Value = key;
+                worksheet.Cell(referralRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                worksheet.Cell(referralRow, 1).Style.Alignment.Indent = 2;
+
+                for (int i = 1; i <= 6; i++)
+                {
+                    var count = generalAdmissions.Count(ga => ga.Referral.Equals(value, StringComparison.OrdinalIgnoreCase) && ga.Date.Month == i);
+                    worksheet.Cell(referralRow, i + 1).Value = count == 0 ? "" : count;
+                    worksheet.Cell(referralRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+
+                worksheet.Cell(referralRow, 8).Value =
+                    Enumerable.Range(1, 6).Sum(i => generalAdmissions.Count(ga => ga.Referral.Equals(value, StringComparison.OrdinalIgnoreCase) && ga.Date.Month == i));
+                worksheet.Cell(referralRow, 8).Style.Font.Bold = true;
+                worksheet.Cell(referralRow, 8).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                for (int i = 7; i <= 12; i++)
+                {
+                    var count = generalAdmissions.Count(ga => ga.Referral.Equals(value, StringComparison.OrdinalIgnoreCase) && ga.Date.Month == i);
+                    worksheet.Cell(referralRow, i + 2).Value = count == 0 ? "" : count;
+                    worksheet.Cell(referralRow, i + 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+
+                worksheet.Cell(referralRow, 15).Value =
+                    Enumerable.Range(7, 12).Sum(i => generalAdmissions.Count(ga => ga.Referral.Equals(value, StringComparison.OrdinalIgnoreCase) && ga.Date.Month == i));
+                worksheet.Cell(referralRow, 15).Style.Font.Bold = true;
+                worksheet.Cell(referralRow, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                referralRow++;
+            }
+
+            worksheet.Cell(referralRow, 1).Value = "TOTAL";
+            worksheet.Cell(referralRow, 1).Style.Font.Bold = true;
+            worksheet.Cell(referralRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            for (int i = 1; i <= 6; i++)
+            {
+                var count = generalAdmissions.Count(ga => ga.Date.Month == i);
+                worksheet.Cell(referralRow, i + 1).Value = count;
+                worksheet.Cell(referralRow, i + 1).Style.Font.Bold = true;
+                worksheet.Cell(referralRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            }
+
+            worksheet.Cell(referralRow, 8).Value =
+                Enumerable.Range(1, 6).Sum(i => generalAdmissions.Count(ga => ga.Date.Month == i));
+            worksheet.Cell(referralRow, 8).Style.Font.Bold = true;
+            worksheet.Cell(referralRow, 8).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            for (int i = 7; i <= 12; i++)
+            {
+                var count = generalAdmissions.Count(ga => ga.Date.Month == i);
+                worksheet.Cell(referralRow, i + 2).Value = count;
+                worksheet.Cell(referralRow, i + 2).Style.Font.Bold = true;
+                worksheet.Cell(referralRow, i + 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            }
+
+            worksheet.Cell(referralRow, 15).Value =
+                Enumerable.Range(7, 12).Sum(i => generalAdmissions.Count(ga => ga.Date.Month == i));
+            worksheet.Cell(referralRow, 15).Style.Font.Bold = true;
+            worksheet.Cell(referralRow, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            // CASELOAD ACCORDING TO SERVICES
+            int caseloadRow = referralRow + 1;
+
+            worksheet.Cell(caseloadRow, 1).Value = "II. CASELOAD ACCORDING TO SERVICES";
+            worksheet.Cell(caseloadRow, 1).Style.Font.Bold = true;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(caseloadRow, i + 1).Value = 0;
+                    worksheet.Cell(caseloadRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(caseloadRow, i + 1).Value = "";
+                }
+            }
+
+            caseloadRow++;
+
+            worksheet.Cell(caseloadRow, 1).Value = "1. During Census";
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Indent = 1;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(caseloadRow, i + 1).Value = 0;
+                    worksheet.Cell(caseloadRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(caseloadRow, i + 1).Value = "";
+                }
+            }
+
+            caseloadRow++;
+
+            worksheet.Cell(caseloadRow, 1).Value = "1.1 New Cases";
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Indent = 2;
+
+            for (int i = 1; i <= 6; i++)
+            {
+                var count = generalAdmissions.Count(ga => !ga.isOld && ga.Date.Month == i);
+                worksheet.Cell(caseloadRow, i + 1).Value = count == 0 ? "" : count;
+                worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            }
+
+            worksheet.Cell(caseloadRow, 8).Value =
+                Enumerable.Range(1, 6).Sum(i => generalAdmissions.Count(ga => !ga.isOld && ga.Date.Month == i));
+            worksheet.Cell(caseloadRow, 8).Style.Font.Bold = true;
+            worksheet.Cell(caseloadRow, 8).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            for (int i = 7; i <= 12; i++)
+            {
+                var count = generalAdmissions.Count(ga => !ga.isOld && ga.Date.Month == i);
+                worksheet.Cell(caseloadRow, i + 2).Value = count == 0 ? "" : count;
+                worksheet.Cell(caseloadRow, i + 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            }
+
+            worksheet.Cell(caseloadRow, 15).Value =
+                Enumerable.Range(7, 12).Sum(i => generalAdmissions.Count(ga => !ga.isOld && ga.Date.Month == i));
+            worksheet.Cell(caseloadRow, 15).Style.Font.Bold = true;
+            worksheet.Cell(caseloadRow, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            caseloadRow++;
+
+            worksheet.Cell(caseloadRow, 1).Value = "1.2 Old Cases";
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Indent = 2;
+
+            for (int i = 1; i <= 6; i++)
+            {
+                var count = generalAdmissions.Count(ga => ga.isOld && ga.Date.Month == i);
+                worksheet.Cell(caseloadRow, i + 1).Value = count == 0 ? "" : count;
+                worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            }
+
+            worksheet.Cell(caseloadRow, 8).Value =
+                Enumerable.Range(1, 6).Sum(i => generalAdmissions.Count(ga => ga.isOld && ga.Date.Month == i));
+            worksheet.Cell(caseloadRow, 8).Style.Font.Bold = true;
+            worksheet.Cell(caseloadRow, 8).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            for (int i = 7; i <= 12; i++)
+            {
+                var count = generalAdmissions.Count(ga => ga.isOld && ga.Date.Month == i);
+                worksheet.Cell(caseloadRow, i + 2).Value = count == 0 ? "" : count;
+                worksheet.Cell(caseloadRow, i + 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            }
+
+            worksheet.Cell(caseloadRow, 15).Value =
+                Enumerable.Range(7, 12).Sum(i => generalAdmissions.Count(ga => ga.isOld && ga.Date.Month == i));
+            worksheet.Cell(caseloadRow, 15).Style.Font.Bold = true;
+            worksheet.Cell(caseloadRow, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            caseloadRow++;
+
+            worksheet.Cell(caseloadRow, 1).Value = "2. Closed Summary";
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Indent = 1;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(caseloadRow, i + 1).Value = 0;
+                    worksheet.Cell(caseloadRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(caseloadRow, i + 1).Value = "";
+                }
+            }
+
+            caseloadRow++;
+
+            worksheet.Cell(caseloadRow, 1).Value = "3. Number of patients based on sectoral groupings mandated by law/policies:";
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.WrapText = true;
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Indent = 1;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(caseloadRow, i + 1).Value = 0;
+                    worksheet.Cell(caseloadRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(caseloadRow, i + 1).Value = "";
+                }
+            }
+
+            caseloadRow++;
+
+            worksheet.Cell(caseloadRow, 1).Value = "a. PWD";
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Indent = 2;
+
+            for (int i = 1; i <= 6; i++)
+            {
+                var count = generalAdmissions.Count(ga => ga.isPWD && ga.Date.Month == i);
+                worksheet.Cell(caseloadRow, i + 1).Value = count == 0 ? "" : count;
+                worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            }
+
+            worksheet.Cell(caseloadRow, 8).Value =
+                Enumerable.Range(1, 6).Sum(i => generalAdmissions.Count(ga => ga.isPWD && ga.Date.Month == i));
+            worksheet.Cell(caseloadRow, 8).Style.Font.Bold = true;
+            worksheet.Cell(caseloadRow, 8).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            for (int i = 7; i <= 12; i++)
+            {
+                var count = generalAdmissions.Count(ga => ga.isPWD && ga.Date.Month == i);
+                worksheet.Cell(caseloadRow, i + 2).Value = count == 0 ? "" : count;
+                worksheet.Cell(caseloadRow, i + 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            }
+
+            worksheet.Cell(caseloadRow, 15).Value =
+                Enumerable.Range(7, 12).Sum(i => generalAdmissions.Count(ga => ga.isPWD && ga.Date.Month == i));
+            worksheet.Cell(caseloadRow, 15).Style.Font.Bold = true;
+            worksheet.Cell(caseloadRow, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            caseloadRow++;
+
+            worksheet.Cell(caseloadRow, 1).Value = "b. Indigenous People";
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Indent = 2;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(caseloadRow, i + 1).Value = 0;
+                    worksheet.Cell(caseloadRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(caseloadRow, i + 1).Value = "";
+                }
+            }
+
+            caseloadRow++;
+
+            worksheet.Cell(caseloadRow, 1).Value = "c. Government Workers";
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(caseloadRow, 1).Style.Alignment.Indent = 2;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(caseloadRow, i + 1).Value = 0;
+                    worksheet.Cell(caseloadRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(caseloadRow, i + 1).Value = "";
+                }
+            }
+
+            // SERVICES
+            int serviceRow = caseloadRow + 1;
+
+            worksheet.Cell(serviceRow, 1).Value = "SERVICES";
+            worksheet.Cell(serviceRow, 1).Style.Font.Bold = true;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "1. Planning, Screening and Eligibility Study / PSE";
+            worksheet.Cell(serviceRow, 1).Style.Font.Bold = true;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "1.1 Socio Economic Classification";
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "1.2 Pre-admission Planning";
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "1.3 Information Services/Orientation";
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "2. Concrete and Referral Services";
+            worksheet.Cell(serviceRow, 1).Style.Font.Bold = true;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "2.1 Provision of Discount";
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "2.2 Facilitating Referrals";
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "2.2.1 Outgoing Referrals for:";
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            var outgoingReferrals = new List<string>
+            {
+                "a. Medical Assistance",
+                "b. Discount on Procedure/Hospital Expenses",
+                "c. Transportation Fare",
+                "d. Institutional Placement",
+                "e. Temporary Shelter",
+                "f. Funeral Assistance/Pauper's Burial",
+                "g. Others specify (networking)"
+            };
+
+            foreach (var value in outgoingReferrals)
+            {
+                serviceRow++;
+
+                worksheet.Cell(serviceRow, 1).Value = value;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 2;
+                for (int i = 1; i <= headers.Length; i++)
+                {
+                    if (i == 7 || i == 14)
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = 0;
+                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    }
+                    else
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = "";
+                    }
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "2.2.2 Incoming Referrals";
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "3. Psychosocial Counseling";
+            worksheet.Cell(serviceRow, 1).Style.Font.Bold = true;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "Ten Leading Causes for Counselling";
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            var tenLeadingCauses = new List<string>
+            {
+                "1. Stress of the family",
+                "2. Refusal of patient to take home",
+                "3. Anxiety of health cost",
+                "4. Marital problem",
+                "5. Refusal of patient for treatment",
+                "6. Unbecoming attitude due to postponement if surgery",
+                "7. Emotional problem",
+                "8. Neglected children",
+                "9. Sexually abuse",
+                "10. Adjustment problem"
+            };
+
+            foreach (var value in tenLeadingCauses)
+            {
+                serviceRow++;
+
+                worksheet.Cell(serviceRow, 1).Value = value;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 2;
+                for (int i = 1; i <= headers.Length; i++)
+                {
+                    if (i == 7 || i == 14)
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = 0;
+                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    }
+                    else
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = "";
+                    }
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "3.2 Family Counselling";
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            var familyCounseling = new List<string>
+            {
+                "a. Social Worker",
+                "b. Health Care Team"
+            };
+
+            foreach (var value in familyCounseling)
+            {
+                serviceRow++;
+
+                worksheet.Cell(serviceRow, 1).Value = value;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 2;
+                for (int i = 1; i <= headers.Length; i++)
+                {
+                    if (i == 7 || i == 14)
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = 0;
+                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    }
+                    else
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = "";
+                    }
+                }
+            }
+
+            var psychologicalCounseling = new List<string>
+            {
+                "3.3 Psychosocial Crisis Intervention",
+                "3.4 Group Work/Per Session",
+                "3.5 Patients/Watchers Education",
+                "3.6 Mutual Support Group Session",
+                "3.7 Advocacy Group"
+            };
+
+            foreach (var value in psychologicalCounseling)
+            {
+                serviceRow++;
+
+                worksheet.Cell(serviceRow, 1).Value = value;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+                for (int i = 1; i <= headers.Length; i++)
+                {
+                    if (i == 7 || i == 14)
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = 0;
+                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    }
+                    else
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = "";
+                    }
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "4. Discharges Services";
+            worksheet.Cell(serviceRow, 1).Style.Font.Bold = true;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            var dischargesServices = new List<string>
+            {
+                "a. Discharge Planning",
+                "b. Facilitation of Discharge",
+                "c. Pre-termination Counseling",
+                "d. Home Conduction"
+            };
+
+            foreach (var value in dischargesServices)
+            {
+                serviceRow++;
+
+                worksheet.Cell(serviceRow, 1).Value = value;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+                for (int i = 1; i <= headers.Length; i++)
+                {
+                    if (i == 7 || i == 14)
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = 0;
+                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    }
+                    else
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = "";
+                    }
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "5. Support Services";
+            worksheet.Cell(serviceRow, 1).Style.Font.Bold = true;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "5.1 Ward Visitation";
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            var wardVisitation = new List<string>
+            {
+                "a. Individual",
+                "b. Team"
+            };
+
+            foreach (var value in wardVisitation)
+            {
+                serviceRow++;
+
+                worksheet.Cell(serviceRow, 1).Value = value;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 2;
+                for (int i = 1; i <= headers.Length; i++)
+                {
+                    if (i == 7 || i == 14)
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = 0;
+                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    }
+                    else
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = "";
+                    }
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "6. Case Conferences";
+            worksheet.Cell(serviceRow, 1).Style.Font.Bold = true;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            var caseConferences = new List<string>
+            {
+                "a. Multi Disciplinary",
+                "b. MSWD"
+            };
+
+            foreach (var value in caseConferences)
+            {
+                serviceRow++;
+
+                worksheet.Cell(serviceRow, 1).Value = value;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+                for (int i = 1; i <= headers.Length; i++)
+                {
+                    if (i == 7 || i == 14)
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = 0;
+                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    }
+                    else
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = "";
+                    }
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "7. Follow-up Services";
+            worksheet.Cell(serviceRow, 1).Style.Font.Bold = true;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            var followUpServices = new List<string>
+            {
+                "7.1 Home Visit",
+                "7.2 Letters Sent",
+                "7.3 Contact of Relatives by Telephone",
+                "7.4 Contact of Relatives through Mass Media"
+            };
+
+            foreach (var value in followUpServices)
+            {
+                serviceRow++;
+
+                worksheet.Cell(serviceRow, 1).Value = value;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+                for (int i = 1; i <= headers.Length; i++)
+                {
+                    if (i == 7 || i == 14)
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = 0;
+                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    }
+                    else
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = "";
+                    }
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "8. Coordination/Initiated by MSW";
+            worksheet.Cell(serviceRow, 1).Style.Font.Bold = true;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            var coordinationsByMSW = new List<string>
+            {
+                "a. Physicians",
+                "b. Nurses",
+                "c. Pharmacist",
+                "d. Nutritionist",
+                "e. Other Staff",
+                "f. Management"
+            };
+
+            foreach (var value in coordinationsByMSW)
+            {
+                serviceRow++;
+
+                worksheet.Cell(serviceRow, 1).Value = value;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+                for (int i = 1; i <= headers.Length; i++)
+                {
+                    if (i == 7 || i == 14)
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = 0;
+                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    }
+                    else
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = "";
+                    }
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "9. Consultative and Advisory Services";
+            worksheet.Cell(serviceRow, 1).Style.Font.Bold = true;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            var consultatives = new List<string>
+            {
+                "a. Physicians",
+                "b. Office Staff",
+                "c. Outside Hospital"
+            };
+
+            foreach (var value in consultatives)
+            {
+                serviceRow++;
+
+                worksheet.Cell(serviceRow, 1).Value = value;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+                for (int i = 1; i <= headers.Length; i++)
+                {
+                    if (i == 7 || i == 14)
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = 0;
+                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    }
+                    else
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = "";
+                    }
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "10. Community Outreach";
+            worksheet.Cell(serviceRow, 1).Style.Font.Bold = true;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "III. CASE MANAGEMENT SERVICES";
+            worksheet.Cell(serviceRow, 1).Style.Font.Bold = true;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            var caseManagements = new List<string>
+            {
+                "1.1 Pre admission Counselling",
+                "1.2 Intake Interview",
+                "1.3 Collateral Interview",
+                "1.4 Issuance of MSS Card",
+                "1.5 Indicate classification in the chart (in pts only)",
+                "1.6 Psychosocial Assessment",
+                "1.7 Psychosocial Counselling",
+                "1.8 Coordination w/ Multidiciplinary Team",
+                "1.9 Completion of Intake Form",
+                "1.10 Health Education",
+                "1.11 Crisis Intervention",
+                "1.12 Concrete Services"
+            };
+
+            foreach (var value in caseManagements)
+            {
+                serviceRow++;
+
+                worksheet.Cell(serviceRow, 1).Value = value;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+                for (int i = 1; i <= headers.Length; i++)
+                {
+                    if (i == 7 || i == 14)
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = 0;
+                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    }
+                    else
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = "";
+                    }
+                }
+            }
+
+            var concreteServices = new List<string>
+            {
+                "1.12.1 Facilitaion/Provision of Meds/Procedures",
+                "1.12.2 Transportation Assistance (w/in MSS resources)",
+                "1.12.3 Material Assistance (food, clothing)",
+                "1.12.4 Financial Assistance (w/in MSS resources)"
+            };
+
+            foreach (var value in concreteServices)
+            {
+                serviceRow++;
+
+                worksheet.Cell(serviceRow, 1).Value = value;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 2;
+                for (int i = 1; i <= headers.Length; i++)
+                {
+                    if (i == 7 || i == 14)
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = 0;
+                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    }
+                    else
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = "";
+                    }
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "1.13 Referral";
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            var referralServices = new List<string>
+            {
+                "1.13.1 Facilitating Incoming Referral",
+                "1.13.2 Preparing the Referral",
+                "1.13.3 Coordination w/ the Receiveing Agency"
+            };
+
+            foreach (var value in referralServices)
+            {
+                serviceRow++;
+
+                worksheet.Cell(serviceRow, 1).Value = value;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 2;
+                for (int i = 1; i <= headers.Length; i++)
+                {
+                    if (i == 7 || i == 14)
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = 0;
+                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    }
+                    else
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = "";
+                    }
+                }
+            }
+
+            var caseManagements2 = new List<string>
+            {
+                "1.14 Ward Rounds (no. of pts visited)",
+                "1.15 Home Visitation",
+                "1.16 Advocacy Role",
+                "1.17 Education",
+                "1.18 Therapeutic Social Work Services"
+            };
+
+            foreach (var value in caseManagements2)
+            {
+                serviceRow++;
+
+                worksheet.Cell(serviceRow, 1).Value = value;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+                for (int i = 1; i <= headers.Length; i++)
+                {
+                    if (i == 7 || i == 14)
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = 0;
+                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    }
+                    else
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = "";
+                    }
+                }
+            }
+
+            var therapeuticServices = new List<string>
+            {
+                "1.18.1 Abandoned",
+                "1.18.2 Sexually Abused",
+                "1.18.3 Neglected",
+                "1.18.4 Battered"
+            };
+
+            foreach (var value in therapeuticServices)
+            {
+                serviceRow++;
+
+                worksheet.Cell(serviceRow, 1).Value = value;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 2;
+                for (int i = 1; i <= headers.Length; i++)
+                {
+                    if (i == 7 || i == 14)
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = 0;
+                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    }
+                    else
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = "";
+                    }
+                }
+            }
+
+            var caseManagements3 = new List<string>
+            {
+                "1.19 Protective Services",
+                "1.20 Grief Work",
+                "1.21 Behavioral Modification ",
+                "1.22 Networking (meeting w/ other institution/grp org.)",
+                "1.23 Politicians",
+                "1.24 Coordination w/ Mass Media",
+                "1.25 Consultaion/Advisory Services",
+                "1.26 Attendance to Case Conferences Committee Meetings",
+                "1.27 Attendance to Clinical Comittees"
+            };
+
+            foreach (var value in caseManagements3)
+            {
+                serviceRow++;
+
+                worksheet.Cell(serviceRow, 1).Value = value;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+                for (int i = 1; i <= headers.Length; i++)
+                {
+                    if (i == 7 || i == 14)
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = 0;
+                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    }
+                    else
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = "";
+                    }
+                }
+            }
+
+            var attendances = new List<string>
+            {
+                "1.27.1 Disharge Planning",
+                "1.27.2 Facilitation of Discharge",
+                "1.27.3 Home Conduction"
+            };
+
+            foreach (var value in attendances)
+            {
+                serviceRow++;
+
+                worksheet.Cell(serviceRow, 1).Value = value;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 2;
+                for (int i = 1; i <= headers.Length; i++)
+                {
+                    if (i == 7 || i == 14)
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = 0;
+                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    }
+                    else
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = "";
+                    }
+                }
+            }
+
+            var caseManagements4 = new List<string>
+            {
+                "1.28 Follow up Services",
+                "1.29 Documentation"
+            };
+
+            foreach (var value in caseManagements4)
+            {
+                serviceRow++;
+
+                worksheet.Cell(serviceRow, 1).Value = value;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+                for (int i = 1; i <= headers.Length; i++)
+                {
+                    if (i == 7 || i == 14)
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = 0;
+                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    }
+                    else
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = "";
+                    }
+                }
+            }
+
+            var documentations = new List<string>
+            {
+                "1.29.1 Profile",
+                "1.29.2 Progress Notes",
+                "1.29.3 Groupwork Recording",
+                "1.29.4 Social Case Study Report/Social Case Summary",
+                "1.29.5 Home Visit Report"
+            };
+
+            foreach (var value in documentations)
+            {
+                serviceRow++;
+
+                worksheet.Cell(serviceRow, 1).Value = value;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 2;
+                for (int i = 1; i <= headers.Length; i++)
+                {
+                    if (i == 7 || i == 14)
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = 0;
+                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    }
+                    else
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = "";
+                    }
+                }
+            }
+
+            var caseManagements5 = new List<string>
+            {
+                "1.30 Palliative Care",
+                "1.31 Facilitation of Unclaimed Cadaver",
+                "1.32 Post Discharge Services",
+                "1.33 Follow up Services through text/phone",
+                "1.34 Follow up Treatment Plans",
+                "1.35 Follow up of Rehabilitation Plans",
+                "1.36 Rehabilitation Services"
+            };
+
+            foreach (var value in caseManagements5)
+            {
+                serviceRow++;
+
+                worksheet.Cell(serviceRow, 1).Value = value;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+                for (int i = 1; i <= headers.Length; i++)
+                {
+                    if (i == 7 || i == 14)
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = 0;
+                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    }
+                    else
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = "";
+                    }
+                }
+            }
+
+            var rehabilitationServices = new List<string>
+            {
+                "1.36.1 Skills Training",
+                "1.36.2 Job Placement",
+                "1.36.3 Capital Assistance"
+            };
+
+            foreach (var value in rehabilitationServices)
+            {
+                serviceRow++;
+
+                worksheet.Cell(serviceRow, 1).Value = value;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 2;
+                for (int i = 1; i <= headers.Length; i++)
+                {
+                    if (i == 7 || i == 14)
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = 0;
+                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    }
+                    else
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = "";
+                    }
+                }
+            }
+
+            var caseManagements6 = new List<string>
+            {
+                "1.37 MSWD Fund Raising Activity",
+                "1.38 Hospital Activity",
+                "1.39 Linkage w/ Donors"
+            };
+
+            foreach (var value in caseManagements6)
+            {
+                serviceRow++;
+
+                worksheet.Cell(serviceRow, 1).Value = value;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+                for (int i = 1; i <= headers.Length; i++)
+                {
+                    if (i == 7 || i == 14)
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = 0;
+                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    }
+                    else
+                    {
+                        worksheet.Cell(serviceRow, i + 1).Value = "";
+                    }
+                }
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "TOTAL";
+            worksheet.Cell(serviceRow, 1).Style.Font.Bold = true;
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            for (int i = 1; i <= 6; i++)
+            {
+                var count = generalAdmissions.Count(ga => ga.Date.Month == i);
+                worksheet.Cell(serviceRow, i + 1).Value = count;
+                worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            }
+
+            worksheet.Cell(serviceRow, 8).Value =
+                Enumerable.Range(1, 6).Sum(i => generalAdmissions.Count(ga => ga.Date.Month == i));
+            worksheet.Cell(serviceRow, 8).Style.Font.Bold = true;
+            worksheet.Cell(serviceRow, 8).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            for (int i = 7; i <= 12; i++)
+            {
+                var count = generalAdmissions.Count(ga => ga.Date.Month == i);
+                worksheet.Cell(serviceRow, i + 2).Value = count;
+                worksheet.Cell(serviceRow, i + 2).Style.Font.Bold = true;
+                worksheet.Cell(serviceRow, i + 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            }
+
+            worksheet.Cell(serviceRow, 15).Value =
+                Enumerable.Range(7, 12).Sum(i => generalAdmissions.Count(ga => ga.Date.Month == i));
+            worksheet.Cell(serviceRow, 15).Style.Font.Bold = true;
+            worksheet.Cell(serviceRow, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            // Autofit for better presentation
+            worksheet.Column(1).AdjustToContents();
+
+            using (var stream = new MemoryStream())
+            {
+                workbook.SaveAs(stream);
+                stream.Position = 0;
+                return File(stream.ToArray(),
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            $"{fileName}.xlsx");
+            }
+        }
+
+
+
+
     }
 }
