@@ -15,7 +15,7 @@
     <div class="search-container" style="width: 100%">
         <form asp-action="Search" asp-controller="SystemLogs" >
             <div class="input-group">
-                <input type="date" name="searchString" class="form-control" placeholder="Search by Date" aria-label="Search">
+                <input type="date" name="searchString" class="form-control" placeholder="Search by Date" aria-label="Search" value="@sortByMonth">
                 <button type="submit" class="btn btn-dark">Search</button>
             </div>
         </form>

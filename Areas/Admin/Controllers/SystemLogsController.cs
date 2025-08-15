@@ -66,6 +66,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     LogsList = logs
                 };
 
+                ViewBag.sortByMonth = searchString;
+
                 return View("Index", logsViewModel);
             }
             catch (Exception ex)
@@ -89,10 +91,10 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 ViewBag.sortBy = level;
             }
 
-            if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
+            if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime dateTime))
             {
-                query = query.Where(d => d.TimeStamp.Month == month.Month && d.TimeStamp.Year == month.Year);
-                ViewBag.sortByMonth = month.ToString("yyyy-MM");
+                query = query.Where(d => d.TimeStamp.Month == dateTime.Month && d.TimeStamp.Year == dateTime.Year && d.TimeStamp.Day == dateTime.Day);
+                ViewBag.sortByMonth = dateTime.ToString("yyyy-MM-dd");
             }
 
             var logs = await query.OrderByDescending(l => l.TimeStamp).ToListAsync();
