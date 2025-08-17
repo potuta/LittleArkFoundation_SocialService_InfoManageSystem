@@ -20,85 +20,106 @@ namespace LittleArkFoundation.Areas.Admin.Data
             await using var context = new ApplicationDbContext(_connectionString);
 
             // MONTHLY INCOME
-            if (opd.MonthlyIncome <= 20000)
-            {
-                scores.Add($"MonthlyIncome_Low: {opd.MonthlyIncome.ToString()}", 10);
-            }
-            else if (opd.MonthlyIncome > 20000 && opd.MonthlyIncome <= 35000)
-            {
-                scores.Add($"MonthlyIncome_Moderate: {opd.MonthlyIncome.ToString()}", 5);
-            }
-            else if (opd.MonthlyIncome > 35000)
-            {
-                scores.Add($"MonthlyIncome_High: {opd.MonthlyIncome.ToString()}", 1);
-            }
+            //if (opd.MonthlyIncome <= 20000)
+            //{
+            //    scores.Add($"MonthlyIncome_Low: {opd.MonthlyIncome.ToString()}", 10);
+            //}
+            //else if (opd.MonthlyIncome > 20000 && opd.MonthlyIncome <= 35000)
+            //{
+            //    scores.Add($"MonthlyIncome_Moderate: {opd.MonthlyIncome.ToString()}", 5);
+            //}
+            //else if (opd.MonthlyIncome > 35000)
+            //{
+            //    scores.Add($"MonthlyIncome_High: {opd.MonthlyIncome.ToString()}", 1);
+            //}
 
             // AMOUNT REQUESTED
-            if (opd.Amount <= 5000)
-            {
-                scores.Add($"Amount_Low: {opd.Amount.ToString()}", 10);
-            }
-            else if (opd.Amount > 5000 && opd.Amount <= 10000)
-            {
-                scores.Add($"Amount_Moderate: {opd.Amount.ToString()}", 5);
-            }
-            else if (opd.Amount > 10000)
-            {
-                scores.Add($"Amount_High: {opd.Amount.ToString()}", 1);
-            }
+            //if (opd.Amount <= 5000)
+            //{
+            //    scores.Add($"Amount_Low: {opd.Amount.ToString()}", 10);
+            //}
+            //else if (opd.Amount > 5000 && opd.Amount <= 10000)
+            //{
+            //    scores.Add($"Amount_Moderate: {opd.Amount.ToString()}", 5);
+            //}
+            //else if (opd.Amount > 10000)
+            //{
+            //    scores.Add($"Amount_High: {opd.Amount.ToString()}", 1);
+            //}
 
             // NO OF CHILDREN
-            if (opd.NoOfChildren > 3)
-            {
-                scores.Add($"NoOfChildren: {opd.NoOfChildren.ToString()}", 5);
-            }
+            //if (opd.NoOfChildren > 3)
+            //{
+            //    scores.Add($"NoOfChildren: {opd.NoOfChildren.ToString()}", 5);
+            //}
 
             // PWD (Person with Disability)
-            if (opd.IsPWD)
-            {
-                scores.Add($"IsPWD: {opd.IsPWD.ToString()}", 20);
-            }
+            //if (opd.IsPWD)
+            //{
+            //    scores.Add($"IsPWD: {opd.IsPWD.ToString()}", 20);
+            //}
 
-            // MINOR (Age < 18)
-            if (opd.Age < 18)
+            // AGE
+            if (opd.Age == 1)
             {
-                scores.Add($"Age_Minor: {opd.Age.ToString()}", 10);
+                scores.Add($"Age_Baby: {opd.Age.ToString()}", 10);
             }
-            else if (opd.Age >= 18 && opd.Age <= 60)
+            else if (opd.Age > 1 && opd.Age <= 5)
             {
-                scores.Add($"Age_Adult: {opd.Age.ToString()}", 5);
+                scores.Add($"Age_Child: {opd.Age.ToString()}", 5);
             }
-            else if (opd.Age > 60)
+            else if (opd.Age > 40)
             {
-                scores.Add($"Age_Senior: {opd.Age.ToString()}", 10);
+                scores.Add($"Age_Adult: {opd.Age.ToString()}", 10);
             }
 
             // DIAGNOSIS
-            var diagnosisList = new List<string>
+            var diagnosisWeights = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
             {
-                "AGN", "DENGUE", "TUBERCULOSIS"
+                { "AGN", 5 },
+                { "PSGN", 5 },
+                { "AZOTEMIA", 10 },
+                { "NEPHROTIC SYNDROME", 15 },
+                { "EDEMA", 15 },
+                { "OLIGURIA", 20 },
+                { "HYPERTENSION", 25 }
             };
 
-            var diagnosisParts = opd.Diagnosis.ToUpper().Split(',', StringSplitOptions.RemoveEmptyEntries);
             int diagnosisScore = 0;
 
-            foreach (var part in diagnosisParts)
+            foreach (var part in opd.Diagnosis.Split(',', StringSplitOptions.RemoveEmptyEntries))
             {
-                if (diagnosisList.Contains(part.Trim()))
+                var cleaned = part.Trim();
+                if (diagnosisWeights.TryGetValue(cleaned, out int weight))
                 {
-                    diagnosisScore += 10; // 10 per critical diagnosis
+                    diagnosisScore += weight;
                 }
             }
 
             if (diagnosisScore > 0)
             {
-                scores.Add($"Diagnosis_Critical: {opd.Diagnosis}", diagnosisScore);
+                string text = "";
+
+                if (diagnosisScore >= 25)
+                {
+                    text = "Diagnosis_Critical";
+                }
+                else if (diagnosisScore >= 15 && diagnosisScore < 25)
+                {
+                    text = "Diagnosis_Moderate";
+                }
+                else if (diagnosisScore < 15)
+                {
+                    text = "Diagnosis_Mild";
+                }
+
+                scores.Add($"{text}: {opd.Diagnosis}", diagnosisScore);
             }
 
             // ASSISTANCE REQUESTED
-            var highPriorityTests = new[] { "BUN", "ALT", "K", "NA", "CA", "CREA", "AST" };
-            var midPriorityTests = new[] { "CBC", "FBS", "LIPID PROFILE" };
-            var lowPriorityTests = new[] { "URIC ACID", "UA" };
+            var highPriorityTests = new[] { "BUN", "CREA" };
+            //var midPriorityTests = new[] { "CBC", "FBS", "LIPID PROFILE" };
+            //var lowPriorityTests = new[] { "URIC ACID", "UA" };
 
             if (!string.IsNullOrEmpty(opd.AssistanceNeeded))
             {
@@ -107,16 +128,16 @@ namespace LittleArkFoundation.Areas.Admin.Data
                 {
                     if (highPriorityTests.Contains(test))
                     {
-                        scores.TryAdd($"Assistance_{test}", 10);
-                    }
-                    else if (midPriorityTests.Contains(test))
-                    {
                         scores.TryAdd($"Assistance_{test}", 5);
                     }
-                    else if (lowPriorityTests.Contains(test))
-                    {
-                        scores.TryAdd($"Assistance_{test}", 3);
-                    }
+                    //else if (midPriorityTests.Contains(test))
+                    //{
+                    //    scores.TryAdd($"Assistance_{test}", 5);
+                    //}
+                    //else if (lowPriorityTests.Contains(test))
+                    //{
+                    //    scores.TryAdd($"Assistance_{test}", 3);
+                    //}
                 }
             }
 
@@ -131,7 +152,7 @@ namespace LittleArkFoundation.Areas.Admin.Data
 
         public async Task<bool> IsEligibleForAdmissionAsync(int totalScore)
         {
-            return totalScore >= 35; // Assuming 35 is the threshold for eligibility
+            return totalScore >= 25; 
         }
     }
 }
