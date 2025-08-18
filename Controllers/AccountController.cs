@@ -13,11 +13,13 @@ namespace LittleArkFoundation.Controllers
     {
         private readonly ConnectionService _connectionService;
         private readonly DatabaseService _databaseService;
+        private readonly EmailService _emailService;
 
-        public AccountController(ConnectionService connectionService, DatabaseService databaseService)
+        public AccountController(ConnectionService connectionService, DatabaseService databaseService, EmailService emailService)
         {
             _connectionService = connectionService;
             _databaseService = databaseService;
+            _emailService = emailService;
         }
 
         [HttpPost]
@@ -139,7 +141,6 @@ namespace LittleArkFoundation.Controllers
                     return Json(new { success = false, message = "User not found or email missing!" });
                 }
 
-                EmailService _emailService = new EmailService();
                 string emailMessage = $"Your verification code is: {verificationCode}";
 
                 bool emailSent = await _emailService.SendEmailAsync(user.Email, "Verification Code", emailMessage);

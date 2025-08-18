@@ -8,6 +8,17 @@ namespace LittleArkFoundation.Data
 {
     public class EmailService
     {
+        private readonly IConfiguration _configuration;
+
+        public EmailService()
+        {
+        }
+
+        public EmailService(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         public async Task<bool> SendEmailAsync(string recipientEmail, string subject, string body)
         {
             try
@@ -17,8 +28,13 @@ namespace LittleArkFoundation.Data
                     throw new ArgumentException("Recipient email is required.");
                 }
 
-                string senderEmail = "stuofficialschool@gmail.com";
-                string senderPassword = "hibz zouo afaw nwzl";  // TODO: Store this in secrets/vault. Never store this in code.
+                string senderEmail = _configuration["EmailSettings:SenderEmail"];
+                string senderPassword = _configuration["EmailSettings:SenderPassword"];
+
+                if (string.IsNullOrWhiteSpace(senderEmail) || string.IsNullOrWhiteSpace(senderPassword))
+                {
+                    throw new InvalidOperationException("Sender email and password must be configured.");
+                }
 
                 using (SmtpClient smtpClient = new SmtpClient("smtp.gmail.com", 587))
                 {

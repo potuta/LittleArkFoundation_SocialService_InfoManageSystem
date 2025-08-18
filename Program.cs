@@ -39,6 +39,7 @@ builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<ConnectionService>();
 builder.Services.AddSingleton<DatabaseService>();
+builder.Services.AddTransient<EmailService>();
 
 //builder.WebHost.ConfigureKestrel(options =>
 //{
