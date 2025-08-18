@@ -47,6 +47,10 @@
             <div class="mb-3">
                 <label for="adminPassword" class="form-label">Password</label>
                 <input type="password" class="form-control" id="adminPassword" name="password" placeholder="Enter your password" required>
+                <div class="form-check mt-2">
+                    <input class="form-check-input" type="checkbox" id="togglePassword" onclick="togglePasswordVisibility()">
+                    <label class="form-check-label" for="togglePassword">Show Password</label>
+                </div>
                 <a onclick="showForgotPassword()">Forgot password?</a>
             </div>
             <button type="submit" class="btn btn-success">Login</button>
@@ -205,6 +209,16 @@
                 button.innerText = "Send Code";
             }
         }, 1000);
+    }
+
+    function togglePasswordVisibility() {
+        let passwordInput = document.getElementById("adminPassword");
+        let toggle = document.getElementById("togglePassword");
+        if (toggle.checked) {
+            passwordInput.type = "text";
+        } else {
+            passwordInput.type = "password";
+        }
     }
 
 </script>
