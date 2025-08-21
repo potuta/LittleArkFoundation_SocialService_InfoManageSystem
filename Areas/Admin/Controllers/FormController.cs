@@ -48,7 +48,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             _pdfConverter = pdfConverter;
         }
 
-        public async Task<IActionResult> Index(bool? isActive)
+        public async Task<IActionResult> Index(bool? isActive, int page = 1, int pageSize = 20)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using (var context = new ApplicationDbContext(connectionString))
@@ -56,8 +56,15 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 bool activeFlag = isActive ?? true;
                 ViewBag.isActive = activeFlag;
 
-                var patients = await context.Patients
-                    .Where(u => u.IsActive == activeFlag)
+                var query = context.Patients
+                    .Where(u => u.IsActive == activeFlag);
+
+                // Pagination
+                var totalCount = await query.CountAsync();
+                var patients = await query
+                    .OrderBy(p => p.PatientID) 
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
                     .ToListAsync();
 
                 var assessments = await context.Assessments
@@ -72,14 +79,17 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 {
                     Patients = patients,
                     Assessments = assessments,
-                    MSWDClassifications = mswdclassification
+                    MSWDClassifications = mswdclassification,
+                    CurrentPage = page,
+                    PageSize = pageSize,
+                    TotalCount = totalCount,
                 };
 
                 return View(viewModel);
             }
         }
 
-        public async Task<IActionResult> Search(string searchString, bool? isActive)
+        public async Task<IActionResult> Search(string searchString, bool? isActive, int page = 1, int pageSize = 20)
         {
             bool activeFlag = isActive ?? true;
             ViewBag.isActive = activeFlag;
@@ -108,7 +118,13 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     EF.Functions.Like(u.PatientID.ToString(), $"%{term}%"));
             }
 
-            var patients = await query.ToListAsync();
+            // Pagination
+            var totalCount = await query.CountAsync();
+            var patients = await query
+                .OrderBy(p => p.PatientID)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
             var assessments = await context.Assessments
                     .OrderByDescending(a => a.DateOfInterview)
@@ -122,7 +138,10 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             {
                 Patients = patients,
                 Assessments = assessments,
-                MSWDClassifications = mswdclassification
+                MSWDClassifications = mswdclassification,
+                CurrentPage = page,
+                PageSize = pageSize,
+                TotalCount = totalCount,
             };
 
             return View("Index", viewModel);
