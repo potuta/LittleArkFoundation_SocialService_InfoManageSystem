@@ -21,7 +21,7 @@
 
         <div class="form-group mt-2">
             <label asp-for="NewUser.Username" class="control-label"></label>
-            <input asp-for="NewUser.Username" class="form-control" required/>
+            <input asp-for="NewUser.Username" class="form-control" readonly required/>
             <span asp-validation-for="NewUser.Username" class="text-danger"></span>
         </div>
         <div class="form-group mt-2">
@@ -38,7 +38,7 @@
             <label asp-for="NewUser.PasswordHash" class="control-label"></label>
             @* <input type="text" value="@Model.NewUser.PasswordHash" id="originalPassword" class="form-control td-password" readonly /> *@
 
-            <button type="button" class="btn btn-secondary mt-2 mb-2" id="togglePasswordButton">Edit Password</button>
+            @* <button type="button" class="btn btn-secondary mt-2 mb-2" id="togglePasswordButton">Edit Password</button> *@
             
             @* <button type="button" class="btn-content">Reset Password</button> *@
             <input type="text" asp-for="NewUser.PasswordHash" class="form-control td-password" id="passwordField" readonly required/>
