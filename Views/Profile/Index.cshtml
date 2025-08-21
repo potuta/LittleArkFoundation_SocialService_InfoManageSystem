@@ -2,7 +2,7 @@
 @model UsersViewModel
 @{
 	ViewData["Title"] = "User Profile";
-	Layout = "_ProfileLayout";
+	Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
 @* TODO: Style profile page - Dino *@
@@ -14,20 +14,7 @@
 
 	/* Additional styles can be added below here */
 
-	h2 {
-		text-align: center;
-		font-size: 2rem;
-		font-weight: bold;
-		margin-top: 25px;
-		margin-bottom: 25px;
-	}
-
-	div {
-		display: flex;
-		flex-direction: column;
-		align-content: center;
-		gap: 10px;
-	}
+	
 
 </style>
 
