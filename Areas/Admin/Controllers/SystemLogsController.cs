@@ -19,7 +19,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             _connectionService = connectionService;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 20)
         {
             try
             {
@@ -27,11 +27,19 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                 await using var context = new ApplicationDbContext(connectionString);
 
-                var logs = await context.Logs.OrderByDescending(l => l.TimeStamp).ToListAsync();
+                var logsQuery = context.Logs.OrderByDescending(l => l.TimeStamp);
+                var totalCount = await logsQuery.CountAsync();
+                var logs = await logsQuery
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
 
                 var logsViewModel = new LogsViewModel
                 {
-                    LogsList = logs
+                    LogsList = logs,
+                    CurrentPage = page,
+                    PageSize = pageSize,
+                    TotalCount = totalCount
                 };
 
                 return View(logsViewModel);
