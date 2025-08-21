@@ -87,103 +87,105 @@
     </div>
 }
 
-<div class="table-responsive">
-    <table class="table" style="width: fit-content;">
-        <thead>
-            @if (Model != null)
-            {
-                <tr>
-                    <th>Actions</th>
-                    <th>AssessmentID</th>
-                    <th>PatientID</th>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Name of Patient</th>
-                    <th>Age</th>
-                    <th>Ward</th>
-                    <th>Diagnosis</th>
-                    <th>MSW</th>
-                </tr>
-            }
-        </thead>
-        <tbody>
-            @if (Model != null)
-            {
-                var isFirst = true;
-                @foreach (var assessment in Model.Assessments)
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
                 {
-                    var diagnosis = Model.MedicalHistory
-                    .FirstOrDefault(m => m.AssessmentID == assessment.AssessmentID)?.AdmittingDiagnosis;
-
-					var user = Model.Users.FirstOrDefault(u => u.UserID == assessment.UserID);
-
                     <tr>
-                        <td>
-                            <a href="@Url.Action("ViewForm", new { id = assessment.PatientID, assessmentID = assessment.AssessmentID })" 
-                                class="btn btn-primary"
-                                data-bs-toggle="tooltip"
-                                title="View Form">
-                                    <i class="bx bx-file"></i>
-                            </a>
-                            @if (Model.Patient.IsActive)
-                            {
-                                if (isFirst)
+                        <th>Actions</th>
+                        <th>AssessmentID</th>
+                        <th>PatientID</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Name of Patient</th>
+                        <th>Age</th>
+                        <th>Ward</th>
+                        <th>Diagnosis</th>
+                        <th>MSW</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    var isFirst = true;
+                    @foreach (var assessment in Model.Assessments)
+                    {
+                        var diagnosis = Model.MedicalHistory
+                        .FirstOrDefault(m => m.AssessmentID == assessment.AssessmentID)?.AdmittingDiagnosis;
+
+					    var user = Model.Users.FirstOrDefault(u => u.UserID == assessment.UserID);
+
+                        <tr>
+                            <td>
+                                <a href="@Url.Action("ViewForm", new { id = assessment.PatientID, assessmentID = assessment.AssessmentID })" 
+                                    class="btn btn-primary"
+                                    data-bs-toggle="tooltip"
+                                    title="View Form">
+                                        <i class="bx bx-file"></i>
+                                </a>
+                                @if (Model.Patient.IsActive)
                                 {
-                                    @if (User.HasClaim("Permission", "EditForm"))
+                                    if (isFirst)
                                     {
-                                        <a href="@Url.Action("Edit", new { id = assessment.PatientID, assessmentID = assessment.AssessmentID })" 
-                                           class="btn btn-success"
-                                           data-bs-toggle="tooltip"
-                                           title="Edit">
+                                        @if (User.HasClaim("Permission", "EditForm"))
+                                        {
+                                            <a href="@Url.Action("Edit", new { id = assessment.PatientID, assessmentID = assessment.AssessmentID })" 
+                                               class="btn btn-success"
+                                               data-bs-toggle="tooltip"
+                                               title="Edit">
+                                                    <i class="bx bx-edit"></i>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a class="btn btn-success text-muted"
+                                               style="cursor: not-allowed;"
+                                               aria-disabled="true"
+                                               tabindex="-1"
+                                               title="You do not have permission to Edit">
                                                 <i class="bx bx-edit"></i>
-                                        </a>
+                                            </a>
+                                        }
+                                    }
+                                }
+                            </td>
+                            <td>
+                                @assessment.AssessmentID
+                                @if (isFirst)
+                                {
+                                    @if (Model.Patient.IsActive)
+                                    {
+                                        <span class="badge bg-info text-dark ms-2">Active</span>
                                     }
                                     else
                                     {
-                                        <a class="btn btn-success text-muted"
-                                           style="cursor: not-allowed;"
-                                           aria-disabled="true"
-                                           tabindex="-1"
-                                           title="You do not have permission to Edit">
-                                            <i class="bx bx-edit"></i>
-                                        </a>
+                                        <span class="badge bg-danger text-dark ms-2">Discharged</span>
                                     }
-                                }
-                            }
-                        </td>
-                        <td>
-                            @assessment.AssessmentID
-                            @if (isFirst)
-                            {
-                                @if (Model.Patient.IsActive)
-                                {
-                                    <span class="badge bg-info text-dark ms-2">Active</span>
                                 }
                                 else
                                 {
-                                    <span class="badge bg-danger text-dark ms-2">Discharged</span>
+                                    <span class="badge bg-secondary text-dark ms-2">Old</span>
                                 }
-                            }
-                            else
-                            {
-                                <span class="badge bg-secondary text-dark ms-2">Old</span>
-                            }
-                        </td>
-                        <td>@assessment.PatientID</td>
-                        <td>@assessment.DateOfInterview</td>
-                        <td>@assessment.TimeOfInterview</td>
-                        <td>
-                            @Model.Patient.LastName, @Model.Patient.FirstName @Model.Patient.MiddleName
-                        </td>
-                        <td>@assessment.Age</td>
-                        <td>@assessment.BasicWard</td>
-                        <td>@(diagnosis ?? "—")</td>
-						<td>@user.Username</td>
-                    </tr>
-                    isFirst = false;
+                            </td>
+                            <td>@assessment.PatientID</td>
+                            <td>@assessment.DateOfInterview</td>
+                            <td>@assessment.TimeOfInterview</td>
+                            <td>
+                                @Model.Patient.LastName, @Model.Patient.FirstName @Model.Patient.MiddleName
+                            </td>
+                            <td>@assessment.Age</td>
+                            <td>@assessment.BasicWard</td>
+                            <td>@(diagnosis ?? "—")</td>
+						    <td>@user.Username</td>
+                        </tr>
+                        isFirst = false;
+                    }
                 }
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
 
+    </div>
 </div>
