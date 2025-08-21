@@ -24,16 +24,28 @@ function toggleSidebar() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    const sidebar = document.querySelector('.navbar-left');
+    const mainContent = document.querySelector('.main-content');
+
+    // Temporarily disable transitions to prevent jitter
+    sidebar.classList.add('no-transition');
+    mainContent.classList.add('no-transition');
+
     const isCollapsed = localStorage.getItem('sidebar-collapsed') === 'true';
 
     if (isCollapsed) {
-        const sidebar = document.querySelector('.navbar-left');
-        const mainContent = document.querySelector('.main-content');
         sidebar.classList.add('collapsed');
         mainContent.classList.add('collapsed');
     }
 
-    // Attach the toggle function to your button
+    // Force reflow so classes are applied immediately
+    void sidebar.offsetWidth;
+
+    // Re-enable transitions
+    sidebar.classList.remove('no-transition');
+    mainContent.classList.remove('no-transition');
+
+    // Attach the toggle button
     const toggleBtn = document.getElementById('toggleSidebar');
     if (toggleBtn) {
         toggleBtn.addEventListener('click', toggleSidebar);
