@@ -89,12 +89,12 @@
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
             <li><a class="dropdown-item" asp-action="SortByOPDAssistedAndReports"
-                   asp-controller="OPD" asp-route-sortByUserID="" asp-route-sortByMonth="@sortByMonth" asp-route-pageSize="@Model.PageSize" asp-route-sortByMonth="@sortByMonth"
+                   asp-controller="OPD" asp-route-sortByUserID="" asp-route-sortByMonth="@sortByMonth" asp-route-page="@Model.CurrentPage" asp-route-pageSize="@Model.PageSize"
                 asp-route-viewName="OPDAssisted">All</a></li>
             @foreach (var user in Model.Users)
             {
                 <li><a class="dropdown-item" asp-action="SortByOPDAssistedAndReports"
-                       asp-controller="OPD" asp-route-sortByUserID="@user.UserID" asp-route-sortByMonth="@sortByMonth" asp-route-pageSize="@Model.PageSize" asp-route-sortByMonth="@sortByMonth"
+                       asp-controller="OPD" asp-route-sortByUserID="@user.UserID" asp-route-sortByMonth="@sortByMonth" asp-route-page="@Model.CurrentPage" asp-route-pageSize="@Model.PageSize"
                     asp-route-viewName="OPDAssisted">@user.Username</a></li>
             }
         </ul>
