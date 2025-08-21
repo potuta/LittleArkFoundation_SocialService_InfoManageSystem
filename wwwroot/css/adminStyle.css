@@ -331,6 +331,38 @@ h2 {
     white-space: nowrap;
 }
 
+/* Remove default Bootstrap border-radius */
+.pagination .page-link {
+    color: #333;
+    transition: all 0.2s;
+}
+
+    /* Hover effect */
+    .pagination .page-link:hover {
+        background-color: #383838;
+        color: white;
+        border-color: #383838;
+    }
+
+/* Active page style */
+.pagination .page-item.active .page-link {
+    background-color: #383838;
+    border-color: #383838;
+    color: white;
+}
+
+/* Disabled page style */
+.pagination .page-item.disabled .page-link {
+    color: #aaa;
+    pointer-events: none;
+    background-color: #f8f9fa;
+    border-color: #ddd;
+}
+
+/* Smaller icons */
+.pagination i.bi {
+    font-size: 0.9rem;
+}
 
 /* Media Queries for Responsive Design */
 @media (max-width: 48rem) { /* 768px */
