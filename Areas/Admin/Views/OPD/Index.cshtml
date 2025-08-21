@@ -476,6 +476,96 @@
     </div>
 </div>
 
+@{
+    int totalPages = Model.TotalPages.Value;
+    int currentPage = Model.CurrentPage.Value;
+    int pageWindow = 5; // how many pages to show around current page
+    int startPage = Math.Max(1, currentPage - pageWindow / 2);
+    int endPage = Math.Min(totalPages, startPage + pageWindow - 1);
+    if (endPage - startPage < pageWindow)
+    {
+        startPage = Math.Max(1, endPage - pageWindow + 1);
+    }
+}
+<div class="container-fluid px-0 mx-0 mt-3" style="max-width: 1400px;">
+    @if (totalPages > 1)
+    {
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center flex-nowrap">
+                <!-- Previous button -->
+                <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                    <a class="page-link" aria-label="Previous" asp-action="Index" asp-route-page="@(currentPage - 1)" asp-route-pageSize="@Model.PageSize">
+                        <span aria-hidden="true">&laquo;</span>
+                        <span class="sr-only"></span>
+                    </a>
+                </li>
+
+                <!-- First page -->
+                @if (startPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Index" asp-route-page="1" asp-route-pageSize="@Model.PageSize">1</a>
+                    </li>
+                    @if (startPage > 2)
+                    {
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    }
+                }
+
+                <!-- Middle pages -->
+                @for (int i = startPage; i <= endPage; i++)
+                {
+                    <li class="page-item @(currentPage == i ? "active" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-pageSize="@Model.PageSize">@i</a>
+                    </li>
+                }
+
+                <!-- Last page -->
+                @if (endPage < totalPages)
+                {
+                    @if (endPage < totalPages - 1)
+                    {
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    }
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Index" asp-route-page="@totalPages" asp-route-pageSize="@Model.PageSize">@totalPages</a>
+                    </li>
+                }
+
+                <!-- Next button -->
+                <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                    <a class="page-link" aria-label="Next" asp-action="Index" asp-route-page="@(currentPage + 1)" asp-route-pageSize="@Model.PageSize">
+                        <span aria-hidden="true">&raquo;</span>
+                        <span class="sr-only"></span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    }
+</div>
+
+<div class="d-flex flex-column align-items-center gap-2 mb-3">
+
+    <!-- Page size dropdown below -->
+    <div class="mx-auto">
+        <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-1 me-2" data-bs-toggle="dropdown" aria-expanded="false">
+            per page: <span class="mb-0">@Model.PageSize</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" asp-action="Index" asp-route-page="1" asp-route-pageSize="10">10</a></li>
+            <li><a class="dropdown-item" asp-action="Index" asp-route-page="1" asp-route-pageSize="20">20</a></li>
+            <li><a class="dropdown-item" asp-action="Index" asp-route-page="1" asp-route-pageSize="50">50</a></li>
+            <li><a class="dropdown-item" asp-action="Index" asp-route-page="1" asp-route-pageSize="100">100</a></li>
+            <li><a class="dropdown-item" asp-action="Index" asp-route-page="1" asp-route-pageSize="@Model.TotalCount">@Model.TotalCount</a></li>
+        </ul>
+    </div>
+
+    <div style="font-size: 13px;">
+        <span class="text-muted">Showing @Model.OPDList.Count of @(Model.TotalCount == 0 ? Model.OPDList.Count : Model.TotalCount) items</span>
+    </div>
+</div>
+
+
 @section Scripts {
     <script>
         // function updateDSSEnabled() {

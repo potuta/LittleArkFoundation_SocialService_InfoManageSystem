@@ -19,17 +19,24 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             _connectionService = connectionService;
         }
 
-        public async Task<IActionResult> Index(int page = 1, int pageSize = 20)
+        public async Task<IActionResult> Index(string? sortByMonth, int page = 1, int pageSize = 20)
         {
             try
             {
                 string connectionString = _connectionService.GetCurrentConnectionString();
-
                 await using var context = new ApplicationDbContext(connectionString);
 
-                var logsQuery = context.Logs.OrderByDescending(l => l.TimeStamp);
-                var totalCount = await logsQuery.CountAsync();
-                var logs = await logsQuery
+                var query = context.Logs.AsQueryable();
+
+                if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime dateTime))
+                {
+                    query = query.Where(d => d.TimeStamp.Month == dateTime.Month && d.TimeStamp.Year == dateTime.Year && d.TimeStamp.Day == dateTime.Day);
+                    ViewBag.sortByMonth = dateTime.ToString("yyyy-MM-dd");
+                }
+
+                var totalCount = await query.CountAsync();
+                var logs = await query
+                    .OrderByDescending(l => l.TimeStamp)
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
                     .ToListAsync();
@@ -52,7 +59,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
-        public async Task<IActionResult> Search(string searchString)
+        public async Task<IActionResult> Search(string searchString, string? level, int page = 1, int pageSize = 20)
         {
             try
             {
@@ -64,14 +71,29 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     return RedirectToAction("Index");
                 }
 
-                var logs = await context.Logs
-                    .Where(l => string.IsNullOrEmpty(searchString) || 
-                    l.TimeStamp.Date == DateTime.Parse(searchString).Date)
+                var query = context.Logs
+                    .Where(l => string.IsNullOrEmpty(searchString) ||
+                    l.TimeStamp.Date == DateTime.Parse(searchString).Date);
+
+                if (!string.IsNullOrEmpty(level))
+                {
+                    query = query.Where(d => d.Level.Equals(level));
+                    ViewBag.sortBy = level;
+                }
+
+                var totalCount = await query.CountAsync();
+                var logs = await query
+                    .OrderByDescending(l => l.TimeStamp)
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
                     .ToListAsync();
 
                 var logsViewModel = new LogsViewModel
                 {
-                    LogsList = logs
+                    LogsList = logs,
+                    CurrentPage = page,
+                    PageSize = pageSize,
+                    TotalCount = totalCount
                 };
 
                 ViewBag.sortByMonth = searchString;
@@ -86,7 +108,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
-        public async Task<IActionResult> SortBy(string? level, string? sortByMonth, string? viewName = "Index")
+        public async Task<IActionResult> SortBy(string? level, string? sortByMonth, string? viewName = "Index", int page = 1, int pageSize = 20)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
@@ -105,13 +127,21 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 ViewBag.sortByMonth = dateTime.ToString("yyyy-MM-dd");
             }
 
-            var logs = await query.OrderByDescending(l => l.TimeStamp).ToListAsync();
+            var totalCount = await query.CountAsync();
+            var logs = await query
+                .OrderByDescending(l => l.TimeStamp)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
             var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
 
             var viewModel = new LogsViewModel
             {
-                LogsList = logs
+                LogsList = logs,
+                CurrentPage = page,
+                PageSize = pageSize,
+                TotalCount = totalCount,
             };
 
             return View(viewName, viewModel);

@@ -29,7 +29,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             _connectionService = connectionService;
         }
 
-        public async Task<IActionResult> Index(string? sortToggle)
+        public async Task<IActionResult> Index(string? sortToggle, int page = 1, int pageSize = 20)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
@@ -37,22 +37,25 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             string sortToggleValue = sortToggle ?? "All";
             ViewBag.sortToggle = sortToggleValue;
 
-            var opdList = new List<OPDModel>();
-            if (sortToggleValue == "All")
-            {
-                // Fetch all OPD records
-                opdList = await context.OPD.ToListAsync();
-            }
-            else if (sortToggleValue == "Admitted")
+            var query = context.OPD.AsQueryable();
+            
+            if (sortToggleValue == "Admitted")
             {
                 // Fetch only admitted patients
-                opdList = await context.OPD.Where(opd => opd.IsAdmitted).ToListAsync();
+                query = context.OPD.Where(opd => opd.IsAdmitted);
             }
             else if (sortToggleValue == "Not Admitted")
             {
                 // Fetch only non-admitted patients
-                opdList = await context.OPD.Where(opd => !opd.IsAdmitted).ToListAsync();
+                query = context.OPD.Where(opd => !opd.IsAdmitted);
             }
+
+            // Pagination
+            var totalCount = await query.CountAsync();
+            var opdList = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
             var scoredList = new List<(OPDModel opd, Dictionary<string, int> scores, bool isEligible)>();
             var _scoreService = new OPDScoringService(connectionString);
@@ -70,7 +73,10 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             {
                 OPDList = opdList,
                 OPDScoringList = scoredList,
-                Users = users
+                Users = users,
+                CurrentPage = page,
+                PageSize = pageSize,
+                TotalCount = totalCount,
             };
 
             return View(viewModel);

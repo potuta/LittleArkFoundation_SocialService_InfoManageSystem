@@ -7,5 +7,11 @@
         public List<(OPDModel opd, Dictionary<string, int> scores, bool isEligible)> OPDScoringList { get; set; } = new List<(OPDModel opd, Dictionary<string, int> scores, bool isEligible)>();
         public UsersModel User { get; set; } = new UsersModel();
         public List<UsersModel> Users { get; set; } = new List<UsersModel> { new UsersModel() };
+
+        // Pagination properties
+        public int? CurrentPage { get; set; } = 1;
+        public int? PageSize { get; set; } = 20; // Show 20 logs per page by default
+        public int? TotalCount { get; set; } = 0;
+        public int? TotalPages => (int)Math.Ceiling((double)TotalCount.Value / PageSize.Value);
     }
 }
