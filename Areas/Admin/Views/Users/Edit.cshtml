@@ -38,7 +38,9 @@
             <label asp-for="NewUser.PasswordHash" class="control-label"></label>
             @* <input type="text" value="@Model.NewUser.PasswordHash" id="originalPassword" class="form-control td-password" readonly /> *@
 
-            @* <button type="button" class="btn btn-secondary mt-2 mb-2" id="togglePasswordButton">Edit Password</button> *@
+            <button type="button" class="btn btn-secondary mt-2 mb-2" id="togglePasswordButton">
+                Reset Password
+            </button>
             
             @* <button type="button" class="btn-content">Reset Password</button> *@
             <input type="text" asp-for="NewUser.PasswordHash" class="form-control td-password" id="passwordField" readonly required/>
@@ -89,26 +91,30 @@
         });
 
         document.getElementById('togglePasswordButton').addEventListener('click', function () {
+            if (!confirm("Warning! Are you sure you want to reset this user's password?")) {
+                return; 
+            }
+
             var passwordField = document.getElementById('passwordField');
             var originalPassword = document.getElementById('originalPassword').value;
             var isEditPasswordEnabledField = document.getElementById('isEditPasswordEnabled');
 
-            if (passwordField.hasAttribute('readonly')) {
-                passwordField.removeAttribute('readonly');
-                passwordField.value = ''; // Allow user to enter a new password
+            if (isEditPasswordEnabledField.value === "false") {
+                // passwordField.removeAttribute('readonly');
+                passwordField.value = '@Model.DefaultUserPassword'; // Allow user to enter a new password
                 passwordField.style.backgroundColor = "#ffffff"; // Restore white background
                 passwordField.style.cursor = "text";
                 passwordField.style.opacity = "1";
-                this.textContent = "Don't Edit Password";
-                if (isEditPasswordEnabledField) isEditPasswordEnabledField.value = 'true';
+                this.textContent = "Don't Reset Password";
+                isEditPasswordEnabledField.value = 'true';
             } else {
                 passwordField.setAttribute('readonly', 'readonly');
                 passwordField.value = originalPassword; // Restore original password
                 passwordField.style.backgroundColor = "#e9ecef"; // Grey background when readonly
                 passwordField.style.cursor = "not-allowed";
                 passwordField.style.opacity = "0.6";
-                this.textContent = 'Edit Password';
-                if (isEditPasswordEnabledField) isEditPasswordEnabledField.value = 'false';
+                this.textContent = 'Reset Password';
+                isEditPasswordEnabledField.value = 'false';
             }
         });
 

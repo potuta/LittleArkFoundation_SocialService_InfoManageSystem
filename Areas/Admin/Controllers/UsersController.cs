@@ -17,10 +17,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
     public class UsersController : Controller
     {
         private readonly ConnectionService _connectionService;
+        private readonly IConfiguration _configuration;
 
-        public UsersController(ConnectionService connectionService)
+        public UsersController(ConnectionService connectionService, IConfiguration configuration)
         {
             _connectionService = connectionService;
+            _configuration = configuration;
         }
 
         public async Task<IActionResult> Index(bool isArchive)
@@ -51,7 +53,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 {
                     Users = users,
                     NewUser = new UsersModel(),
-                    Roles = await new RolesRepository(_connectionService).GetRolesAsync()
+                    Roles = await new RolesRepository(_connectionService).GetRolesAsync(),
                 };
 
                 ViewBag.isArchive = isArchive;
@@ -241,11 +243,20 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 var user = await context.Users.FindAsync(id);
                 if (user == null) return NotFound();
 
+                var defaultUserPassword = _configuration.GetValue<string>("DefaultUserPassword");
+
+                if (string.IsNullOrEmpty(defaultUserPassword))
+                {
+                    TempData["ErrorMessage"] = "Default user password is not set in the configuration.";
+                    return View("Index");
+                }
+
                 var viewModel = new UsersViewModel
                 {
                     Users = new List<UsersModel>(),
                     NewUser = user,
-                    Roles = await new RolesRepository(_connectionService).GetRolesAsync()
+                    Roles = await new RolesRepository(_connectionService).GetRolesAsync(),
+                    DefaultUserPassword = defaultUserPassword
                 };
 
                 return View(viewModel);

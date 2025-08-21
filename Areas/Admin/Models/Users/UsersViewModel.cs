@@ -7,5 +7,6 @@ namespace LittleArkFoundation.Areas.Admin.Models
         public UsersModel? NewUser { get; set; }
         public UsersArchivesModel? NewUserArchive { get; set; }
         public IEnumerable<RolesModel>? Roles { get; set; }
+        public string? DefaultUserPassword { get; set; }
     }
 }
