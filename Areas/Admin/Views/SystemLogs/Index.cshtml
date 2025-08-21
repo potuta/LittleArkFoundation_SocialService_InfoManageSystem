@@ -187,14 +187,30 @@
     <!-- Page size dropdown below -->
     <div class="mx-auto">
         <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-1 me-2" data-bs-toggle="dropdown" aria-expanded="false">
-            per page: <span class="mb-0">@Model.PageSize</span>
+            per page: <span class="mb-0">@(Model.PageSize > Model.TotalCount ? Model.TotalCount : Model.PageSize)</span>
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" asp-action="Index" asp-controller="SystemLogs" asp-route-sortByMonth="@sortByMonth" asp-route-page="1" asp-route-pageSize="10">10</a></li>
-            <li><a class="dropdown-item" asp-action="Index" asp-controller="SystemLogs" asp-route-sortByMonth="@sortByMonth" asp-route-page="1" asp-route-pageSize="20">20</a></li>
-            <li><a class="dropdown-item" asp-action="Index" asp-controller="SystemLogs" asp-route-sortByMonth="@sortByMonth" asp-route-page="1" asp-route-pageSize="50">50</a></li>
-            <li><a class="dropdown-item" asp-action="Index" asp-controller="SystemLogs" asp-route-sortByMonth="@sortByMonth" asp-route-page="1" asp-route-pageSize="100">100</a></li>
-            <li><a class="dropdown-item" asp-action="Index" asp-controller="SystemLogs" asp-route-sortByMonth="@sortByMonth" asp-route-page="1" asp-route-pageSize="@Model.TotalCount">@Model.TotalCount</a></li>
+            @if (Model.TotalCount >= 10)
+            {
+                <li><a class="dropdown-item" asp-action="Index" asp-controller="SystemLogs" asp-route-sortByMonth="@sortByMonth" asp-route-page="1" asp-route-pageSize="10">10</a></li>
+            }
+            @if (Model.TotalCount >= 20)
+            {
+                <li><a class="dropdown-item" asp-action="Index" asp-controller="SystemLogs" asp-route-sortByMonth="@sortByMonth" asp-route-page="1" asp-route-pageSize="20">20</a></li>
+            }
+            @if (Model.TotalCount >= 50)
+            {
+                <li><a class="dropdown-item" asp-action="Index" asp-controller="SystemLogs" asp-route-sortByMonth="@sortByMonth" asp-route-page="1" asp-route-pageSize="50">50</a></li>
+            }
+            @if (Model.TotalCount >= 100)
+            {
+                <li><a class="dropdown-item" asp-action="Index" asp-controller="SystemLogs" asp-route-sortByMonth="@sortByMonth" asp-route-page="1" asp-route-pageSize="100">100</a></li>
+            }
+            <li>
+                <a class="dropdown-item" asp-action="Index" asp-controller="SystemLogs" asp-route-sortByMonth="@sortByMonth" asp-route-page="1" asp-route-pageSize="@Model.TotalCount">
+                    @Model.TotalCount
+                </a>
+            </li>
         </ul>
     </div>
 
