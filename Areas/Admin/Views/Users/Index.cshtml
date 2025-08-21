@@ -276,8 +276,8 @@
                         <span asp-validation-for="NewUser.PhoneNumber" class="text-danger"></span>
                     </div>
                     <div class="form-group">
-                        <label asp-for="NewUser.PasswordHash" class="control-label"></label>
-                        <input type="password" asp-for="NewUser.PasswordHash" class="form-control" required/>
+                        <label asp-for="NewUser.PasswordHash" class="control-label">Password (Uses Default Password):</label>
+                        <input type="password" asp-for="NewUser.PasswordHash" class="form-control" value="@Model.DefaultUserPassword" readonly required/>
                         <span asp-validation-for="NewUser.PasswordHash" class="text-danger"></span>
                     </div>
                     <div class="form-group">

@@ -49,11 +49,20 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                 var users = await context.Users.ToListAsync();
 
+                var defaultUserPassword = _configuration.GetValue<string>("DefaultUserPassword");
+
+                if (string.IsNullOrEmpty(defaultUserPassword))
+                {
+                    TempData["ErrorMessage"] = "Default user password is not set in the configuration.";
+                    return View("Index");
+                }
+
                 var viewModel = new UsersViewModel
                 {
                     Users = users,
                     NewUser = new UsersModel(),
                     Roles = await new RolesRepository(_connectionService).GetRolesAsync(),
+                    DefaultUserPassword = defaultUserPassword
                 };
 
                 ViewBag.isArchive = isArchive;
