@@ -229,7 +229,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return View("Index", viewModel);
         }
 
-        public async Task<IActionResult> SortByOPDAssistedAndReports(string sortByUserID, string? sortByMonth, string? viewName)
+        public async Task<IActionResult> SortByOPDAssistedAndReports(string sortByUserID, string? sortByMonth, string? viewName, int page = 1, int pageSize = 20)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
@@ -250,7 +250,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 ViewBag.sortByMonth = month.ToString("yyyy-MM");
             }
 
-            var opdList = await query.ToListAsync();
+            // Pagination
+            var totalCount = await query.CountAsync();
+            var opdList = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
             var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
@@ -258,7 +263,10 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var viewModel = new OPDViewModel
             {
                 OPDList = opdList,
-                Users = users
+                Users = users,
+                CurrentPage = page,
+                PageSize = pageSize,
+                TotalCount = totalCount,
             };
 
             return View(viewName, viewModel);
@@ -892,12 +900,26 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
-        public async Task<IActionResult> OPDAssisted()
+        public async Task<IActionResult> OPDAssisted(string? sortByMonth, int page = 1, int pageSize = 20)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
 
-            var opdList = await context.OPD.ToListAsync();
+            var query = context.OPD.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
+            {
+                query = query.Where(opd => opd.Date.Month == month.Month && opd.Date.Year == month.Year);
+                ViewBag.sortByMonth = month.ToString("yyyy-MM");
+            }
+
+            // Pagination
+            var totalCount = await query.CountAsync();
+            var opdList = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
             if (opdList == null || !opdList.Any())
             {
                 TempData["ErrorMessage"] = "No OPD records found.";
@@ -910,7 +932,10 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var viewModel = new OPDViewModel
             {
                 OPDList = opdList,
-                Users = users
+                Users = users,
+                CurrentPage = page,
+                PageSize = pageSize,
+                TotalCount = totalCount,
             };
 
             return View(viewModel);
