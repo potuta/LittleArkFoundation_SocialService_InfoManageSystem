@@ -29,7 +29,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             _connectionService = connectionService;
         }
 
-        public async Task<IActionResult> Index(string? sortToggle, int page = 1, int pageSize = 20)
+        public async Task<IActionResult> Index(string? sortToggle, string? sortByMonth, int page = 1, int pageSize = 20)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
@@ -48,6 +48,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             {
                 // Fetch only non-admitted patients
                 query = context.OPD.Where(opd => !opd.IsAdmitted);
+            }
+
+            if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
+            {
+                query = query.Where(opd => opd.Date.Month == month.Month && opd.Date.Year == month.Year);
+                ViewBag.sortByMonth = month.ToString("yyyy-MM");
             }
 
             // Pagination
@@ -82,7 +88,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return View(viewModel);
         }
 
-        public async Task<IActionResult> Search(string searchString, string? sortToggle)
+        public async Task<IActionResult> Search(string searchString, string? sortToggle, string? sortByMonth, int page = 1, int pageSize = 20)
         {
             string sortToggleValue = sortToggle ?? "All";
             ViewBag.sortToggle = sortToggleValue;
@@ -109,6 +115,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 query = query.Where(u => !u.IsAdmitted);
             }
 
+            if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
+            {
+                query = query.Where(opd => opd.Date.Month == month.Month && opd.Date.Year == month.Year);
+                ViewBag.sortByMonth = month.ToString("yyyy-MM");
+            }
+
             foreach (var word in searchWords)
             {
                 var term = word.Trim();
@@ -120,7 +132,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     EF.Functions.Like(u.Id.ToString(), $"%{term}%"));
             }
 
-            var opdList = await query.ToListAsync();
+            // Pagination
+            var totalCount = await query.CountAsync();
+            var opdList = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
             var scoredList = new List<(OPDModel opd, Dictionary<string, int> scores, bool isEligible)>();
             var _scoreService = new OPDScoringService(connectionString);
@@ -131,16 +148,23 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 scoredList.Add((opd, scores, isEligible));
             }
 
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+
             var viewModel = new OPDViewModel
             {
                 OPDList = opdList,
                 OPDScoringList = scoredList,
+                Users = users,
+                CurrentPage = page,
+                PageSize = pageSize,
+                TotalCount = totalCount,
             };
 
             return View("Index", viewModel);
         }
 
-        public async Task<IActionResult> SortBy(string sortByUserID, string? sortByMonth, string? sortToggle)
+        public async Task<IActionResult> SortBy(string sortByUserID, string? sortByMonth, string? sortToggle, int page = 1, int pageSize = 20)
         {
             string sortToggleValue = sortToggle ?? "All";
             ViewBag.sortToggle = sortToggleValue;
@@ -173,7 +197,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 ViewBag.sortByMonth = month.ToString("yyyy-MM");
             }
 
-            var opdList = await query.ToListAsync();
+            // Pagination
+            var totalCount = await query.CountAsync();
+            var opdList = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
             var scoredList = new List<(OPDModel opd, Dictionary<string, int> scores, bool isEligible)>();
             var _scoreService = new OPDScoringService(connectionString);
@@ -191,7 +220,10 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             {
                 OPDList = opdList,
                 OPDScoringList = scoredList,
-                Users = users
+                Users = users,
+                CurrentPage = page,
+                PageSize = pageSize,
+                TotalCount = totalCount,
             };
             
             return View("Index", viewModel);

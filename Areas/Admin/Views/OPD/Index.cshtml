@@ -70,8 +70,11 @@
 @* Search *@
 <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
     <div class="search-container" style="width: 100%">
-        <form asp-action="Search" asp-route-sortToggle="@sortToggle" asp-controller="OPD">
+        <form asp-action="Search" asp-route-sortToggle="@sortToggle" asp-route-page="@Model.CurrentPage" asp-route-pageSize="@Model.PageSize">
             <div class="input-group">
+                <input type="hidden" name="page" value="@Model.CurrentPage" />
+                <input type="hidden" name="pageSize" value="@Model.PageSize" />
+                <input type="hidden" name="sortByMonth" value="@sortByMonth" />
                 <input type="search" name="searchString" class="form-control" placeholder="Search by Id/FullName" aria-label="Search">
                 <button type="submit" class="btn btn-dark"
                 data-bs-toggle="tooltip"
@@ -109,19 +112,25 @@
         }
 
         <div class="btn-group btn-group-toggle" data-toggle="buttons">
-            <a asp-action="Index" asp-controller="OPD" asp-route-sortToggle="All" class="btn btn-secondary @(sortToggle == "All" ? "active" : "")">
+            <a asp-action="Index" asp-controller="OPD" asp-route-sortToggle="All"
+               asp-route-page="@Model.CurrentPage" asp-route-pageSize="@Model.PageSize" asp-route-sortByMonth="@sortByMonth"
+               class="btn btn-secondary @(sortToggle == "All" ? "active" : "")">
                 <div class="custom-radio">
                     <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "All" ? "checked" : "")>
                     <label style="margin-bottom: 0">All</label>
                 </div>
             </a>
-            <a asp-action="Index" asp-controller="OPD" asp-route-sortToggle="Not Admitted" class="btn btn-secondary @(sortToggle == "Not Admitted" ? "active" : "")">
+            <a asp-action="Index" asp-controller="OPD" asp-route-sortToggle="Not Admitted"
+               asp-route-page="@Model.CurrentPage" asp-route-pageSize="@Model.PageSize" asp-route-sortByMonth="@sortByMonth"
+               class="btn btn-secondary @(sortToggle == "Not Admitted" ? "active" : "")">
                 <div class="custom-radio">
                     <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "Not Admitted" ? "checked" : "")>
                     <label style="margin-bottom: 0">Not Admitted</label>
                 </div>
             </a>
-            <a asp-action="Index" asp-controller="OPD" asp-route-sortToggle="Admitted" class="btn btn-secondary @(sortToggle == "Admitted" ? "active" : "")">
+            <a asp-action="Index" asp-controller="OPD" asp-route-sortToggle="Admitted"
+               asp-route-page="@Model.CurrentPage" asp-route-pageSize="@Model.PageSize" asp-route-sortByMonth="@sortByMonth"
+               class="btn btn-secondary @(sortToggle == "Admitted" ? "active" : "")">
                 <div class="custom-radio">
                     <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "Admitted" ? "checked" : "")>
                     <label style="margin-bottom: 0">Admitted</label>
@@ -149,10 +158,12 @@
             }
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" asp-action="SortBy" asp-controller="OPD" asp-route-sortByUserID="" asp-route-sortByMonth="@sortByMonth" asp-route-sortToggle="@sortToggle">All</a></li>
+            <li><a class="dropdown-item" asp-action="SortBy" asp-controller="OPD" asp-route-sortByUserID="" asp-route-sortByMonth="@sortByMonth" asp-route-sortToggle="@sortToggle" 
+                asp-route-page="@Model.CurrentPage" asp-route-pageSize="@Model.PageSize">All</a></li>
             @foreach (var user in Model.Users)
             {
-                <li><a class="dropdown-item" asp-action="SortBy" asp-controller="OPD" asp-route-sortByUserID="@user.UserID" asp-route-sortByMonth="@sortByMonth" asp-route-sortToggle="@sortToggle">@user.Username</a></li>
+                <li><a class="dropdown-item" asp-action="SortBy" asp-controller="OPD" asp-route-sortByUserID="@user.UserID" asp-route-sortByMonth="@sortByMonth" asp-route-sortToggle="@sortToggle" 
+                    asp-route-page="@Model.CurrentPage" asp-route-pageSize="@Model.PageSize">@user.Username</a></li>
             }
         </ul>
         @* @if (matchedUser)
@@ -179,6 +190,8 @@
 
         @* Month filter *@
         <form method="get" asp-action="SortBy" class="d-flex align-items-center gap-2">
+            <input type="hidden" name="page" value="@Model.CurrentPage" />
+            <input type="hidden" name="pageSize" value="@Model.PageSize" />
             <input type="hidden" name="sortByUserID" value="@sortByUserID" />
             <input type="hidden" name="sortToggle" value="@sortToggle" />
             <input type="month" name="sortByMonth" class="form-control form-control-sm" value="@sortByMonth" />
@@ -487,6 +500,7 @@
         startPage = Math.Max(1, endPage - pageWindow + 1);
     }
 }
+
 <div class="container-fluid px-0 mx-0 mt-3" style="max-width: 1400px;">
     @if (totalPages > 1)
     {
@@ -494,7 +508,7 @@
             <ul class="pagination justify-content-center flex-nowrap">
                 <!-- Previous button -->
                 <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                    <a class="page-link" aria-label="Previous" asp-action="Index" asp-route-page="@(currentPage - 1)" asp-route-pageSize="@Model.PageSize">
+                    <a class="page-link" aria-label="Previous" asp-action="Index" asp-route-page="@(currentPage - 1)" asp-route-pageSize="@Model.PageSize" asp-route-sortByMonth="@sortByMonth">
                         <span aria-hidden="true">&laquo;</span>
                         <span class="sr-only"></span>
                     </a>
@@ -504,7 +518,7 @@
                 @if (startPage > 1)
                 {
                     <li class="page-item">
-                        <a class="page-link" asp-action="Index" asp-route-page="1" asp-route-pageSize="@Model.PageSize">1</a>
+                        <a class="page-link" asp-action="Index" asp-route-page="1" asp-route-pageSize="@Model.PageSize" asp-route-sortByMonth="@sortByMonth">1</a>
                     </li>
                     @if (startPage > 2)
                     {
@@ -516,7 +530,7 @@
                 @for (int i = startPage; i <= endPage; i++)
                 {
                     <li class="page-item @(currentPage == i ? "active" : "")">
-                        <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-pageSize="@Model.PageSize">@i</a>
+                        <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-pageSize="@Model.PageSize" asp-route-sortByMonth="@sortByMonth">@i</a>
                     </li>
                 }
 
@@ -528,13 +542,13 @@
                         <li class="page-item disabled"><span class="page-link">...</span></li>
                     }
                     <li class="page-item">
-                        <a class="page-link" asp-action="Index" asp-route-page="@totalPages" asp-route-pageSize="@Model.PageSize">@totalPages</a>
+                        <a class="page-link" asp-action="Index" asp-route-page="@totalPages" asp-route-pageSize="@Model.PageSize" asp-route-sortByMonth="@sortByMonth">@totalPages</a>
                     </li>
                 }
 
                 <!-- Next button -->
                 <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                    <a class="page-link" aria-label="Next" asp-action="Index" asp-route-page="@(currentPage + 1)" asp-route-pageSize="@Model.PageSize">
+                    <a class="page-link" aria-label="Next" asp-action="Index" asp-route-page="@(currentPage + 1)" asp-route-pageSize="@Model.PageSize" asp-route-sortByMonth="@sortByMonth">
                         <span aria-hidden="true">&raquo;</span>
                         <span class="sr-only"></span>
                     </a>
@@ -549,14 +563,33 @@
     <!-- Page size dropdown below -->
     <div class="mx-auto">
         <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-1 me-2" data-bs-toggle="dropdown" aria-expanded="false">
-            per page: <span class="mb-0">@Model.PageSize</span>
+            per page: <span class="mb-0">@(Model.PageSize > Model.TotalCount ? Model.TotalCount : Model.PageSize)</span>
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" asp-action="Index" asp-route-page="1" asp-route-pageSize="10">10</a></li>
-            <li><a class="dropdown-item" asp-action="Index" asp-route-page="1" asp-route-pageSize="20">20</a></li>
-            <li><a class="dropdown-item" asp-action="Index" asp-route-page="1" asp-route-pageSize="50">50</a></li>
-            <li><a class="dropdown-item" asp-action="Index" asp-route-page="1" asp-route-pageSize="100">100</a></li>
-            <li><a class="dropdown-item" asp-action="Index" asp-route-page="1" asp-route-pageSize="@Model.TotalCount">@Model.TotalCount</a></li>
+            @if (Model.TotalCount >= 10)
+            {
+                <li><a class="dropdown-item" asp-action="Index" asp-route-sortByMonth="@sortByMonth" asp-route-page="1" asp-route-pageSize="10">10</a></li>
+            }
+            @if (Model.TotalCount >= 20)
+            {
+                <li><a class="dropdown-item" asp-action="Index" asp-route-sortByMonth="@sortByMonth" asp-route-page="1" asp-route-pageSize="20">20</a></li>
+            }
+            @if (Model.TotalCount >= 50)
+            {
+                <li><a class="dropdown-item" asp-action="Index" asp-route-sortByMonth="@sortByMonth" asp-route-page="1" asp-route-pageSize="50">50</a></li>
+            }
+            @if (Model.TotalCount >= 100)
+            {
+                <li><a class="dropdown-item" asp-action="Index" asp-route-sortByMonth="@sortByMonth" asp-route-page="1" asp-route-pageSize="100">100</a></li>
+            }
+            @if (Model.TotalCount > 100)
+            {
+                <li>
+                    <a class="dropdown-item" asp-action="Index" asp-controller="SystemLogs" asp-route-sortByMonth="@sortByMonth" asp-route-page="1" asp-route-pageSize="@Model.TotalCount">
+                        @Model.TotalCount
+                    </a>
+                </li>
+            }
         </ul>
     </div>
 
