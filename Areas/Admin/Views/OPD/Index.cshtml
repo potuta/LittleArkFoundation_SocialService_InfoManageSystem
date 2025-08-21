@@ -72,8 +72,6 @@
     <div class="search-container" style="width: 100%">
         <form asp-action="Search" asp-route-sortToggle="@sortToggle" asp-route-page="@Model.CurrentPage" asp-route-pageSize="@Model.PageSize">
             <div class="input-group">
-                <input type="hidden" name="page" value="@Model.CurrentPage" />
-                <input type="hidden" name="pageSize" value="@Model.PageSize" />
                 <input type="hidden" name="sortByMonth" value="@sortByMonth" />
                 <input type="search" name="searchString" class="form-control" placeholder="Search by Id/FullName" aria-label="Search">
                 <button type="submit" class="btn btn-dark"

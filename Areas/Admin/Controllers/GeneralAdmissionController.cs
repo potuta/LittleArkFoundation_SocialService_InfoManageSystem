@@ -25,7 +25,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             _connectionService = connectionService;
         }
 
-        public async Task<IActionResult> Index(string? sortToggle)
+        public async Task<IActionResult> Index(string? sortToggle, string? sortByMonth, int page = 1, int pageSize = 20)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
@@ -33,20 +33,30 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             string sortToggleValue = sortToggle ?? "All";
             ViewBag.sortToggle = sortToggleValue;
 
-            var generalAdmissions = new List<GeneralAdmissionModel>();
-
-            if (sortToggleValue == "All")
+            var query = context.GeneralAdmission.AsQueryable();
+            
+            if (sortToggleValue == "Interviewed")
             {
-                generalAdmissions = await context.GeneralAdmission.ToListAsync();
-            }
-            else if (sortToggleValue == "Interviewed")
-            {
-                generalAdmissions = await context.GeneralAdmission.Where(patient => patient.isInterviewed).ToListAsync();
+                query = context.GeneralAdmission.Where(patient => patient.isInterviewed);
             }
             else if (sortToggleValue == "Not Interviewed")
             {
-                generalAdmissions = await context.GeneralAdmission.Where(patient => !patient.isInterviewed).ToListAsync();
+                query = context.GeneralAdmission.Where(patient => !patient.isInterviewed);
             }
+
+            if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
+            {
+                query = query.Where(opd => opd.Date.Month == month.Month && opd.Date.Year == month.Year);
+                ViewBag.sortByMonth = month.ToString("yyyy-MM");
+            }
+
+            // Pagination
+            var totalCount = await query.CountAsync();
+            var generalAdmissions = await query
+                .OrderByDescending(g => g.Date)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
             var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
@@ -54,13 +64,16 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var viewModel = new GeneralAdmissionViewModel
             {
                 Users = users,
-                GeneralAdmissions = generalAdmissions
+                GeneralAdmissions = generalAdmissions,
+                CurrentPage = page,
+                PageSize = pageSize,
+                TotalCount = totalCount,
             };
 
             return View(viewModel);
         }
 
-        public async Task<IActionResult> Search(string searchString, string? sortToggle)
+        public async Task<IActionResult> Search(string searchString, string? sortToggle, string? sortByMonth, int page = 1, int pageSize = 20)
         {
             string sortToggleValue = sortToggle ?? "All";
             ViewBag.sortToggle = sortToggleValue;
@@ -78,6 +91,21 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             var query = context.GeneralAdmission.AsQueryable();
 
+            if (sortToggleValue == "Interviewed")
+            {
+                query = context.GeneralAdmission.Where(patient => patient.isInterviewed);
+            }
+            else if (sortToggleValue == "Not Interviewed")
+            {
+                query = context.GeneralAdmission.Where(patient => !patient.isInterviewed);
+            }
+
+            if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
+            {
+                query = query.Where(opd => opd.Date.Month == month.Month && opd.Date.Year == month.Year);
+                ViewBag.sortByMonth = month.ToString("yyyy-MM");
+            }
+
             foreach (var word in searchWords)
             {
                 var term = word.Trim();
@@ -89,7 +117,13 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     EF.Functions.Like(u.Id.ToString(), $"%{term}%"));
             }
 
-            var generalAdmissions = await query.ToListAsync();
+            // Pagination
+            var totalCount = await query.CountAsync();
+            var generalAdmissions = await query
+                .OrderByDescending(g => g.Date)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
             var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
@@ -97,13 +131,16 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var viewModel = new GeneralAdmissionViewModel
             {
                 Users = users,
-                GeneralAdmissions = generalAdmissions
+                GeneralAdmissions = generalAdmissions,
+                CurrentPage = page,
+                PageSize = pageSize,
+                TotalCount = totalCount,
             };
 
             return View("Index", viewModel);
         }
 
-        public async Task<IActionResult> SortBy(string sortByUserID, string? sortByMonth, string? sortToggle)
+        public async Task<IActionResult> SortBy(string sortByUserID, string? sortByMonth, string? sortToggle, int page = 1, int pageSize = 20)
         {
             string sortToggleValue = sortToggle ?? "All";
             ViewBag.sortToggle = sortToggleValue;
@@ -136,7 +173,13 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 ViewBag.sortByMonth = month.ToString("yyyy-MM");
             }
 
-            var generalAdmissions = await query.ToListAsync();
+            // Pagination
+            var totalCount = await query.CountAsync();
+            var generalAdmissions = await query
+                .OrderByDescending(g => g.Date)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
             var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
@@ -144,7 +187,10 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var viewModel = new GeneralAdmissionViewModel
             {
                 Users = users,
-                GeneralAdmissions = generalAdmissions
+                GeneralAdmissions = generalAdmissions,
+                CurrentPage = page,
+                PageSize = pageSize,
+                TotalCount = totalCount,
             };
 
             return View("Index", viewModel);
