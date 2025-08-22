@@ -20,7 +20,7 @@ html, body {
 
 body {
     display: grid;
-    grid-template-columns: 9.375rem 1fr; /* 150px */
+    grid-template-columns: calc(var(--navbar-left-width) - 40px) 1fr; 
     grid-template-rows: auto 1fr;
     height: 100vh;
     margin: 0;
@@ -61,7 +61,7 @@ body {
     background-color: #f8f8f8;
     box-sizing: border-box;
     /*    width: fit-content;*/
-    width: 12rem;
+    width: var(--navbar-left-width);
     padding: 0.625rem; /* 10px */
     justify-content: space-between;
     transition: width 0.3s ease, padding 0.3s ease;
