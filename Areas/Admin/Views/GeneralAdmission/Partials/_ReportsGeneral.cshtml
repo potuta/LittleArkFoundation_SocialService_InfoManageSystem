@@ -8,7 +8,6 @@
         .GroupBy(d => d.Date)
         .OrderBy(g => g.Key)
         .ToList();
-    var mswTotals = msws.ToDictionary(msw => msw, msw => Model.GeneralAdmissions.Count(d => d.MSW == msw));
     var overallTotal = Model.GeneralAdmissions.Count;
 
     var groupedClass = new List<string>
@@ -25,7 +24,7 @@
     var overallClassTotal = Model.GeneralAdmissions.Count;
 }
 
-<h5 style="margin-top: 15px;">COUNTA of Date Processed by MSW</h5>
+<h5 style="margin-top: 15px;">COUNTA of Date</h5>
 <div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
     <div class="table-responsive" style="overflow-x: auto;">
         <table class="table" style="min-width: 1200px;">
@@ -34,10 +33,6 @@
                 {
                     <tr>
                         <th>Date Processed</th>
-                        @foreach (var msw in msws)
-                        {
-                            <th>@msw</th>
-                        }
                         <th>Grand Total</th>
                     </tr>
                 }
@@ -49,23 +44,12 @@
                     {
                         <tr>
                             <td>@group.Key.ToShortDateString()</td>
-
-                            @foreach (var msw in msws)
-                            {
-                                var count = group.Count(d => d.MSW == msw);
-                                <td>@count</td>
-                            }
-
                             <td>@group.Count()</td>
                         </tr>
                     }
 
                     <tr class="fw-bold">
                         <td>Total</td>
-                        @foreach (var msw in msws)
-                        {
-                            <td>@mswTotals[msw]</td>
-                        }
                         <td>@overallTotal</td>
                     </tr>
                 }

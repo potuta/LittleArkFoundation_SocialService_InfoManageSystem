@@ -285,3 +285,15 @@ else if (sortToggle == "Patient Interviewed")
 {
     @await Html.PartialAsync("Partials/_ReportsPatientInterviewed", Model)
 }
+else if (sortToggle == "Total Interviewed")
+{
+    @await Html.PartialAsync("Partials/_ReportsTotalInterviewed", Model)
+}
+@* else if (sortToggle == "PHIC")
+{
+    @await Html.PartialAsync("Partials/_ReportsPHIC", Model)
+}
+else if (sortToggle == "Referral/Old/New/PWD")
+{
+    @await Html.PartialAsync("Partials/_ReportsReferralOldNewPWD", Model)
+} *@
