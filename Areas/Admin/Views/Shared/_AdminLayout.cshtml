@@ -23,9 +23,6 @@
     <!-- Custom Styles -->
     <link rel="stylesheet" href="~/css/adminStyle.css">
 
-    <script src="~/lib/jquery/jquery-3.6.0.min.js"></script>
-    <script src="~/lib/bootstrap/bootstrap-5.3.0-dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js"></script>
 </head>
 <body data-controller ="@ViewContext.RouteData.Values["controller"]"
                      data-action="@ViewContext.RouteData.Values["action"]">
@@ -353,6 +350,11 @@
         });
     </script>
 
+
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script src="~/lib/jquery/jquery-3.6.0.min.js"></script>
+    <script src="~/lib/bootstrap/bootstrap-5.3.0-dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js"></script>
 </body>
 </html>
