@@ -8,15 +8,15 @@
     .container {
         margin: 10px;
         padding: 25px;
-        width: max-content;
+        width: 200px;
         height: max-content;
-        border: 1px solid #6c757d;
+		border: 1px solid #6c757d;
         border-radius: 5%;
         align-items: center;
         text-align: center;
         color: #6c757d;
         background-color: rgb(255, 255, 255);
-        box-shadow: 5px 5px 5px rgb(217, 217, 217);
+        box-shadow: 0px 0px 15px rgb(217, 217, 217);
     }
 
         .container h1 {
@@ -29,13 +29,20 @@
             padding: 10px;
             font-size: large;
         }
+
+    .daily, 
+    .monthly,
+    .yearly {
+        color: #6c757d;
+    }
+
 </style>
 
 <h2>Dashboard</h2>
 <hr />
 
 <div class="mx-auto d-flex justify-content-center mt-2 mb-2">
-    <button id="selectBtn" type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-1 me-2" data-bs-toggle="dropdown" aria-expanded="false">
+    <button id="selectBtn" type="button" class="btn btn-success btn-sm dropdown-toggle d-flex align-items-center gap-1 me-2" data-bs-toggle="dropdown" aria-expanded="false">
         Daily Performance
     </button>
     <ul class="dropdown-menu dropdown-menu-end">
@@ -45,7 +52,7 @@
     </ul>
 </div>
 
-<div class="d-flex justify-content-center">
+<div class="d-flex justify-content-center align-items-center">
     <div class="container">
         <h1 class="daily" style="display: block;">@Model.DailyOPD.Count</h1>
         <h1 class="monthly" style="display: none;">@Model.MonthlyOPD.Count</h1>
@@ -63,6 +70,12 @@
         <h1 class="monthly" style="display: none;">@Model.MonthlyDischarges.Count</h1>
         <h1 class="yearly" style="display: none;">@Model.YearlyDischarges.Count</h1>
         <p>Discharge</p>
+    </div>
+    <div class="container">
+        <h1 class="daily" style="display: block;">@Model.DailyProgressNotes.Count</h1>
+        <h1 class="monthly" style="display: none;">@Model.MonthlyProgressNotes.Count</h1>
+        <h1 class="yearly" style="display: none;">@Model.YearlyProgressNotes.Count</h1>
+        <p>Progress Notes</p>
     </div>
 </div>
 

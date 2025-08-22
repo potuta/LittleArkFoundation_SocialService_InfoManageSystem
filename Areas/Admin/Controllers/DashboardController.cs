@@ -85,6 +85,23 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 .Where(d => d.DischargedDate.Year == DateTime.Now.Year)
                 .ToList();
 
+            // Progress Notes
+            var progressNotes = await context.ProgressNotes
+                .Where(p => p.UserID == userId)
+                .ToListAsync();
+
+            var dailyProgressNotes = progressNotes
+                .Where(p => p.Date == DateOnly.FromDateTime(DateTime.Now))
+                .ToList();
+
+            var monthlyProgressNotes = progressNotes
+                .Where(p => p.Date.Month == DateTime.Now.Month && p.Date.Year == DateTime.Now.Year)
+                .ToList();
+
+            var yearlyProgressNotes = progressNotes
+                .Where(p => p.Date.Year == DateTime.Now.Year)
+                .ToList();
+
             var viewModel = new DashboardViewModel()
             {
                 DailyOPD = dailyOPD,
@@ -95,7 +112,10 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 YearlyAssessments = yearlyassessments,
                 DailyDischarges = dailydischarges,
                 MonthlyDischarges = monthlydischarges,
-                YearlyDischarges = yearlydischarges
+                YearlyDischarges = yearlydischarges,
+                DailyProgressNotes = dailyProgressNotes,
+                MonthlyProgressNotes = monthlyProgressNotes,
+                YearlyProgressNotes = yearlyProgressNotes
             };
 
             return View(viewModel);
