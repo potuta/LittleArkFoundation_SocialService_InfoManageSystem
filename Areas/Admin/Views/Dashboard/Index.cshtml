@@ -5,76 +5,120 @@
 }
 
 <style>
-    .dashboard-div {
-		font-family: Arial, sans-serif;
-    }
-
-    .dashboard-table {
-        border-collapse: collapse;
-        width: 60%;
-        margin-bottom: 40px;
-    }
-
-    .dashboard-table th, td {
-        border: 1px solid #dddddd;
+    .container {
+        margin: 10px;
+        padding: 25px;
+        width: max-content;
+        height: max-content;
+        border: 1px solid #6c757d;
+        border-radius: 5%;
+        align-items: center;
         text-align: center;
-        padding: 12px;
+        color: #6c757d;
+        background-color: rgb(255, 255, 255);
+        box-shadow: 5px 5px 5px rgb(217, 217, 217);
     }
 
-    .dashboard-table th {
-        background-color: #f2f2f2;
-    }
+        .container h1 {
+            margin: 0px;
+            padding: 10px;
+        }
 
-    .dashboard-section-title {
-        font-size: 18px;
-        margin-top: 40px;
-        margin-bottom: 10px;
-    }
+        .container p {
+            margin: 0px;
+            padding: 10px;
+            font-size: large;
+        }
 </style>
 
 <h2>Dashboard</h2>
 <hr />
 
-<div class="dashboard-div">
-    <div class="dashboard-section-title">Daily Statistics</div>
-    <table class="dashboard-table">
-        <tr>
-            <th>OPD</th>
-            <th>Admission</th>
-            <th>Discharge</th>
-        </tr>
-        <tr>
-            <td>@Model.DailyOPD.Count</td>
-            <td>@Model.DailyAssessments.Count</td>
-            <td>@Model.DailyDischarges.Count</td>
-        </tr>
-    </table>
-
-    <div class="dashboard-section-title">Monthly Statistics</div>
-    <table class="dashboard-table">
-        <tr>
-            <th>OPD</th>
-            <th>Admission</th>
-            <th>Discharge</th>
-        </tr>
-        <tr>
-            <td>@Model.MonthlyOPD.Count</td>
-            <td>@Model.MonthlyAssessments.Count</td>
-            <td>@Model.MonthlyDischarges.Count</td>
-        </tr>
-    </table>
-
-    <div class="dashboard-section-title">Yearly Statistics</div>
-    <table class="dashboard-table">
-        <tr>
-            <th>OPD</th>
-            <th>Admission</th>
-            <th>Discharge</th>
-        </tr>
-        <tr>
-            <td>@Model.YearlyOPD.Count</td>
-            <td>@Model.YearlyAssessments.Count</td>
-            <td>@Model.YearlyDischarges.Count</td>
-        </tr>
-    </table>
+<div class="mx-auto d-flex justify-content-center mt-2 mb-2">
+    <button id="selectBtn" type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-1 me-2" data-bs-toggle="dropdown" aria-expanded="false">
+        Daily Performance
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end">
+        <li><a class="dropdown-item" onclick="OnSelectClick(this)" name="Daily">Daily</a></li>
+        <li><a class="dropdown-item" onclick="OnSelectClick(this)" name="Monthly">Monthly</a></li>
+        <li><a class="dropdown-item" onclick="OnSelectClick(this)" name="Yearly">Yearly</a></li>
+    </ul>
 </div>
+
+<div class="d-flex justify-content-center">
+    <div class="container">
+        <h1 class="daily" style="display: block;">@Model.DailyOPD.Count</h1>
+        <h1 class="monthly" style="display: none;">@Model.MonthlyOPD.Count</h1>
+        <h1 class="yearly" style="display: none;">@Model.YearlyOPD.Count</h1>
+        <p>OPD</p>
+    </div>
+    <div class="container">
+        <h1 class="daily" style="display: block;">@Model.DailyAssessments.Count</h1>
+        <h1 class="monthly" style="display: none;">@Model.MonthlyAssessments.Count</h1>
+        <h1 class="yearly" style="display: none;">@Model.YearlyAssessments.Count</h1>
+        <p>Admission</p>
+    </div>
+    <div class="container">
+        <h1 class="daily" style="display: block;">@Model.DailyDischarges.Count</h1>
+        <h1 class="monthly" style="display: none;">@Model.MonthlyDischarges.Count</h1>
+        <h1 class="yearly" style="display: none;">@Model.YearlyDischarges.Count</h1>
+        <p>Discharge</p>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function OnSelectedOption(selectElement) {
+            const selection = selectElement.value;
+
+            const dailyClasses = document.querySelectorAll(".daily");
+            const monthlyClasses = document.querySelectorAll(".monthly");
+            const yearlyClasses = document.querySelectorAll(".yearly");
+
+            if (selection === "Daily") {
+                dailyClasses.forEach(d => d.style.display = "block");
+                monthlyClasses.forEach(d => d.style.display = "none");
+                yearlyClasses.forEach(d => d.style.display = "none");
+            }
+            else if (selection === "Monthly") {
+                dailyClasses.forEach(d => d.style.display = "none");
+                monthlyClasses.forEach(d => d.style.display = "block");
+                yearlyClasses.forEach(d => d.style.display = "none");
+            }
+            else if (selection === "Yearly") {
+                dailyClasses.forEach(d => d.style.display = "none");
+                monthlyClasses.forEach(d => d.style.display = "none");
+                yearlyClasses.forEach(d => d.style.display = "block");
+            }
+        }
+
+        function OnSelectClick(selectedElement) {
+            const selection = selectedElement.name;
+
+            let btn = document.getElementById("selectBtn");
+            btn.innerHTML = selection + " Performance";
+
+            const dailyClasses = document.querySelectorAll(".daily");
+            const monthlyClasses = document.querySelectorAll(".monthly");
+            const yearlyClasses = document.querySelectorAll(".yearly");
+
+            if (selection === "Daily") {
+                dailyClasses.forEach(d => d.style.display = "block");
+                monthlyClasses.forEach(d => d.style.display = "none");
+                yearlyClasses.forEach(d => d.style.display = "none");
+            }
+            else if (selection === "Monthly") {
+                dailyClasses.forEach(d => d.style.display = "none");
+                monthlyClasses.forEach(d => d.style.display = "block");
+                yearlyClasses.forEach(d => d.style.display = "none");
+            }
+            else if (selection === "Yearly") {
+                dailyClasses.forEach(d => d.style.display = "none");
+                monthlyClasses.forEach(d => d.style.display = "none");
+                yearlyClasses.forEach(d => d.style.display = "block");
+            }
+        }
+    </script>
+}
+
+            
