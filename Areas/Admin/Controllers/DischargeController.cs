@@ -62,25 +62,43 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             _connectionService = connectionService;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? sortByMonth, int page = 1, int pageSize = 20)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
 
+            var query = context.Discharges.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
+            {
+                query = query.Where(opd => opd.DischargedDate.Month == month.Month && opd.DischargedDate.Year == month.Year);
+                ViewBag.sortByMonth = month.ToString("yyyy-MM");
+            }
+
+            // Pagination
+            var totalCount = await query.CountAsync();
+            var discharges = await query
+                .OrderByDescending(d => d.DischargedDate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
             var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
-            var discharges = await context.Discharges.OrderByDescending(d => d.DischargedDate).ToListAsync();
 
             var viewModel = new DischargeViewModel
             {
                 Users = users,
                 Discharges = discharges,
+                CurrentPage = page,
+                PageSize = pageSize,
+                TotalCount = totalCount,
             };
 
             return View(viewModel);
         }
 
-        public async Task<IActionResult> Search(string searchString)
+        public async Task<IActionResult> Search(string searchString, string? sortByMonth, int page = 1, int pageSize = 20)
         {
             if (string.IsNullOrEmpty(searchString))
             {
@@ -96,8 +114,13 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var searchWords = searchString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
             var query = context.Discharges
-                .OrderByDescending(d => d.DischargedDate)
                 .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
+            {
+                query = query.Where(opd => opd.DischargedDate.Month == month.Month && opd.DischargedDate.Year == month.Year);
+                ViewBag.sortByMonth = month.ToString("yyyy-MM");
+            }
 
             foreach (var word in searchWords)
             {
@@ -109,18 +132,27 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     EF.Functions.Like(u.LastName, $"%{term}%"));
             }
 
-            var discharges = await query.ToListAsync();
+            // Pagination
+            var totalCount = await query.CountAsync();
+            var discharges = await query
+                .OrderByDescending(d => d.DischargedDate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
             var viewModel = new DischargeViewModel
             {
                 Users = users,
                 Discharges = discharges,
+                CurrentPage = page,
+                PageSize = pageSize,
+                TotalCount = totalCount,
             };
 
             return View("Index", viewModel);
         }
 
-        public async Task<IActionResult> SortBy(string sortByUserID, string? sortByMonth)
+        public async Task<IActionResult> SortBy(string sortByUserID, string? sortByMonth, int page = 1, int pageSize = 20)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
@@ -141,7 +173,13 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 ViewBag.sortByMonth = month.ToString("yyyy-MM");
             }
 
-            var discharges = await query.ToListAsync();
+            // Pagination
+            var totalCount = await query.CountAsync();
+            var discharges = await query
+                .OrderByDescending(d => d.DischargedDate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
             var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
@@ -149,7 +187,10 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var viewModel = new DischargeViewModel
             {
                 Discharges = discharges,
-                Users = users
+                Users = users,
+                CurrentPage = page,
+                PageSize = pageSize,
+                TotalCount = totalCount,
             };
 
             return View("Index", viewModel);
