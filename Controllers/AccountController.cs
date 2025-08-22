@@ -14,12 +14,14 @@ namespace LittleArkFoundation.Controllers
         private readonly ConnectionService _connectionService;
         private readonly DatabaseService _databaseService;
         private readonly EmailService _emailService;
+        private readonly IConfiguration _configuration;
 
-        public AccountController(ConnectionService connectionService, DatabaseService databaseService, EmailService emailService)
+        public AccountController(ConnectionService connectionService, DatabaseService databaseService, EmailService emailService, IConfiguration configuration)
         {
             _connectionService = connectionService;
             _databaseService = databaseService;
             _emailService = emailService;
+            _configuration = configuration;
         }
 
         [HttpPost]
@@ -39,6 +41,12 @@ namespace LittleArkFoundation.Controllers
                     LoggingService.LogInformation($"Invalid login attempt. UserID: {userID}, DateTime: {DateTime.Now}");
                     TempData["LoginError"] = "Invalid User ID or Password. Please try again.";
                     return RedirectToAction("Index", "Home");
+                }
+
+                var defaultUserPassword = _configuration.GetValue<string>("DefaultUserPassword");
+                if (password.Equals(defaultUserPassword, StringComparison.Ordinal))
+                {
+                    return RedirectToAction("ResetPassword", new { isPasswordDefault = true, userId = user.UserID });
                 }
 
                 string role = await new RolesRepository(_connectionService).GetRoleNameByRoleID(user.RoleID);
@@ -192,8 +200,15 @@ namespace LittleArkFoundation.Controllers
         }
 
         [HttpGet]
-        public IActionResult ResetPassword()
+        public IActionResult ResetPassword(bool? isPasswordDefault, int? userId)
         {
+            if (isPasswordDefault.HasValue && isPasswordDefault.Value)
+            {
+                TempData["WarningMessage"] = "Your password is using the default value. Please change it immediately.";
+                ViewBag.UserID = userId.Value;
+                return View();
+            }
+
             // Check if user is verified
             int? verifiedUserID = HttpContext.Session.GetInt32("VerifiedUserID");
             if (verifiedUserID == null)
