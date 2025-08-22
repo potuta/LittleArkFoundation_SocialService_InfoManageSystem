@@ -65,7 +65,7 @@ body {
 }
 
     .navbar-left.collapsed {
-        width: 85px;
+        width: var(--navbar-left-width-collapsed);
     }
 
         .navbar-left.collapsed .btn-left span,
