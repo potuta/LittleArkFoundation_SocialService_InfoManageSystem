@@ -461,4 +461,63 @@
         </table>
     </div>
 </div>
+
+<h5 style="margin-top: 15px;">COUNTA of Referral</h5>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>Referral</th>
+                        @foreach (var msw in msws)
+                        {
+                            <th>@msw</th>
+                        }
+                        <th>Row Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    var statuses = new[] { "Private/Clinic", "Govt. Agencies", "Govt. Hosp.", "Health Care Team", "NGO/Private Welfare", "Politicians", "Walk in", "Media", "Others" };
+                    var grandTotals = new int[msws.Count];
+                    int overallTotals = 0;
+
+                    @foreach (var stats in statuses)
+                    {
+                        int rowTotal = 0;
+                        <tr>
+                            <td>@stats</td>
+                            @for (int i = 0; i < msws.Count; i++)
+                            {
+                                var count = Model.OPDList.Count(d =>
+                                d.SourceOfReferral.ToUpper() == stats.ToUpper() &&
+                                d.MSW == msws[i]
+                                );
+                                <td>@count</td>
+                                rowTotal += count;
+                                grandTotals[i] += count;
+                                overallTotals += count;
+                            }
+                            <td class="fw-bold">@rowTotal</td>
+                        </tr>
+                    }
+
+                    <tr class="fw-bold">
+                        <td>Grand Total</td>
+                        @for (int i = 0; i < msws.Count; i++)
+                        {
+                            <td>@grandTotals[i]</td>
+                        }
+                        <td>@overallTotals</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
                              

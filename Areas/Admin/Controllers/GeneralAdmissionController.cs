@@ -560,10 +560,10 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             //{
             //    ViewBag.sortToggle = "PHIC";
             //}
-            //else if (sortToggleValue == "Referral/Old/New/PWD")
-            //{
-            //    ViewBag.sortToggle = "Referral/Old/New/PWD";
-            //}
+            else if (sortToggle == "Referral/Old/New/PWD")
+            {
+                return RedirectToAction("ExportReferralOldNewPWDToExcel", new { userID, month });
+            }
 
             TempData["ErrorMessage"] = $"Download failed. No reports was found for {sortToggle}";
             return RedirectToAction("Reports");
@@ -1433,6 +1433,217 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             worksheet.Cell(totalDateRowIndex, totalDateColIndex).Value = groupedOPD.Sum(g => g.Count()); // Grand Total
             worksheet.Row(totalDateRowIndex).Style.Font.Bold = true;
+
+            // Autofit for better presentation
+            worksheet.Columns().AdjustToContents();
+
+            using (var stream = new MemoryStream())
+            {
+                workbook.SaveAs(stream);
+                stream.Position = 0;
+                return File(stream.ToArray(),
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            $"{fileName}.xlsx");
+            }
+        }
+
+        public async Task<IActionResult> ExportReferralOldNewPWDToExcel(int userID, string? month)
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            // Parse the month input if provided
+            bool filterByMonth = DateTime.TryParseExact(month, "yyyy-MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedMonth);
+
+            var query = context.GeneralAdmission.AsQueryable();
+
+            if (userID > 0)
+            {
+                query = query.Where(g => g.UserID == userID);
+            }
+
+            if (filterByMonth)
+            {
+                query = query.Where(g => g.Date.Month == parsedMonth.Month && g.Date.Year == parsedMonth.Year);
+            }
+
+            var generalAdmissions = await query.ToListAsync();
+
+            if (generalAdmissions == null || !generalAdmissions.Any())
+            {
+                TempData["ErrorMessage"] = "No General Admissions records found for selected filters.";
+                return RedirectToAction("Reports");
+            }
+
+            // File name generation
+            string mswName = userID > 0 ? generalAdmissions.First().MSW : "All";
+            string monthLabel = filterByMonth ? parsedMonth.ToString("MMMM_yyyy") : generalAdmissions.First().Date.Year.ToString();
+            string fileName = $"GA_ReferralOldNewPWD_{monthLabel}";
+
+            // Sanitize file name (for download)
+            string safeFileName = Regex.Replace(fileName, @"[^\w\-]", "_");
+
+            // Sanitize sheet name (for Excel)
+            string safeSheetName = Regex.Replace(fileName, @"[\[\]\*\?/\\:]", "_");
+            if (safeSheetName.Length > 31)
+                safeSheetName = safeSheetName.Substring(0, 31);
+
+            var workbook = new XLWorkbook();
+            var worksheet = workbook.Worksheets.Add(safeSheetName);
+
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+
+            // HEADERS
+            // COUNTA OF DATE PROCESSED BY MSW
+            worksheet.Cell(1, 1).Value = "COUNTA OF REFERRAL BY MSW";
+            worksheet.Cell(2, 1).Value = "Referral";
+
+            int referralColIndex = 2;
+            foreach (var user in users)
+            {
+                worksheet.Cell(2, referralColIndex).Value = user.Username;
+                referralColIndex++;
+            }
+
+            worksheet.Cell(2, referralColIndex).Value = "Grand Total";
+
+            // Prepare data grouped by ProcessedDate
+            var groupedOPD = generalAdmissions
+                .GroupBy(d => d.Referral)
+                .OrderBy(g => g.Key)
+                .ToList();
+
+            int dateRowIndex = 3;
+            foreach (var group in groupedOPD)
+            {
+                worksheet.Cell(dateRowIndex, 1).Value = group.Key;
+
+                int colIndex = 2;
+                foreach (var user in users)
+                {
+                    var count = group.Count(d => d.UserID == user.UserID);
+                    worksheet.Cell(dateRowIndex, colIndex).Value = count;
+                    colIndex++;
+                }
+
+                worksheet.Cell(dateRowIndex, colIndex).Value = group.Count(); // Grand Total
+                dateRowIndex++;
+            }
+
+            int totalDateRowIndex = dateRowIndex;
+            worksheet.Cell(totalDateRowIndex, 1).Value = "Total";
+
+            int totalDateColIndex = 2;
+            foreach (var user in users)
+            {
+                var totalCount = groupedOPD.Sum(g => g.Count(d => d.UserID == user.UserID));
+                worksheet.Cell(totalDateRowIndex, totalDateColIndex).Value = totalCount;
+                totalDateColIndex++;
+            }
+
+            worksheet.Cell(totalDateRowIndex, totalDateColIndex).Value = groupedOPD.Sum(g => g.Count()); // Grand Total
+            worksheet.Row(totalDateRowIndex).Style.Font.Bold = true;
+
+            // COUNTA OF OLD/NEW
+            int oldNewStartRowIndex = totalDateRowIndex + 2;
+            worksheet.Cell(oldNewStartRowIndex, 1).Value = "COUNTA OF OLD/NEW";
+            worksheet.Cell(oldNewStartRowIndex + 1, 1).Value = "Old/New";
+
+            int oldNewDataColIndex = 2;
+            foreach (var user in users)
+            {
+                worksheet.Cell(oldNewStartRowIndex + 1, oldNewDataColIndex).Value = user.Username;
+                oldNewDataColIndex++;
+            }
+
+            worksheet.Cell(oldNewStartRowIndex + 1, oldNewDataColIndex).Value = "Grand Total";
+
+            int oldNewDataRowIndex = oldNewStartRowIndex + 2;
+            worksheet.Cell(oldNewDataRowIndex, 1).Value = "New";
+            int colIndexNew = 2;
+            foreach (var user in users)
+            {
+                var countNew = generalAdmissions.Count(g => !g.isOld && g.UserID == user.UserID);
+                worksheet.Cell(oldNewDataRowIndex, colIndexNew).Value = countNew;
+                colIndexNew++;
+            }
+            worksheet.Cell(oldNewDataRowIndex, colIndexNew).Value = generalAdmissions.Count(g => !g.isOld);
+
+            oldNewDataRowIndex++;
+
+            worksheet.Cell(oldNewDataRowIndex, 1).Value = "Old";
+            int colIndexOld = 2;
+            foreach (var user in users)
+            {
+                var countOld = generalAdmissions.Count(g => g.isOld && g.UserID == user.UserID);
+                worksheet.Cell(oldNewDataRowIndex, colIndexOld).Value = countOld;
+                colIndexOld++;
+            }
+            worksheet.Cell(oldNewDataRowIndex, colIndexOld).Value = generalAdmissions.Count(g => g.isOld);
+
+            oldNewDataRowIndex++;
+
+            worksheet.Cell(oldNewDataRowIndex, 1).Value = "Total";
+            int colIndexTotal = 2;
+            foreach (var user in users)
+            {
+                var countTotal = generalAdmissions.Count(g => g.UserID == user.UserID);
+                worksheet.Cell(oldNewDataRowIndex, colIndexTotal).Value = countTotal;
+                colIndexTotal++;
+            }
+            worksheet.Cell(oldNewDataRowIndex, colIndexTotal).Value = generalAdmissions.Count();
+            worksheet.Row(oldNewDataRowIndex).Style.Font.Bold = true;
+
+            // COUNTA OF PWD
+            int pwdStartRowIndex = oldNewDataRowIndex + 2;
+            worksheet.Cell(pwdStartRowIndex, 1).Value = "COUNTA OF PWD";
+            worksheet.Cell(pwdStartRowIndex + 1, 1).Value = "PWD";
+
+            int pwdDataColIndex = 2;
+            foreach (var user in users)
+            {
+                worksheet.Cell(pwdStartRowIndex + 1, pwdDataColIndex).Value = user.Username;
+                pwdDataColIndex++;
+            }
+
+            worksheet.Cell(pwdStartRowIndex + 1, pwdDataColIndex).Value = "Grand Total";
+
+            int pwdDataRowIndex = pwdStartRowIndex + 2;
+            worksheet.Cell(pwdDataRowIndex, 1).Value = "N";
+            int colIndexNo = 2;
+            foreach (var user in users)
+            {
+                var countNo = generalAdmissions.Count(g => !g.isPWD && g.UserID == user.UserID);
+                worksheet.Cell(pwdDataRowIndex, colIndexNo).Value = countNo;
+                colIndexNo++;
+            }
+            worksheet.Cell(pwdDataRowIndex, colIndexNo).Value = generalAdmissions.Count(g => !g.isPWD);
+
+            pwdDataRowIndex++;
+
+            worksheet.Cell(pwdDataRowIndex, 1).Value = "Y";
+            int colIndexYes = 2;
+            foreach (var user in users)
+            {
+                var countYes = generalAdmissions.Count(g => g.isPWD && g.UserID == user.UserID);
+                worksheet.Cell(pwdDataRowIndex, colIndexYes).Value = countYes;
+                colIndexYes++;
+            }
+            worksheet.Cell(pwdDataRowIndex, colIndexYes).Value = generalAdmissions.Count(g => g.isPWD);
+
+            pwdDataRowIndex++;
+
+            worksheet.Cell(pwdDataRowIndex, 1).Value = "Total";
+            int colIndexTotalPWD = 2;
+            foreach (var user in users)
+            {
+                var countTotal = generalAdmissions.Count(g => g.UserID == user.UserID);
+                worksheet.Cell(pwdDataRowIndex, colIndexTotalPWD).Value = countTotal;
+                colIndexTotalPWD++;
+            }
+            worksheet.Cell(pwdDataRowIndex, colIndexTotalPWD).Value = generalAdmissions.Count();
+            worksheet.Row(pwdDataRowIndex).Style.Font.Bold = true;
 
             // Autofit for better presentation
             worksheet.Columns().AdjustToContents();

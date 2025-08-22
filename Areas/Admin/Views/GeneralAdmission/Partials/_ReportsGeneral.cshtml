@@ -157,97 +157,6 @@
     </div>
 </div>
 
-@* <h5 style="margin-top: 15px;">COUNTA of Old/New</h5>
-<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
-    <div class="table-responsive" style="overflow-x: auto;">
-        <table class="table" style="min-width: 1200px;">
-            <thead>
-                @if (Model != null)
-                {
-                    <tr>
-                        <th>MSW</th>
-                        <th>Old</th>
-                        <th>New</th>
-                        <th>Grand Total</th>
-                    </tr>
-                }
-            </thead>
-            <tbody>
-                @if (Model != null)
-                {
-                    @foreach (var msw in msws)
-                    {
-                        var oldCount = Model.GeneralAdmissions.Count(d => d.isOld == true && d.MSW == msw);
-                        var newCount = Model.GeneralAdmissions.Count(d => d.isOld == false && d.MSW == msw);
-                        var totalCount = oldCount + newCount;
-                        <tr>
-                            <td>@msw</td>
-                            <td>@oldCount</td>
-                            <td>@newCount</td>
-                            <td>@totalCount</td>
-                        </tr>
-                    }
-
-                    var oldCountAll = Model.GeneralAdmissions.Count(d => d.isOld == true);
-                    var newCountAll = Model.GeneralAdmissions.Count(d => d.isOld == false);
-                    var totalCountAll = oldCountAll + newCountAll;
-                    <tr class="fw-bold">
-                        <td>Total</td>
-                        <td>@oldCountAll</td>
-                        <td>@newCountAll</td>
-                        <td>@totalCountAll</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<h5 style="margin-top: 15px;">COUNTA of PWD</h5>
-<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
-    <div class="table-responsive" style="overflow-x: auto;">
-        <table class="table" style="min-width: 1200px;">
-            <thead>
-                @if (Model != null)
-                {
-                    <tr>
-                        <th>MSW</th>
-                        <th>PWD</th>
-                        <th>Non-PWD</th>
-                        <th>Grand Total</th>
-                    </tr>
-                }
-            </thead>
-            <tbody>
-                @if (Model != null)
-                {
-                    @foreach (var msw in msws)
-                    {
-                        var pwdCount = Model.GeneralAdmissions.Count(d => d.isPWD == true && d.MSW == msw);
-                        var nonPwdCount = Model.GeneralAdmissions.Count(d => d.isPWD == false && d.MSW == msw);
-                        var totalCount = pwdCount + nonPwdCount;
-                        <tr>
-                            <td>@msw</td>
-                            <td>@pwdCount</td>
-                            <td>@nonPwdCount</td>
-                            <td>@totalCount</td>
-                        </tr>
-                    }
-                    var pwdCountAll = Model.GeneralAdmissions.Count(d => d.isPWD == true);
-                    var nonPwdCountAll = Model.GeneralAdmissions.Count(d => d.isPWD == false);
-                    var totalCountAll = pwdCountAll + nonPwdCountAll;
-                    <tr class="fw-bold">
-                        <td>Total</td>
-                        <td>@pwdCountAll</td>
-                        <td>@nonPwdCountAll</td>
-                        <td>@totalCountAll</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-</div> *@
-
 <h5 style="margin-top: 15px;">COUNTA of Eco. Stat</h5>
 <div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
     <div class="table-responsive" style="overflow-x: auto;">
@@ -336,8 +245,7 @@
             <tbody>
                 @if (Model != null)
                 {
-                    var statuses = new[] { "Clinic/Private", "Govt. Agencies", "Govt. Hosp.", "HCT",
-                                "NGOs", "Others", "Walk in"};
+                    var statuses = new[] { "Private/Clinic", "Govt. Agencies", "Govt. Hosp.", "Health Care Team", "NGO/Private Welfare", "Politicians", "Walk in", "Media", "Others" };
                     int totalCount = 0;
                     @foreach (var stats in statuses)
                     {

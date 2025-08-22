@@ -894,6 +894,59 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Cell(totalPwdRow, 3).Value = nonPwdTotal;
             worksheet.Cell(totalPwdRow, 4).Value = pwdTotal + nonPwdTotal; // Grand total for PWD
 
+            // HEADERS
+            // COUNTA OF REFERRAL PROCESSED BY MSW
+            int referralRowStart = totalPwdRow + 2;
+
+            worksheet.Cell(referralRowStart, 1).Value = "COUNTA OF REFERRAL BY MSW";
+            worksheet.Cell(referralRowStart + 1, 1).Value = "Referral";
+
+            int referralColIndex = 2;
+            foreach (var user in users)
+            {
+                worksheet.Cell(referralRowStart + 1, referralColIndex).Value = user.Username;
+                referralColIndex++;
+            }
+
+            worksheet.Cell(referralRowStart + 1, referralColIndex).Value = "Grand Total";
+
+            // Prepare data grouped by ProcessedDate
+            var groupedReferral = opdList
+                .GroupBy(d => d.SourceOfReferral)
+                .OrderBy(g => g.Key)
+                .ToList();
+
+            int referralDataRowIndex = referralRowStart + 2;
+            foreach (var group in groupedReferral)
+            {
+                worksheet.Cell(referralDataRowIndex, 1).Value = group.Key;
+
+                int colIndex = 2;
+                foreach (var user in users)
+                {
+                    var count = group.Count(d => d.UserID == user.UserID);
+                    worksheet.Cell(referralDataRowIndex, colIndex).Value = count;
+                    colIndex++;
+                }
+
+                worksheet.Cell(referralDataRowIndex, colIndex).Value = group.Count(); // Grand Total
+                referralDataRowIndex++;
+            }
+
+            int totalReferralDataRowIndex = referralDataRowIndex;
+            worksheet.Cell(totalReferralDataRowIndex, 1).Value = "Total";
+
+            int totalReferralDataColIndex = 2;
+            foreach (var user in users)
+            {
+                var totalCount = groupedReferral.Sum(g => g.Count(d => d.UserID == user.UserID));
+                worksheet.Cell(totalReferralDataRowIndex, totalReferralDataColIndex).Value = totalCount;
+                totalReferralDataColIndex++;
+            }
+
+            worksheet.Cell(totalReferralDataRowIndex, totalReferralDataColIndex).Value = groupedReferral.Sum(g => g.Count()); // Grand Total
+            worksheet.Row(totalReferralDataRowIndex).Style.Font.Bold = true;
+
 
             // Autofit for better presentation
             worksheet.Columns().AdjustToContents();
