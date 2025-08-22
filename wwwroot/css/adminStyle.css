@@ -26,10 +26,6 @@ body {
     margin: 0;
 }
 
-    body.sidebar-collapsed {
-        grid-template-columns: 0 1fr;
-    }
-
 .navbar-top {
     grid-column: 1 / span 2;
     grid-row: 1;
@@ -83,7 +79,6 @@ body {
     .navbar-left .btn-left-sub i {
         margin-right: 8px;
         font-size: 1.2rem;
-        transition: margin 0.3s ease;
     }
 
     .navbar-left.collapsed .btn-left i,
