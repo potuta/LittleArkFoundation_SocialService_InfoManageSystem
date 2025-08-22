@@ -44,19 +44,19 @@
 
 		<div class="form-group mt-2">
 			<label asp-for="NewUser.Username" class="control-label"></label>
-			<input asp-for="NewUser.Username" class="form-control" required />
+			<input type="text" asp-for="NewUser.Username" class="form-control" required />
 			<span asp-validation-for="NewUser.Username" class="text-danger"></span>
 		</div>
 
 		<div class="form-group mt-2">
 			<label asp-for="NewUser.Email" class="control-label"></label>
-			<input asp-for="NewUser.Email" class="form-control" required />
+			<input type="email" asp-for="NewUser.Email" class="form-control" required />
 			<span asp-validation-for="NewUser.Email" class="text-danger"></span>
 		</div>
 
 		<div class="form-group mt-2">
 			<label asp-for="NewUser.PhoneNumber" class="control-label"></label>
-			<input asp-for="NewUser.PhoneNumber" class="form-control" required />
+			<input type="number" asp-for="NewUser.PhoneNumber" class="form-control" required />
 			<span asp-validation-for="NewUser.PhoneNumber" class="text-danger"></span>
 		</div>
 
