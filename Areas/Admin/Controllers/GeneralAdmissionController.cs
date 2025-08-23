@@ -1781,13 +1781,16 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 return RedirectToAction("Index");
             }
 
+            var progressNotes = await context.ProgressNotes.ToListAsync();
+
             var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
 
             var viewModel = new GeneralAdmissionViewModel
             {
                 Users = users,
-                GeneralAdmissions = generalAdmissions
+                GeneralAdmissions = generalAdmissions,
+                ProgressNotes = progressNotes
             };
 
             return View(viewModel);
@@ -3181,10 +3184,71 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
             }
 
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "1.29.1 Profile";
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 2;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            serviceRow++;
+
+            var progressQuery = context.ProgressNotes.AsQueryable();
+
+            if (userID > 0)
+            {
+                progressQuery = progressQuery.Where(ga => ga.UserID == userID);
+            }
+
+            if (filterByMonth)
+            {
+                progressQuery = progressQuery.Where(ga => ga.Date.Month == parsedMonth.Month && ga.Date.Year == parsedMonth.Year);
+            }
+
+            var progressNotes = await progressQuery.ToListAsync();
+
+            worksheet.Cell(serviceRow, 1).Value = "1.29.2 Progress Notes";
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 2;
+
+            for (int i = 1; i <= 6; i++)
+            {
+                var count = progressNotes.Count(ga => ga.Date.Month == i);
+                worksheet.Cell(serviceRow, i + 1).Value = count == 0 ? "" : count;
+                worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            }
+
+            worksheet.Cell(serviceRow, 8).Value =
+                Enumerable.Range(1, 6).Sum(i => progressNotes.Count(ga => ga.Date.Month == i));
+            worksheet.Cell(serviceRow, 8).Style.Font.Bold = true;
+            worksheet.Cell(serviceRow, 8).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            for (int i = 7; i <= 12; i++)
+            {
+                var count = progressNotes.Count(ga => ga.Date.Month == i);
+                worksheet.Cell(serviceRow, i + 2).Value = count == 0 ? "" : count;
+                worksheet.Cell(serviceRow, i + 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            }
+
+            worksheet.Cell(serviceRow, 15).Value =
+                Enumerable.Range(7, 12).Sum(i => progressNotes.Count(ga => ga.Date.Month == i));
+            worksheet.Cell(serviceRow, 15).Style.Font.Bold = true;
+            worksheet.Cell(serviceRow, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
             var documentations = new List<string>
             {
-                "1.29.1 Profile",
-                "1.29.2 Progress Notes",
                 "1.29.3 Groupwork Recording",
                 "1.29.4 Social Case Study Report/Social Case Summary",
                 "1.29.5 Home Visit Report"
@@ -3311,27 +3375,27 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             for (int i = 1; i <= 6; i++)
             {
-                var count = generalAdmissions.Count(ga => ga.Date.Month == i);
+                var count = generalAdmissions.Count(ga => ga.Date.Month == i) + progressNotes.Count(ga => ga.Date.Month == i);
                 worksheet.Cell(serviceRow, i + 1).Value = count;
                 worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
                 worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             }
 
             worksheet.Cell(serviceRow, 8).Value =
-                Enumerable.Range(1, 6).Sum(i => generalAdmissions.Count(ga => ga.Date.Month == i));
+                Enumerable.Range(1, 6).Sum(i => generalAdmissions.Count(ga => ga.Date.Month == i) + progressNotes.Count(ga => ga.Date.Month == i));
             worksheet.Cell(serviceRow, 8).Style.Font.Bold = true;
             worksheet.Cell(serviceRow, 8).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
             for (int i = 7; i <= 12; i++)
             {
-                var count = generalAdmissions.Count(ga => ga.Date.Month == i);
+                var count = generalAdmissions.Count(ga => ga.Date.Month == i) + progressNotes.Count(ga => ga.Date.Month == i);
                 worksheet.Cell(serviceRow, i + 2).Value = count;
                 worksheet.Cell(serviceRow, i + 2).Style.Font.Bold = true;
                 worksheet.Cell(serviceRow, i + 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             }
 
             worksheet.Cell(serviceRow, 15).Value =
-                Enumerable.Range(7, 12).Sum(i => generalAdmissions.Count(ga => ga.Date.Month == i));
+                Enumerable.Range(7, 12).Sum(i => generalAdmissions.Count(ga => ga.Date.Month == i) + progressNotes.Count(ga => ga.Date.Month == i));
             worksheet.Cell(serviceRow, 15).Style.Font.Bold = true;
             worksheet.Cell(serviceRow, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 

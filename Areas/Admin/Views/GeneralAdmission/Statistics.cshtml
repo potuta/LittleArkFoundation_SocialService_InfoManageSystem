@@ -1313,10 +1313,47 @@ else
                         </tr>
                     }
 
+                    <tr>
+                        <td style="white-space: nowrap;">1.29.1 Profile</td>
+                        @for (int i = 1; i <= 14; i++)
+                        {
+                            if (i == 7 || i == 14)
+                            {
+                                <td style="white-space: nowrap;">0</td>
+                            }
+                            else
+                            {
+                                <td style="white-space: nowrap;"></td>
+                            }
+                        }
+                    </tr>
+
+                    <tr>
+                        <td style="white-space: nowrap;">1.29.2 Progress Notes</td>
+
+                        @for (int i = 1; i <= 6; i++)
+                        {
+                            var count = Model.ProgressNotes.Count(m => m.Date.Month == i);
+                            <td style="white-space: nowrap;">@(count == 0 ? "" : count)</td>
+                        }
+
+                        <td style="white-space: nowrap;">
+                            @(Enumerable.Range(1, 6).Sum(i => Model.ProgressNotes.Count(m => m.Date.Month == i)))
+                        </td>
+
+                        @for (int i = 7; i <= 12; i++)
+                        {
+                            var count = Model.ProgressNotes.Count(m => m.Date.Month == i);
+                            <td style="white-space: nowrap;">@(count == 0 ? "" : count)</td>
+                        }
+
+                        <td style="white-space: nowrap;">
+                            @(Enumerable.Range(7, 12).Sum(i => Model.ProgressNotes.Count(m => m.Date.Month == i)))
+                        </td>
+                    </tr>
+
                     var documentations = new List<string>
                                 {
-                                "1.29.1 Profile",
-                                "1.29.2 Progress Notes",
                                 "1.29.3 Groupwork Recording",
                                 "1.29.4 Social Case Study Report/Social Case Summary",
                                 "1.29.5 Home Visit Report"
@@ -1424,20 +1461,20 @@ else
 
                         @for (int i = 1; i <= 6; i++)
                         {
-                            <td style="white-space: nowrap; font-weight: bold;">@Model.GeneralAdmissions.Count(m => m.Date.Month == i)</td>
+                            <td style="white-space: nowrap; font-weight: bold;">@(Model.GeneralAdmissions.Count(m => m.Date.Month == i) + Model.ProgressNotes.Count(m => m.Date.Month == i))</td>
                         }
 
                         <td style="white-space: nowrap; font-weight: bold;">
-                            @(Enumerable.Range(1, 6).Sum(i => Model.GeneralAdmissions.Count(m => m.Date.Month == i)))
+                            @(Enumerable.Range(1, 6).Sum(i => Model.GeneralAdmissions.Count(m => m.Date.Month == i) + Model.ProgressNotes.Count(m => m.Date.Month == i)))
                         </td>
 
                         @for (int i = 7; i <= 12; i++)
                         {
-                            <td style="white-space: nowrap; font-weight: bold;">@Model.GeneralAdmissions.Count(m => m.Date.Month == i)</td>
+                            <td style="white-space: nowrap; font-weight: bold;">@(Model.GeneralAdmissions.Count(m => m.Date.Month == i) + Model.ProgressNotes.Count(m => m.Date.Month == i))</td>
                         }
 
                         <td style="white-space: nowrap; font-weight: bold;">
-                            @(Enumerable.Range(7, 12).Sum(i => Model.GeneralAdmissions.Count(m => m.Date.Month == i)))
+                            @(Enumerable.Range(7, 12).Sum(i => Model.GeneralAdmissions.Count(m => m.Date.Month == i) + Model.ProgressNotes.Count(m => m.Date.Month == i)))
                         </td>
                     </tr>
                 }

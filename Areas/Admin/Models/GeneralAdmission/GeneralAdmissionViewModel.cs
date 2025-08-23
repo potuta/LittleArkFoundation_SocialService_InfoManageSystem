@@ -1,10 +1,13 @@
-﻿namespace LittleArkFoundation.Areas.Admin.Models.GeneralAdmission
+﻿using LittleArkFoundation.Areas.Admin.Models.ProgressNotes;
+
+namespace LittleArkFoundation.Areas.Admin.Models.GeneralAdmission
 {
     public class GeneralAdmissionViewModel
     {
         public List<GeneralAdmissionModel> GeneralAdmissions { get; set; } = new List<GeneralAdmissionModel> { new GeneralAdmissionModel() };
         public GeneralAdmissionModel GeneralAdmission { get; set; } = new GeneralAdmissionModel();
         public List<UsersModel> Users { get; set; } = new List<UsersModel> { new UsersModel() };
+        public List<ProgressNotesModel> ProgressNotes { get; set; } = new List<ProgressNotesModel> { new ProgressNotesModel() };
 
         // Pagination properties
         public int? CurrentPage { get; set; } = 1;
