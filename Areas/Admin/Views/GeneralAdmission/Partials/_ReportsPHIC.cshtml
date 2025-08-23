@@ -1,0 +1,76 @@
+﻿@model LittleArkFoundation.Areas.Admin.Models.GeneralAdmission.GeneralAdmissionViewModel
+@{
+    string? sortBy = ViewBag.sortBy ?? "";
+    string? sortByUserID = ViewBag.sortByUserID ?? "";
+    string? sortByMonth = ViewBag.sortByMonth ?? "";
+    bool matchedUser = Model.Users.Any(u => u.Username == sortBy);
+
+    // Unique MSWs
+    var msws = Model.Users.Select(u => u.Username).Distinct().ToList();
+
+    // Group discharges by ProcessedDate
+    var grouped = Model.GeneralAdmissions
+        .GroupBy(d => d.PHIC)
+        .OrderBy(g => g.Key)
+        .ToList();
+    var mswTotals = msws.ToDictionary(msw => msw, msw => Model.GeneralAdmissions.Count(d => d.MSW == msw));
+    var overallTotal = Model.GeneralAdmissions.Count;
+}
+
+<h5 style="margin-top: 15px;">COUNTA of PHIC</h5>
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th>Referral</th>
+                        @foreach (var msw in msws)
+                        {
+                            <th>@msw</th>
+                        }
+                        <th>Row Total</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    var statuses = new[] { "OWWA", "Emp.", "Vol.", "MASA", "None" };
+                    var grandTotals = new int[msws.Count];
+                    int overallTotals = 0;
+
+                    @foreach (var stats in statuses)
+                    {
+                        int rowTotal = 0;
+                        <tr>
+                            <td>@stats</td>
+                            @for (int i = 0; i < msws.Count; i++)
+                            {
+                                var count = Model.GeneralAdmissions.Count(d =>
+                                d.PHIC.ToUpper() == stats.ToUpper() &&
+                                d.MSW == msws[i]
+                                );
+                                <td>@count</td>
+                                rowTotal += count;
+                                grandTotals[i] += count;
+                                overallTotals += count;
+                            }
+                            <td class="fw-bold">@rowTotal</td>
+                        </tr>
+                    }
+
+                    <tr class="fw-bold">
+                        <td>Grand Total</td>
+                        @for (int i = 0; i < msws.Count; i++)
+                        {
+                            <td>@grandTotals[i]</td>
+                        }
+                        <td>@overallTotals</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

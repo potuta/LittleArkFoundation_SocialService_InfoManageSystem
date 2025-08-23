@@ -556,10 +556,10 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             {
                 return RedirectToAction("ExportTotalInterviewedToExcel", new { userID, month });
             }
-            //else if (sortToggleValue == "PHIC")
-            //{
-            //    ViewBag.sortToggle = "PHIC";
-            //}
+            else if (sortToggle == "PHIC")
+            {
+                return RedirectToAction("ExportPHICToExcel", new { userID, month });
+            }
             else if (sortToggle == "Referral/Old/New/PWD")
             {
                 return RedirectToAction("ExportReferralOldNewPWDToExcel", new { userID, month });
@@ -1644,6 +1644,117 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
             worksheet.Cell(pwdDataRowIndex, colIndexTotalPWD).Value = generalAdmissions.Count();
             worksheet.Row(pwdDataRowIndex).Style.Font.Bold = true;
+
+            // Autofit for better presentation
+            worksheet.Columns().AdjustToContents();
+
+            using (var stream = new MemoryStream())
+            {
+                workbook.SaveAs(stream);
+                stream.Position = 0;
+                return File(stream.ToArray(),
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            $"{fileName}.xlsx");
+            }
+        }
+
+        public async Task<IActionResult> ExportPHICToExcel(int userID, string? month)
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            // Parse the month input if provided
+            bool filterByMonth = DateTime.TryParseExact(month, "yyyy-MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedMonth);
+
+            var query = context.GeneralAdmission.AsQueryable();
+
+            if (userID > 0)
+            {
+                query = query.Where(g => g.UserID == userID);
+            }
+
+            if (filterByMonth)
+            {
+                query = query.Where(g => g.Date.Month == parsedMonth.Month && g.Date.Year == parsedMonth.Year);
+            }
+
+            var generalAdmissions = await query.ToListAsync();
+
+            if (generalAdmissions == null || !generalAdmissions.Any())
+            {
+                TempData["ErrorMessage"] = "No General Admissions records found for selected filters.";
+                return RedirectToAction("Reports");
+            }
+
+            // File name generation
+            string mswName = userID > 0 ? generalAdmissions.First().MSW : "All";
+            string monthLabel = filterByMonth ? parsedMonth.ToString("MMMM_yyyy") : generalAdmissions.First().Date.Year.ToString();
+            string fileName = $"GA_PHIC_{monthLabel}";
+
+            // Sanitize file name (for download)
+            string safeFileName = Regex.Replace(fileName, @"[^\w\-]", "_");
+
+            // Sanitize sheet name (for Excel)
+            string safeSheetName = Regex.Replace(fileName, @"[\[\]\*\?/\\:]", "_");
+            if (safeSheetName.Length > 31)
+                safeSheetName = safeSheetName.Substring(0, 31);
+
+            var workbook = new XLWorkbook();
+            var worksheet = workbook.Worksheets.Add(safeSheetName);
+
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+
+            // HEADERS
+            // COUNTA OF DATE PROCESSED BY MSW
+            worksheet.Cell(1, 1).Value = "COUNTA OF PHIC BY MSW";
+            worksheet.Cell(2, 1).Value = "PHIC";
+
+            int referralColIndex = 2;
+            foreach (var user in users)
+            {
+                worksheet.Cell(2, referralColIndex).Value = user.Username;
+                referralColIndex++;
+            }
+
+            worksheet.Cell(2, referralColIndex).Value = "Grand Total";
+
+            // Prepare data grouped by ProcessedDate
+            var groupedOPD = generalAdmissions
+                .GroupBy(d => d.PHIC)
+                .OrderBy(g => g.Key)
+                .ToList();
+
+            int dateRowIndex = 3;
+            foreach (var group in groupedOPD)
+            {
+                worksheet.Cell(dateRowIndex, 1).Value = group.Key;
+
+                int colIndex = 2;
+                foreach (var user in users)
+                {
+                    var count = group.Count(d => d.UserID == user.UserID);
+                    worksheet.Cell(dateRowIndex, colIndex).Value = count;
+                    colIndex++;
+                }
+
+                worksheet.Cell(dateRowIndex, colIndex).Value = group.Count(); // Grand Total
+                dateRowIndex++;
+            }
+
+            int totalDateRowIndex = dateRowIndex;
+            worksheet.Cell(totalDateRowIndex, 1).Value = "Total";
+
+            int totalDateColIndex = 2;
+            foreach (var user in users)
+            {
+                var totalCount = groupedOPD.Sum(g => g.Count(d => d.UserID == user.UserID));
+                worksheet.Cell(totalDateRowIndex, totalDateColIndex).Value = totalCount;
+                totalDateColIndex++;
+            }
+
+            worksheet.Cell(totalDateRowIndex, totalDateColIndex).Value = groupedOPD.Sum(g => g.Count()); // Grand Total
+            worksheet.Row(totalDateRowIndex).Style.Font.Bold = true;
 
             // Autofit for better presentation
             worksheet.Columns().AdjustToContents();
