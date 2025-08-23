@@ -240,10 +240,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             await using var context = new ApplicationDbContext(connectionString);
 
             var query = context.GeneralAdmission.AsQueryable();
+            var progressNotesQuery = context.ProgressNotes.AsQueryable();
 
             if (!string.IsNullOrEmpty(sortByUserID))
             {
                 query = query.Where(d => d.UserID == int.Parse(sortByUserID));
+                progressNotesQuery = progressNotesQuery.Where(p => p.UserID == int.Parse(sortByUserID));
                 var user = await context.Users.FindAsync(int.Parse(sortByUserID));
                 ViewBag.sortBy = user.Username;
                 ViewBag.sortByUserID = user.UserID.ToString();
@@ -252,10 +254,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
             {
                 query = query.Where(d => d.Date.Month == month.Month && d.Date.Year == month.Year);
+                progressNotesQuery = progressNotesQuery.Where(p => p.Date.Month == month.Month && p.Date.Year == month.Year);
                 ViewBag.sortByMonth = month.ToString("yyyy-MM");
             }
 
             var generalAdmissions = await query.ToListAsync();
+            var progressNotes = await progressNotesQuery.ToListAsync();
 
             var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
@@ -263,6 +267,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var viewModel = new GeneralAdmissionViewModel
             {
                 GeneralAdmissions = generalAdmissions,
+                ProgressNotes = progressNotes,
                 Users = users
             };
 
