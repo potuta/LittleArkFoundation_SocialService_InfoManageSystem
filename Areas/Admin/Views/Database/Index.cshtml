@@ -207,7 +207,7 @@
                                             <i class="bi bi-database-gear"></i> Restore
                                         </a>
                                     }
-                                    if (database.Key != "MSWD_DB_Temp")
+                                    if (database.Key != $"{Model.DefaultDatabaseName}_Temp")
                                     {
                                         <a href="@Url.Action("Delete", new { name = database.Key })" 
                                         class="btn btn-danger" 

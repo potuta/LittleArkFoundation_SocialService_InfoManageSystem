@@ -252,10 +252,10 @@ namespace LittleArkFoundation.Data
             Dictionary<string, string> databases = new Dictionary<string, string>();
             List<string> databaseNamesList = new List<string>();
 
-            string query = @"SELECT name
+            string query = @$"SELECT name
                             FROM sys.databases
                             WHERE (name NOT IN ('master', 'tempdb', 'model', 'msdb')) 
-                            AND (name LIKE '%MSWD_DB%')";
+                            AND (name LIKE '%{GetSelectedDatabaseInConnectionString(_connectionService.GetDefaultConnectionString())}%')";
 
             try
             {

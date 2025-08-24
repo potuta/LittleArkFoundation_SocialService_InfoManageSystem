@@ -157,7 +157,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         {
             //string backupPath = @"C:\Program Files\Microsoft SQL Server\MSSQL16.SQLEXPRESS\MSSQL\Backup";
             string backupPath = await _databaseService.GetSqlBackupPathAsync();
-            string searchPattern = "MSWD_DB*.bak"; 
+            string searchPattern = $"{_databaseService.GetSelectedDatabaseInConnectionString(_connectionService.GetDefaultConnectionString())}*.bak"; 
             string[] files = Directory.GetFiles(backupPath, searchPattern);
             string[] fileNames = Array.ConvertAll(files, Path.GetFileName); // Extract only file names
 
@@ -247,7 +247,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         public async Task<IActionResult> ViewBackupFiles(string name)
         {
             string backupPath = await _databaseService.GetSqlBackupPathAsync();
-            string searchPattern = "MSWD_DB*.bak";
+            string searchPattern = $"{_databaseService.GetSelectedDatabaseInConnectionString(_connectionService.GetDefaultConnectionString())}*.bak";
             string[] files = Directory.GetFiles(backupPath, searchPattern);
             string[] fileNames = Array.ConvertAll(files, Path.GetFileName); // Extract only file names
 
