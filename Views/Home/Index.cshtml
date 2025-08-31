@@ -44,15 +44,19 @@
                 <label for="adminUserId" class="form-label">User ID</label>
                 <input type="number" class="form-control" id="adminUserId" name="userID" placeholder="Enter your User ID" required>
             </div>
-            <div class="mb-3">
-                <label for="adminPassword" class="form-label">Password</label>
+
+            <label for="adminPassword" class="form-label">Password</label>
+            <div class="mb-3 position-relative">
                 <input type="password" class="form-control" id="adminPassword" name="password" placeholder="Enter your password" required>
-                <div class="form-check mt-2">
-                    <input class="form-check-input" type="checkbox" id="togglePassword" onclick="togglePasswordVisibility()">
-                    <label class="form-check-label" for="togglePassword">Show Password</label>
-                </div>
-                <a onclick="showForgotPassword()">Forgot password?</a>
+                <!-- Eye toggle button -->
+                <button type="button" class="position-absolute top-50 end-0 translate-middle-y me-2"
+                        onclick="togglePasswordVisibility()" style="border: none; background: transparent;">
+                    <i id="passwordEyeIcon" class="bi bi-eye"></i>
+                </button>
             </div>
+
+            <a onclick="showForgotPassword()" class="mb-3">Forgot password?</a>
+
             <button type="submit" class="btn btn-success">Login</button>
         </form>
     </div>
@@ -212,12 +216,17 @@
     }
 
     function togglePasswordVisibility() {
-        let passwordInput = document.getElementById("adminPassword");
-        let toggle = document.getElementById("togglePassword");
-        if (toggle.checked) {
-            passwordInput.type = "text";
+        const passwordField = document.getElementById('adminPassword');
+        const eyeIcon = document.getElementById('passwordEyeIcon');
+
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            eyeIcon.classList.remove('bi-eye');
+            eyeIcon.classList.add('bi-eye-slash');
         } else {
-            passwordInput.type = "password";
+            passwordField.type = "password";
+            eyeIcon.classList.remove('bi-eye-slash');
+            eyeIcon.classList.add('bi-eye');
         }
     }
 
