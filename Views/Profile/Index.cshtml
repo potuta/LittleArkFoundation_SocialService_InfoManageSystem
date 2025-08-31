@@ -60,12 +60,18 @@
 			<span asp-validation-for="NewUser.PhoneNumber" class="text-danger"></span>
 		</div>
 
-		<div class="form-group">
-			<label asp-for="NewUser.PasswordHash" class="control-label">Password</label>
-			<button type="button" class="btn btn-dark mt-2 mb-2 btn-sm" id="togglePasswordButton">Edit Password</button>
+		<label asp-for="NewUser.PasswordHash" class="control-label">Password</label>
+		<button type="button" class="btn btn-dark mt-2 mb-2 btn-sm" id="togglePasswordButton">Edit Password</button>
+		<div class="form-group position-relative">
 			<input type="text" asp-for="NewUser.PasswordHash" class="form-control td-password" id="passwordField" readonly required />
-			<span asp-validation-for="NewUser.PasswordHash" class="text-danger"></span>
+			<!-- Eye toggle button -->
+			<button type="button" class="position-absolute top-50 end-0 translate-middle-y me-2"
+					onclick="togglePasswordVisibility('passwordField', 'newPasswordEye')"
+					style="border: none; background: transparent;">
+				<i id="newPasswordEye" class="bi bi-eye" style="display: none;"></i>
+			</button>
 		</div>
+		<span asp-validation-for="NewUser.PasswordHash" class="text-danger"></span>
 
 		<div class="mt-2">
 			<div class="progress" style="height: 6px;">
@@ -76,7 +82,15 @@
 
 		<div class="form-group mt-2" id="confirmPasswordContainer">
 			<label for="confirmPassword" id="confirmPasswordLabel" class="control-label">Confirm New Password</label>
-			<input type="password" class="form-control" id="confirmPassword" placeholder="Confirm new password">
+			<div class="position-relative">
+				<input type="password" class="form-control" id="confirmPassword" placeholder="Confirm new password">
+				<!-- Eye toggle button -->
+				<button type="button" class="position-absolute top-50 end-0 translate-middle-y me-2"
+						onclick="togglePasswordVisibility('confirmPassword', 'confirmPasswordEye')"
+						style="border: none; background: transparent;">
+					<i id="confirmPasswordEye" class="bi bi-eye" style="display: none;"></i>
+				</button>
+			</div>
 			<span class="text-danger" id="confirmPasswordError"></span>
 			<p id="confirmPasswordMessage"></p>
 		</div>
@@ -145,8 +159,16 @@
 				passwordField.style.backgroundColor = "#ffffff";
 				passwordField.style.cursor = "text";
 				passwordField.style.opacity = "1";
+				passwordField.classList.remove('td-password'); // Remove text security style
+				passwordField.type = "password"; // Set input type to password
 				this.textContent = "Don't Edit Password";
 				confirmPasswordLabel.style.display = "block"; // Show confirm password label
+
+				const newEyeIcon = document.getElementById('newPasswordEye');
+				newEyeIcon.style.display = "inline"; // Show eye icon
+
+				const confirmEyeIcon = document.getElementById('confirmPasswordEye');
+				confirmEyeIcon.style.display = "inline"; // Show eye icon
 
 				// Show confirm password field
 				confirmPasswordField.style.display = "block";
@@ -159,8 +181,16 @@
 				passwordField.style.backgroundColor = "#e9ecef";
 				passwordField.style.cursor = "not-allowed";
 				passwordField.style.opacity = "0.6";
+				passwordField.classList.add('td-password'); // Reapply text security style
+				passwordField.type = "text"; // Set input type to text
 				this.textContent = 'Edit Password';
 				confirmPasswordLabel.style.display = "none"; // Hide confirm password label
+
+				const eyeIcon = document.getElementById('newPasswordEye');
+				eyeIcon.style.display = "none"; // Hide eye icon
+
+				const confirmEyeIcon = document.getElementById('confirmPasswordEye');
+				confirmEyeIcon.style.display = "none"; // Hide eye icon
 
 				// Hide confirm password field
 				confirmPasswordField.style.display = "none";
@@ -182,6 +212,21 @@
 		// 		e.preventDefault(); // Stop form submission
 		// 	}
 		// });
+
+		function togglePasswordVisibility(passwordFieldId, eyeIconId) {
+			const passwordField = document.getElementById(passwordFieldId);
+			const eyeIcon = document.getElementById(eyeIconId);
+
+			if (passwordField.type === "password") {
+				passwordField.type = "text";
+				eyeIcon.classList.remove('bi-eye');
+				eyeIcon.classList.add('bi-eye-slash');
+			} else {
+				passwordField.type = "password";
+				eyeIcon.classList.remove('bi-eye-slash');
+				eyeIcon.classList.add('bi-eye');
+			}
+		}
 
 	</script>
 	<script src="~/js/profilePasswordValidation.js"></script>
