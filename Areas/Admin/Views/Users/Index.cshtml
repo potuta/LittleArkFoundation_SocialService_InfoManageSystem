@@ -36,7 +36,7 @@
         {
             @if (User.HasClaim("Permission", "CreateUser"))
             {
-                <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createUserModal"
+                <a href="#" class="btn btn-success hide-when-archived" data-bs-toggle="modal" data-bs-target="#createUserModal"
                    data-bs-toggle="tooltip"
                    title="Create New">
                     <i class="bi bi-person-add"></i> Create New
@@ -44,7 +44,7 @@
             }
             else
             {
-                <a class="btn btn-success text-muted"
+                <a class="btn btn-success text-muted hide-when-archived"
                    style="cursor: not-allowed;"
                    aria-disabled="true"
                    tabindex="-1"
@@ -158,7 +158,7 @@
                                 <td class="sticky-col d-flex gap-1" style="white-space: nowrap; left: 0; z-index: 1;">
                                     @if (User.HasClaim("Permission", "EditUser"))
                                     {
-                                        <a href="@Url.Action("Edit", new { id = user.UserID })" class="btn btn-primary"
+                                        <a href="@Url.Action("Edit", new { id = user.UserID })" class="btn btn-primary hide-when-archived"
                                            data-bs-toggle="tooltip"
                                            title="Edit">
                                             <i class="bx bx-edit"></i>
@@ -166,7 +166,7 @@
                                     }
                                     else
                                     {
-                                        <a class="btn btn-primary text-muted"
+                                        <a class="btn btn-primary text-muted hide-when-archived"
                                            style="cursor: not-allowed;"
                                            aria-disabled="true"
                                            tabindex="-1"
@@ -177,7 +177,7 @@
 
                                     @if (User.HasClaim("Permission", "ArchiveUnarchiveUser"))
                                     {
-                                        <a href="@Url.Action("Archive", new { id = user.UserID })" class="btn btn-danger" onclick="return confirm('Are you sure you want to archive this user?');"
+                                        <a href="@Url.Action("Archive", new { id = user.UserID })" class="btn btn-danger hide-when-archived" onclick="return confirm('Are you sure you want to archive this user?');"
                                            data-bs-toggle="tooltip"
                                            title="Archive User">
                                             <i class="bi bi-archive"></i>
@@ -185,7 +185,7 @@
                                     }
                                     else
                                     {
-                                        <a class="btn btn-danger text-muted"
+                                        <a class="btn btn-danger text-muted hide-when-archived"
                                            style="cursor: not-allowed;"
                                            aria-disabled="true"
                                            tabindex="-1"
@@ -214,7 +214,7 @@
                                 <td class="sticky-col d-flex gap-1" style="white-space: nowrap; left: 0; z-index: 1;">
                                     @if (User.HasClaim("Permission", "ArchiveUnarchiveUser"))
                                     {
-                                            <a href="@Url.Action("Unarchive", new { id = user.UserID })" class="btn btn-success" onclick="return confirm('Are you sure you want to unarchive this user?');"
+                                        <a href="@Url.Action("Unarchive", new { id = user.UserID })" class="btn btn-success hide-when-archived" onclick="return confirm('Are you sure you want to unarchive this user?');"
                                                data-bs-toggle="tooltip"
                                                title="Unarchive User">
                                                 <i class="bi bi-box-arrow-in-left"></i>
@@ -222,7 +222,7 @@
                                     }
                                     else
                                     {
-                                            <a class="btn btn-success text-muted"
+                                        <a class="btn btn-success text-muted hide-when-archived"
                                                style="cursor: not-allowed;"
                                                aria-disabled="true"
                                                tabindex="-1"

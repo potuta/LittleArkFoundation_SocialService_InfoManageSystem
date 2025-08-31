@@ -93,13 +93,13 @@
         {
             @if (User.HasClaim("Permission", "CreateOPD"))
             {
-                <a class="btn btn-success" asp-action="Create" asp-controller="OPD">
+                <a class="btn btn-success hide-when-archived" asp-action="Create" asp-controller="OPD">
                     <i class="bi bi-file-earmark-plus"></i> Create New
                 </a>
             }
             else
             {
-                <a class="btn btn-success text-muted"
+                <a class="btn btn-success text-muted hide-when-archived"
                    style="cursor: not-allowed;"
                    aria-disabled="true"
                    tabindex="-1"
@@ -277,8 +277,8 @@
 
                                     @if (User.HasClaim("Permission", "CreateForm"))
                                     {
-                                        <a class="btn btn-primary" asp-action="AdmitOPD" asp-controller="Form" asp-route-id="@opd.Id" 
-                                        onclick="return confirm('Are you sure you want to admit this OPD?');"
+                                        <a class="btn btn-primary hide-when-archived" asp-action="AdmitOPD" asp-controller="Form" asp-route-id="@opd.Id"
+                                           onclick="return confirm('Are you sure you want to admit this OPD?');"
                                         data-bs-toggle="tooltip"
                                         title="Admit Patient">
                                             <i class="bi bi-box-arrow-in-right"></i>
@@ -286,7 +286,7 @@
                                     }
                                     else
                                     {
-                                        <a class="btn btn-primary text-muted"
+                                        <a class="btn btn-primary text-muted hide-when-archived"
                                            style="cursor: not-allowed;"
                                            aria-disabled="true"
                                            tabindex="-1"
@@ -297,7 +297,7 @@
 
                                     @if (User.HasClaim("Permission", "EditOPD"))
                                     {
-                                        <a class="btn btn-success" asp-action="Edit" asp-route-id="@opd.Id"
+                                        <a class="btn btn-success hide-when-archived" asp-action="Edit" asp-route-id="@opd.Id"
                                         data-bs-toggle="tooltip"
                                         title="Edit">
                                             <i class="bx bx-edit"></i>
@@ -305,7 +305,7 @@
                                     }
                                     else
                                     {
-                                        <a class="btn btn-success text-muted"
+                                        <a class="btn btn-success text-muted hide-when-archived"
                                            style="cursor: not-allowed;"
                                            aria-disabled="true"
                                            tabindex="-1"
