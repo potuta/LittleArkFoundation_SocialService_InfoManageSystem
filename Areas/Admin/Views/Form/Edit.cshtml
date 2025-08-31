@@ -63,22 +63,32 @@
         width: 2rem;
     }
 
-    .mentalhealth-input input:hover, .mentalhealth-input input:focus,
-    .mentalhealth-input select:hover, .mentalhealth-input select:focus,
-    .hospitalizaiton-input input:hover, .hospitalizaiton-input input:focus,
-    .hospitalizaiton-input select:hover, .hospitalizaiton-input select:focus,
-    .medication-input input:hover, .medication-input input:focus,
-    .medication-input select:hover, .medication-input select:focus,
-    .diagnosis-input input:hover, .diagnosis-input input:focus,
-    .diagnosis-input select:hover, .diagnosis-input select:focus,
-    .family-input input:hover, .family-input input:focus,
-    .family-input select:hover, .family-input select:focus {
-        transform: scale(1.2); /* Slightly enlarges the input field */
-        box-shadow: 0 0 8px rgba(0, 0, 0, 0.2); /* Adds a subtle glow */
-        z-index: 10; /* Ensures it appears above other elements */
-        position: relative;
-        width: 10rem;
+    /* Input hover/focus */
+    /* .mentalhealth-input input,
+    .hospitalization-input input, */
+    .medication-input input,
+    .diagnosis-input input,
+    .family-input input {
+        transition: transform 0.3s, box-shadow 0.3s;
     }
+
+        /* .mentalhealth-input input:hover,
+        .mentalhealth-input input:focus,
+        .hospitalization-input input:hover,
+        .hospitalization-input input:focus, */
+        .medication-input input:hover,
+        .medication-input input:focus,
+        .diagnosis-input input:hover,
+        .diagnosis-input input:focus,
+        .family-input input:hover,
+        .family-input input:focus {
+            transform: scale(1.2); 
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 10; 
+            width: 12rem;
+            font-size: small;
+        }
 
     textarea {
         width: 100%;
