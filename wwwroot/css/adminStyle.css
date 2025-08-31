@@ -290,7 +290,10 @@ body.sidebar-collapsed .navbar-left {
 
 .td-password,
 #td-password {
-    -webkit-text-security: disc;
+    font-family: 'text-security-disc', 'Courier', monospace;
+    -webkit-text-security: disc; /* Chrome, Safari, Edge */
+    -moz-text-security: disc; /* Firefox doesn't support this */
+    text-security: disc; /* Future standard */
 }
 
 h2 {
