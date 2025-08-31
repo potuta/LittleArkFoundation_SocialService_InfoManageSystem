@@ -203,13 +203,19 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     if (data.isArchived && !data.isTemp && !data.isDefault) {
         const alertDiv = document.createElement('div');
+
         alertDiv.className = 'alert alert-warning text-center mb-3';
         alertDiv.role = 'alert';
         alertDiv.innerHTML = '<i class="bi bi-exclamation-triangle-fill"></i> Warning: The database connection is archived. No changes can be made.';
+
         const selection = document.querySelector('.main-content main hr');
         if (selection) {
             selection.after(alertDiv);
         }
+
+        document.querySelectorAll('.hide-when-archived')
+            .forEach(el => el.style.display = 'none');
+
     }
     else if (data.isArchived && data.isTemp && !data.isDefault) {
         const alertDiv = document.createElement('div');

@@ -107,13 +107,13 @@
         {
             @if (User.HasClaim("Permission", "CreateForm"))
             {
-                <a class="btn btn-success" asp-action="Create" asp-controller="GeneralAdmission">
+                <a class="btn btn-success hide-when-archived" asp-action="Create" asp-controller="GeneralAdmission">
                     <i class="bi bi-file-earmark-plus"></i> Create New
                 </a>
             }
             else
             {
-                <a class="btn btn-success text-muted"
+                <a class="btn btn-success text-muted hide-when-archived"
                    style="cursor: not-allowed;"
                    aria-disabled="true"
                    tabindex="-1"
@@ -344,8 +344,8 @@
                                 {
                                     @if (User.HasClaim("Permission", "CreateForm"))
                                     {
-                                        <a asp-action="InterviewGeneral" asp-controller="Form" asp-route-Id="@patient.Id" 
-                                           class="btn btn-secondary"
+                                        <a asp-action="InterviewGeneral" asp-controller="Form" asp-route-Id="@patient.Id"
+                                           class="btn btn-secondary hide-when-archived"
                                            data-bs-toggle="tooltip"
                                            title="Interview Patient">
                                             <i class="bi bi-box-arrow-in-left"></i>
@@ -353,7 +353,7 @@
                                     }
                                     else
                                     {
-                                        <a class="btn btn-secondary text-muted"
+                                        <a class="btn btn-secondary text-muted hide-when-archived"
                                            style="cursor: not-allowed;"
                                            aria-disabled="true"
                                            tabindex="-1"
@@ -365,8 +365,8 @@
 
                                 @if (User.HasClaim("Permission", "EditForm"))
                                 {
-                                    <a asp-action="Edit" asp-controller="GeneralAdmission" asp-route-Id="@patient.Id" 
-                                       class="btn btn-success"
+                                    <a asp-action="Edit" asp-controller="GeneralAdmission" asp-route-Id="@patient.Id"
+                                       class="btn btn-success hide-when-archived"
                                        data-bs-toggle="tooltip"
                                        title="Edit">
                                         <i class="bx bx-edit"></i>
@@ -374,7 +374,7 @@
                                 }
                                 else
                                 {
-                                    <a class="btn btn-success text-muted"
+                                    <a class="btn btn-success text-muted hide-when-archived"
                                        style="cursor: not-allowed;"
                                        aria-disabled="true"
                                        tabindex="-1"

@@ -99,13 +99,13 @@
         {
             @if (User.HasClaim("Permission", "CreateForm"))
             {
-                <a class="btn btn-success" asp-action="Create" asp-controller="Form">
+                <a class="btn btn-success hide-when-archived" asp-action="Create" asp-controller="Form">
                     <i class="bi bi-file-earmark-plus"></i> Create New
                 </a>
             }
             else
             {
-                <a class="btn btn-success text-muted"
+                <a class="btn btn-success text-muted hide-when-archived"
                    style="cursor: not-allowed;"
                    aria-disabled="true"
                    tabindex="-1"
@@ -217,8 +217,8 @@
 
                                     @if (User.HasClaim("Permission", "EditForm"))
                                     {
-                                        <a href="@Url.Action("Edit", new { id = patient.PatientID, assessmentID = assessment.AssessmentID })" 
-                                            class="btn btn-success"
+                                        <a href="@Url.Action("Edit", new { id = patient.PatientID, assessmentID = assessment.AssessmentID })"
+                                           class="btn btn-success hide-when-archived"
                                             data-bs-toggle="tooltip"
                                             title="Edit">
                                                 <i class="bx bx-edit"></i>
@@ -226,7 +226,7 @@
                                     }
                                     else
                                     {
-                                        <a class="btn btn-success text-muted"
+                                        <a class="btn btn-success text-muted hide-when-archived"
                                            style="cursor: not-allowed;"
                                            aria-disabled="true"
                                            tabindex="-1"
@@ -238,7 +238,7 @@
                                     @if (User.HasClaim("Permission", "DischargePatient"))
                                     {
                                         <a href="#"
-                                           class="btn btn-danger"
+                                           class="btn btn-danger hide-when-archived"
                                            data-bs-toggle="modal"
                                            data-bs-toggle="tooltip"
                                            title="Discharge"
@@ -257,7 +257,7 @@
                                     }
                                     else
                                     {
-                                        <a class="btn btn-danger text-muted"
+                                        <a class="btn btn-danger text-muted hide-when-archived"
                                            style="cursor: not-allowed;"
                                            aria-disabled="true"
                                            tabindex="-1"
@@ -271,12 +271,13 @@
                                 {
                                     @if (User.HasClaim("Permission", "CreateForm"))
                                     {
-                                        <a href="@Url.Action("ReAdmitPatient", "Discharge", new { area = "Admin", id = patient.PatientID, assessmentID = assessment.AssessmentID })" class="btn btn-success" 
-                                        onclick="return confirm('Are you sure you want to re-admit this patient?');">Re-Admit</a>
+                                        <a href="@Url.Action("ReAdmitPatient", "Discharge", new { area = "Admin", id = patient.PatientID, assessmentID = assessment.AssessmentID })"
+                                           class="btn btn-success hide-when-archived"
+                                           onclick="return confirm('Are you sure you want to re-admit this patient?');">Re-Admit</a>
                                     }
                                     else
                                     {
-                                        <a class="btn btn-success text-muted"
+                                        <a class="btn btn-success text-muted hide-when-archived"
                                            style="cursor: not-allowed;"
                                            aria-disabled="true"
                                            tabindex="-1"
