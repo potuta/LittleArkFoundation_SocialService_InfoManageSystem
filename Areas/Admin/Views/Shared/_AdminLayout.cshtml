@@ -43,7 +43,11 @@
                     </span>
                 </a>
                 <div id="dropdown-profile-menu" class="dropdown-profile-content">
-                    <a asp-area="" asp-action="Index" asp-controller="Profile" asp-route-id="@User.FindFirstValue(ClaimTypes.NameIdentifier)" >Profile</a>
+                    <a asp-area="" asp-action="Index" asp-controller="Profile" 
+                    asp-route-id="@User.FindFirstValue(ClaimTypes.NameIdentifier)" 
+                    class="profile-btn hide-when-archived">
+                        Profile
+                    </a>
                     <a asp-area="" asp-action="Logout" asp-controller="Account">Logout</a>
                 </div>
             </div>
