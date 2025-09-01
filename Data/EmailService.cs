@@ -50,9 +50,16 @@ namespace LittleArkFoundation.Data
 
                 return true;
             }
+            catch (SmtpException ex)
+            {
+                Console.WriteLine($"SMTP Error: {ex.StatusCode} - {ex.Message}");
+                LoggingService.LogError("Error: " + ex);
+                return false;
+            }
             catch (Exception ex)
             {
                 Console.WriteLine($"Email sending failed: {ex.Message}");
+                LoggingService.LogError("Error: " + ex);
                 return false;
             }
         }
