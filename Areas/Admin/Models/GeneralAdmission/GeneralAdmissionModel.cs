@@ -13,7 +13,7 @@
         public string LastName { get; set; } = "N/A";
         public string Ward { get; set; } = "N/A";
         public string Class { get; set; } = "N/A";
-        public int Age { get; set; } = 0;
+        public decimal Age { get; set; } = 0;
         public string Gender { get; set; } = "N/A";
         public TimeOnly Time { get; set; } = TimeOnly.MinValue;
         public string Diagnosis { get; set; } = "N/A";

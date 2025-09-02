@@ -5,7 +5,7 @@
         public int Id { get; set; }
         public int AssessmentID { get; set; }
         public int PatientID { get; set; }
-        public int Age { get; set; }
+        public decimal Age { get; set; }
         public DateOnly DateOfInterview { get; set; }
         public TimeOnly TimeOfInterview { get; set; }
         public string? BasicWard { get; set; }

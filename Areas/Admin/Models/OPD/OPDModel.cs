@@ -11,7 +11,7 @@
         public string MiddleName { get; set; } = "N/A";
         public string LastName { get; set; } = "N/A";
         public string ContactNo { get; set; } = "0";
-        public int Age { get; set; } = 0;
+        public decimal Age { get; set; } = 0;
         public string Gender { get; set; } = "N/A";
         public bool IsPWD { get; set; } = false;
         public string Diagnosis { get; set; }   = "N/A";

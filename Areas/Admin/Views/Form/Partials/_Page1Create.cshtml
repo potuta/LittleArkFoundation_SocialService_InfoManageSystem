@@ -165,7 +165,7 @@
         </td>
         <td>
             Age: <span class="required">*</span>
-            <input type="number" asp-for="Assessments.Age" required>
+            <input type="number" asp-for="Assessments.Age" step="any" required>
             <span asp-validation-for="Assessments.Age" class="text-danger"></span>
         </td>
         <td>
