@@ -160,7 +160,7 @@ namespace LittleArkFoundation.Data
             var patientage = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Age']");
             if (patientage != null)
             {
-                patientage.InnerHtml = assessment.Age.ToString();
+                patientage.InnerHtml = assessment.Age.ToString("0.##");
             }
 
             switch (patient.Sex)
@@ -1913,13 +1913,13 @@ namespace LittleArkFoundation.Data
             var birthweightlbs = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Birthweightlbs']");
             if (birthweightlbs != null)
             {
-                birthweightlbs.InnerHtml = pregnancybirthhistory.BirthWeightLbs.ToString();
+                birthweightlbs.InnerHtml = pregnancybirthhistory.BirthWeightLbs.ToString("0.##");
             }
 
             var birthweightoz = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Birthweightoz']");
             if (birthweightoz != null)
             {
-                birthweightoz.InnerHtml = pregnancybirthhistory.BirthWeightOz.ToString();
+                birthweightoz.InnerHtml = pregnancybirthhistory.BirthWeightOz.ToString("0.##");
             }
 
             var childhealthatbirth = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Childhealthatbirthtext']");
@@ -1977,7 +1977,7 @@ namespace LittleArkFoundation.Data
             var adoptedage = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Adoptedagetext']");
             if (adoptedage != null)
             {
-                adoptedage.InnerHtml = pregnancybirthhistory.ChildAdoptedAge.ToString();
+                adoptedage.InnerHtml = pregnancybirthhistory.ChildAdoptedAge.ToString("0.##");
             }
 
             switch (pregnancybirthhistory.AdoptionType)
@@ -2018,31 +2018,31 @@ namespace LittleArkFoundation.Data
             var rolledover = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Rolledovertext']");
             if (rolledover != null)
             {
-                rolledover.InnerHtml = developmentalhistory.RolledOverAge.ToString();
+                rolledover.InnerHtml = developmentalhistory.RolledOverAge.ToString("0.##");
             }
 
             var crawled = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Crawledtext']");
             if (crawled != null)
             {
-                crawled.InnerHtml = developmentalhistory.CrawledAge.ToString();
+                crawled.InnerHtml = developmentalhistory.CrawledAge.ToString("0.##");
             }
 
             var walked = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Walkedtext']");
             if (walked != null)
             {
-                walked.InnerHtml = developmentalhistory.WalkedAge.ToString();
+                walked.InnerHtml = developmentalhistory.WalkedAge.ToString("0.##");
             }
 
             var talked = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Talkedtext']");
             if (talked != null)
             {
-                talked.InnerHtml = developmentalhistory.TalkedAge.ToString();
+                talked.InnerHtml = developmentalhistory.TalkedAge.ToString("0.##");
             }
 
             var toilettrained = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Toilettrainedtext']");
             if (toilettrained != null)
             {
-                toilettrained.InnerHtml = developmentalhistory.ToiletTrainedAge.ToString();
+                toilettrained.InnerHtml = developmentalhistory.ToiletTrainedAge.ToString("0.##");
             }
 
             if (developmentalhistory.SpeechConcerns)
