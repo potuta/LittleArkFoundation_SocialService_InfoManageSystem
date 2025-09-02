@@ -51,13 +51,13 @@
     <tr>
         <td>
             Health Record No: <span class="required">*</span>
-            <input type="text" asp-for="Assessments.HealthRecordNo" required>
+            <input type="number" asp-for="Assessments.HealthRecordNo" step="any" required>
             <span asp-validation-for="Assessments.HealthRecordNo" class="text-danger"></span>
 
         </td>
         <td>
             MSWD No: <span class="required">*</span>
-            <input type="text" asp-for="Assessments.MSWDNo" required>
+            <input type="number" asp-for="Assessments.MSWDNo" step="any" required>
 
             @* <select asp-for="Assessments.MSWDNo" required>
 			    @foreach (var user in Model.Users)
@@ -287,7 +287,7 @@
         </td>
         <td colspan="2">
             Patient's Monthly Income: <span class="required">*</span>
-            <input type="number" asp-for="Patient.MonthlyIncome" required>
+            <input type="number" asp-for="Patient.MonthlyIncome" step="any" required>
             <span asp-validation-for="Patient.MonthlyIncome" class="text-danger"></span>
 
         </td>
@@ -296,7 +296,7 @@
     <tr>
         <td>
             PhilHealth Identification Number (PIN): <span class="required">*</span>
-            <input type="number" asp-for="Patient.PhilhealthPIN" required>
+            <input type="number" asp-for="Patient.PhilhealthPIN" step="any" required>
             <span asp-validation-for="Patient.PhilhealthPIN" class="text-danger"></span>
 
         </td>
@@ -346,7 +346,7 @@
                 </td>
                 <td><input type="text" name="FamilyMembers[@i].EducationalAttainment" required></td>
                 <td><input type="text" name="FamilyMembers[@i].Occupation" required></td>
-                <td><input type="number" name="FamilyMembers[@i].MonthlyIncome" required></td>
+                <td><input type="number" name="FamilyMembers[@i].MonthlyIncome" step="any" required></td>
                 <td><button type="button" id="family-button-remove" onclick="removeRow(this)">❌</button></td>
             </tr>
         }
@@ -366,11 +366,11 @@
         </td>
         <td>
             Total Household Income: <span class="required">*</span>
-            <input type="number" asp-for="Household.TotalHouseholdIncome" required>
+            <input type="number" asp-for="Household.TotalHouseholdIncome" step="any" required>
         </td>
         <td>
             Per Capita Income: <span class="required">*</span>
-            <input type="number" asp-for="Household.PerCapitaIncome" required>
+            <input type="number" asp-for="Household.PerCapitaIncome" step="any" required>
         </td>
     </tr>
 </table>
