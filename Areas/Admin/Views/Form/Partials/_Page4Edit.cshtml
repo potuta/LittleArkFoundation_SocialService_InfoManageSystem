@@ -162,7 +162,7 @@
             </div>
 
             if yes, at what age?
-            <input type="number" asp-for="PregnancyBirthHistory.ChildAdoptedAge" placeholder="Type 0 if no answer" required>
+            <input type="number" asp-for="PregnancyBirthHistory.ChildAdoptedAge" step="any" placeholder="Type 0 if no answer" required>
 
             <div class="radio-group">
                 <input type="radio" asp-for="PregnancyBirthHistory.AdoptionType" value="Domestic adoption" required> Domestic adoption
@@ -192,35 +192,35 @@
             Rolled over?
         </th>
         <th>
-            <input type="number" asp-for="DevelopmentalHistory.RolledOverAge" placeholder="Type 0 if no answer" required>
+            <input type="number" asp-for="DevelopmentalHistory.RolledOverAge" step="any" placeholder="Type 0 if no answer" required>
         </th>
 
         <th>
             Crawled?
         </th>
         <th>
-            <input type="number" asp-for="DevelopmentalHistory.CrawledAge" placeholder="Type 0 if no answer" required>
+            <input type="number" asp-for="DevelopmentalHistory.CrawledAge" step="any" placeholder="Type 0 if no answer" required>
         </th>
 
         <th>
             Walked?
         </th>
         <th>
-            <input type="number" asp-for="DevelopmentalHistory.WalkedAge" placeholder="Type 0 if no answer" required>
+            <input type="number" asp-for="DevelopmentalHistory.WalkedAge" step="any" placeholder="Type 0 if no answer" required>
         </th>
 
         <th>
             Talked (two words)?
         </th>
         <th>
-            <input type="number" asp-for="DevelopmentalHistory.TalkedAge" placeholder="Type 0 if no answer" required>
+            <input type="number" asp-for="DevelopmentalHistory.TalkedAge" step="any" placeholder="Type 0 if no answer" required>
         </th>
 
         <th>
             Toilet trained?
         </th>
         <th>
-            <input type="number" asp-for="DevelopmentalHistory.ToiletTrainedAge" placeholder="Type 0 if no answer" required>
+            <input type="number" asp-for="DevelopmentalHistory.ToiletTrainedAge" step="any" placeholder="Type 0 if no answer" required>
         </th>
     </tr>
 
