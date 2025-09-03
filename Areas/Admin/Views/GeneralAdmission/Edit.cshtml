@@ -104,7 +104,7 @@
             <tr>
                 <td>
                     Date: <span class="required">*</span>
-                    <input type="date" asp-for="GeneralAdmission.Date" id="dateInput" readonly>
+                    <input type="date" asp-for="GeneralAdmission.Date" id="dateInput" style="background-color:#e9ecef; cursor: not-allowed;" readonly>
 
                 </td>
                 <td>
@@ -126,16 +126,16 @@
             <tr>
                 <td>
                     First Name: <span class="required">*</span>
-                    <input type="text" asp-for="GeneralAdmission.FirstName" placeholder="Type N/A if No Answer" readonly>
+                    <input type="text" asp-for="GeneralAdmission.FirstName" placeholder="Type N/A if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly>
 
                 </td>
                 <td>
                     Middle Name: <span class="required">*</span>
-                    <input type="text" asp-for="GeneralAdmission.MiddleName" placeholder="Type N/A if No Answer" readonly>
+                    <input type="text" asp-for="GeneralAdmission.MiddleName" placeholder="Type N/A if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly>
                 </td>
                 <td>
                     Last Name: <span class="required">*</span>
-                    <input type="text" asp-for="GeneralAdmission.LastName" placeholder="Type N/A if No Answer" readonly>
+                    <input type="text" asp-for="GeneralAdmission.LastName" placeholder="Type N/A if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly>
 
                 </td>
             </tr>
@@ -174,7 +174,7 @@
                 </td>
                 <td>
                     Age: <span class="required">*</span>
-                    <input type="number" asp-for="GeneralAdmission.Age" step="any" placeholder="Type N/A if No Answer" readonly>
+                    <input type="number" asp-for="GeneralAdmission.Age" step="any" placeholder="Type N/A if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly>
                 </td>
             </tr>
 
@@ -191,18 +191,18 @@
             </td>
             <td>
                 Time of Interview: <span class="required">*</span>
-                <input type="time" asp-for="GeneralAdmission.Time" id="timeInput" readonly>
+                <input type="time" asp-for="GeneralAdmission.Time" id="timeInput" style="background-color:#e9ecef; cursor: not-allowed;" readonly>
             </td>
             <td>
                 Diagnosis: <span class="required">*</span>
-                <textarea type="text" asp-for="GeneralAdmission.Diagnosis" placeholder="Type N/A if No Answer" readonly></textarea>
+                <textarea type="text" asp-for="GeneralAdmission.Diagnosis" placeholder="Type N/A if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly></textarea>
 
             </td>
 
             <tr>
                 <td>
                     Complete Address: <span class="required">*</span>
-                    <textarea type="text" asp-for="GeneralAdmission.CompleteAddress" placeholder="Type N/A if No Answer" readonly></textarea>
+                    <textarea type="text" asp-for="GeneralAdmission.CompleteAddress" placeholder="Type N/A if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly></textarea>
 
                 </td>
                 <td>
@@ -317,7 +317,7 @@
             <tr>
                 <td>
                     Contact Number: <span class="required">*</span>
-                    <input type="number" asp-for="GeneralAdmission.ContactNumber" placeholder="Type 0 if No Answer" readonly>
+                    <input type="number" asp-for="GeneralAdmission.ContactNumber" placeholder="Type 0 if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly>
                 </td>
                 <td>
                     Source of Referral: <span class="required">*</span>
@@ -401,7 +401,7 @@
 
                 <td>
                     Monthly Income: <span class="required">*</span>
-                    <input type="number" asp-for="GeneralAdmission.MonthlyIncome" step="any" placeholder="Type 0 if No Answer" readonly>
+                    <input type="number" asp-for="GeneralAdmission.MonthlyIncome" step="any" placeholder="Type 0 if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly>
                 </td>
 
                 <td>
@@ -419,7 +419,7 @@
 
                 <td>
                     Household Size: <span class="required">*</span>
-                    <input type="number" asp-for="GeneralAdmission.HouseholdSize" placeholder="Type 0 if No Answer" readonly>
+                    <input type="number" asp-for="GeneralAdmission.HouseholdSize" placeholder="Type 0 if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly>
                 </td>
 
                 <td>
@@ -579,7 +579,7 @@
                             <option>@msw</option>
                         </select>
                     } *@
-                    <input type="text" asp-for="GeneralAdmission.MSW" readonly/>
+                    <input type="text" asp-for="GeneralAdmission.MSW" style="background-color:#e9ecef; cursor: not-allowed;" readonly />
                     @* <input type="hidden" asp-for="GeneralAdmission.MSW" /> *@
                 </td>
             </tr>

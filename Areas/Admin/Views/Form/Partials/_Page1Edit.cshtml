@@ -9,13 +9,13 @@
     <tr>
         <td>
             Date of Interview: <span class="required">*</span>
-            <input type="date" asp-for="Assessments.DateOfInterview" id="dateInput" readonly required>
+            <input type="date" asp-for="Assessments.DateOfInterview" id="dateInput" style="background-color:#e9ecef; cursor: not-allowed;" readonly required>
             <span asp-validation-for="Assessments.DateOfInterview" class="text-danger"></span>
 
         </td>
         <td>
             Time of Interview: <span class="required">*</span>
-            <input type="time" asp-for="Assessments.TimeOfInterview" id="timeInput" readonly required>
+            <input type="time" asp-for="Assessments.TimeOfInterview" id="timeInput" style="background-color:#e9ecef; cursor: not-allowed;" readonly required>
             <span asp-validation-for="Assessments.TimeOfInterview" class="text-danger"></span>
 
         </td>
@@ -143,17 +143,17 @@
     <tr>
         <td>
             Patient's Last Name: <span class="required">*</span>
-            <input type="text" asp-for="Patient.LastName" required>
+            <input type="text" asp-for="Patient.LastName" style="background-color:#e9ecef; cursor: not-allowed;" readonly required>
             <span asp-validation-for="Patient.LastName" class="text-danger"></span>
         </td>
         <td>
             Patient's First Name: <span class="required">*</span>
-            <input type="text" asp-for="Patient.FirstName" required>
+            <input type="text" asp-for="Patient.FirstName" style="background-color:#e9ecef; cursor: not-allowed;" readonly required>
             <span asp-validation-for="Patient.FirstName" class="text-danger"></span>
         </td>
         <td>
             Patient's Middle Name: <span class="required">*</span>
-            <input type="text" asp-for="Patient.MiddleName" required>
+            <input type="text" asp-for="Patient.MiddleName" style="background-color:#e9ecef; cursor: not-allowed;" readonly required>
             <span asp-validation-for="Patient.MiddleName" class="text-danger"></span>
         </td>
     </tr>
