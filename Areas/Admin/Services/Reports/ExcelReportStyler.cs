@@ -54,12 +54,10 @@ namespace LittleArkFoundation.Areas.Admin.Services.Reports
                 }
             }
 
-            // Zebra stripes
+            // Zebra stripes + borders only for rows with data
             var usedRange = worksheet.RangeUsed();
-            usedRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
-            usedRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
-
             int rowCounter = 1;
+
             // Exclude title rows, header rows, and total rows
             var excludedRows = rowsList
                 .Concat(headerRowsList)
@@ -68,12 +66,23 @@ namespace LittleArkFoundation.Areas.Admin.Services.Reports
 
             foreach (var row in usedRange.Rows())
             {
-                if (!excludedRows.Contains(row.RowNumber()) && row.RowNumber() > 2)
+                bool rowHasData = row.Cells().Any(c => !c.IsEmpty());
+
+                if (rowHasData)
                 {
-                    if (rowCounter % 2 == 0)
-                        row.Style.Fill.BackgroundColor = XLColor.LightCyan;
+                    // Apply borders only if row has data
+                    row.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                    row.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+
+                    // Apply zebra stripes if not excluded
+                    if (!excludedRows.Contains(row.RowNumber()) && row.RowNumber() > 2)
+                    {
+                        if (rowCounter % 2 == 0)
+                            row.Style.Fill.BackgroundColor = XLColor.LightCyan;
+                    }
+
+                    rowCounter++;
                 }
-                rowCounter++;
             }
 
             // Signature block
