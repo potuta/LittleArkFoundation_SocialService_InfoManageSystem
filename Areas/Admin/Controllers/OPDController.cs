@@ -6,6 +6,7 @@ using LittleArkFoundation.Areas.Admin.Data;
 using LittleArkFoundation.Areas.Admin.Models.Discharges;
 using LittleArkFoundation.Areas.Admin.Models.Form;
 using LittleArkFoundation.Areas.Admin.Models.OPD;
+using LittleArkFoundation.Areas.Admin.Services.Reports;
 using LittleArkFoundation.Authorize;
 using LittleArkFoundation.Data;
 using Microsoft.AspNetCore.Mvc;
@@ -680,17 +681,17 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             // HEADERS
             // COUNTA OF DATE PROCESSED BY MSW
-            worksheet.Cell(1, 1).Value = "COUNTA OF DATE PROCESSED BY MSW";
-            worksheet.Cell(2, 1).Value = "Date Processed by MSW";
+            worksheet.Cell(4, 1).Value = "COUNTA OF DATE PROCESSED BY MSW";
+            worksheet.Cell(5, 1).Value = "Date Processed by MSW";
 
             int dateCol = 2;
             foreach (var user in users)
             {
-                worksheet.Cell(2, dateCol).Value = user.Username;
+                worksheet.Cell(5, dateCol).Value = user.Username;
                 dateCol++;
             }
 
-            worksheet.Cell(2, dateCol).Value = "Grand Total";
+            worksheet.Cell(5, dateCol).Value = "Grand Total";
 
             // Prepare data grouped by ProcessedDate
             var groupedOPD = opdList
@@ -698,7 +699,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 .OrderBy(g => g.Key)
                 .ToList();
 
-            int dateRow = 3;
+            int dateRow = 6;
             foreach (var group in groupedOPD)
             {
                 worksheet.Cell(dateRow, 1).Value = group.Key.ToShortDateString();
@@ -947,115 +948,42 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Cell(totalReferralDataRowIndex, totalReferralDataColIndex).Value = groupedReferral.Sum(g => g.Count()); // Grand Total
             worksheet.Row(totalReferralDataRowIndex).Style.Font.Bold = true;
 
-            // Apply center alignment to the whole worksheet
-            worksheet.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-            worksheet.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+            // Column 1
+            var cell2 = worksheet.Cell(1, 1);
+            cell2.Value = "OPD Reports";
+            cell2.Style.Font.Bold = true;
+            cell2.Style.Font.FontSize = 12;
+            cell2.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            cell2.Style.Fill.BackgroundColor = XLColor.LightGray;
+            worksheet.Range(1, 1, 1, worksheet.LastColumnUsed().ColumnNumber()).Merge();
 
-            // Set header row style (example for first row title)
+            // Column 2
+            var cell3 = worksheet.Cell(2, 1);
+            cell3.Value = $"{monthLabel} OPD";
+            cell3.Style.Font.Bold = true;
+            cell3.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            cell3.Style.Fill.BackgroundColor = XLColor.LightGray;
+            worksheet.Range(2, 1, 2, worksheet.LastColumnUsed().ColumnNumber()).Merge();
+
+            // Set header row style 
             var rowsList = new List<int>
             {
-                1, classRowStart, genderRowStart, pwdRowStart, referralRowStart, oldNewRowStart
+                4, classRowStart, genderRowStart, pwdRowStart, referralRowStart, oldNewRowStart
             };
-
-            foreach (var rowIndex in rowsList)
-            {
-                var titleRange = worksheet.Range(rowIndex, 1, rowIndex, worksheet.LastColumnUsed().ColumnNumber());
-                titleRange.Style.Font.Bold = true;
-                //titleRange.Style.Font.FontSize = 14;
-                titleRange.Style.Fill.BackgroundColor = XLColor.LightGray;
-                titleRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-
-                // Merge the header row across all used columns
-                titleRange.Merge();
-            }
 
             var headerRowsList = new List<int>
             {
-                2, classRowStart + 1, genderRowStart + 1, pwdRowStart + 1, referralRowStart + 1, oldNewRowStart + 1
+                5, classRowStart + 1, genderRowStart + 1, pwdRowStart + 1, referralRowStart + 1, oldNewRowStart + 1
             };
 
-            foreach (var headerRowIndex in headerRowsList)
-            {
-                var headerRange = worksheet.Range(headerRowIndex, 1, headerRowIndex, worksheet.LastColumnUsed().ColumnNumber());
-                headerRange.Style.Font.Bold = true;
-                headerRange.Style.Fill.BackgroundColor = XLColor.Cyan;
-                headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-            }
-
-            // Apply alternating row colors for readability (zebra stripes)
-            var usedRange = worksheet.RangeUsed();
-            usedRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
-            usedRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
-
-            int rowCounter = 1;
-            foreach (var row in usedRange.Rows())
-            {
-                if (rowCounter % 2 == 0)
-                {
-                    row.Style.Fill.BackgroundColor = XLColor.LightCyan;
-                }
-                rowCounter++;
-            }
-
-            // Style totals row 
             var totalRowsList = new List<int>
             {
                 totalDateRow, totalClassRow, totalGenderRow, totalPwdRow, totalReferralDataRowIndex, totalOldNewRow
             };
 
-            foreach (var totalRowIndex in totalRowsList)
-            {
-                var totalRange = worksheet.Range(totalRowIndex, 1, totalRowIndex, worksheet.LastColumnUsed().ColumnNumber());
-                totalRange.Style.Font.Bold = true;
-                totalRange.Style.Fill.BackgroundColor = XLColor.LightYellow;
-            }
-
-            // Signature Block
-            int signatureRowStart = totalReferralDataRowIndex + 3;
-
-            int lastCol = worksheet.LastColumnUsed().ColumnNumber();
-
-            // Add signature block aligned to the right
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var userNameClaim = User.FindFirst(ClaimTypes.Name).Value;
 
-            worksheet.Cell(signatureRowStart, 1).Value = $"Date Printed: {DateTime.Now:MM/dd/yyyy}";
-            worksheet.Cell(signatureRowStart, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-
-            worksheet.Cell(signatureRowStart, lastCol).Value = userNameClaim ?? "";
-            worksheet.Cell(signatureRowStart + 1, lastCol).Value = "______________________________";
-            worksheet.Cell(signatureRowStart + 2, lastCol).Value = "Prepared By";
-            worksheet.Range(signatureRowStart, lastCol, signatureRowStart + 2, lastCol)
-                     .Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-
-            worksheet.Cell(signatureRowStart + 4, lastCol).Value = "______________________________";
-            worksheet.Cell(signatureRowStart + 5, lastCol).Value = "Approved By";
-            worksheet.Range(signatureRowStart + 4, lastCol, signatureRowStart + 5, lastCol)
-                     .Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-
-            // -------------------------
-            // PDF Formatting
-            // -------------------------
-            worksheet.PageSetup.PrintAreas.Clear();
-            worksheet.PageSetup.PrintAreas.Add($"A1:{worksheet.LastCellUsed().Address}");
-
-            worksheet.PageSetup.PaperSize = XLPaperSize.A4Paper;
-            //worksheet.PageSetup.PageOrientation = XLPageOrientation.Landscape;
-
-            worksheet.PageSetup.FitToPages(1, 0);
-
-            // Footer
-            worksheet.PageSetup.Footer.Center.AddText("Page &P of &N");
-
-            // Margins and centering
-            worksheet.PageSetup.Margins.Top = 0.5;
-            worksheet.PageSetup.Margins.Bottom = 0.5;
-            worksheet.PageSetup.Margins.Left = 0.5;
-            worksheet.PageSetup.Margins.Right = 0.5;
-            worksheet.PageSetup.CenterHorizontally = true;
-
-            // Keep signature block on new page
-            worksheet.Row(signatureRowStart - 1).AddHorizontalPageBreak();
+            ExcelReportStyler.ApplyWorksheetDesign(worksheet, rowsList, headerRowsList, totalRowsList, totalReferralDataRowIndex, userNameClaim, true);
 
             // Autofit for better presentation
             worksheet.Columns().AdjustToContents();
