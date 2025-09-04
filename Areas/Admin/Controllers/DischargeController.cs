@@ -40,11 +40,13 @@ using LittleArkFoundation.Areas.Admin.Models.RecentLosses;
 using LittleArkFoundation.Areas.Admin.Models.Referrals;
 using LittleArkFoundation.Areas.Admin.Models.SafetyConcerns;
 using LittleArkFoundation.Areas.Admin.Models.StrengthsResources;
+using LittleArkFoundation.Areas.Admin.Services.Reports;
 using LittleArkFoundation.Authorize;
 using LittleArkFoundation.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Security.Claims;
@@ -1212,6 +1214,11 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 row++;
             }
 
+            ExcelReportStyler.ApplyWorksheetDesign(worksheet, new List<int> { 1, 2, 3 }, new List<int> { 5 }, new List<int> { row }, row, User.FindFirst(ClaimTypes.Name).Value, false, true);
+
+            // Autofit for better presentation
+            worksheet.Columns().AdjustToContents();
+
             using (var stream = new MemoryStream())
             {
                 workbook.SaveAs(stream);
@@ -1294,17 +1301,17 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             // HEADERS
             // COUNTA OF DATE PROCESSED BY MSW
-            worksheet.Cell(1, 1).Value = "COUNTA OF DATE PROCESSED BY MSW";
-            worksheet.Cell(2, 1).Value = "Date Processed";
+            worksheet.Cell(4, 1).Value = "COUNTA OF DATE PROCESSED BY MSW";
+            worksheet.Cell(5, 1).Value = "Date Processed";
 
             int col = 2;
             foreach (var user in users)
             {
-                worksheet.Cell(2, col).Value = user.Username;
+                worksheet.Cell(5, col).Value = user.Username;
                 col++;
             }
 
-            worksheet.Cell(2, col).Value = "Grand Total";
+            worksheet.Cell(5, col).Value = "Grand Total";
 
             // Prepare data grouped by ProcessedDate
             var groupedDischarges = discharges
@@ -1312,7 +1319,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 .OrderBy(g => g.Key)
                 .ToList();
 
-            int row = 3;
+            int row = 6;
             foreach (var group in groupedDischarges)
             {
                 worksheet.Cell(row, 1).Value = group.Key.ToShortDateString();
@@ -1403,6 +1410,44 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
             worksheet.Cell(classRow, totalClassCol).Value = discharges.Count(d => classes.Contains(d.Class));
             worksheet.Row(classRow).Style.Font.Bold = true;
+
+            // Column 1
+            var cell2 = worksheet.Cell(1, 1);
+            cell2.Value = "Discharge Reports";
+            cell2.Style.Font.Bold = true;
+            cell2.Style.Font.FontSize = 12;
+            cell2.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            cell2.Style.Fill.BackgroundColor = XLColor.LightGray;
+            worksheet.Range(1, 1, 1, worksheet.LastColumnUsed().ColumnNumber()).Merge();
+
+            // Column 2
+            var cell3 = worksheet.Cell(2, 1);
+            cell3.Value = $"{monthLabel} Discharge";
+            cell3.Style.Font.Bold = true;
+            cell3.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            cell3.Style.Fill.BackgroundColor = XLColor.LightGray;
+            worksheet.Range(2, 1, 2, worksheet.LastColumnUsed().ColumnNumber()).Merge();
+
+            // Set header row style 
+            var rowsList = new List<int>
+            {
+                4, totalRow + 2
+            };
+
+            var headerRowsList = new List<int>
+            {
+                5, totalRow + 3
+
+            };
+
+            var totalRowsList = new List<int>
+            {
+                totalRow, classRow
+            };
+
+            var userNameClaim = User.FindFirst(ClaimTypes.Name).Value;
+
+            ExcelReportStyler.ApplyWorksheetDesign(worksheet, rowsList, headerRowsList, totalRowsList, classRow, userNameClaim, true);
 
             // Autofit for better presentation
             worksheet.Columns().AdjustToContents();
