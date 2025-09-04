@@ -19,6 +19,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/Account/AccessDenied";
         options.ReturnUrlParameter = "returnUrl";
         options.ExpireTimeSpan = TimeSpan.FromDays(1);
+        options.SlidingExpiration = true;
+        options.Cookie.IsEssential = true;
     });
 
 builder.Services.AddHttpContextAccessor();
