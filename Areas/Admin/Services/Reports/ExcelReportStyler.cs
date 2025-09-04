@@ -99,7 +99,7 @@ namespace LittleArkFoundation.Areas.Admin.Services.Reports
             worksheet.PageSetup.Margins.Left = 0.5;
             worksheet.PageSetup.Margins.Right = 0.5;
             worksheet.PageSetup.CenterHorizontally = true;
-            worksheet.Row(signatureRowStart - 1).AddHorizontalPageBreak();
+            worksheet.Row(signatureRowStart - 1);
 
         }
     }
