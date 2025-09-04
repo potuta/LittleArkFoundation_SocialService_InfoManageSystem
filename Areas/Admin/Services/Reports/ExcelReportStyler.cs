@@ -11,7 +11,8 @@ namespace LittleArkFoundation.Areas.Admin.Services.Reports
             List<int> totalRowsList,
             int lastRowIndex,
             string userNameClaim,
-            bool isCenterAligned)
+            bool isCenterAligned,
+            bool? hideTotalRows = false)
         {
             if (isCenterAligned)
             {
@@ -40,11 +41,14 @@ namespace LittleArkFoundation.Areas.Admin.Services.Reports
             }
 
             // Total rows
-            foreach (var totalRowIndex in totalRowsList)
+            if (hideTotalRows == false)
             {
-                var totalRange = worksheet.Range(totalRowIndex, 1, totalRowIndex, worksheet.LastColumnUsed().ColumnNumber());
-                totalRange.Style.Font.Bold = true;
-                totalRange.Style.Fill.BackgroundColor = XLColor.LightYellow;
+                foreach (var totalRowIndex in totalRowsList)
+                {
+                    var totalRange = worksheet.Range(totalRowIndex, 1, totalRowIndex, worksheet.LastColumnUsed().ColumnNumber());
+                    totalRange.Style.Font.Bold = true;
+                    totalRange.Style.Fill.BackgroundColor = XLColor.LightYellow;
+                }
             }
 
             // Zebra stripes

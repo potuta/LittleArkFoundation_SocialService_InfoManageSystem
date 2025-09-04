@@ -1175,6 +1175,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 dataRow++;
             }
 
+            ExcelReportStyler.ApplyWorksheetDesign(worksheet, new List<int> { 1, 2, 3 }, new List<int> { headerRow }, new List<int> { dataRow }, dataRow, User.FindFirst(ClaimTypes.Name).Value, false, true);
+
             // Autofit for better presentation
             worksheet.Columns().AdjustToContents();
 
