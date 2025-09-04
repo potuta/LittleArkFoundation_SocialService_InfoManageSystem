@@ -384,7 +384,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 await context.SaveChangesAsync();
 
                 TempData["SuccessMessage"] = "Successfully created new OPD";
-                LoggingService.LogInformation($"OPD Patient creation successful. Created OPD Id: {viewModel.OPD.Id}. Created by UserID: {User.FindFirst(ClaimTypes.NameIdentifier).Value}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {User.FindFirst(ClaimTypes.NameIdentifier).Value}. OPD Patient creation successful. Created OPD Id: {viewModel.OPD.Id}");
                 return RedirectToAction("Index");
 
             }
@@ -432,7 +432,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 context.OPD.Update(viewModel.OPD);
                 await context.SaveChangesAsync();
                 TempData["SuccessMessage"] = $"Successfully edited/updated OPD Id: {viewModel.OPD.Id}";
-                LoggingService.LogInformation($"OPD Patient edited/updated successful. Updated OPD Id: {viewModel.OPD.Id}. Updated by UserID: {User.FindFirst(ClaimTypes.NameIdentifier).Value}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {User.FindFirst(ClaimTypes.NameIdentifier).Value}. OPD Patient edited/updated successful. Updated OPD Id: {viewModel.OPD.Id}");
                 return RedirectToAction("Index");
             }
             catch (SqlException se)
@@ -465,7 +465,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 context.OPD.Remove(opd);
                 await context.SaveChangesAsync();
                 TempData["SuccessMessage"] = $"Successfully deleted OPD Id: {id}";
-                LoggingService.LogInformation($"OPD Patient deleted successful. Deleted OPD Id: {id}. Deleted by UserID: {User.FindFirst(ClaimTypes.NameIdentifier).Value}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {User.FindFirst(ClaimTypes.NameIdentifier).Value}. OPD Patient deleted successful. Deleted OPD Id: {id}");
                 return RedirectToAction("Index");
             }
             catch (SqlException se)

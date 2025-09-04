@@ -277,7 +277,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
                 TempData["SuccessMessage"] = "Patient successfully discharged.";
-                LoggingService.LogInformation($"Patient discharge successful. Discharged PatientID: {discharge.PatientID}. Discharged by UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Patient discharge successful. Discharged PatientID: {discharge.PatientID}");
                 return RedirectToAction("Index", "Form");
             }
             catch (SqlException se)
@@ -1088,7 +1088,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     await context.SaveChangesAsync();
 
                     TempData["SuccessMessage"] = "Successfully re-admitted patient.";
-                    LoggingService.LogInformation($"Patient Re-admission successful. Created new AssessmentID: {newAssessmentID}. Re-admitted by UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                    LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Patient Re-admission successful. Created new AssessmentID: {newAssessmentID}");
                     return RedirectToAction("Edit", "Form", new { id = patientID, assessmentID = newAssessmentID });
 
                 }

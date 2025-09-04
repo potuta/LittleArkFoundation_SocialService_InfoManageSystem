@@ -1,11 +1,12 @@
-using System.Security.Claims;
+using DocumentFormat.OpenXml.Spreadsheet;
+using LittleArkFoundation.Areas.Admin.Data;
+using LittleArkFoundation.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using LittleArkFoundation.Data;
 using Microsoft.Data.SqlClient;
 using System.Data;
-using LittleArkFoundation.Areas.Admin.Data;
+using System.Security.Claims;
 
 namespace LittleArkFoundation.Controllers
 {
@@ -32,13 +33,13 @@ namespace LittleArkFoundation.Controllers
 
             try
             {
-                LoggingService.LogInformation($"Login attempt. UserID: {userID}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {userID}. Login attempt");
 
                 var user = await new UsersRepository(connectionString).GetUserAsync(userID, password);
 
                 if (user == null)
                 {
-                    LoggingService.LogInformation($"Invalid login attempt. UserID: {userID}, DateTime: {DateTime.Now}");
+                    LoggingService.LogInformation($"UserID: {userID}. Invalid login attempt");
                     TempData["LoginError"] = "Invalid User ID or Password. Please try again.";
                     return RedirectToAction("Index", "Home");
                 }
@@ -79,7 +80,7 @@ namespace LittleArkFoundation.Controllers
                 HttpContext.Session.SetString("ConnectionString", connectionString);
                 HttpContext.Session.SetString("DatabaseName", _databaseService.GetSelectedDatabaseInConnectionString(connectionString));
 
-                LoggingService.LogInformation($"User logged in. UserID: {userID}, Role: {role}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {userID}. User has logged in. Role: {role}");
 
                 return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
             }
@@ -107,7 +108,7 @@ namespace LittleArkFoundation.Controllers
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim != null)
             {
-                LoggingService.LogInformation($"User logged out. UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {userIdClaim.Value}. User has logged out");
             }
             else
             {
@@ -233,7 +234,7 @@ namespace LittleArkFoundation.Controllers
         {
             try
             {
-                LoggingService.LogInformation($"User reset password attempt. UserID: {userID}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {userID}. User reset password attempt");
 
                 string connectionString = _connectionService.GetDefaultConnectionString();
 
@@ -253,7 +254,7 @@ namespace LittleArkFoundation.Controllers
 
                 HttpContext.Session.Remove("VerifiedUserID");
                 TempData["ResetPasswordSuccess"] = "Your password has been reset successfully.";
-                LoggingService.LogInformation($"User reset password successful. UserID: {userID}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {userID}. User reset password successful");
             }
             catch (Exception ex)
             {
@@ -267,7 +268,7 @@ namespace LittleArkFoundation.Controllers
 
         public IActionResult AccessDenied()
         {
-            LoggingService.LogWarning($"Access denied. UserID: {User.FindFirst(ClaimTypes.NameIdentifier)?.Value}, DateTime: {DateTime.Now}");
+            LoggingService.LogWarning($"UserID: {User.FindFirst(ClaimTypes.NameIdentifier)?.Value}. Access denied");
             return View();
         }
     }

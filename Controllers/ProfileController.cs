@@ -68,7 +68,7 @@ namespace LittleArkFoundation.Controllers
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
                 string connectionString = _connectionService.GetCurrentConnectionString();
 
-                LoggingService.LogInformation($"Profile edit attempt. UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Profile edit attempt");
 
                 await using (var context = new ApplicationDbContext(connectionString))
                 {
@@ -83,7 +83,7 @@ namespace LittleArkFoundation.Controllers
                     context.Users.Update(user.NewUser);
                     await context.SaveChangesAsync();
 
-                    LoggingService.LogInformation($"Profile edit sucessful. Edited UserID: {user.NewUser.UserID}. Edited by UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                    LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Profile edit sucessful. Edited UserID: {user.NewUser.UserID}");
                 }
             }
             catch (Exception ex)

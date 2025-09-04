@@ -305,7 +305,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 await context.SaveChangesAsync();
 
                 TempData["SuccessMessage"] = $"Successfully edited General Admission Id: {viewModel.GeneralAdmission.Id}";
-                LoggingService.LogInformation($"General Admission Patient edit successful. Edited Id: {viewModel.GeneralAdmission.Id}. Edited by UserID: {User.FindFirst(ClaimTypes.NameIdentifier).Value}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {User.FindFirst(ClaimTypes.NameIdentifier).Value}. General Admission Patient edit successful. Edited Id: {viewModel.GeneralAdmission.Id}");
                 return RedirectToAction("Index");
             }
             catch (SqlException se)
@@ -357,7 +357,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 await context.SaveChangesAsync();
 
                 TempData["SuccessMessage"] = "Successfully created General Admission record.";
-                LoggingService.LogInformation($"General Admission Patient creation successful. Created Id: {viewModel.GeneralAdmission.Id}. Created by UserID: {userIdClaim}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {userIdClaim}. General Admission Patient creation successful. Created Id: {viewModel.GeneralAdmission.Id}");
                 return RedirectToAction("Index");
             }
             catch (SqlException se)

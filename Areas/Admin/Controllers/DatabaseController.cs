@@ -74,7 +74,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 string backupFilePath = $"{originalDbName}_{timestamp}_backup.bak";
                 string newBackupFilePath = $"{newDbName}_{timestamp}_backup.bak";
 
-                LoggingService.LogInformation($"Database creation attempt. Database: {newDbName}, UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Database creation attempt: {newDbName}");
 
                 await _databaseService.BackupDatabaseAsync(backupFilePath, originalDbName);
                 await _databaseService.RestoreDatabaseAsync(backupFilePath, newDbName);
@@ -86,7 +86,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
 
                 TempData["SuccessMessage"] = $"Successfully created new database year {newDbName}.";
-                LoggingService.LogInformation($"Database creation attempt successful. Database: {newDbName}, UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Database creation attempt successful: {newDbName}");
                 return RedirectToAction("Index");
             }
             catch (SqlException ex)
@@ -128,14 +128,14 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             try
             {
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-                LoggingService.LogInformation($"Database backup attempt. Database: {name}, UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Database backup attempt: {name}");
 
                 string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss"); // Safe format
                 string backupFilePath = $"{name}_{timestamp}_backup.bak";
                 await _databaseService.BackupDatabaseAsync(backupFilePath, name);
 
                 TempData["SuccessMessage"] = $"Successfully backed up database {name}.";
-                LoggingService.LogInformation($"Database backup attempt successful. Database: {name}, UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Database backup attempt successful: {name}");
                 return RedirectToAction("Index");
             }
             catch (SqlException ex)
@@ -178,14 +178,14 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             try
             {
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-                LoggingService.LogInformation($"Database restore attempt. Database: {name}, BackupFileName: {backupFileName} UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Database restore attempt: {name}. BackupFileName: {backupFileName}");
 
                 string originalDbName = _databaseService.GetSelectedDatabaseInConnectionString(_connectionService.GetDefaultConnectionString());
                 string backupFilePath = $"{backupFileName}";
                 await _databaseService.RestoreDatabaseAsync(backupFilePath, name);
 
                 TempData["SuccessMessage"] = $"Successfully restored database {name}.";
-                LoggingService.LogInformation($"Database restore attempt successful. Database: {name}, BackupFileName: {backupFileName} UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Database restore attempt successful: {name}. BackupFileName: {backupFileName}");
                 return RedirectToAction("Index");
             }
             catch (SqlException ex)
@@ -207,7 +207,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             try
             {
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-                LoggingService.LogInformation($"Database delete attempt. Database: {name}, UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Database deletion attempt: {name}");
 
                 if (name == _databaseService.GetSelectedDatabaseInConnectionString(_connectionService.GetDefaultConnectionString()))
                 {
@@ -227,7 +227,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 await _databaseService.DeleteDatabaseAsync(name);
 
                 TempData["SuccessMessage"] = $"Successfully deleted database {name}.";
-                LoggingService.LogInformation($"Database delete attempt successful. Database: {name}, UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Database deletion attempt successful: {name}");
                 return RedirectToAction("Index");
             }
             catch (SqlException ex)

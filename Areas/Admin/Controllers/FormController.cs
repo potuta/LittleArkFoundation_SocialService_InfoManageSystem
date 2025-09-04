@@ -645,7 +645,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     await context.SaveChangesAsync();
 
                     TempData["SuccessMessage"] = "Successfully created new form";
-                    LoggingService.LogInformation($"Admission Patient creation successful. Created new AssessmentID: {assessmentID} PatientID: {patientID}. Admitted by UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                    LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Admission Patient creation successful. Created new AssessmentID: {assessmentID} and PatientID: {patientID}");
                     return RedirectToAction("Index");
                 }
             }
@@ -1131,7 +1131,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 await context.SaveChangesAsync();
 
                 TempData["SuccessMessage"] = $"Successfully edited PatientID: {id}";
-                LoggingService.LogInformation($"Admission Patient edit successful. Edited AssessmentID: {assessmentId} PatientID: {id}. Edited by UserID: {User.FindFirst(ClaimTypes.NameIdentifier).Value}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {User.FindFirst(ClaimTypes.NameIdentifier).Value}. Admission Patient edit successful. Edited AssessmentID: {assessmentId} and PatientID: {id}");
                 return RedirectToAction("Index");
             }
             catch (SqlException se)

@@ -45,7 +45,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             try
             {
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-                LoggingService.LogInformation($"Permission creation attempt. UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Permission creation attempt");
 
                 string connectionString = _connectionService.GetCurrentConnectionString();
 
@@ -66,7 +66,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                         await context.SaveChangesAsync();
 
                         TempData["CreateSuccess"] = $"Successfully added new permission! PermissionName: {permission.Name}";
-                        LoggingService.LogInformation($"Permission creation successful. Added PermissionName: {permission.Name}. Added by UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                        LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Permission creation successful. Added PermissionName: {permission.Name}");
                     }
                 }
             }
@@ -89,7 +89,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             try
             {
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-                LoggingService.LogInformation($"Permission deletion attempt. UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Permission deletion attempt");
 
                 string connectionString = _connectionService.GetCurrentConnectionString();
 
@@ -103,7 +103,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                         await context.SaveChangesAsync();
 
                         TempData["CreateSuccess"] = $"Successfully deleted permission! PermissionID: {id}";
-                        LoggingService.LogInformation($"Permission deletion successful. Deleted PermissionID: {id}. Deleted by UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                        LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Permission deletion successful. Deleted PermissionID: {id}");
                     }
                 }
             }

@@ -190,7 +190,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             try
             {
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-                LoggingService.LogInformation($"User creation attempt. UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {userIdClaim.Value}. User creation attempt");
 
                 string connectionString = _connectionService.GetCurrentConnectionString();
 
@@ -210,7 +210,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     await context.SaveChangesAsync();
 
                     TempData["SuccessMessage"] = $"Successfully added new user! UserID: {viewModel.NewUser.UserID} Username: {viewModel.NewUser.Username}";
-                    LoggingService.LogInformation($"User creation successful. Created new user UserID: {viewModel.NewUser.UserID}. Created by UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                    LoggingService.LogInformation($"UserID: {userIdClaim.Value}. User creation successful. Created new user UserID: {viewModel.NewUser.UserID}");
                 }
             }
             catch (SqlException ex)
@@ -298,7 +298,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
                 string connectionString = _connectionService.GetCurrentConnectionString();
 
-                LoggingService.LogInformation($"User edit attempt. UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {userIdClaim.Value}. User edit attempt");
 
                 await using (var context = new ApplicationDbContext(connectionString))
                 {
@@ -317,7 +317,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     await context.SaveChangesAsync();
 
                     TempData["SuccessMessage"] = $"Successfully edited user! UserID: {user.NewUser.UserID} Username: {user.NewUser.Username}";
-                    LoggingService.LogInformation($"User edit sucessful. Edited UserID: {user.NewUser.UserID}. Edited by UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                    LoggingService.LogInformation($"UserID: {userIdClaim.Value}. User edit sucessful. Edited UserID: {user.NewUser.UserID}");
                 }
             }
             catch (Exception ex)
@@ -339,7 +339,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
                 string connectionString = _connectionService.GetCurrentConnectionString();
 
-                LoggingService.LogInformation($"User archive attempt. UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {userIdClaim.Value}. User archive attempt");
                 await using (var context = new ApplicationDbContext(connectionString))
                 {
                     var user = await context.Users.FindAsync(id);
@@ -370,7 +370,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     await context.SaveChangesAsync();
 
                     TempData["SuccessMessage"] = $"Successfully archived user! UserID: {userArchive.UserID} Username: {userArchive.Username}";
-                    LoggingService.LogInformation($"User archive successful. Archived UserID: {userArchive.UserID}. Archived by UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                    LoggingService.LogInformation($"UserID: {userIdClaim.Value}. User archive successful. Archived UserID: {userArchive.UserID}");
                 }
             }
             catch (Exception ex)
@@ -392,7 +392,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
                 string connectionString = _connectionService.GetCurrentConnectionString();
 
-                LoggingService.LogInformation($"User unarchive attempt. UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {userIdClaim.Value}. User unarchive attempt");
 
                 await using (var context = new ApplicationDbContext(connectionString))
                 {
@@ -416,7 +416,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     await context.SaveChangesAsync();
 
                     TempData["SuccessMessage"] = $"Successfully unarchived user! UserID: {user.UserID} Username: {user.Username}";
-                    LoggingService.LogInformation($"User unarchive successful. Unarchived UserID: {user.UserID}. Archived by UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                    LoggingService.LogInformation($"UserID: {userIdClaim.Value}. User unarchive successful. Unarchived UserID: {user.UserID}");
                 }
             }
             catch (Exception ex)

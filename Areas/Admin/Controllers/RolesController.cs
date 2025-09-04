@@ -56,7 +56,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             try
             {
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-                LoggingService.LogInformation($"Role creation attempt. Role: {name}, UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Role creation attempt: {name}");
 
                 string connectionString = _connectionService.GetCurrentConnectionString();
 
@@ -77,7 +77,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     }
                 }
 
-                LoggingService.LogInformation($"Role creation attempt successful. Role: {name}, UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Role creation attempt successful: {name}");
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
@@ -144,7 +144,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             try
             {
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-                LoggingService.LogInformation($"Role edit attempt. Role: {roleViewModel.NewRole.RoleName}, UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Role edit attempt: {roleViewModel.NewRole.RoleName}");
 
                 string connectionString = _connectionService.GetCurrentConnectionString();
 
@@ -176,7 +176,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     await context.SaveChangesAsync();
                 }
 
-                LoggingService.LogInformation($"Role edit attempt successful. Role: {roleViewModel.NewRole.RoleName}, UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Role edit attempt successful: {roleViewModel.NewRole.RoleName}");
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
@@ -192,7 +192,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             try
             {
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-                LoggingService.LogInformation($"Role delete attempt. RoleID: {id}, UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Role delete attempt, RoleID: {id}");
 
                 string connectionString = _connectionService.GetCurrentConnectionString();
                 string roleName = await new RolesRepository(_connectionService).GetRoleNameByRoleID(id);
@@ -214,7 +214,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
 
                 TempData["SuccessMessage"] = $"Successfully deleted Role: {roleName}";
-                LoggingService.LogInformation($"Role delete attempt successful. RoleID: {id}, UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Role delete attempt successful. RoleID: {id}");
                 return RedirectToAction("Index");
             }
             catch (SqlException ex)
