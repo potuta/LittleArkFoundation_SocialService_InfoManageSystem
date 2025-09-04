@@ -375,19 +375,67 @@ h2 {
     }
 
     .navbar-left {
-        width: 100%;
-        height: auto;
-        position: relative;
-        top: 0;
+        display: none; /* Sidebar disappears */
     }
 
-        .navbar-left a {
-            padding: 0.625rem; /* 10px */
-            text-align: center;
+        .navbar-left.active {
+            display: flex; /* show when .active is added */
+            z-index: 1000;
+            width: var(--navbar-left-width) !important;
         }
 
-    .dropdown-profile-content {
-        right: auto;
-        left: 0;
+            /* ignore collapsed styles on mobile */
+            .navbar-left.active.collapsed {
+                width: var(--navbar-left-width) !important;
+            }
+
+                .navbar-left.active.collapsed .btn-left span,
+                .navbar-left.active.collapsed .btn-left-sub span,
+                .navbar-left.active.collapsed .btn-group strong,
+                .navbar-left.active.collapsed .btn-group p {
+                    display: inline !important;
+                    width: var(--navbar-left-width) !important;
+                }
+
+                .navbar-left.active.collapsed .btn-left {
+                    text-align: start;
+                    padding: 0.3rem 1rem;
+                    width: calc(var(--navbar-left-width) - 30px);
+                }
+
+                .navbar-left.active.collapsed .btn-left-sub {
+                    text-align: start;
+                    padding: 0.3rem 1rem;
+                    width: calc(var(--navbar-left-width) - 41px)
+                }
+
+                    .navbar-left.active.collapsed .btn-left i,
+                    .navbar-left.active.collapsed .btn-left-sub i {
+                        margin-right: 8px;
+                        font-size: 1.2rem;
+                    }
+
+
+    .main-content {
+        grid-column: 1 / span 2; /* Main content takes full width */
+        margin-left: 0;
+        width: 100%;
     }
+
+    .main-content.collapsed {
+        margin-left: 0;
+    }
+
+        .main-content main .container-fluid{
+            max-width: 100% !important;
+        }
+
+        .main-content.collapsed main .container-fluid {
+            max-width: 100% !important;
+        }
+
+        .dropdown-profile-content {
+            right: auto;
+            left: 0;
+        }
 }

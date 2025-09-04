@@ -21,6 +21,9 @@ function toggleSidebar() {
 
     // Save the state to localStorage
     localStorage.setItem('sidebar-collapsed', isCollapsed);
+
+    // For small screens, toggle 'active' class to show/hide sidebar
+    sidebar.classList.toggle('active');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
