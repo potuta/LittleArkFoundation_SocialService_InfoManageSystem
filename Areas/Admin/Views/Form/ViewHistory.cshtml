@@ -176,7 +176,7 @@
                             <td>
                                 @Model.Patient.LastName, @Model.Patient.FirstName @Model.Patient.MiddleName
                             </td>
-                            <td>@assessment.Age</td>
+                            <td>@assessment.Age.ToString("0.##")</td>
                             <td>@assessment.BasicWard</td>
                             <td>@(diagnosis ?? "—")</td>
 						    <td>@user.Username</td>
