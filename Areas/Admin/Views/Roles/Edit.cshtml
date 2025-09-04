@@ -154,7 +154,16 @@
                                                 <input type="hidden" asp-for="Permissions[@i].Name" />
                                                 <input type="hidden" asp-for="Permissions[@i].PermissionType" />
                                                 <input type="hidden" asp-for="Permissions[@i].Module" />
-                                                <input type="checkbox" asp-for="Permissions[@i].IsSelected" />
+
+                                                if (Model.NewRole.RoleID == 1)
+                                                {
+                                                    <input type="checkbox" asp-for="Permissions[@i].IsSelected" disabled/>
+                                                    <input type="hidden" asp-for="Permissions[@i].IsSelected" />
+                                                }
+                                                else
+                                                {
+                                                    <input type="checkbox" asp-for="Permissions[@i].IsSelected" />
+                                                }
                                             }
                                             else
                                             {
