@@ -12,6 +12,7 @@ using LittleArkFoundation.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 using System.Globalization;
 using System.Reflection.Metadata.Ecma335;
 using System.Security.Claims;
@@ -1283,6 +1284,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                 dataRow++;
             }
+
+            ExcelReportStyler.ApplyWorksheetDesign(worksheet, new List<int> { 1, 2, 3 }, new List<int> { headerRow }, new List<int> { dataRow }, dataRow, User.FindFirst(ClaimTypes.Name).Value, false, true);
 
             // Autofit for better presentation
             worksheet.Columns().AdjustToContents();
@@ -2862,6 +2865,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 Enumerable.Range(7, 12).Sum(i => opdList.Count(opd => opd.Date.Month == i));
             worksheet.Cell(serviceRow, 15).Style.Font.Bold = true;
             worksheet.Cell(serviceRow, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            ExcelReportStyler.ApplyWorksheetDesign(worksheet, new List<int> { 1, 2, 3 }, new List<int> { headerRow }, new List<int> { referralRow, serviceRow }, serviceRow, User.FindFirst(ClaimTypes.Name).Value, false, false, true);
 
             // Autofit for better presentation
             worksheet.Column(1).AdjustToContents();

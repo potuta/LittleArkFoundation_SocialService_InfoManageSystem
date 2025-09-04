@@ -12,7 +12,8 @@ namespace LittleArkFoundation.Areas.Admin.Services.Reports
             int lastRowIndex,
             string userNameClaim,
             bool isCenterAligned,
-            bool? hideTotalRows = false)
+            bool? hideTotalRows = false,
+            bool? isStats = false)
         {
             if (isCenterAligned)
             {
@@ -21,10 +22,12 @@ namespace LittleArkFoundation.Areas.Admin.Services.Reports
                 worksheet.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
             }
 
+            int lastColumn = worksheet.LastColumnUsed().ColumnNumber();
+
             // Title rows
             foreach (var rowIndex in rowsList)
             {
-                var titleRange = worksheet.Range(rowIndex, 1, rowIndex, worksheet.LastColumnUsed().ColumnNumber());
+                var titleRange = worksheet.Range(rowIndex, 1, rowIndex, lastColumn);
                 titleRange.Style.Font.Bold = true;
                 titleRange.Style.Fill.BackgroundColor = XLColor.LightGray;
                 titleRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
@@ -34,7 +37,7 @@ namespace LittleArkFoundation.Areas.Admin.Services.Reports
             // Header rows
             foreach (var headerRowIndex in headerRowsList)
             {
-                var headerRange = worksheet.Range(headerRowIndex, 1, headerRowIndex, worksheet.LastColumnUsed().ColumnNumber());
+                var headerRange = worksheet.Range(headerRowIndex, 1, headerRowIndex, lastColumn);
                 headerRange.Style.Font.Bold = true;
                 headerRange.Style.Fill.BackgroundColor = XLColor.Cyan;
                 headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
@@ -45,7 +48,7 @@ namespace LittleArkFoundation.Areas.Admin.Services.Reports
             {
                 foreach (var totalRowIndex in totalRowsList)
                 {
-                    var totalRange = worksheet.Range(totalRowIndex, 1, totalRowIndex, worksheet.LastColumnUsed().ColumnNumber());
+                    var totalRange = worksheet.Range(totalRowIndex, 1, totalRowIndex, lastColumn);
                     totalRange.Style.Font.Bold = true;
                     totalRange.Style.Fill.BackgroundColor = XLColor.LightYellow;
                 }
@@ -71,7 +74,7 @@ namespace LittleArkFoundation.Areas.Admin.Services.Reports
 
             // Signature block
             int signatureRowStart = lastRowIndex + 3;
-            int lastCol = worksheet.LastColumnUsed().ColumnNumber();
+            int lastCol = isStats.Value ? lastColumn - 1 : lastColumn;
 
             worksheet.Cell(signatureRowStart, 1).Value = $"Date Printed: {DateTime.Now:MM/dd/yyyy}";
             worksheet.Cell(signatureRowStart, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
@@ -93,7 +96,7 @@ namespace LittleArkFoundation.Areas.Admin.Services.Reports
             worksheet.PageSetup.PaperSize = XLPaperSize.A4Paper;
             worksheet.PageSetup.PagesWide = 1;
             worksheet.PageSetup.PagesTall = 0;
-            worksheet.PageSetup.Footer.Center.AddText("Page &P of &N");
+            //worksheet.PageSetup.Footer.Center.AddText("Page &P of &N");
             worksheet.PageSetup.Margins.Top = 0.5;
             worksheet.PageSetup.Margins.Bottom = 0.5;
             worksheet.PageSetup.Margins.Left = 0.5;
