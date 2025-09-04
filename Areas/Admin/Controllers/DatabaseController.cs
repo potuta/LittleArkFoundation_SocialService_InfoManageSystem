@@ -107,11 +107,13 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         {
             try
             {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
                 HttpContext.Session.Remove("ConnectionString");
                 HttpContext.Session.Remove("DatabaseName");
                 HttpContext.Session.SetString("ConnectionString", connectionString);
                 HttpContext.Session.SetString("DatabaseName", _databaseService.GetSelectedDatabaseInConnectionString(connectionString));
                 TempData["SuccessMessage"] = $"Successfully connected to database {_databaseService.GetSelectedDatabaseInConnectionString(connectionString)}.";
+                LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Connected to database: {_databaseService.GetSelectedDatabaseInConnectionString(connectionString)}");
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
