@@ -39,7 +39,7 @@ namespace LittleArkFoundation.Areas.Admin.Services.Reports
             {
                 var headerRange = worksheet.Range(headerRowIndex, 1, headerRowIndex, lastColumn);
                 headerRange.Style.Font.Bold = true;
-                headerRange.Style.Fill.BackgroundColor = XLColor.Cyan;
+                headerRange.Style.Fill.BackgroundColor = XLColor.Emerald;
                 headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             }
 
@@ -78,7 +78,7 @@ namespace LittleArkFoundation.Areas.Admin.Services.Reports
                     if (!excludedRows.Contains(row.RowNumber()) && row.RowNumber() > 2)
                     {
                         if (rowCounter % 2 == 0)
-                            row.Style.Fill.BackgroundColor = XLColor.LightCyan;
+                            row.Style.Fill.BackgroundColor = XLColor.FromHtml("#daf2d0");
                     }
 
                     rowCounter++;
