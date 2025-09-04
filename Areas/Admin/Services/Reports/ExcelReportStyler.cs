@@ -60,7 +60,11 @@ namespace LittleArkFoundation.Areas.Admin.Services.Reports
             usedRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
 
             int rowCounter = 1;
-            var excludedRows = rowsList.Concat(totalRowsList).ToHashSet();
+            // Exclude title rows, header rows, and total rows
+            var excludedRows = rowsList
+                .Concat(headerRowsList)
+                .Concat(totalRowsList)
+                .ToHashSet();
 
             foreach (var row in usedRange.Rows())
             {

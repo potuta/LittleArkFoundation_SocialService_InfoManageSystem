@@ -4,6 +4,7 @@ using LittleArkFoundation.Areas.Admin.Data;
 using LittleArkFoundation.Areas.Admin.Models.Discharges;
 using LittleArkFoundation.Areas.Admin.Models.GeneralAdmission;
 using LittleArkFoundation.Areas.Admin.Models.OPD;
+using LittleArkFoundation.Areas.Admin.Services.Reports;
 using LittleArkFoundation.Authorize;
 using LittleArkFoundation.Data;
 using Microsoft.AspNetCore.Mvc;
@@ -498,6 +499,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 dataRow++;
             }
 
+            ExcelReportStyler.ApplyWorksheetDesign(worksheet, new List<int> { 1, 2, 3 }, new List<int> { headerRow }, new List<int> { dataRow }, dataRow, User.FindFirst(ClaimTypes.Name).Value, false, true);
+
             // Autofit for better presentation
             worksheet.Columns().AdjustToContents();
 
@@ -623,11 +626,11 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             // HEADERS
             // COUNTA OF DATE PROCESSED BY MSW
-            worksheet.Cell(1, 1).Value = "COUNTA OF DATE";
-            worksheet.Cell(2, 1).Value = "Date";
+            worksheet.Cell(4, 1).Value = "COUNTA OF DATE";
+            worksheet.Cell(5, 1).Value = "Date";
 
             int dateColIndex = 2;
-            worksheet.Cell(2, dateColIndex).Value = "Grand Total";
+            worksheet.Cell(5, dateColIndex).Value = "Grand Total";
 
             // Prepare data grouped by ProcessedDate
             var groupedOPD = generalAdmissions
@@ -635,7 +638,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 .OrderBy(g => g.Key)
                 .ToList();
 
-            int dateRowIndex = 3;
+            int dateRowIndex = 6;
             foreach (var group in groupedOPD)
             {
                 worksheet.Cell(dateRowIndex, 1).Value = group.Key.ToShortDateString();
@@ -1222,6 +1225,57 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Cell(totalMonthlyIncomeRowIndex, 2).Value = groupedMonthlyIncome.Sum(g => g.Count()); // Grand Total
             worksheet.Row(totalMonthlyIncomeRowIndex).Style.Font.Bold = true;
 
+            // Column 1
+            var cell2 = worksheet.Cell(1, 1);
+            cell2.Value = "GA Reports";
+            cell2.Style.Font.Bold = true;
+            cell2.Style.Font.FontSize = 12;
+            cell2.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            cell2.Style.Fill.BackgroundColor = XLColor.LightGray;
+            worksheet.Range(1, 1, 1, worksheet.LastColumnUsed().ColumnNumber()).Merge();
+
+            // Column 2
+            var cell3 = worksheet.Cell(2, 1);
+            cell3.Value = $"{monthLabel} GA";
+            cell3.Style.Font.Bold = true;
+            cell3.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            cell3.Style.Fill.BackgroundColor = XLColor.LightGray;
+            worksheet.Range(2, 1, 2, worksheet.LastColumnUsed().ColumnNumber()).Merge();
+
+            // Set header row style 
+            var rowsList = new List<int>
+            {
+                4, classRowIndex, genderRowIndex, economicStatusRowIndex, maritalStatusRowIndex, 
+                referralRowIndex, originRowIndex, ageRowIndex, patientEduRowIndex, fatherEduRowIndex, 
+                motherEduRowIndex, oldNewRowIndex, pwdRowIndex, householdSizeRowIndex, lightSourceRowIndex, 
+                waterSourceRowIndex, fuelSourceRowIndex, dwellingTypeRowIndex, statsOccupationRowIndex, 
+                incomeRangeRowIndex, occupationRowIndex, monthlyIncomeRowIndex
+            };
+
+            var headerRowsList = new List<int>
+            {
+                5, classRowIndex + 1, genderRowIndex + 1, economicStatusRowIndex + 1, maritalStatusRowIndex + 1, 
+                referralRowIndex + 1, originRowIndex + 1, ageRowIndex + 1, patientEduRowIndex + 1, 
+                fatherEduRowIndex + 1, motherEduRowIndex + 1, oldNewRowIndex + 1, pwdRowIndex + 1, 
+                householdSizeRowIndex + 1, lightSourceRowIndex + 1, waterSourceRowIndex + 1, 
+                fuelSourceRowIndex + 1, dwellingTypeRowIndex + 1, statsOccupationRowIndex + 1, 
+                incomeRangeRowIndex + 1, occupationRowIndex + 1, monthlyIncomeRowIndex + 1
+
+            };
+
+            var totalRowsList = new List<int>
+            {
+                totalDateRowIndex, totalClassRowIndex, totalGenderRowIndex, totalEconomicStatusRowIndex, 
+                totalMaritalStatusRowIndex, totalReferralRowIndex, totalOriginRowIndex, totalAgeRowIndex, 
+                totalPatientEduRowIndex, totalFatherEduRowIndex, totalMotherEduRowIndex, oldNewRowIndex + 4, 
+                pwdRowIndex + 4, totalHouseholdSizeRowIndex, totalLightSourceRowIndex, totalWaterSourceRowIndex, 
+                totalFuelSourceRowIndex, totalDwellingTypeRowIndex, totalStatsOccupationRowIndex, 
+                totalIncomeRangeRowIndex, totalOccupationRowIndex, totalMonthlyIncomeRowIndex
+            };
+
+            var userNameClaim = User.FindFirst(ClaimTypes.Name).Value;
+
+            ExcelReportStyler.ApplyWorksheetDesign(worksheet, rowsList, headerRowsList, totalRowsList, monthlyIncomeDataRowIndex, userNameClaim, true);
 
             // Autofit for better presentation
             worksheet.Columns().AdjustToContents();
