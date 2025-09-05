@@ -19,5 +19,9 @@ namespace LittleArkFoundation.Areas.Admin.Models.Dashboard
         public List<ProgressNotesModel> DailyProgressNotes { get; set; } = new List<ProgressNotesModel>();
         public List<ProgressNotesModel> MonthlyProgressNotes { get; set; } = new List<ProgressNotesModel>();
         public List<ProgressNotesModel> YearlyProgressNotes { get; set; } = new List<ProgressNotesModel>();
+        public List<OPDModel> OPDList { get; set; } = new List<OPDModel>();
+        public List<AssessmentsModel> AssessmentsList { get; set; } = new List<AssessmentsModel>();
+        public List<DischargesModel> DischargesList { get; set; } = new List<DischargesModel>();
+        public List<ProgressNotesModel> ProgressNotesList { get; set; } = new List<ProgressNotesModel>();   
     }
 }

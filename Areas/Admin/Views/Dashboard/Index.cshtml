@@ -8,20 +8,21 @@
     .container {
         margin: 10px;
         padding: 25px;
-        width: 200px;
+        width: 250px;
         height: max-content;
-		border: 1px solid #6c757d;
+        border: 1px solid #ffffff;
         border-radius: 5%;
         align-items: center;
         text-align: center;
-        color: #6c757d;
-        background-color: rgb(255, 255, 255);
+        color: #ffffff;
+        background-color: rgb(0, 126, 63);
         box-shadow: 0px 0px 15px rgb(217, 217, 217);
     }
 
         .container h1 {
             margin: 0px;
             padding: 10px;
+            word-wrap: break-word;
         }
 
         .container p {
@@ -30,13 +31,108 @@
             font-size: large;
         }
 
-    .daily, 
+    .daily,
     .monthly,
     .yearly {
-        color: #6c757d;
+        color: #ffffff;
     }
 
+    .container-users {
+        margin: 10px;
+        padding: 25px;
+        width: 300px;
+        height: max-content;
+        border: 1px solid #494949;
+        border-radius: 5%;
+        align-items: center;
+        text-align: center;
+        color: #ffffff;
+        background-color: rgb(51, 51, 51);
+        box-shadow: 0px 0px 15px rgb(217, 217, 217);
+    }
+
+        .container-users h3 {
+            margin: 0px;
+            padding: 5px;
+        }
+
+        .container-users p {
+            margin-top: -10px;
+            padding-top: -25px;
+        }
+
+    .users-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        justify-content: center; /* centers the whole group */
+    }
+
+        .users {
+            text-align: center;
+            font-size: medium;
+        }
+
+    .container-general {
+        margin: 10px;
+        padding: 25px;
+        width: 300px;
+        height: max-content;
+        border: 1px solid #5a5a5a;
+        border-radius: 5%;
+        align-items: center;
+        text-align: center;
+        color: #ffffff;
+        background-color: rgb(51, 51, 51);
+        background: #2d2d2d;
+        box-shadow: 0px 0px 15px rgb(217, 217, 217);
+    }
+
+        .container-general h3 {
+            margin: 0px;
+            padding: 0px;
+            word-wrap: break-word;
+        }
+
+        .container-general p {
+            margin-top: -10px;
+            padding-top: -25px;
+        }
+
+    .general-grid {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr); /* 3 equal columns */
+        gap: 10px; /* spacing between items */
+        text-align: center;
+    }
+
+    p {
+		font-weight: bold;
+    }
+
+    #activeUsersList {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center; /* centers items regardless of count */
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+        #activeUsersList li {
+            flex: 0 0 calc(33.333% - 8px); /* 3 columns */
+            background: #2d2d2d; /* optional styling */
+            border-radius: 5px;
+            padding: 4px 8px;
+            text-align: center;
+            color: #fff;
+            font-size: 0.9rem;
+            word-wrap: break-word; /* prevents long names from breaking layout */
+        }
 </style>
+
+<link rel="stylesheet" href="~/css/liveDot.css">
 
 <h2>Dashboard</h2>
 <hr />
@@ -57,25 +153,52 @@
         <h1 class="daily" style="display: block;">@Model.DailyOPD.Count</h1>
         <h1 class="monthly" style="display: none;">@Model.MonthlyOPD.Count</h1>
         <h1 class="yearly" style="display: none;">@Model.YearlyOPD.Count</h1>
-        <p>OPD</p>
+		<div class="d-flex align-items-center justify-content-center">
+            <i class="bi bi-box-arrow-left"></i> <p>OPD</p>
+        </div>
     </div>
     <div class="container">
         <h1 class="daily" style="display: block;">@Model.DailyAssessments.Count</h1>
         <h1 class="monthly" style="display: none;">@Model.MonthlyAssessments.Count</h1>
         <h1 class="yearly" style="display: none;">@Model.YearlyAssessments.Count</h1>
-        <p>Admission</p>
+        <div class="d-flex align-items-center justify-content-center">
+            <i class="bi bi-box-arrow-in-right"></i> <p>Admission</p>
+        </div>
     </div>
     <div class="container">
         <h1 class="daily" style="display: block;">@Model.DailyDischarges.Count</h1>
         <h1 class="monthly" style="display: none;">@Model.MonthlyDischarges.Count</h1>
         <h1 class="yearly" style="display: none;">@Model.YearlyDischarges.Count</h1>
-        <p>Discharge</p>
+        <div class="d-flex align-items-center justify-content-center">
+            <i class="bi bi-box-arrow-right"></i> <p>Discharge</p>
+        </div>
     </div>
     <div class="container">
         <h1 class="daily" style="display: block;">@Model.DailyProgressNotes.Count</h1>
         <h1 class="monthly" style="display: none;">@Model.MonthlyProgressNotes.Count</h1>
         <h1 class="yearly" style="display: none;">@Model.YearlyProgressNotes.Count</h1>
-        <p>Progress Notes</p>
+        <div class="d-flex align-items-center justify-content-center">
+            <i class="bi bi-card-text"></i> <p>Progress Notes</p>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-center">
+    <div class="container-users">
+        <p>Active Users:</p>
+        <div class="users-grid">
+            <ul id="activeUsersList" class="list-unstyled"></ul>
+        </div>
+    </div>
+
+    <div class="container-general">
+        <p>General Performance</p>
+        <div class="general-grid">
+            <h3 class="users"><i class="bi bi-box-arrow-left"></i> OPD: @Model.OPDList.Count</h3>
+            <h3 class="users"><i class="bi bi-box-arrow-in-right"></i> Admission: @Model.AssessmentsList.Count</h3>
+            <h3 class="users"><i class="bi bi-box-arrow-right"></i> Discharge: @Model.DischargesList.Count</h3>
+            <h3 class="users"><i class="bi bi-card-text"></i> Progress Notes: @Model.ProgressNotesList.Count</h3>
+        </div>
     </div>
 </div>
 
@@ -132,6 +255,7 @@
             }
         }
     </script>
+
 }
 
             

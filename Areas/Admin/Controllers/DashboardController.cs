@@ -102,6 +102,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 .Where(p => p.Date.Year == DateTime.Now.Year)
                 .ToList();
 
+            // ALL
+            var opdAll = await context.OPD.ToListAsync();
+            var assessmentsAll = await context.Assessments.ToListAsync();
+            var dischargesAll = await context.Discharges.ToListAsync();
+            var progressNotesAll = await context.ProgressNotes.ToListAsync();
+
             var viewModel = new DashboardViewModel()
             {
                 DailyOPD = dailyOPD,
@@ -115,7 +121,11 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 YearlyDischarges = yearlydischarges,
                 DailyProgressNotes = dailyProgressNotes,
                 MonthlyProgressNotes = monthlyProgressNotes,
-                YearlyProgressNotes = yearlyProgressNotes
+                YearlyProgressNotes = yearlyProgressNotes,
+                OPDList = opdAll,
+                AssessmentsList = assessmentsAll,
+                DischargesList = dischargesAll,
+                ProgressNotesList = progressNotesAll
             };
 
             return View(viewModel);

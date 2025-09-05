@@ -1,6 +1,7 @@
 using DinkToPdf;
 using DinkToPdf.Contracts;
 using DinkToPdfAll;
+using LittleArkFoundation.Areas.Admin.Hubs;
 using LittleArkFoundation.Authorize;
 using LittleArkFoundation.Data;
 using LittleArkFoundation.Hubs;
@@ -87,6 +88,7 @@ app.UseAuthorization();
 app.UseSession();
 
 app.MapHub<LogsHub>("/logsHub");
+app.MapHub<UsersHub>("/usersHub");
 
 app.MapControllerRoute(
       name: "areas",

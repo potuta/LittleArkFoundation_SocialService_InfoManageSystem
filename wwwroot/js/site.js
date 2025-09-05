@@ -237,6 +237,30 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 });
 
+document.addEventListener("DOMContentLoaded", async function () {
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/usersHub")
+        .build();
+
+    connection.on("ActiveUsersUpdated", function(users) {
+        let list = document.getElementById("activeUsersList");
+        list.innerHTML = "";
+        users.forEach(u => {
+            let li = document.createElement("li");
+            li.textContent = u;
+            li.className = "users";
+            list.appendChild(li);
+        });
+
+        // Update count
+        const usersCountElement = document.querySelector(".container-users p");
+        usersCountElement.innerHTML = '<span class="live-dot"></span> Active Users: ' + users.length;
+
+    });
+
+    connection.start().catch(err => console.error(err));
+});
+
 
 
 
