@@ -2,7 +2,9 @@
 using LittleArkFoundation.Areas.Admin.Models.SystemLogs;
 using LittleArkFoundation.Authorize;
 using LittleArkFoundation.Data;
+using LittleArkFoundation.Hubs;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace LittleArkFoundation.Areas.Admin.Controllers
@@ -13,10 +15,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
     public class SystemLogsController : Controller
     {
         private readonly ConnectionService _connectionService;
+        private readonly IHubContext<LogsHub> _hubContext;
         
-        public SystemLogsController(ConnectionService connectionService)
+        public SystemLogsController(ConnectionService connectionService, IHubContext<LogsHub> hubContext)
         {
             _connectionService = connectionService;
+            _hubContext = hubContext;
         }
 
         public async Task<IActionResult> Index(string? sortByMonth, int page = 1, int pageSize = 20)

@@ -1,12 +1,14 @@
+using DinkToPdf;
+using DinkToPdf.Contracts;
+using DinkToPdfAll;
+using LittleArkFoundation.Authorize;
 using LittleArkFoundation.Data;
+using LittleArkFoundation.Hubs;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using LittleArkFoundation.Authorize;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Build.Execution;
-using DinkToPdfAll;
-using DinkToPdf.Contracts;
-using DinkToPdf;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,6 +44,7 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<ConnectionService>();
 builder.Services.AddSingleton<DatabaseService>();
 builder.Services.AddTransient<EmailService>();
+builder.Services.AddSignalR();
 
 //builder.WebHost.ConfigureKestrel(options =>
 //{
@@ -57,6 +60,14 @@ builder.Services.AddScoped<ApplicationDbContext>(provider =>
 
 
 var app = builder.Build();
+
+// assign hub context to static LoggingService
+using (var scope = app.Services.CreateScope())
+{
+    var hubContext = scope.ServiceProvider.GetRequiredService<IHubContext<LogsHub>>();
+    LoggingService.HubContext = hubContext;
+}
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -74,6 +85,8 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();
+
+app.MapHub<LogsHub>("/logsHub");
 
 app.MapControllerRoute(
       name: "areas",

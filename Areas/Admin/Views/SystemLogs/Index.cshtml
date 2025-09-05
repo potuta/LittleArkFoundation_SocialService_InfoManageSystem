@@ -96,7 +96,7 @@
                     </tr>
                 }
             </thead>
-            <tbody>
+            <tbody id="logs-body">
                 @if (Model != null)
                 {
                     @foreach (var log in Model.LogsList)
@@ -221,5 +221,46 @@
         <span class="text-muted">Showing @Model.LogsList.Count of @(Model.TotalCount == 0 ? Model.LogsList.Count : Model.TotalCount) items</span>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
+
+    <script>
+        // establish SignalR connection
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/logsHub")
+            .build();
+
+        // get current filters from Razor ViewBag
+        const currentLevel = "@(ViewBag.sortBy ?? "")";
+        const currentDate = "@(ViewBag.sortByMonth ?? "")";
+
+        connection.on("ReceiveLog", function (log) {
+            // apply filter check before appending
+            if (currentLevel && log.level !== currentLevel) {
+                return;
+            }
+            if (currentDate && log.timeStamp.substring(0, 10) !== currentDate) {
+                return;
+            }
+
+            // build new row
+            const row = `
+                <tr data-level="${log.level}" data-date="${log.timeStamp.substring(0,10)}">
+                    <th>${log.id}</th>
+                    <th>${log.message}</th>
+                    <th>${log.level}</th>
+                    <th>${log.timeStamp}</th>
+                </tr>`;
+
+            // prepend to top of table
+            const tbody = document.getElementById("logs-body");
+            tbody.insertAdjacentHTML("afterbegin", row);
+        });
+
+        connection.start().catch(err => console.error(err.toString()));
+    </script>
+}
+
 
 
