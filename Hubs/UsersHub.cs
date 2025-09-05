@@ -18,7 +18,7 @@ namespace LittleArkFoundation.Areas.Admin.Hubs
 
             ActiveUsers[Context.ConnectionId] = username;
 
-            await Clients.All.SendAsync("ActiveUsersUpdated", ActiveUsers.Values);
+            await Clients.All.SendAsync("ActiveUsersUpdated", ActiveUsers.Values.Distinct());
 
             await base.OnConnectedAsync();
         }
@@ -27,7 +27,7 @@ namespace LittleArkFoundation.Areas.Admin.Hubs
         {
             ActiveUsers.TryRemove(Context.ConnectionId, out _);
 
-            await Clients.All.SendAsync("ActiveUsersUpdated", ActiveUsers.Values);
+            await Clients.All.SendAsync("ActiveUsersUpdated", ActiveUsers.Values.Distinct());
 
             await base.OnDisconnectedAsync(exception);
         }
@@ -35,7 +35,7 @@ namespace LittleArkFoundation.Areas.Admin.Hubs
         // Helper method if you want to get active users programmatically
         public static IEnumerable<string> GetActiveUsers()
         {
-            return ActiveUsers.Values;
+            return ActiveUsers.Values.Distinct();
         }
     }
 }
