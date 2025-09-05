@@ -4176,7 +4176,7 @@ namespace LittleArkFoundation.Data
                 var atwhatage = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Atwhatage1']");
                 if (atwhatage != null)
                 {
-                    atwhatage.InnerHtml = historyofabuse.SexualAbuseAgeOfChild.ToString();
+                    atwhatage.InnerHtml = historyofabuse.SexualAbuseAgeOfChild.ToString("0.##");
                 }
 
                 switch (historyofabuse.SexualAbuseReported)
@@ -4218,7 +4218,7 @@ namespace LittleArkFoundation.Data
                 var atwhatage = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Atwhatage2']");
                 if (atwhatage != null)
                 {
-                    atwhatage.InnerHtml = historyofabuse.PhysicalAbuseAgeOfChild.ToString();
+                    atwhatage.InnerHtml = historyofabuse.PhysicalAbuseAgeOfChild.ToString("0.##");
                 }
 
                 switch (historyofabuse.PhysicalAbuseReported)
@@ -4258,7 +4258,7 @@ namespace LittleArkFoundation.Data
                 var atwhatage = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Atwhatage3']");
                 if (atwhatage != null)
                 {
-                    atwhatage.InnerHtml = historyofabuse.EmotionalAbuseAgeOfChild.ToString();
+                    atwhatage.InnerHtml = historyofabuse.EmotionalAbuseAgeOfChild.ToString("0.##");
                 }
                 switch (historyofabuse.EmotionalAbuseReported)
                 {
@@ -4297,7 +4297,7 @@ namespace LittleArkFoundation.Data
                 var atwhatage = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Atwhatage4']");
                 if (atwhatage != null)
                 {
-                    atwhatage.InnerHtml = historyofabuse.VerbalAbuseAgeOfChild.ToString();
+                    atwhatage.InnerHtml = historyofabuse.VerbalAbuseAgeOfChild.ToString("0.##");
                 }
                 switch (historyofabuse.VerbalAbuseReported)
                 {
@@ -4336,7 +4336,7 @@ namespace LittleArkFoundation.Data
                 var atwhatage = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Atwhatage5']");
                 if (atwhatage != null)
                 {
-                    atwhatage.InnerHtml = historyofabuse.AbandonedAbuseAgeOfChild.ToString();
+                    atwhatage.InnerHtml = historyofabuse.AbandonedAbuseAgeOfChild.ToString("0.##");
                 }
                 switch(historyofabuse.AbandonedAbuseReported)
                 {
@@ -4375,7 +4375,7 @@ namespace LittleArkFoundation.Data
                 var atwhatage = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Atwhatage6']");
                 if (atwhatage != null)
                 {
-                    atwhatage.InnerHtml = historyofabuse.PsychologicalAbuseAgeOfChild.ToString();
+                    atwhatage.InnerHtml = historyofabuse.PsychologicalAbuseAgeOfChild.ToString("0.##");
                 }
                 switch (historyofabuse.PsychologicalAbuseReported)
                 {
@@ -4482,7 +4482,7 @@ namespace LittleArkFoundation.Data
                 var atwhatage = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Accusedatwhatage1']");
                 if (atwhatage != null)
                 {
-                    atwhatage.InnerHtml = historyofviolence.SexualAbuseAgeOfChild.ToString();
+                    atwhatage.InnerHtml = historyofviolence.SexualAbuseAgeOfChild.ToString("0.##");
                 }
 
                 switch (historyofviolence.SexualAbuseReported)
@@ -4516,7 +4516,7 @@ namespace LittleArkFoundation.Data
                 var atwhatage = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Accusedatwhatage2']");
                 if (atwhatage != null)
                 {
-                    atwhatage.InnerHtml = historyofviolence.PhysicalAbuseAgeOfChild.ToString();
+                    atwhatage.InnerHtml = historyofviolence.PhysicalAbuseAgeOfChild.ToString("0.##");
                 }
                 switch (historyofviolence.PhysicalAbuseReported)
                 {
@@ -4549,7 +4549,7 @@ namespace LittleArkFoundation.Data
                 var atwhatage = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Accusedatwhatage3']");
                 if (atwhatage != null)
                 {
-                    atwhatage.InnerHtml = historyofviolence.EmotionalAbuseAgeOfChild.ToString();
+                    atwhatage.InnerHtml = historyofviolence.EmotionalAbuseAgeOfChild.ToString("0.##");
                 }
                 switch (historyofviolence.EmotionalAbuseReported)
                 {
@@ -4582,7 +4582,7 @@ namespace LittleArkFoundation.Data
                 var atwhatage = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Accusedatwhatage4']");
                 if (atwhatage != null)
                 {
-                    atwhatage.InnerHtml = historyofviolence.VerbalAbuseAgeOfChild.ToString();
+                    atwhatage.InnerHtml = historyofviolence.VerbalAbuseAgeOfChild.ToString("0.##");
                 }
                 switch (historyofviolence.VerbalAbuseReported)
                 {
@@ -4615,7 +4615,7 @@ namespace LittleArkFoundation.Data
                 var atwhatage = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Accusedatwhatage5']");
                 if (atwhatage != null)
                 {
-                    atwhatage.InnerHtml = historyofviolence.AbandonedAbuseAgeOfChild.ToString();
+                    atwhatage.InnerHtml = historyofviolence.AbandonedAbuseAgeOfChild.ToString("0.##");
                 }
                 switch (historyofviolence.AbandonedAbuseReported)
                 {
