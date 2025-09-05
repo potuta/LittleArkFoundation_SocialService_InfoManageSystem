@@ -3648,13 +3648,13 @@ namespace LittleArkFoundation.Data
             var fosteragestart = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Fromage']");
             if (fosteragestart != null)
             {
-                fosteragestart.InnerHtml = fostercare.FosterAgeEnd.ToString();
+                fosteragestart.InnerHtml = fostercare.FosterAgeStart.ToString("0.##");
             }
 
             var fosterageend = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Toage']");
             if (fosterageend != null)
             {
-                fosterageend.InnerHtml = fostercare.FosterAgeEnd.ToString();
+                fosterageend.InnerHtml = fostercare.FosterAgeEnd.ToString("0.##");
             }
 
             var reason = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Describereasonfostercare']");

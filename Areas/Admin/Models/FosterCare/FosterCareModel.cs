@@ -6,8 +6,8 @@
         public int AssessmentID { get; set; }
         public int PatientID { get; set; }
         public string HasBeenFosterCared { get; set; } = "N/A";
-        public int FosterAgeStart { get; set; } = 0;
-        public int FosterAgeEnd { get; set; } = 0;
+        public decimal FosterAgeStart { get; set; } = 0;
+        public decimal FosterAgeEnd { get; set; } = 0;
         public string Reason { get; set; } = "N/A";
         public string PlacementType { get; set; } = "N/A";
         public string CurrentStatus { get; set; } = "N/A";
