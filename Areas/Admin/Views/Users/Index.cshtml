@@ -153,14 +153,15 @@
                         @foreach (var user in Model.Users)
                         {
 							var roleName = Model.Roles.FirstOrDefault(r => r.RoleID == user.RoleID)?.RoleName ?? "Unknown";
+							var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
                             <tr>
                                 <td class="sticky-col d-flex gap-1" style="white-space: nowrap; left: 0; z-index: 1;">
                                     @if (User.HasClaim("Permission", "EditUser"))
                                     {
                                         <a href="@Url.Action("Edit", new { id = user.UserID })" class="btn btn-primary hide-when-archived"
-                                           data-bs-toggle="tooltip"
-                                           title="Edit">
+                                            data-bs-toggle="tooltip"
+                                            title="Edit">
                                             <i class="bx bx-edit"></i>
                                         </a>
                                     }
@@ -177,11 +178,14 @@
 
                                     @if (User.HasClaim("Permission", "ArchiveUnarchiveUser"))
                                     {
-                                        <a href="@Url.Action("Archive", new { id = user.UserID })" class="btn btn-danger hide-when-archived" onclick="return confirm('Are you sure you want to archive this user?');"
-                                           data-bs-toggle="tooltip"
-                                           title="Archive User">
-                                            <i class="bi bi-archive"></i>
-                                        </a>
+                                        if (user.RoleID != 1 && user.UserID != int.Parse(currentUserId))
+                                        {
+                                            <a href="@Url.Action("Archive", new { id = user.UserID })" class="btn btn-danger hide-when-archived" onclick="return confirm('Are you sure you want to archive this user?');"
+                                               data-bs-toggle="tooltip"
+                                               title="Archive User">
+                                                <i class="bi bi-archive"></i>
+                                            </a>
+                                        }
                                     }
                                     else
                                     {
