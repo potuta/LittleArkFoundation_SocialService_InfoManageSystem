@@ -1148,9 +1148,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DownloadPDF(int id, int assessmentID)
+        [HttpGet]
+        public async Task<IActionResult> DownloadPDF(int id, int assessmentID, bool? isPrint)
         {
             try
             {
@@ -1291,6 +1290,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
 
                 byte[] mergedPdf = await new PDFService(_pdfConverter).MergePdfsAsync(pdfList);
+
+                if (isPrint == true)
+                {
+                    return File(mergedPdf, "application/pdf");
+                }
+
                 return File(mergedPdf, "application/pdf", $"{id}.pdf");
             }
             catch (Exception ex)
