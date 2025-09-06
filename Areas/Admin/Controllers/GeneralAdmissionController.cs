@@ -504,7 +504,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             // Autofit for better presentation
             worksheet.Columns().AdjustToContents();
 
-            using (var stream = new MemoryStream())
+            await using (var stream = new MemoryStream())
             {
                 workbook.SaveAs(stream);
                 stream.Position = 0;
@@ -1280,7 +1280,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             // Autofit for better presentation
             worksheet.Columns().AdjustToContents();
 
-            using (var stream = new MemoryStream())
+            await using (var stream = new MemoryStream())
             {
                 workbook.SaveAs(stream);
                 stream.Position = 0;
@@ -1387,7 +1387,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             // Autofit for better presentation
             worksheet.Columns().AdjustToContents();
 
-            using (var stream = new MemoryStream())
+            await using (var stream = new MemoryStream())
             {
                 workbook.SaveAs(stream);
                 stream.Position = 0;
@@ -1535,7 +1535,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             // Autofit for better presentation
             worksheet.Columns().AdjustToContents();
 
-            using (var stream = new MemoryStream())
+            await using (var stream = new MemoryStream())
             {
                 workbook.SaveAs(stream);
                 stream.Position = 0;
@@ -1783,7 +1783,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             // Autofit for better presentation
             worksheet.Columns().AdjustToContents();
 
-            using (var stream = new MemoryStream())
+            await using (var stream = new MemoryStream())
             {
                 workbook.SaveAs(stream);
                 stream.Position = 0;
@@ -1931,7 +1931,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             // Autofit for better presentation
             worksheet.Columns().AdjustToContents();
 
-            using (var stream = new MemoryStream())
+            await using (var stream = new MemoryStream())
             {
                 workbook.SaveAs(stream);
                 stream.Position = 0;
@@ -3576,7 +3576,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             // Autofit for better presentation
             worksheet.Column(1).AdjustToContents();
 
-            using (var stream = new MemoryStream())
+            await using (var stream = new MemoryStream())
             {
                 workbook.SaveAs(stream);
                 stream.Position = 0;
