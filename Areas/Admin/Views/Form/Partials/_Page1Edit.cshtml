@@ -399,15 +399,15 @@
         <td>
 
             <div class="radio-group">
-                <input type="radio" asp-for="MSWDClassification.SubClassification" value="C1" required> C1
+                <input type="radio" asp-for="MSWDClassification.SubClassification" value="C1" disabled> C1
             </div>
 
             <div class="radio-group">
-                <input type="radio" asp-for="MSWDClassification.SubClassification" value="C2"> C2
+                <input type="radio" asp-for="MSWDClassification.SubClassification" value="C2" disabled> C2
             </div>
 
             <div class="radio-group">
-                <input type="radio" asp-for="MSWDClassification.SubClassification" value="C3"> C3
+                <input type="radio" asp-for="MSWDClassification.SubClassification" value="C3" disabled> C3
             </div>
             
         </td>
@@ -484,3 +484,24 @@
         </td>
     </tr>
 </table>
+
+<script>
+    document.querySelectorAll('input[name="MSWDClassification.MainClassification"]').forEach(mainRadio => {
+        mainRadio.addEventListener('change', function () {
+            let subRadios = document.querySelectorAll('input[name="MSWDClassification.SubClassification"]');
+
+            if (this.value === "Financially Incapable/Incapacitated") {
+                subRadios.forEach(r => {
+                    r.disabled = false;
+                    r.required = true;
+                });
+            } else {
+                subRadios.forEach(r => {
+                    r.checked = false;   // uncheck if previously selected
+                    r.disabled = true;
+                    r.required = false;
+                });
+            }
+        });
+    });
+</script>
