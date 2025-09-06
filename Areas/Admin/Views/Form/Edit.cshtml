@@ -1022,11 +1022,13 @@
                         }, 100);
 
 
-                        // Give DOM time to visually update
-                        // setTimeout(() => {
-                        //     form.removeAttribute("novalidate");
-                        //     form.requestSubmit();
-                        // }, 100);
+                        // Collapse sections without invalid fields
+                        collapses.forEach(collapseEl => {
+                            const hasInvalid = collapseEl.querySelector(":invalid");
+                            if (!hasInvalid) {
+                                collapseEl.classList.remove("show");
+                            }
+                        });
 
                     }
                 }
