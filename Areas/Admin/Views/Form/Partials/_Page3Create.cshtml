@@ -243,7 +243,13 @@
         </td>
         <td>
             PhoneNumber
-            <input type="text" asp-for="PrimaryCareDoctor.PhoneNumber" placeholder="Type N/A if no answer" required>
+            <input type="tel" 
+                asp-for="PrimaryCareDoctor.PhoneNumber"
+                required inputmode="numeric"
+                pattern="(^09\d{9}$)|(^0\d{1,2}\d{7,8}$)"
+                title="Mobile: 11 digits starting with 09. Or landline e.g. 02xxxxxxx"
+                maxlength="11"
+                required>
         </td>
     </tr>
 </table>
