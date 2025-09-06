@@ -1302,7 +1302,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetProgressNoteFile(int id)
+        public async Task<IActionResult> GetProgressNoteFile(int id, bool? isDownload)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
@@ -1319,11 +1319,19 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             {
                 "application/pdf" => ".pdf",
                 "image/jpeg" => ".jpg",
+                "image/jpg" => ".jpg",
                 "image/png" => ".png",
                 _ => ""
             };
 
-            return File(progressNote.Attachment, contentType, fileName + extension);
+            if (isDownload == true)
+            {
+                return File(progressNote.Attachment, contentType, fileName + extension);
+            }
+            else
+            {
+                return File(progressNote.Attachment, contentType);
+            }
         }
     }
 }

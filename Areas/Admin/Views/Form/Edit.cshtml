@@ -603,17 +603,28 @@
                     <td>
                         <input type="hidden" name="ProgressNotes[${rowCount}].Attachment" />
                         <input type="hidden" name="ProgressNotes[${rowCount}].AttachmentContentType" />
+                        <input type="hidden" name="ProgressNotes[${rowCount}].RemoveAttachment" id="removeAttachment-${rowCount}" />
+
                         <input type="file" name="ProgressNotes[${rowCount}].AttachmentFile"
                             id="uploadedFile-${rowCount}"
                             accept=".pdf,image/*"
                             class="form-control mb-2"
                             onchange="handleFileUpload(this, ${rowCount})" />
-                        <input type="hidden" name="ProgressNotes[${rowCount}].RemoveAttachment" id="removeAttachment-${rowCount}" />
-                        <div id="previewContainer-${rowCount}" class="mt-2" style="display: none;">
-                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#filePreviewModal-${rowCount}">
-                                View File
+
+                        <div id="previewContainer-${rowCount}" class="d-flex justify-content-center align-items-center gap-2" style="display: none;">
+                            <button type="button"
+                                class="btn btn-dark"
+                                data-bs-toggle="modal"
+                                data-bs-target="#filePreviewModal-${rowCount}"
+                                title="View File">
+                                <i class="bi bi-eye"></i>
                             </button>
-                            <button type="button" class="btn btn-danger ms-2" onclick="removeFile(${rowCount})">Remove File</button>
+                            <button type="button"
+                                class="btn btn-danger"
+                                title="Delete File"
+                                onclick="if (confirm('Are you sure you want to remove this file?')) removeFile(${rowCount});">
+                                <i class="bi bi-trash"></i>
+                            </button>
                         </div>
 
                         <!-- Modal will be blank initially -->
@@ -1074,7 +1085,11 @@
 
         function removeFile(index) {
             const fileInput = document.getElementById(`uploadedFile-${index}`);
-            if (fileInput) fileInput.value = "";
+            if (fileInput) {
+                fileInput.value = "";
+                fileInput.disabled = false; // re-enable so user can upload again
+				fileInput.style = "display: block;"; // show the file input again
+            }
 
             const removeFlag = document.getElementById(`removeAttachment-${index}`);
             if (removeFlag) removeFlag.value = "true";
@@ -1084,6 +1099,9 @@
 
             const previewContent = document.getElementById(`filePreviewContent-${index}`);
             if (previewContent) previewContent.innerHTML = "";
+
+			const downloadFile = document.getElementById(`downloadFile-${index}`);
+			if (downloadFile) downloadFile.style.display = "none";
         }
 
 

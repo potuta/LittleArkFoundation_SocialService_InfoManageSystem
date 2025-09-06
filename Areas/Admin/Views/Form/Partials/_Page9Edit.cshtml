@@ -39,28 +39,47 @@
 
                 <td>
 
-                    <input type="hidden" asp-for="ProgressNotes[i].Attachment" id="removeAttachment-@i" />
-                    <input type="hidden" asp-for="ProgressNotes[i].AttachmentContentType" id="removeAttachment-@i" />
-
-                    <input type="file" asp-for="ProgressNotes[i].AttachmentFile" id="uploadedFile-@i"
-                           accept=".pdf,image/*" class="form-control mb-2"
-                           onchange="handleFileUpload(this, @i)" />
-
-                    <!-- Hidden input to track attachment removal -->
+                    <input type="hidden" asp-for="ProgressNotes[i].Attachment" id="attachment-@i" />
+                    <input type="hidden" asp-for="ProgressNotes[i].AttachmentContentType" id="attachmentContentType-@i" />
                     <input type="hidden" asp-for="ProgressNotes[i].RemoveAttachment" id="removeAttachment-@i" />
 
-                    <div id="previewContainer-@i" class="mt-2" style="@(hasFile ? "" : "display: none;")">
-                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#filePreviewModal-@i">
-                            View File
+                    @if (hasFile)
+                    {
+                        <input type="file" asp-for="ProgressNotes[i].AttachmentFile" id="uploadedFile-@i"
+                               accept=".pdf,image/png,image/jpeg,image/jpg"
+                               class="form-control mb-2"
+                               style="display: none;"
+                               onchange="handleFileUpload(this, @i)" disabled />
+                    }
+                    else
+                    {
+                        <input type="file" asp-for="ProgressNotes[i].AttachmentFile" id="uploadedFile-@i"
+                               accept=".pdf,image/png,image/jpeg,image/jpg"
+                               class="form-control mb-2"
+                               onchange="handleFileUpload(this, @i)" />
+                    }
+
+                    <div id="previewContainer-@i" class="d-flex justify-content-center align-items-center gap-2" style="@(hasFile ? "" : "display: none;")">
+                        <button type="button" 
+                            class="btn btn-dark" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#filePreviewModal-@i"
+                            title="View File">
+                            <i class="bi bi-eye"></i>
                         </button>
-                        <a href="@Url.Action("GetProgressNoteFile", "Form", new { id = Model.ProgressNotes[i].ProgressNotesID })"
+                        <a href="@Url.Action("GetProgressNoteFile", "Form", new { id = Model.ProgressNotes[i].ProgressNotesID, isDownload = true })"
                            style="@(hasFile ? "" : "display: none;")"
-                           class="btn btn-primary" target="_blank">
-                            Download File
+                           class="btn btn-primary" 
+                           id="downloadFile-@i"
+                           target="_blank"
+                            title="Download File">
+                            <i class="bi bi-file-earmark-arrow-down"></i>
                         </a>
-                        <button type="button" class="btn btn-danger ms-2"
-                                onclick="if (confirm('Are you sure you want to remove this file?')) removeFile(@i);">
-                            Remove File
+                        <button type="button" 
+                            class="btn btn-danger"
+                            title="Delete File"
+                            onclick="if (confirm('Are you sure you want to remove this file?')) removeFile(@i);">
+                            <i class="bi bi-trash"></i>
                         </button>
                     </div>
 
@@ -101,7 +120,10 @@
 
                 </td>
 
-                <td><button type="button" id="progressnotes-button-remove" onclick="removeRow(this)">❌</button></td>
+                <td><button type="button" 
+                    id="progressnotes-button-remove"
+                    class="d-flex justify-content-center align-items-center"
+                    onclick="removeRow(this)">❌</button></td>
             </tr>
         }
     </tbody>
