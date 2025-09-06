@@ -846,6 +846,10 @@
             const form = document.querySelector("form");
 
             form.addEventListener("submit", function (e) {
+                // Remove old highlights first
+                form.querySelectorAll(".invalid-highlight").forEach(el => {
+                    el.classList.remove("invalid-highlight");
+                });
 
                 const collapses = document.querySelectorAll(".accordion-collapse");
 
