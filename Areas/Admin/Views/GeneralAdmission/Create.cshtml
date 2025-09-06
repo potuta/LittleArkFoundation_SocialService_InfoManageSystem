@@ -309,7 +309,13 @@
             <tr>
                 <td>
                     Contact Number: <span class="required">*</span>
-                    <input type="number" asp-for="GeneralAdmission.ContactNumber" placeholder="Type 0 if No Answer" required>
+                    <input type="tel" 
+                        asp-for="GeneralAdmission.ContactNumber"
+                        required inputmode="numeric"
+                        pattern="(^09\d{9}$)|(^0\d{1,2}\d{7,8}$)"
+                        title="Mobile: 11 digits starting with 09. Or landline e.g. 02xxxxxxx"
+                        maxlength="11"
+                        required>
                 </td>
                 <td>
                     Source of Referral: <span class="required">*</span>

@@ -79,7 +79,13 @@
             </div>
             <div style="display: flex;">
                 Contact #:
-                <input type="text" asp-for="LegalInvolvement.OfficerContactNum" placeholder="Type N/A if no answer" required>
+                <input type="tel" 
+                    asp-for="LegalInvolvement.OfficerContactNum"
+                    required inputmode="numeric"
+                    pattern="(^09\d{9}$)|(^0\d{1,2}\d{7,8}$)"
+                    title="Mobile: 11 digits starting with 09. Or landline e.g. 02xxxxxxx"
+                    maxlength="11"
+                    required>
             </div>
 
             <hr />
