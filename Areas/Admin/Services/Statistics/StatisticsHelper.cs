@@ -1,4 +1,5 @@
-﻿using LittleArkFoundation.Areas.Admin.Models.Statistics;
+﻿using ClosedXML.Excel;
+using LittleArkFoundation.Areas.Admin.Models.Statistics;
 
 namespace LittleArkFoundation.Areas.Admin.Services.Statistics
 {
@@ -25,6 +26,47 @@ namespace LittleArkFoundation.Areas.Admin.Services.Statistics
             }
 
             return result;
+        }
+
+        public static void ApplyWorksheetStatistics(
+            IXLWorksheet worksheet,
+            int row,
+            string title,
+            int indent,
+            Dictionary<int, Dictionary<string, int>> totalStatisticsMonthlyDictionary,
+            string key,
+            bool isWrapText = false
+            )
+        {
+            worksheet.Cell(row, 1).Value = title;
+            worksheet.Cell(row, 1).Style.Alignment.WrapText = isWrapText;
+            worksheet.Cell(row, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(row, 1).Style.Alignment.Indent = indent;
+
+            for (int i = 1; i <= 6; i++)
+            {
+                var count = totalStatisticsMonthlyDictionary[i][key];
+                worksheet.Cell(row, i + 1).Value = count == 0 ? "" : count;
+                worksheet.Cell(row, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            }
+
+            worksheet.Cell(row, 8).Value =
+                Enumerable.Range(1, 6).Sum(i => totalStatisticsMonthlyDictionary[i][key]);
+            worksheet.Cell(row, 8).Style.Font.Bold = true;
+            worksheet.Cell(row, 8).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            for (int i = 7; i <= 12; i++)
+            {
+                var count = totalStatisticsMonthlyDictionary[i][key];
+                worksheet.Cell(row, i + 2).Value = count == 0 ? "" : count;
+                worksheet.Cell(row, i + 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            }
+
+            worksheet.Cell(row, 15).Value =
+                Enumerable.Range(7, 6).Sum(i => totalStatisticsMonthlyDictionary[i][key]);
+            worksheet.Cell(row, 15).Style.Font.Bold = true;
+            worksheet.Cell(row, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
         }
     }
 }
