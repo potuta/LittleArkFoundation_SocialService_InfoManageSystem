@@ -1700,19 +1700,30 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Cell(caseloadRow, 1).Value = "2. Closed Summary";
             worksheet.Cell(caseloadRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
             worksheet.Cell(caseloadRow, 1).Style.Alignment.Indent = 1;
-            for (int i = 1; i <= headers.Length; i++)
+
+            for (int i = 1; i <= 6; i++)
             {
-                if (i == 7 || i == 14)
-                {
-                    worksheet.Cell(caseloadRow, i + 1).Value = 0;
-                    worksheet.Cell(caseloadRow, i + 1).Style.Font.Bold = true;
-                    worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                }
-                else
-                {
-                    worksheet.Cell(caseloadRow, i + 1).Value = "";
-                }
+                var count = totalStatisticsMonthlyDictionary[i]["ii_ClosedSummary"];
+                worksheet.Cell(caseloadRow, i + 1).Value = count == 0 ? "" : count;
+                worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             }
+
+            worksheet.Cell(caseloadRow, 8).Value =
+                Enumerable.Range(1, 6).Sum(i => totalStatisticsMonthlyDictionary[i]["ii_ClosedSummary"]);
+            worksheet.Cell(caseloadRow, 8).Style.Font.Bold = true;
+            worksheet.Cell(caseloadRow, 8).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            for (int i = 7; i <= 12; i++)
+            {
+                var count = totalStatisticsMonthlyDictionary[i]["ii_ClosedSummary"];
+                worksheet.Cell(caseloadRow, i + 2).Value = count == 0 ? "" : count;
+                worksheet.Cell(caseloadRow, i + 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            }
+
+            worksheet.Cell(caseloadRow, 15).Value =
+                Enumerable.Range(7, 6).Sum(i => totalStatisticsMonthlyDictionary[i]["ii_ClosedSummary"]);
+            worksheet.Cell(caseloadRow, 15).Style.Font.Bold = true;
+            worksheet.Cell(caseloadRow, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
             caseloadRow++;
 
@@ -1769,38 +1780,60 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Cell(caseloadRow, 1).Value = "b. Indigenous People";
             worksheet.Cell(caseloadRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
             worksheet.Cell(caseloadRow, 1).Style.Alignment.Indent = 2;
-            for (int i = 1; i <= headers.Length; i++)
+
+            for (int i = 1; i <= 6; i++)
             {
-                if (i == 7 || i == 14)
-                {
-                    worksheet.Cell(caseloadRow, i + 1).Value = 0;
-                    worksheet.Cell(caseloadRow, i + 1).Style.Font.Bold = true;
-                    worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                }
-                else
-                {
-                    worksheet.Cell(caseloadRow, i + 1).Value = "";
-                }
+                var count = totalStatisticsMonthlyDictionary[i]["ii_NoPatients_IndigenousPeople"];
+                worksheet.Cell(caseloadRow, i + 1).Value = count == 0 ? "" : count;
+                worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             }
+
+            worksheet.Cell(caseloadRow, 8).Value =
+                Enumerable.Range(1, 6).Sum(i => totalStatisticsMonthlyDictionary[i]["ii_NoPatients_IndigenousPeople"]);
+            worksheet.Cell(caseloadRow, 8).Style.Font.Bold = true;
+            worksheet.Cell(caseloadRow, 8).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            for (int i = 7; i <= 12; i++)
+            {
+                var count = totalStatisticsMonthlyDictionary[i]["ii_NoPatients_IndigenousPeople"];
+                worksheet.Cell(caseloadRow, i + 2).Value = count == 0 ? "" : count;
+                worksheet.Cell(caseloadRow, i + 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            }
+
+            worksheet.Cell(caseloadRow, 15).Value =
+                Enumerable.Range(7, 6).Sum(i => totalStatisticsMonthlyDictionary[i]["ii_NoPatients_IndigenousPeople"]);
+            worksheet.Cell(caseloadRow, 15).Style.Font.Bold = true;
+            worksheet.Cell(caseloadRow, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
             caseloadRow++;
 
             worksheet.Cell(caseloadRow, 1).Value = "c. Government Workers";
             worksheet.Cell(caseloadRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
             worksheet.Cell(caseloadRow, 1).Style.Alignment.Indent = 2;
-            for (int i = 1; i <= headers.Length; i++)
+
+            for (int i = 1; i <= 6; i++)
             {
-                if (i == 7 || i == 14)
-                {
-                    worksheet.Cell(caseloadRow, i + 1).Value = 0;
-                    worksheet.Cell(caseloadRow, i + 1).Style.Font.Bold = true;
-                    worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                }
-                else
-                {
-                    worksheet.Cell(caseloadRow, i + 1).Value = "";
-                }
+                var count = totalStatisticsMonthlyDictionary[i]["ii_NoPatients_GovernmentWorkers"];
+                worksheet.Cell(caseloadRow, i + 1).Value = count == 0 ? "" : count;
+                worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             }
+
+            worksheet.Cell(caseloadRow, 8).Value =
+                Enumerable.Range(1, 6).Sum(i => totalStatisticsMonthlyDictionary[i]["ii_NoPatients_GovernmentWorkers"]);
+            worksheet.Cell(caseloadRow, 8).Style.Font.Bold = true;
+            worksheet.Cell(caseloadRow, 8).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            for (int i = 7; i <= 12; i++)
+            {
+                var count = totalStatisticsMonthlyDictionary[i]["ii_NoPatients_GovernmentWorkers"];
+                worksheet.Cell(caseloadRow, i + 2).Value = count == 0 ? "" : count;
+                worksheet.Cell(caseloadRow, i + 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            }
+
+            worksheet.Cell(caseloadRow, 15).Value =
+                Enumerable.Range(7, 6).Sum(i => totalStatisticsMonthlyDictionary[i]["ii_NoPatients_GovernmentWorkers"]);
+            worksheet.Cell(caseloadRow, 15).Style.Font.Bold = true;
+            worksheet.Cell(caseloadRow, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
             // SERVICES
             int serviceRow = caseloadRow + 1;

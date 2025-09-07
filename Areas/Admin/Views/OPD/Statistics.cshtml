@@ -404,17 +404,26 @@ else
 
                     <tr>
                         <td style="white-space: nowrap;">2. Closed Summary</td>
-                        @for (int i = 1; i <= 14; i++)
+
+                        @for (int i = 1; i <= 6; i++)
                         {
-                            if (i == 7 || i == 14)
-                            {
-                                <td style="white-space: nowrap;">0</td>
-                            }
-                            else
-                            {
-                                <td style="white-space: nowrap;"></td>
-                            }
+                            var count = Model.TotalStatisticsMonthly[i]["ii_ClosedSummary"];
+                            <td style="white-space: nowrap;">@(count == 0 ? "" : count)</td>
                         }
+
+                        <td style="white-space: nowrap;">
+                            @(Enumerable.Range(1, 6).Sum(i => Model.TotalStatisticsMonthly[i]["ii_ClosedSummary"]))
+                        </td>
+
+                        @for (int i = 7; i <= 12; i++)
+                        {
+                            var count = Model.TotalStatisticsMonthly[i]["ii_ClosedSummary"];
+                            <td style="white-space: nowrap;">@(count == 0 ? "" : count)</td>
+                        }
+
+                        <td style="white-space: nowrap;">
+                            @(Enumerable.Range(7, 6).Sum(i => Model.TotalStatisticsMonthly[i]["ii_ClosedSummary"]))
+                        </td>
                     </tr>
 
                     <tr>
@@ -458,32 +467,50 @@ else
 
                     <tr>
                         <td style="white-space: nowrap;">b. Indigenous People</td>
-                        @for (int i = 1; i <= 14; i++)
+
+                        @for (int i = 1; i <= 6; i++)
                         {
-                            if (i == 7 || i == 14)
-                            {
-                                <td style="white-space: nowrap;">0</td>
-                            }
-                            else
-                            {
-                                <td style="white-space: nowrap;"></td>
-                            }
+                            var count = Model.TotalStatisticsMonthly[i]["ii_NoPatients_IndigenousPeople"];
+                            <td style="white-space: nowrap;">@(count == 0 ? "" : count)</td>
                         }
+
+                        <td style="white-space: nowrap;">
+                            @(Enumerable.Range(1, 6).Sum(i => Model.TotalStatisticsMonthly[i]["ii_NoPatients_IndigenousPeople"]))
+                        </td>
+
+                        @for (int i = 7; i <= 12; i++)
+                        {
+                            var count = Model.TotalStatisticsMonthly[i]["ii_NoPatients_IndigenousPeople"];
+                            <td style="white-space: nowrap;">@(count == 0 ? "" : count)</td>
+                        }
+
+                        <td style="white-space: nowrap;">
+                            @(Enumerable.Range(7, 6).Sum(i => Model.TotalStatisticsMonthly[i]["ii_NoPatients_IndigenousPeople"]))
+                        </td>
                     </tr>
 
                     <tr>
                         <td style="white-space: nowrap;">c. Government Workers</td>
-                        @for (int i = 1; i <= 14; i++)
+
+                        @for (int i = 1; i <= 6; i++)
                         {
-                            if (i == 7 || i == 14)
-                            {
-                                <td style="white-space: nowrap;">0</td>
-                            }
-                            else
-                            {
-                                <td style="white-space: nowrap;"></td>
-                            }
+                            var count = Model.TotalStatisticsMonthly[i]["ii_NoPatients_GovernmentWorkers"];
+                            <td style="white-space: nowrap;">@(count == 0 ? "" : count)</td>
                         }
+
+                        <td style="white-space: nowrap;">
+                            @(Enumerable.Range(1, 6).Sum(i => Model.TotalStatisticsMonthly[i]["ii_NoPatients_GovernmentWorkers"]))
+                        </td>
+
+                        @for (int i = 7; i <= 12; i++)
+                        {
+                            var count = Model.TotalStatisticsMonthly[i]["ii_NoPatients_GovernmentWorkers"];
+                            <td style="white-space: nowrap;">@(count == 0 ? "" : count)</td>
+                        }
+
+                        <td style="white-space: nowrap;">
+                            @(Enumerable.Range(7, 6).Sum(i => Model.TotalStatisticsMonthly[i]["ii_NoPatients_GovernmentWorkers"]))
+                        </td>
                     </tr>
 
                     <tr>
