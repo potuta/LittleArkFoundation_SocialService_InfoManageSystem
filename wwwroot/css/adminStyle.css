@@ -362,6 +362,10 @@ h2 {
     font-size: 0.9rem;
 }
 
+input[type="radio"] {
+    accent-color: rgb(0, 0, 0) !important; 
+}
+
 /* Media Queries for Responsive Design */
 @media (max-width: 48rem) { /* 768px */
     .navbar-top-main {
