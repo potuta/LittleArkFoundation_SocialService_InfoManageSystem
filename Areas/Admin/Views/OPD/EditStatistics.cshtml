@@ -263,7 +263,10 @@
 
                         <tr>
                             <td style="white-space: nowrap;">2. Closed Summary</td>
-                            
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_ClosedSummary" />
+                            </td>
                         </tr>
 
                         <tr>
@@ -311,17 +314,27 @@
 
                         <tr>
                             <td style="white-space: nowrap;">1.1 Socio Economic Classification</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Planning_SocioEconomicClassification" />
+                            </td>
                             
                         </tr>
 
                         <tr>
                             <td style="white-space: nowrap;">1.2 Pre-admission Planning</td>
-                            
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Planning_PreAdmissionPlanning" />
+                            </td>
                         </tr>
 
                         <tr>
                             <td style="white-space: nowrap;">1.3 Information Services/Orientation</td>
-                            
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Planning_InformationServices" />
+                            </td>
                         </tr>
 
                         <tr>
@@ -331,41 +344,90 @@
 
                         <tr>
                             <td style="white-space: nowrap;">2.1 Provision of Discount</td>
-                            
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Concrete_ProvisionDiscount" />
+                            </td>
                         </tr>
 
                         <tr>
                             <td style="white-space: nowrap;">2.2 Facilitating Referrals</td>
-                            
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Concrete_FacilitatingReferrals" />
+                            </td>
                         </tr>
 
                         <tr>
                             <td style="white-space: nowrap;">2.2.1 Outgoing Referrals for:</td>
-                            
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Concrete_OutgoingReferrals_MedicalAssistance" />
+                            </td>
                         </tr>
 
-                        var outgoingReferrals = new List<string>
-                                    {
-                                    "a. Medical Assistance",
-                                    "b. Discount on Procedure/Hospital Expenses",
-                                    "c. Transportation Fare",
-                                    "d. Institutional Placement",
-                                    "e. Temporary Shelter",
-                                    "f. Funeral Assistance/Pauper's Burial",
-                                    "g. Others specify (networking)"
-                                    };
+                        <tr>
+                            <td style="white-space: nowrap;">a. Medical Assistance</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Concrete_OutgoingReferrals_MedicalAssistance" />
+                            </td>
+                        </tr>
 
-                        foreach (var value in outgoingReferrals)
-                        {
-                            <tr>
-                                <td style="white-space: nowrap;">@value</td>
-                                
-                            </tr>
-                        }
+                        <tr>
+                            <td style="white-space: nowrap;">b. Discount on Procedure/Hospital Expenses</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Concrete_OutgoingReferrals_DiscountProcedure" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">c. Transportation Fare</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Concrete_OutgoingReferrals_TransportationFare" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">d. Institutional Placement</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Concrete_OutgoingReferrals_InstitutionalPlacement" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">e. Temporary Shelter</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Concrete_OutgoingReferrals_TemporaryShelter" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">f. Funeral Assistance/Pauper's Burial</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Concrete_OutgoingReferrals_FuneralAssistance" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">g. Others specify (networking)</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Concrete_OutgoingReferrals_OthersSpecify" />
+                            </td>
+                        </tr>
 
                         <tr>
                             <td style="white-space: nowrap;">2.2.2 Incoming Referrals</td>
-                            
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Concrete_IncomingReferrals" />
+                            </td>
                         </tr>
 
                         <tr>
@@ -378,84 +440,183 @@
                             
                         </tr>
 
-                        var tenLeadingCauses = new List<string>
-                                    {
-                                    "1. Stress of the family",
-                                    "2. Refusal of patient to take home",
-                                    "3. Anxiety of health cost",
-                                    "4. Marital problem",
-                                    "5. Refusal of patient for treatment",
-                                    "6. Unbecoming attitude due to postponement if surgery",
-                                    "7. Emotional problem",
-                                    "8. Neglected children",
-                                    "9. Sexually abuse",
-                                    "10. Adjustment problem"
-                                    };
+                        <tr>
+                            <td style="white-space: nowrap;">1. Stress of the family</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Psychosocial_TenLeading_StressFamily" />
+                            </td>
+                        </tr>
 
-                        foreach (var value in tenLeadingCauses)
-                        {
-                            <tr>
-                                <td style="white-space: nowrap;">@value</td>
-                                
-                            </tr>
-                        }
+                        <tr>
+                            <td style="white-space: nowrap;">2. Refusal of patient to take home</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Psychosocial_TenLeading_RefusalPatientTakeHome" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">3. Anxiety of health cost</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Psychosocial_TenLeading_AnxietyHealth" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">4. Marital problem</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Psychosocial_TenLeading_MaritalProblem" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">5. Refusal of patient for treatment</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Psychosocial_TenLeading_RefusalPatientTreatment" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">6. Unbecoming attitude due to postponement if surgery</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Psychosocial_TenLeading_UnbecomingAttitude" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">7. Emotional problem</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Psychosocial_TenLeading_EmotionalProblem" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">8. Neglected children</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Psychosocial_TenLeading_NeglectedChildren" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">9. Sexually abuse</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Psychosocial_TenLeading_SexuallyAbuse" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">10. Adjustment problem</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Psychosocial_TenLeading_AdjustedProblem" />
+                            </td>
+                        </tr>
 
                         <tr>
                             <td style="white-space: nowrap;">3.2 Family Counselling</td>
                             
                         </tr>
 
-                        var familyCounseling = new List<string>
-                                    {
-                                    "a. Social Worker",
-                                    "b. Health Care Team"
-                                    };
+                        <tr>
+                            <td style="white-space: nowrap;">a. Social Worker</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Psychosocial_FamilyCounseling_SocialWorker" />
+                            </td>
+                        </tr>
 
-                        foreach (var value in familyCounseling)
-                        {
-                            <tr>
-                                <td style="white-space: nowrap;">@value</td>
-                                
-                            </tr>
-                        }
+                        <tr>
+                            <td style="white-space: nowrap;">b. Health Care Team</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Psychosocial_FamilyCounseling_HealthCareTeam" />
+                            </td>
+                        </tr>
 
-                        var psychologicalCounseling = new List<string>
-                                    {
-                                    "3.3 Psychosocial Crisis Intervention",
-                                    "3.4 Group Work/Per Session",
-                                    "3.5 Patients/Watchers Education",
-                                    "3.6 Mutual Support Group Session",
-                                    "3.7 Advocacy Group"
-                                    };
+                        <tr>
+                            <td style="white-space: nowrap;">3.3 Psychosocial Crisis Intervention</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Psychosocial_PsychosocialCrisis" />
+                            </td>
+                        </tr>
 
-                        foreach (var value in psychologicalCounseling)
-                        {
-                            <tr>
-                                <td style="white-space: nowrap;">@value</td>
-                                
-                            </tr>
-                        }
+                        <tr>
+                            <td style="white-space: nowrap;">3.4 Group Work/Per Session</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Psychosocial_GroupWork" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">3.5 Patients/Watchers Education</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Psychosocial_PatientsEducation" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">3.6 Mutual Support Group Session</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Psychosocial_MutualSupport" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">3.7 Advocacy Group</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Psychosocial_AdvocacyGroup" />
+                            </td>
+                        </tr>
 
                         <tr>
                             <td style="white-space: nowrap; font-weight: bold;">4. Discharges Services</td>
                             
                         </tr>
 
-                        var dischargesServices = new List<string>
-                                    {
-                                    "a. Discharge Planning",
-                                    "b. Facilitation of Discharge",
-                                    "c. Pre-termination Counseling",
-                                    "d. Home Conduction"
-                                    };
+                        <tr>
+                            <td style="white-space: nowrap;">a. Discharge Planning</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Discharges_DischargePlanning" />
+                            </td>
+                        </tr>
 
-                        foreach (var value in dischargesServices)
-                        {
-                            <tr>
-                                <td style="white-space: nowrap;">@value</td>
-                                
-                            </tr>
-                        }
+                        <tr>
+                            <td style="white-space: nowrap;">b. Facilitation of Discharge</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Discharges_FacilitationDischarge" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">c. Pre-termination Counseling</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Discharges_PreTerminationCounseling" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">d. Home Conduction</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Discharges_HomeConduction" />
+                            </td>
+                        </tr>
 
                         <tr>
                             <td style="white-space: nowrap; font-weight: bold;">5. Support Services</td>
@@ -467,102 +628,161 @@
                             
                         </tr>
 
-                        var wardVisitation = new List<string>
-                                    {
-                                    "a. Individual",
-                                    "b. Team"
-                                    };
+                        <tr>
+                            <td style="white-space: nowrap;">a. Individual</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Support_Ward_Individual" />
+                            </td>
+                        </tr>
 
-                        foreach (var value in wardVisitation)
-                        {
-                            <tr>
-                                <td style="white-space: nowrap;">@value</td>
-                                
-                            </tr>
-                        }
+                        <tr>
+                            <td style="white-space: nowrap;">b. Team</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Support_Ward_Team" />
+                            </td>
+                        </tr>
 
                         <tr>
                             <td style="white-space: nowrap; font-weight: bold;">6. Case Conferences</td>
                             
                         </tr>
 
-                        var caseConferences = new List<string>
-                                    {
-                                    "a. Multi Disciplinary",
-                                    "b. MSWD"
-                                    };
+                        <tr>
+                            <td style="white-space: nowrap;">a. Multi Disciplinary</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Case_MultiDisciplinary" />
+                            </td>
+                        </tr>
 
-                        foreach (var value in caseConferences)
-                        {
-                            <tr>
-                                <td style="white-space: nowrap;">@value</td>
-                                
-                            </tr>
-                        }
+                        <tr>
+                            <td style="white-space: nowrap;">b. MSWD</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Case_MSWD" />
+                            </td>
+                        </tr>
 
                         <tr>
                             <td style="white-space: nowrap; font-weight: bold;">7. Follow-up Services</td>
                             
                         </tr>
 
-                        var followUpServices = new List<string>
-                                    {
-                                    "7.1 Home Visit",
-                                    "7.2 Letters Sent",
-                                    "7.3 Contact of Relatives by Telephone",
-                                    "7.4 Contact of Relatives through Mass Media"
-                                    };
+                        <tr>
+                            <td style="white-space: nowrap;">7.1 Home Visit</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_FollowUp_HomeVisit" />
+                            </td>
+                        </tr>
 
-                        foreach (var value in followUpServices)
-                        {
-                            <tr>
-                                <td style="white-space: nowrap;">@value</td>
-                                
-                            </tr>
-                        }
+                        <tr>
+                            <td style="white-space: nowrap;">7.2 Letters Sent</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_FollowUp_LettersSent" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">7.3 Contact of Relatives by Telephone</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_FollowUp_ContactRelativesTelephone" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">7.4 Contact of Relatives through Mass Media</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_FollowUp_ContactRelativesMassMedia" />
+                            </td>
+                        </tr>
 
                         <tr>
                             <td style="white-space: nowrap; font-weight: bold;">8. Coordination/Initiated by MSW</td>
                             
                         </tr>
 
-                        var coordinationsByMSW = new List<string>
-                                    {
-                                    "a. Physicians",
-                                    "b. Nurses",
-                                    "c. Pharmacist",
-                                    "d. Nutritionist",
-                                    "e. Other Staff",
-                                    "f. Management"
-                                    };
+                        <tr>
+                            <td style="white-space: nowrap;">a. Physicians</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Coordination_Physicians" />
+                            </td>
+                        </tr>
 
-                        foreach (var value in coordinationsByMSW)
-                        {
-                            <tr>
-                                <td style="white-space: nowrap;">@value</td>
-                                
-                            </tr>
-                        }
+                        <tr>
+                            <td style="white-space: nowrap;">b. Nurses</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Coordination_Nurses" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">c. Pharmacist</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Coordination_Pharmacist" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">d. Nutritionist</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Coordination_Nutritionist" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">e. Other Staff</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Coordination_OtherStaff" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">f. Management</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Coordination_Management" />
+                            </td>
+                        </tr>
 
                         <tr>
                             <td style="white-space: nowrap; font-weight: bold;">9. Consultative and Advisory Services</td>
                             
                         </tr>
 
-                        var consultatives = new List<string>
-                                    {
-                                    "a. Physicians",
-                                    "b. Office Staff",
-                                    "c. Outside Hospital"
-                                    };
+                        <tr>
+                            <td style="white-space: nowrap;">a. Physicians</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Consultive_Physicians" />
+                            </td>
+                        </tr>
 
-                        foreach (var value in consultatives)
-                        {
-                            <tr>
-                                <td style="white-space: nowrap;">@value</td>
-                                
-                            </tr>
-                        }
+                        <tr>
+                            <td style="white-space: nowrap;">b. Office Staff</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Consultive_OfficeStaff" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">c. Outside Hospital</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_Consultive_OutsideHospital" />
+                            </td>
+                        </tr>
 
                         <tr>
                             <td style="white-space: nowrap; font-weight: bold;">10. Community Outreach</td>
@@ -574,214 +794,475 @@
                            
                         </tr>
 
-                        var caseManagements = new List<string>
-                                    {
-                                    "1.1 Pre admission Counselling",
-                                    "1.2 Intake Interview",
-                                    "1.3 Collateral Interview",
-                                    "1.4 Issuance of MSS Card",
-                                    "1.5 Indicate classification in the chart (in pts only)",
-                                    "1.6 Psychosocial Assessment",
-                                    "1.7 Psychosocial Counselling",
-                                    "1.8 Coordination w/ Multidiciplinary Team",
-                                    "1.9 Completion of Intake Form",
-                                    "1.10 Health Education",
-                                    "1.11 Crisis Intervention",
-                                    "1.12 Concrete Services"
-                                    };
+                        <tr>
+                            <td style="white-space: nowrap;">1.1 Pre admission Counselling</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_PreAdmissionCounseling" />
+                            </td>
+                        </tr>
 
-                        foreach (var value in caseManagements)
-                        {
-                            <tr>
-                                <td style="white-space: nowrap;">@value</td>
-                                
-                            </tr>
-                        }
+                        <tr>
+                            <td style="white-space: nowrap;">1.2 Intake Interview</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_IntakeInterview" />
+                            </td>
+                        </tr>
 
-                        var concreteServices = new List<string>
-                                    {
-                                    "1.12.1 Facilitaion/Provision of Meds/Procedures",
-                                    "1.12.2 Transportation Assistance (w/in MSS resources)",
-                                    "1.12.3 Material Assistance (food, clothing)",
-                                    "1.12.4 Financial Assistance (w/in MSS resources)"
-                                    };
+                        <tr>
+                            <td style="white-space: nowrap;">1.3 Collateral Interview</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_CollateralInterview" />
+                            </td>
+                        </tr>
 
-                        foreach (var value in concreteServices)
-                        {
-                            <tr>
-                                <td style="white-space: nowrap;">@value</td>
-                                
-                            </tr>
-                        }
+                        <tr>
+                            <td style="white-space: nowrap;">1.4 Issuance of MSS Card</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_IssuanceMSSCard" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.5 Indicate classification in the chart (in pts only)</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_IndicateClassification" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.6 Psychosocial Assessment</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_PsychosocialAssessment" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.7 Psychosocial Counselling</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_PsychosocialCounseling" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.8 Coordination w/ Multidiciplinary Team</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_CoordinationMultidisciplinary" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.9 Completion of Intake Form</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_CompletionIntakeForm" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.10 Health Education</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_HealthEducation" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.11 Crisis Intervention</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_CrisisIntervention" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.12 Concrete Services</td>
+                            
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.12.1 Facilitaion/Provision of Meds/Procedures</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_ConcreteServices_Facilitation" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.12.2 Transportation Assistance (w/in MSS resources)</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_ConcreteServices_Transportation" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.12.3 Material Assistance (food, clothing)</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_ConcreteServices_MaterialAssistance" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.12.4 Financial Assistance (w/in MSS resources)</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_ConcreteServices_FinancialAssistance" />
+                            </td>
+                        </tr>
 
                         <tr>
                             <td style="white-space: nowrap;">1.13 Referral</td>
                             
                         </tr>
 
-                        var referralServices = new List<string>
-                                    {
-                                    "1.13.1 Facilitating Incoming Referral",
-                                    "1.13.2 Preparing the Referral",
-                                    "1.13.3 Coordination w/ the Receiveing Agency"
-                                    };
+                        <tr>
+                            <td style="white-space: nowrap;">1.13.1 Facilitating Incoming Referral</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_Referral_Facilitating" />
+                            </td>
+                        </tr>
 
-                        foreach (var value in referralServices)
-                        {
-                            <tr>
-                                <td style="white-space: nowrap;">@value</td>
-                                
-                            </tr>
-                        }
+                        <tr>
+                            <td style="white-space: nowrap;">1.13.2 Preparing the Referral</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_Referral_Preparing" />
+                            </td>
+                        </tr>
 
-                        var caseManagements2 = new List<string>
-                                    {
-                                    "1.14 Ward Rounds (no. of pts visited)",
-                                    "1.15 Home Visitation",
-                                    "1.16 Advocacy Role",
-                                    "1.17 Education",
-                                    "1.18 Therapeutic Social Work Services"
-                                    };
+                        <tr>
+                            <td style="white-space: nowrap;">1.13.3 Coordination w/ the Receiveing Agency</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_Referral_Coordination" />
+                            </td>
+                        </tr>
 
-                        foreach (var value in caseManagements2)
-                        {
-                            <tr>
-                                <td style="white-space: nowrap;">@value</td>
-                                
-                            </tr>
-                        }
+                        <tr>
+                            <td style="white-space: nowrap;">1.14 Ward Rounds (no. of pts visited)</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_WardRounds" />
+                            </td>
+                        </tr>
 
-                        var therapeuticServices = new List<string>
-                                    {
-                                    "1.18.1 Abandoned",
-                                    "1.18.2 Sexually Abused",
-                                    "1.18.3 Neglected",
-                                    "1.18.4 Battered"
-                                    };
+                        <tr>
+                            <td style="white-space: nowrap;">1.15 Home Visitation</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_HomeVisitation" />
+                            </td>
+                        </tr>
 
-                        foreach (var value in therapeuticServices)
-                        {
-                            <tr>
-                                <td style="white-space: nowrap;">@value</td>
-                                
-                            </tr>
-                        }
+                        <tr>
+                            <td style="white-space: nowrap;">1.16 Advocacy Role</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_AdvocacyRole" />
+                            </td>
+                        </tr>
 
-                        var caseManagements3 = new List<string>
-                                    {
-                                    "1.19 Protective Services",
-                                    "1.20 Grief Work",
-                                    "1.21 Behavioral Modification ",
-                                    "1.22 Networking (meeting w/ other institution/grp org.)",
-                                    "1.23 Politicians",
-                                    "1.24 Coordination w/ Mass Media",
-                                    "1.25 Consultaion/Advisory Services",
-                                    "1.26 Attendance to Case Conferences Committee Meetings",
-                                    "1.27 Attendance to Clinical Comittees"
-                                    };
+                        <tr>
+                            <td style="white-space: nowrap;">1.17 Education</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_Education" />
+                            </td>
+                        </tr>
 
-                        foreach (var value in caseManagements3)
-                        {
-                            <tr>
-                                <td style="white-space: nowrap;">@value</td>
-                                
-                            </tr>
-                        }
+                        <tr>
+                            <td style="white-space: nowrap;">1.18 Therapeutic Social Work Services</td>
+                            
+                        </tr>
 
-                        var attendances = new List<string>
-                                    {
-                                    "1.27.1 Disharge Planning",
-                                    "1.27.2 Facilitation of Discharge",
-                                    "1.27.3 Home Conduction"
-                                    };
+                        <tr>
+                            <td style="white-space: nowrap;">1.18.1 Abandoned</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_Therapeutic_Abandoned" />
+                            </td>
+                        </tr>
 
-                        foreach (var value in attendances)
-                        {
-                            <tr>
-                                <td style="white-space: nowrap;">@value</td>
-                                
-                            </tr>
-                        }
+                        <tr>
+                            <td style="white-space: nowrap;">1.18.2 Sexually Abused</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_Therapeutic_SexuallyAbused" />
+                            </td>
+                        </tr>
 
-                        var caseManagements4 = new List<string>
-                                    {
-                                    "1.28 Follow up Services",
-                                    "1.29 Documentation"
-                                    };
+                        <tr>
+                            <td style="white-space: nowrap;">1.18.3 Neglected</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_Therapeutic_Neglected" />
+                            </td>
+                        </tr>
 
-                        foreach (var value in caseManagements4)
-                        {
-                            <tr>
-                                <td style="white-space: nowrap;">@value</td>
-                                
-                            </tr>
-                        }
+                        <tr>
+                            <td style="white-space: nowrap;">1.18.4 Battered</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_Therapeutic_Battered" />
+                            </td>
+                        </tr>
 
-                        var documentations = new List<string>
-                                    {
-                                    "1.29.1 Profile",
-                                    "1.29.2 Progress Notes",
-                                    "1.29.3 Groupwork Recording",
-                                    "1.29.4 Social Case Study Report/Social Case Summary",
-                                    "1.29.5 Home Visit Report"
-                                    };
+                        <tr>
+                            <td style="white-space: nowrap;">1.19 Protective Services</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_ProtectiveServices" />
+                            </td>
+                        </tr>
 
-                        foreach (var value in documentations)
-                        {
-                            <tr>
-                                <td style="white-space: nowrap;">@value</td>
-                                
-                            </tr>
-                        }
+                        <tr>
+                            <td style="white-space: nowrap;">1.20 Grief Work</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_GriefWork" />
+                            </td>
+                        </tr>
 
-                        var caseManagements5 = new List<string>
-                                    {
-                                    "1.30 Palliative Care",
-                                    "1.31 Facilitation of Unclaimed Cadaver",
-                                    "1.32 Post Discharge Services",
-                                    "1.33 Follow up Services through text/phone",
-                                    "1.34 Follow up Treatment Plans",
-                                    "1.35 Follow up of Rehabilitation Plans",
-                                    "1.36 Rehabilitation Services"
-                                    };
+                        <tr>
+                            <td style="white-space: nowrap;">1.21 Behavioral Modification</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_Behavioral" />
+                            </td>
+                        </tr>
 
-                        foreach (var value in caseManagements5)
-                        {
-                            <tr>
-                                <td style="white-space: nowrap;">@value</td>
-                                
-                            </tr>
-                        }
+                        <tr>
+                            <td style="white-space: nowrap;">1.22 Networking (meeting w/ other institution/grp org.)</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_Networking" />
+                            </td>
+                        </tr>
 
-                        var rehabilitationServices = new List<string>
-                                    {
-                                    "1.36.1 Skills Training",
-                                    "1.36.2 Job Placement",
-                                    "1.36.3 Capital Assistance"
-                                    };
+                        <tr>
+                            <td style="white-space: nowrap;">1.23 Politicians</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_Politicians" />
+                            </td>
+                        </tr>
 
-                        foreach (var value in rehabilitationServices)
-                        {
-                            <tr>
-                                <td style="white-space: nowrap;">@value</td>
-                                
-                            </tr>
-                        }
+                        <tr>
+                            <td style="white-space: nowrap;">1.24 Coordination w/ Mass Media</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_CoordinationMassMedia" />
+                            </td>
+                        </tr>
 
-                        var caseManagements6 = new List<string>
-                                    {
-                                    "1.37 MSWD Fund Raising Activity",
-                                    "1.38 Hospital Activity",
-                                    "1.39 Linkage w/ Donors"
-                                    };
+                        <tr>
+                            <td style="white-space: nowrap;">1.25 Consultaion/Advisory Services</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_ConsultationAdvisory" />
+                            </td>
+                        </tr>
 
-                        foreach (var value in caseManagements6)
-                        {
-                            <tr>
-                                <td style="white-space: nowrap;">@value</td>
-                                
-                            </tr>
-                        }
+                        <tr>
+                            <td style="white-space: nowrap;">1.26 Attendance to Case Conferences Committee Meetings</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_AttendanceCaseConference" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.27 Attendance to Clinical Comittees</td>
+                            
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.27.1 Disharge Planning</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_AttendanceClinical_Discharge" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.27.2 Facilitation of Discharge</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_AttendanceClinical_Facilitation" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.27.3 Home Conduction</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_AttendanceClinical_Home" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.28 Follow up Services</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_FollowUpServices" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.29 Documentation</td>
+                            
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.29.1 Profile</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_Documentation_Profile" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.29.2 Progress Notes</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_Documentation_ProgressNotes" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.29.3 Groupwork Recording</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_Documentation_GroupWork" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.29.4 Social Case Study Report/Social Case Summary</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_Documentation_SocialCase" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.29.5 Home Visit Report</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_Documentation_HomeVisit" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.30 Palliative Care</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_Palliative" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.31 Facilitation of Unclaimed Cadaver</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_FacilitationUnclaimed" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.32 Post Discharge Services</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_PostDischarge" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.33 Follow up Services through text/phone</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_FollowUpServicesText" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.34 Follow up Treatment Plans</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_FollowUpTreatment" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.35 Follow up of Rehabilitation Plans</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_FollowUpRehabilitation" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.36 Rehabilitation Services</td>
+                            
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.36.1 Skills Training</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_Rehabilitation_Skills" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.36.2 Job Placement</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_Rehabilitation_Job" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.36.3 Capital Assistance</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_Rehabilitation_Capital" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.37 MSWD Fund Raising Activity</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_MSWDFund" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.38 Hospital Activity</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_HospitalActivity" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="white-space: nowrap;">1.39 Linkage w/ Donors</td>
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.iii_LinkageDonors" />
+                            </td>
+                        </tr>
 
                     }
                 </tbody>

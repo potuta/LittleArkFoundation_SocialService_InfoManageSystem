@@ -17,7 +17,7 @@
         public int? i_Others { get; set; }
         public int? ii_DuringCensus_NewCases { get; set; }
         public int? ii_DuringCensus_OldCases { get; set; }
-        public int? ii_Closed_Summary { get; set; }
+        public int? ii_ClosedSummary { get; set; }
         public int? ii_NoPatients_PWD { get; set; }
         public int? ii_NoPatients_IndigenousPeople { get; set; }
         public int? ii_NoPatients_GovernmentWorkers { get; set; }

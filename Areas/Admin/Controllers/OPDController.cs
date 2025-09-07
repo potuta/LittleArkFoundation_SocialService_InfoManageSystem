@@ -319,7 +319,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
 
             var opdList = await query.ToListAsync();
-            var statisticsList = await statisticsQuery.ToListAsync();
+            var statisticsList = await statisticsQuery.Where(s => s.Type == "OPD").ToListAsync();
 
             //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
@@ -1311,7 +1311,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 return RedirectToAction("Index");
             }
 
-            var statisticsList = await context.Statistics.ToListAsync();
+            var statisticsList = await context.Statistics
+                .Where(s => s.Type == "OPD")
+                .ToListAsync();
 
             //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
@@ -1395,7 +1397,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
 
             var opdList = await query.ToListAsync();
-            var statisticsList = await statisticsQuery.ToListAsync();
+            var statisticsList = await statisticsQuery
+                .Where(s => s.Type == "OPD")
+                .ToListAsync();
 
             if (opdList == null || !opdList.Any())
             {
