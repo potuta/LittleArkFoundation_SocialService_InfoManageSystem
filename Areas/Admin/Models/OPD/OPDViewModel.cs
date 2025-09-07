@@ -10,6 +10,7 @@ namespace LittleArkFoundation.Areas.Admin.Models.OPD
         public UsersModel User { get; set; } = new UsersModel();
         public List<UsersModel> Users { get; set; } = new List<UsersModel> { new UsersModel() };
         public StatisticsModel? Statistics { get; set; } = new StatisticsModel();
+        public List<StatisticsModel> StatisticsList { get; set; } = new List<StatisticsModel> { new StatisticsModel() };
 
         // Pagination properties
         public int? CurrentPage { get; set; } = 1;

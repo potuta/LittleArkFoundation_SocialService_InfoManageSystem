@@ -298,10 +298,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             await using var context = new ApplicationDbContext(connectionString);
 
             IQueryable<OPDModel> query = context.OPD.AsQueryable();
+            var statisticsQuery = context.Statistics.AsQueryable();
 
             if (!string.IsNullOrEmpty(sortByUserID))
             {
                 query = query.Where(opd => opd.UserID == int.Parse(sortByUserID));
+                statisticsQuery = statisticsQuery.Where(stat => stat.UserID == int.Parse(sortByUserID));
                 var user = await context.Users.FindAsync(int.Parse(sortByUserID));
                 ViewBag.sortBy = user.Username;
                 ViewBag.sortByUserID = user.UserID.ToString();
@@ -310,10 +312,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
             {
                 query = query.Where(opd => opd.Date.Month == month.Month && opd.Date.Year == month.Year);
+                statisticsQuery = statisticsQuery.Where(stat => stat.Date.Value.Month == month.Month && stat.Date.Value.Year == month.Year);
                 ViewBag.sortByMonth = month.ToString("yyyy-MM");
             }
 
             var opdList = await query.ToListAsync();
+            var statisticsList = await statisticsQuery.ToListAsync();
 
             //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
@@ -322,6 +326,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var viewModel = new OPDViewModel
             {
                 OPDList = opdList,
+                StatisticsList = statisticsList,
                 Users = users
             };
 
@@ -1260,6 +1265,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 return RedirectToAction("Index");
             }
 
+            var statisticsList = await context.Statistics.ToListAsync();
+
             //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
             var users = await context.Users.ToListAsync();
@@ -1267,7 +1274,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var viewModel = new OPDViewModel
             {
                 OPDList = opdList,
-                Users = users
+                Users = users,
+                StatisticsList = statisticsList
             };
 
             return View(viewModel);
@@ -1282,18 +1290,22 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             bool filterByMonth = DateTime.TryParseExact(month, "yyyy-MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedMonth);
 
             var query = context.OPD.AsQueryable();
+            var statisticsQuery = context.Statistics.AsQueryable();
 
             if (userID > 0)
             {
                 query = query.Where(opd => opd.UserID == userID);
+                statisticsQuery = statisticsQuery.Where(stat => stat.UserID == userID);
             }
 
             if (filterByMonth)
             {
                 query = query.Where(opd => opd.Date.Month == parsedMonth.Month && opd.Date.Year == parsedMonth.Year);
+                statisticsQuery = statisticsQuery.Where(stat => stat.Date.Value.Month == parsedMonth.Month && stat.Date.Value.Year == parsedMonth.Year);
             }
 
             var opdList = await query.ToListAsync();
+            var statisticsList = await statisticsQuery.ToListAsync();
 
             if (opdList == null || !opdList.Any())
             {
@@ -2830,6 +2842,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
+        [HasPermission("EditOPD")]
         public async Task<IActionResult> EditStatistics(string? sortToggle)
         {
             string sortToggleValue = sortToggle ?? "01";
@@ -2888,6 +2901,35 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             };
 
             return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [HasPermission("EditOPD")]
+        public async Task<IActionResult> EditStatistics(OPDViewModel viewModel)
+        {
+            try
+            {
+                string connectionString = _connectionService.GetCurrentConnectionString();
+                await using var context = new ApplicationDbContext(connectionString);
+                context.Statistics.Update(viewModel.Statistics);
+                await context.SaveChangesAsync();
+                TempData["SuccessMessage"] = $"Successfully edited/updated Statistics: {viewModel.Statistics.UserID}";
+                LoggingService.LogInformation($"UserID: {User.FindFirst(ClaimTypes.NameIdentifier).Value}. Statistics edited/updated successfully");
+                return RedirectToAction("Index");
+            }
+            catch (SqlException se)
+            {
+                TempData["ErrorMessage"] = "SQL Error: " + se.Message;
+                LoggingService.LogError("SQL Error: " + se);
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Error: " + ex.Message;
+                LoggingService.LogError("Error: " + ex);
+                return RedirectToAction("Index");
+            }
         }
     }
 }

@@ -165,6 +165,10 @@
 }
 
 <form asp-action="EditStatistics" asp-route-userID="@Model.User.UserID" asp-route-sortToggle="@sortToggle" method="post">
+    <input type="hidden" asp-for="Statistics.Id" />
+    <input type="hidden" asp-for="Statistics.Type" />
+    <input type="hidden" asp-for="Statistics.UserID" />
+    <input type="hidden" asp-for="Statistics.Date" />
     @Html.AntiForgeryToken()
     <div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
         <div class="table-responsive" style="overflow-x: auto;">
@@ -218,7 +222,7 @@
                                         asp-for="Statistics.i_GovernmentHospital" value="@count"
                                         class="text-muted"
                                         style="cursor: not-allowed;"
-                                        readonly/>
+                                        disabled/>
                                 </td>
                             </tr>
                         }
@@ -241,7 +245,7 @@
                                        asp-for="Statistics.ii_DuringCensus_NewCases" value="@Model.OPDList.Count(m => !m.IsOld && m.Date.Month == int.Parse(sortToggle))"
                                        class="text-muted"
                                        style="cursor: not-allowed;"
-                                       readonly />
+                                       disabled />
                             </td>
                         </tr>
 
@@ -253,7 +257,7 @@
                                        asp-for="Statistics.ii_DuringCensus_OldCases" value="@Model.OPDList.Count(m => m.IsOld && m.Date.Month == int.Parse(sortToggle))"
                                        class="text-muted"
                                        style="cursor: not-allowed;"
-                                       readonly />
+                                       disabled />
                             </td>
                         </tr>
 
@@ -275,18 +279,24 @@
                                        asp-for="Statistics.ii_NoPatients_PWD" value="@Model.OPDList.Count(m => m.IsPWD && m.Date.Month == int.Parse(sortToggle))"
                                        class="text-muted"
                                        style="cursor: not-allowed;"
-                                       readonly />
+                                       disabled />
                             </td>
                         </tr>
 
                         <tr>
                             <td style="white-space: nowrap;">b. Indigenous People</td>
-                            
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_NoPatients_IndigenousPeople" />
+                            </td>
                         </tr>
 
                         <tr>
                             <td style="white-space: nowrap;">c. Government Workers</td>
-                            
+                            <td style="white-space: nowrap;">
+                                <input type="number"
+                                       asp-for="Statistics.ii_NoPatients_GovernmentWorkers" />
+                            </td>
                         </tr>
 
                         <tr>
