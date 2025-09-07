@@ -3,6 +3,7 @@
 	ViewData["Title"] = "OPD Reports";
 	Layout = "_AdminLayout";
 
+    string? sortToggle = ViewBag.sortToggle ?? "OPD";
     string? sortBy = ViewBag.sortBy ?? "";
     string? sortByUserID = ViewBag.sortByUserID ?? "";
     string? sortByMonth = ViewBag.sortByMonth ?? "";
@@ -72,18 +73,18 @@
            ? "active" : "")"
            asp-action="General" asp-controller="OPD">General</a> *@
 
-        <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "OPDAssisted" ? "active" : "")"
+        @* <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "OPDAssisted" ? "active" : "")"
            asp-action="OPDAssisted" asp-controller="OPD">OPD Assisted</a>
 
         <a class="btn btn-outline-dark @(
             ViewContext.RouteData.Values["action"]?.ToString() == "GLReceived" ||
             ViewContext.RouteData.Values["action"]?.ToString() == "SortByGLReceivedAndReports"
             ? "active" : "")"
-        asp-action="GLReceived" asp-controller="OPD">GL Received</a>
+        asp-action="GLReceived" asp-controller="OPD">GL Received</a> *@
 
         <a class="btn btn-outline-dark @(
             ViewContext.RouteData.Values["action"]?.ToString() == "Reports" ||
-            ViewContext.RouteData.Values["action"]?.ToString() == "SortByOPDAssistedAndReports"
+            ViewContext.RouteData.Values["action"]?.ToString() == "SortByReports"
             ? "active" : "")"
            asp-action="Reports" asp-controller="OPD">Reports</a>
 
@@ -98,60 +99,70 @@
     <a class="btn btn-outline-secondary mb-3" asp-controller="OPD" asp-action="Index">← Back to List</a>
 </div>
 
-<div class="d-flex justify-content-end align-items-start flex-wrap gap-2 mb-3">
+<div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+    @* Left toggles/buttons *@
+    <div class="d-flex align-items-center gap-3">
+        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <a asp-action="Reports" asp-controller="OPD" asp-route-sortToggle="OPD" asp-route-sortByMonth="@sortByMonth"
+               class="btn btn-secondary @(sortToggle == "OPD" ? "active" : "")">
+                <div class="custom-radio">
+                    <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "OPD" ? "checked" : "")>
+                    <label style="margin-bottom: 0">OPD</label>
+                </div>
+            </a>
+            <a asp-action="Reports" asp-controller="OPD" asp-route-sortToggle="OPDAssisted" asp-route-sortByMonth="@sortByMonth"
+               class="btn btn-secondary @(sortToggle == "OPDAssisted" ? "active" : "")">
+                <div class="custom-radio">
+                    <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "OPDAssisted" ? "checked" : "")>
+                    <label style="margin-bottom: 0">OPDAssisted</label>
+                </div>
+            </a>
+            <a asp-action="Reports" asp-controller="OPD" asp-route-sortToggle="GLReceived" asp-route-sortByMonth="@sortByMonth"
+               class="btn btn-secondary @(sortToggle == "GLReceived" ? "active" : "")">
+                <div class="custom-radio">
+                    <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "GLReceived" ? "checked" : "")>
+                    <label style="margin-bottom: 0">GLReceived</label>
+                </div>
+            </a>
+        </div>
+
+    </div>
+
     @* Right toggles/buttons *@
     <div class="btn-group">
-        @* <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-1 me-2" data-bs-toggle="dropdown" aria-expanded="false">
-            @if (string.IsNullOrEmpty(sortBy))
-            {
-                <span class="mb-0">Filter by MSW</span>
-            }
-            else
-            {
-                <span class="mb-0">@sortBy</span>
-            }
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end">
-            <li>
-                <a class="dropdown-item" asp-action="SortByOPDAssistedAndReports"
-                   asp-controller="OPD" asp-route-sortByUserID="" asp-route-sortByMonth="@sortByMonth"
-                   asp-route-viewName="Reports">All</a>
-            </li>
-            @foreach (var user in Model.Users)
-            {
-                <li>
-                    <a class="dropdown-item" asp-action="SortByOPDAssistedAndReports"
-                       asp-controller="OPD" asp-route-sortByUserID="@user.UserID" asp-route-sortByMonth="@sortByMonth"
-                       asp-route-viewName="Reports">@user.Username</a>
-                </li>
-            }
-        </ul> *@
-        @* @if (matchedUser)
+
+        @if (sortToggle == "OPDAssisted" || sortToggle == "GLReceived")
         {
-            foreach (var user in Model.Users)
-            {
-                if (user.Username == sortBy)
+            @* MSW filter *@
+            <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-1 me-2" data-bs-toggle="dropdown" aria-expanded="false">
+                @if (string.IsNullOrEmpty(sortBy))
                 {
-                    <a class="btn btn-sm btn-success" style="margin-left:5px;"
-                       asp-action="ExportLogsheetToExcel"
-                       asp-route-userID="@user.UserID">
-                        Download Excel (@user.Username)
-                    </a>
+                    <span class="mb-0">Filter by MSW</span>
                 }
-            }
+                else
+                {
+                    <span class="mb-0">@sortBy</span>
+                }
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                    <a class="dropdown-item" asp-action="SortByReports"
+                       asp-controller="OPD" asp-route-sortByUserID="" asp-route-sortToggle="@sortToggle" asp-route-sortByMonth="@sortByMonth" asp-route-page="@Model.CurrentPage" asp-route-pageSize="@Model.PageSize">All</a>
+                </li>
+                @foreach (var user in Model.Users)
+                {
+                    <li>
+                        <a class="dropdown-item" asp-action="SortByReports"
+                           asp-controller="OPD" asp-route-sortByUserID="@user.UserID" asp-route-sortToggle="@sortToggle" asp-route-sortByMonth="@sortByMonth" asp-route-page="@Model.CurrentPage" asp-route-pageSize="@Model.PageSize">@user.Username</a>
+                    </li>
+                }
+            </ul>
         }
-        else
-        {
-            <a class="btn btn-sm btn-success" style="margin-left:5px;"
-               asp-action="ExportLogsheetToExcel">
-                Download Excel (All)
-            </a>
-        } *@
 
         @* Month filter *@
-        <form method="get" asp-action="SortByOPDAssistedAndReports" class="d-flex align-items-center gap-2">
+        <form method="get" asp-action="SortByReports" class="d-flex align-items-center gap-2">
             <input type="hidden" name="sortByUserID" value="@sortByUserID" />
-            <input type="hidden" name="viewName" value="Reports" />
+            <input type="hidden" name="sortToggle" value="@sortToggle" />
             <input type="month" name="sortByMonth" class="form-control form-control-sm" value="@sortByMonth" />
             <button type="submit" class="btn btn-secondary btn-sm" style="width: 100%;">
                 <i class="bi bi-filter"></i> Filter Month
@@ -170,23 +181,26 @@
         <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <form asp-action="ExportReportsToExcel" asp-controller="OPD" method="get">
+                    <form asp-action="ExportReportsToExcel" asp-controller="OPD" asp-route-sortToggle="@sortToggle">
                         <div class="modal-header">
                             <h5 class="modal-title" id="exportModalLabel">Export to Excel</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
 
                         <div class="modal-body">
-                            @* <div class="mb-3">
-                                <label for="userID" class="form-label">MSW</label>
-                                <select class="form-select" id="userID" name="userID">
-                                    <option value="0">All</option>
-                                    @foreach (var user in Model.Users)
-                                    {
-                                        <option value="@user.UserID">@user.Username</option>
-                                    }
-                                </select>
-                            </div> *@
+                            @if (sortToggle == "OPDAssisted" || sortToggle == "GLReceived")
+                            {
+                                <div class="mb-3">
+                                    <label for="userID" class="form-label">MSW</label>
+                                    <select class="form-select" id="userID" name="userID">
+                                        <option value="0">All</option>
+                                        @foreach (var user in Model.Users)
+                                        {
+                                            <option value="@user.UserID">@user.Username</option>
+                                        }
+                                    </select>
+                                </div>
+                            }
 
                             <div class="mb-3">
                                 <label for="month" class="form-label">Month</label>
@@ -223,301 +237,15 @@
     </div>
 }
 
-<h4 style="margin-top: 15px;">COUNT of Date Processed by MSW</h4>
-<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
-    <div class="table-responsive" style="overflow-x: auto;">
-        <table class="table" style="min-width: 1200px;">
-            <thead>
-                @if (Model != null)
-                {
-                    <tr>
-                        <th>Date Processed</th>
-                        @foreach (var msw in msws)
-                        {
-                            <th>@msw</th>
-                        }
-                        <th>Grand Total</th>
-                    </tr>
-                }
-            </thead>
-            <tbody>
-                @if (Model != null)
-                {
-                    @foreach (var group in grouped)
-                    {
-                        <tr>
-                            <td>@group.Key.ToShortDateString()</td>
-
-                            @foreach (var msw in msws)
-                            {
-                                var count = group.Count(d => d.MSW == msw);
-                                <td>@count</td>
-                            }
-
-                            <td>@group.Count()</td>
-                        </tr>
-                    }
-
-                    <tr class="fw-bold">
-                        <td>Total</td>
-                        @foreach (var msw in msws)
-                        {
-                            <td>@mswTotals[msw]</td>
-                        }
-                        <td>@overallTotal</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<h4 style="margin-top: 15px;">COUNT of Class</h4>
-<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
-    <div class="table-responsive" style="overflow-x: auto;">
-        <table class="table" style="min-width: 1200px;">
-            <thead>
-                @if (Model != null)
-                {
-                    <tr>
-                        <th>Date Processed</th>
-                        @foreach (var msw in msws)
-                        {
-                            <th>@msw</th>
-                        }
-                        <th>Grand Total</th>
-                    </tr>
-                }
-            </thead>
-            <tbody>
-                @if (Model != null)
-                {
-                    @foreach (var cls in groupedClass)
-                    {
-                        <tr>
-                            <td>@cls</td>
-
-                            @foreach (var msw in msws)
-                            {
-                                var count = groupedByClass.ContainsKey(cls)
-                                ? groupedByClass[cls].Count(d => d.MSW == msw)
-                                : 0;
-                                <td>@count</td>
-                            }
-
-                            <td>
-                                @(groupedByClass.ContainsKey(cls) ? groupedByClass[cls].Count : 0)
-                            </td>
-                        </tr>
-                    }
-
-                    <tr class="fw-bold">
-                        <td>Total</td>
-                        @foreach (var msw in msws)
-                        {
-                            <td>@classTotals[msw]</td>
-                        }
-                        <td>@overallClassTotal</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<h4 style="margin-top: 15px;">COUNT of Class by Gender</h4>
-<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
-    <div class="table-responsive" style="overflow-x: auto;">
-        <table class="table" style="min-width: 1200px;">
-            <thead>
-                @if (Model != null)
-                {
-                    <tr>
-                        <th>Class</th>
-                        <th>F</th>
-						<th>M</th>
-                        <th>Grand Total</th>
-                    </tr>
-                }
-            </thead>
-            <tbody>
-                @if (Model != null)
-                {
-                    foreach (var cls in groupedClass)
-                    {
-                        var femaleCount = Model.OPDList.Count(d => d.Class == cls && d.Gender == "Female");
-						var maleCount = Model.OPDList.Count(d => d.Class == cls && d.Gender == "Male");
-                        <tr>
-                            <td>@cls</td>
-                            <td>@femaleCount</td>
-					        <td>@maleCount</td>
-                            @* <td>@Model.OPDList.Count(d => d.Class == cls)</td> *@
-							<td>@(femaleCount + maleCount)</td>
-                        </tr>
-                    }
-
-                    var femaleCountAll = Model.OPDList.Count(d => d.Gender == "Female");
-                    var maleCountAll = Model.OPDList.Count(d => d.Gender == "Male");
-					var totalCountAll = femaleCountAll + maleCountAll;
-                    <tr class="fw-bold">
-                        <td>Total</td>
-                        <td>@femaleCountAll</td>
-						<td>@maleCountAll</td>
-						<td>@totalCountAll</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-	</div>
-</div>
-
-<h4 style="margin-top: 15px;">COUNT of Old/New</h4>
-<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
-    <div class="table-responsive" style="overflow-x: auto;">
-        <table class="table" style="min-width: 1200px;">
-            <thead>
-                @if (Model != null)
-                {
-                    <tr>
-                        <th>MSW</th>
-                        <th>Old</th>
-                        <th>New</th>
-                        <th>Grand Total</th>
-                    </tr>
-                }
-            </thead>
-            <tbody>
-                @if (Model != null)
-                {
-                    @foreach (var msw in msws)
-                    {
-                        var oldCount = Model.OPDList.Count(d => d.IsOld == true && d.MSW == msw);
-                        var newCount = Model.OPDList.Count(d => d.IsOld == false && d.MSW == msw);
-                        var totalCount = oldCount + newCount;
-                        <tr>
-                            <td>@msw</td>
-                            <td>@oldCount</td>
-                            <td>@newCount</td>
-                            <td>@totalCount</td>
-                        </tr>
-                    }
-
-                    var oldCountAll = Model.OPDList.Count(d => d.IsOld == true);
-                    var newCountAll = Model.OPDList.Count(d => d.IsOld == false);
-					var totalCountAll = oldCountAll + newCountAll;
-                    <tr class="fw-bold">
-                        <td>Total</td>
-                        <td>@oldCountAll</td>
-                        <td>@newCountAll</td>
-                        <td>@totalCountAll</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<h4 style="margin-top: 15px;">COUNT of PWD</h4>
-<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
-    <div class="table-responsive" style="overflow-x: auto;">
-        <table class="table" style="min-width: 1200px;">
-            <thead>
-                @if (Model != null)
-                {
-                    <tr>
-                        <th>MSW</th>
-                        <th>PWD</th>
-                        <th>Non-PWD</th>
-                        <th>Grand Total</th>
-                    </tr>
-                }
-            </thead>
-            <tbody>
-                @if (Model != null)
-                {
-                    @foreach (var msw in msws)
-                    {
-                        var pwdCount = Model.OPDList.Count(d => d.IsPWD == true && d.MSW == msw);
-                        var nonPwdCount = Model.OPDList.Count(d => d.IsPWD == false && d.MSW == msw);
-                        var totalCount = pwdCount + nonPwdCount;
-                        <tr>
-                            <td>@msw</td>
-                            <td>@pwdCount</td>
-                            <td>@nonPwdCount</td>
-                            <td>@totalCount</td>
-                        </tr>
-                    }
-                    var pwdCountAll = Model.OPDList.Count(d => d.IsPWD == true);
-                    var nonPwdCountAll = Model.OPDList.Count(d => d.IsPWD == false);
-                    var totalCountAll = pwdCountAll + nonPwdCountAll;
-                    <tr class="fw-bold">
-                        <td>Total</td>
-                        <td>@pwdCountAll</td>
-                        <td>@nonPwdCountAll</td>
-                        <td>@totalCountAll</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<h5 style="margin-top: 15px;">COUNT of Referral</h5>
-<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
-    <div class="table-responsive" style="overflow-x: auto;">
-        <table class="table" style="min-width: 1200px;">
-            <thead>
-                @if (Model != null)
-                {
-                    <tr>
-                        <th>Referral</th>
-                        @foreach (var msw in msws)
-                        {
-                            <th>@msw</th>
-                        }
-                        <th>Row Total</th>
-                    </tr>
-                }
-            </thead>
-            <tbody>
-                @if (Model != null)
-                {
-                    var statuses = new[] { "Private/Clinic", "Govt. Agencies", "Govt. Hosp.", "Health Care Team", "NGO/Private Welfare", "Politicians", "Walk in", "Media", "Others" };
-                    var grandTotals = new int[msws.Count];
-                    int overallTotals = 0;
-
-                    @foreach (var stats in statuses)
-                    {
-                        int rowTotal = 0;
-                        <tr>
-                            <td>@stats</td>
-                            @for (int i = 0; i < msws.Count; i++)
-                            {
-                                var count = Model.OPDList.Count(d =>
-                                d.SourceOfReferral.ToUpper() == stats.ToUpper() &&
-                                d.MSW == msws[i]
-                                );
-                                <td>@count</td>
-                                rowTotal += count;
-                                grandTotals[i] += count;
-                                overallTotals += count;
-                            }
-                            <td class="fw-bold">@rowTotal</td>
-                        </tr>
-                    }
-
-                    <tr class="fw-bold">
-                        <td>Grand Total</td>
-                        @for (int i = 0; i < msws.Count; i++)
-                        {
-                            <td>@grandTotals[i]</td>
-                        }
-                        <td>@overallTotals</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-</div>
-
-                             
+@if (sortToggle == "OPD")
+{
+    @await Html.PartialAsync("Partials/_ReportsOPD", Model, ViewData)
+}
+else if (sortToggle == "OPDAssisted")
+{
+    @await Html.PartialAsync("Partials/_ReportsOPDAssisted", Model, ViewData)
+}
+else if (sortToggle == "GLReceived")
+{
+    @await Html.PartialAsync("Partials/_ReportsOPDGLReceived", Model, ViewData)
+}

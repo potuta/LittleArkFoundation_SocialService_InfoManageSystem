@@ -49,14 +49,14 @@
            ? "active" : "")"
            asp-action="Index" asp-controller="OPD">Main</a>
 
-        <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "OPDAssisted" ? "active" : "")"
+        @* <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "OPDAssisted" ? "active" : "")"
            asp-action="OPDAssisted" asp-controller="OPD">OPD Assisted</a>
 
         <a class="btn btn-outline-dark @(
             ViewContext.RouteData.Values["action"]?.ToString() == "GLReceived" ||
             ViewContext.RouteData.Values["action"]?.ToString() == "SortByGLReceivedAndReports"
             ? "active" : "")"
-        asp-action="GLReceived" asp-controller="OPD">GL Received</a>
+        asp-action="GLReceived" asp-controller="OPD">GL Received</a> *@
 
         <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "Reports" ? "active" : "")"
            asp-action="Reports" asp-controller="OPD">Reports</a>

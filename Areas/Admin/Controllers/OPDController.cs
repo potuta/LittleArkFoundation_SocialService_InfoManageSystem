@@ -231,6 +231,62 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return View("Index", viewModel);
         }
 
+        public async Task<IActionResult> SortByReports(string sortByUserID, string? sortToggle, string? sortByMonth, int page = 1, int pageSize = 20)
+        {
+            string sortToggleValue = sortToggle ?? "OPD";
+            ViewBag.sortToggle = sortToggleValue;
+
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            IQueryable<OPDModel> query = context.OPD.AsQueryable();
+
+            if (!string.IsNullOrEmpty(sortByUserID))
+            {
+                query = query.Where(opd => opd.UserID == int.Parse(sortByUserID));
+                var user = await context.Users.FindAsync(int.Parse(sortByUserID));
+                ViewBag.sortBy = user.Username;
+                ViewBag.sortByUserID = user.UserID.ToString();
+            }
+
+            if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
+            {
+                query = query.Where(opd => opd.Date.Month == month.Month && opd.Date.Year == month.Year);
+                ViewBag.sortByMonth = month.ToString("yyyy-MM");
+            }
+
+            List<OPDModel> opdList = new List<OPDModel>();
+            int totalCount = 0;
+
+            if (sortToggleValue == "OPDAssisted" || sortToggleValue == "GLReceived")
+            {
+                // Pagination
+                totalCount = await query.CountAsync();
+                opdList = await query
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
+            }
+            else
+            {
+                opdList = await query.ToListAsync();
+            }
+
+            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+
+            var viewModel = new OPDViewModel
+            {
+                OPDList = opdList,
+                Users = users,
+                CurrentPage = page,
+                PageSize = pageSize,
+                TotalCount = totalCount,
+            };
+
+            return View("Reports", viewModel);
+        }
+
         public async Task<IActionResult> SortByOPDAssistedAndReports(string sortByUserID, string? sortByMonth, string? viewName, int page = 1, int pageSize = 20)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
@@ -615,16 +671,43 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
-        public async Task<IActionResult> Reports()
+        public async Task<IActionResult> Reports(string? sortToggle, string? sortByMonth, int page = 1, int pageSize = 20)
         {
+            string sortToggleValue = sortToggle ?? "OPD";
+            ViewBag.sortToggle = sortToggleValue;
+
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
 
-            var opdList = await context.OPD.ToListAsync();
-            if (opdList == null || !opdList.Any())
+            var query = context.OPD.AsQueryable();
+
+            if (query == null || !query.Any())
             {
                 TempData["ErrorMessage"] = "No OPD records found.";
                 return RedirectToAction("Index");
+            }
+
+            if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
+            {
+                query = query.Where(patient => patient.Date.Month == month.Month && patient.Date.Year == month.Year);
+                ViewBag.sortByMonth = month.ToString("yyyy-MM");
+            }
+
+            List<OPDModel> opdList = new List<OPDModel>();
+            int totalCount = 0;
+
+            if (sortToggleValue == "OPDAssisted" || sortToggleValue == "GLReceived")
+            {
+                // Pagination
+                totalCount = await query.CountAsync();
+                opdList = await query
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
+            }
+            else
+            {
+                opdList = await query.ToListAsync();
             }
 
             var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
@@ -633,12 +716,35 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var viewModel = new OPDViewModel
             {
                 OPDList = opdList,
-                Users = users
+                Users = users,
+                CurrentPage = page,
+                PageSize = pageSize,
+                TotalCount = totalCount,
             };
+
             return View(viewModel);
         }
 
-        public async Task<IActionResult> ExportReportsToExcel(int userID, string? month)
+        public async Task<IActionResult> ExportReportsToExcel(int userID, string? month, string? sortToggle)
+        {
+            if (sortToggle == "OPD")
+            {
+                return RedirectToAction("ExportOPDReportsToExcel", new { userID, month });
+            }
+            else if (sortToggle == "OPDAssisted")
+            {
+                return RedirectToAction("ExportOPDAssistedToExcel", new { userID, month });
+            }
+            else if (sortToggle == "GLReceived")
+            {
+                return RedirectToAction("ExportOPDGLReceivedToExcel", new { userID, month });
+            }
+
+            TempData["ErrorMessage"] = $"Download failed. No reports was found for {sortToggle}";
+            return RedirectToAction("Reports");
+        }
+
+        public async Task<IActionResult> ExportOPDReportsToExcel(int userID, string? month)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
@@ -1039,7 +1145,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 TotalCount = totalCount,
             };
 
-            return View(viewModel);
+            return View("Reports", viewModel);
         }
 
         public async Task<IActionResult> GLReceived(string? sortByMonth, int page = 1, int pageSize = 20)

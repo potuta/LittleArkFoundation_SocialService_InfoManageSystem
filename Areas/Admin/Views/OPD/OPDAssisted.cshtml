@@ -48,7 +48,7 @@
            ? "active" : "")"
            asp-action="General" asp-controller="OPD">General</a> *@
 
-        <a class="btn btn-outline-dark @(
+        @* <a class="btn btn-outline-dark @(
             ViewContext.RouteData.Values["action"]?.ToString() == "OPDAssisted" ||
             ViewContext.RouteData.Values["action"]?.ToString() == "SortByOPDAssistedAndReports"
             ? "active" : "")"
@@ -58,7 +58,7 @@
             ViewContext.RouteData.Values["action"]?.ToString() == "GLReceived" ||
             ViewContext.RouteData.Values["action"]?.ToString() == "SortByGLReceivedAndReports"
             ? "active" : "")"
-        asp-action="GLReceived" asp-controller="OPD">GL Received</a>
+        asp-action="GLReceived" asp-controller="OPD">GL Received</a> *@
 
         <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "Reports" ? "active" : "")"
            asp-action="Reports" asp-controller="OPD">Reports</a>
