@@ -1300,8 +1300,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
 
             // HEADERS
-            // COUNTA OF DATE PROCESSED BY MSW
-            worksheet.Cell(4, 1).Value = "COUNTA OF DATE PROCESSED BY MSW";
+            // COUNT OF DATE PROCESSED BY MSW
+            worksheet.Cell(4, 1).Value = "COUNT OF DATE PROCESSED BY MSW";
             worksheet.Cell(5, 1).Value = "Date Processed";
 
             int col = 2;
@@ -1355,8 +1355,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Row(totalRow).Style.Font.Bold = true;
 
             // HEADERS
-            // COUNTA Of Class
-            worksheet.Cell(totalRow + 2, 1).Value = "Counta of Class";
+            // COUNT Of Class
+            worksheet.Cell(totalRow + 2, 1).Value = "COUNT of Class";
             worksheet.Cell(totalRow + 3, 1).Value = "Class";
 
             int classCol = 2;

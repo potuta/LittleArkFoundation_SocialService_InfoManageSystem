@@ -683,8 +683,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
 
             // HEADERS
-            // COUNTA OF DATE PROCESSED BY MSW
-            worksheet.Cell(4, 1).Value = "COUNTA OF DATE PROCESSED BY MSW";
+            // COUNT OF DATE PROCESSED BY MSW
+            worksheet.Cell(4, 1).Value = "COUNT OF DATE PROCESSED BY MSW";
             worksheet.Cell(5, 1).Value = "Date Processed by MSW";
 
             int dateCol = 2;
@@ -738,10 +738,10 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Row(totalDateRow).Style.Font.Bold = true;
 
             // HEADERS
-            // COUNTA OF CLASS
+            // COUNT OF CLASS
             int classRowStart = totalDateRow + 2;
 
-            worksheet.Cell(classRowStart, 1).Value = "COUNTA OF CLASS";
+            worksheet.Cell(classRowStart, 1).Value = "COUNT OF CLASS";
             worksheet.Cell(classRowStart + 1, 1).Value = "Class";
 
             int classCol = 2;
@@ -799,10 +799,10 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Row(totalClassRow).Style.Font.Bold = true;
 
             // HEADERS
-            // COUNTA OF CLASS BY GENDER
+            // COUNT OF CLASS BY GENDER
             int genderRowStart = totalClassRow + 2;
 
-            worksheet.Cell(genderRowStart, 1).Value = "COUNTA OF CLASS BY GENDER";
+            worksheet.Cell(genderRowStart, 1).Value = "COUNT OF CLASS BY GENDER";
             worksheet.Cell(genderRowStart + 1, 1).Value = "Class";
             worksheet.Cell(genderRowStart + 1, 2).Value = "F";
             worksheet.Cell(genderRowStart + 1, 3).Value = "M";
@@ -834,10 +834,10 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
 
             // HEADERS
-            // COUNTA OF OLD/NEW
+            // COUNT OF OLD/NEW
             int oldNewRowStart = totalGenderRow + 2;
 
-            worksheet.Cell(oldNewRowStart, 1).Value = "COUNTA OF OLD/NEW";
+            worksheet.Cell(oldNewRowStart, 1).Value = "COUNT OF OLD/NEW";
             worksheet.Cell(oldNewRowStart + 1, 1).Value = "MSW";
             worksheet.Cell(oldNewRowStart + 1, 2).Value = "Old";
             worksheet.Cell(oldNewRowStart + 1, 3).Value = "New";
@@ -867,10 +867,10 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Row(totalOldNewRow).Style.Font.Bold = true;
 
             // HEADERS
-            // COUNTA OF PWD
+            // COUNT OF PWD
             int pwdRowStart = totalOldNewRow + 2;
 
-            worksheet.Cell(pwdRowStart, 1).Value = "COUNTA OF PWD";
+            worksheet.Cell(pwdRowStart, 1).Value = "COUNT OF PWD";
             worksheet.Cell(pwdRowStart + 1, 1).Value = "MSW";
             worksheet.Cell(pwdRowStart + 1, 2).Value = "PWD";
             worksheet.Cell(pwdRowStart + 1, 3).Value = "Non-PWD";
@@ -899,10 +899,10 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Cell(totalPwdRow, 4).Value = pwdTotal + nonPwdTotal; // Grand total for PWD
 
             // HEADERS
-            // COUNTA OF REFERRAL PROCESSED BY MSW
+            // COUNT OF REFERRAL PROCESSED BY MSW
             int referralRowStart = totalPwdRow + 2;
 
-            worksheet.Cell(referralRowStart, 1).Value = "COUNTA OF REFERRAL BY MSW";
+            worksheet.Cell(referralRowStart, 1).Value = "COUNT OF REFERRAL BY MSW";
             worksheet.Cell(referralRowStart + 1, 1).Value = "Referral";
 
             int referralColIndex = 2;

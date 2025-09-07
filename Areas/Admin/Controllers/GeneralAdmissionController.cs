@@ -625,8 +625,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
 
             // HEADERS
-            // COUNTA OF DATE PROCESSED BY MSW
-            worksheet.Cell(4, 1).Value = "COUNTA OF DATE";
+            // COUNT OF DATE PROCESSED BY MSW
+            worksheet.Cell(4, 1).Value = "COUNT OF DATE";
             worksheet.Cell(5, 1).Value = "Date";
 
             int dateColIndex = 2;
@@ -658,10 +658,10 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Row(totalDateRowIndex).Style.Font.Bold = true;
 
             // HEADERS
-            // COUNTA OF CLASS 
+            // COUNT OF CLASS 
             int classRowIndex = totalDateRowIndex + 2;
 
-            worksheet.Cell(classRowIndex, 1).Value = "COUNTA OF CLASS";
+            worksheet.Cell(classRowIndex, 1).Value = "COUNT OF CLASS";
             worksheet.Cell(classRowIndex + 1, 1).Value = "Class";
 
             int classColIndex = 2;
@@ -709,9 +709,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Row(totalClassRowIndex).Style.Font.Bold = true;
 
             // HEADERS
-            // COUNTA OF GENDER
+            // COUNT OF GENDER
             int genderRowIndex = totalClassRowIndex + 2;
-            worksheet.Cell(genderRowIndex, 1).Value = "COUNTA OF GENDER";
+            worksheet.Cell(genderRowIndex, 1).Value = "COUNT OF GENDER";
             worksheet.Cell(genderRowIndex + 1, 1).Value = "Class";
             worksheet.Cell(genderRowIndex + 1, 2).Value = "F";
             worksheet.Cell(genderRowIndex + 1, 3).Value = "M";
@@ -746,9 +746,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Row(totalGenderRowIndex).Style.Font.Bold = true;
 
             // HEADERS
-            // COUNTA OF Eco. Stat
+            // COUNT OF Eco. Stat
             int economicStatusRowIndex = totalGenderRowIndex + 2;
-            worksheet.Cell(economicStatusRowIndex, 1).Value = "COUNTA OF Eco. Stat";
+            worksheet.Cell(economicStatusRowIndex, 1).Value = "COUNT OF Eco. Stat";
             worksheet.Cell(economicStatusRowIndex + 1, 1).Value = "Eco. Stat";
             worksheet.Cell(economicStatusRowIndex + 1, 2).Value = "Grand Total";
 
@@ -772,9 +772,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Row(totalEconomicStatusRowIndex).Style.Font.Bold = true;
 
             // HEADERS
-            // COUNTA OF Marital Status
+            // COUNT OF Marital Status
             int maritalStatusRowIndex = totalEconomicStatusRowIndex + 2;
-            worksheet.Cell(maritalStatusRowIndex, 1).Value = "COUNTA OF Marital Status";
+            worksheet.Cell(maritalStatusRowIndex, 1).Value = "COUNT OF Marital Status";
             worksheet.Cell(maritalStatusRowIndex + 1, 1).Value = "M. Stat";
             worksheet.Cell(maritalStatusRowIndex + 1, 2).Value = "Grand Total";
 
@@ -798,9 +798,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Row(totalMaritalStatusRowIndex).Style.Font.Bold = true;
 
             // HEADERS
-            // COUNTA OF REFERRAL
+            // COUNT OF REFERRAL
             int referralRowIndex = totalMaritalStatusRowIndex + 2;
-            worksheet.Cell(referralRowIndex, 1).Value = "COUNTA OF REFERRAL";
+            worksheet.Cell(referralRowIndex, 1).Value = "COUNT OF REFERRAL";
             worksheet.Cell(referralRowIndex + 1, 1).Value = "Referral";
             worksheet.Cell(referralRowIndex + 1, 2).Value = "Grand Total";
 
@@ -824,9 +824,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Row(totalReferralRowIndex).Style.Font.Bold = true;
 
             // HEADERS
-            // COUNTA OF ORIGIN
+            // COUNT OF ORIGIN
             int originRowIndex = totalReferralRowIndex + 2;
-            worksheet.Cell(originRowIndex, 1).Value = "COUNTA OF ORIGIN";
+            worksheet.Cell(originRowIndex, 1).Value = "COUNT OF ORIGIN";
             worksheet.Cell(originRowIndex + 1, 1).Value = "Origin";
             worksheet.Cell(originRowIndex + 1, 2).Value = "Grand Total";
 
@@ -850,9 +850,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Row(totalOriginRowIndex).Style.Font.Bold = true;
 
             // HEADERS
-            // COUNTA OF AGE
+            // COUNT OF AGE
             int ageRowIndex = totalOriginRowIndex + 2;
-            worksheet.Cell(ageRowIndex, 1).Value = "COUNTA OF AGE";
+            worksheet.Cell(ageRowIndex, 1).Value = "COUNT OF AGE";
             worksheet.Cell(ageRowIndex + 1, 1).Value = "Age";
             worksheet.Cell(ageRowIndex + 1, 2).Value = "Grand Total";
 
@@ -876,9 +876,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Row(totalAgeRowIndex).Style.Font.Bold = true;
 
             // HEADERS
-            // COUNTA OF PATIENT EDU. ATTAINMENT
+            // COUNT OF PATIENT EDU. ATTAINMENT
             int patientEduRowIndex = totalAgeRowIndex + 2;
-            worksheet.Cell(patientEduRowIndex, 1).Value = "COUNTA OF PATIENT EDU. ATTAINMENT";
+            worksheet.Cell(patientEduRowIndex, 1).Value = "COUNT OF PATIENT EDU. ATTAINMENT";
             worksheet.Cell(patientEduRowIndex + 1, 1).Value = "Patient";
             worksheet.Cell(patientEduRowIndex + 1, 2).Value = "Grand Total";
 
@@ -902,9 +902,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Row(totalPatientEduRowIndex).Style.Font.Bold = true;
 
             // HEADERS
-            // COUNTA OF FATHER EDU. ATTAINMENT
+            // COUNT OF FATHER EDU. ATTAINMENT
             int fatherEduRowIndex = totalPatientEduRowIndex + 2;
-            worksheet.Cell(fatherEduRowIndex, 1).Value = "COUNTA OF FATHER EDU. ATTAINMENT";
+            worksheet.Cell(fatherEduRowIndex, 1).Value = "COUNT OF FATHER EDU. ATTAINMENT";
             worksheet.Cell(fatherEduRowIndex + 1, 1).Value = "Father";
             worksheet.Cell(fatherEduRowIndex + 1, 2).Value = "Grand Total";
 
@@ -928,9 +928,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Row(totalFatherEduRowIndex).Style.Font.Bold = true;
 
             // HEADERS
-            // COUNTA OF MOTHER EDU. ATTAINMENT
+            // COUNT OF MOTHER EDU. ATTAINMENT
             int motherEduRowIndex = totalFatherEduRowIndex + 2;
-            worksheet.Cell(motherEduRowIndex, 1).Value = "COUNTA OF MOTHER EDU. ATTAINMENT";
+            worksheet.Cell(motherEduRowIndex, 1).Value = "COUNT OF MOTHER EDU. ATTAINMENT";
             worksheet.Cell(motherEduRowIndex + 1, 1).Value = "Mother";
             worksheet.Cell(motherEduRowIndex + 1, 2).Value = "Grand Total";
 
@@ -954,9 +954,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Row(totalMotherEduRowIndex).Style.Font.Bold = true;
 
             // HEADERS
-            // COUNTA OF OLD/NEW
+            // COUNT OF OLD/NEW
             int oldNewRowIndex = totalMotherEduRowIndex + 2;
-            worksheet.Cell(oldNewRowIndex, 1).Value = "COUNTA OF OLD/NEW";
+            worksheet.Cell(oldNewRowIndex, 1).Value = "COUNT OF OLD/NEW";
             worksheet.Cell(oldNewRowIndex + 1, 1).Value = "Old/New";
             worksheet.Cell(oldNewRowIndex + 1, 2).Value = "Grand Total";
 
@@ -973,9 +973,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Row(oldNewDataRowIndex).Style.Font.Bold = true;
 
             // HEADERS
-            // COUNTA OF PWD
+            // COUNT OF PWD
             int pwdRowIndex = oldNewDataRowIndex + 2;
-            worksheet.Cell(pwdRowIndex, 1).Value = "COUNTA OF PWD";
+            worksheet.Cell(pwdRowIndex, 1).Value = "COUNT OF PWD";
             worksheet.Cell(pwdRowIndex + 1, 1).Value = "PWD";
             worksheet.Cell(pwdRowIndex + 1, 2).Value = "Grand Total";
 
@@ -992,9 +992,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Row(pwdDataRowIndex).Style.Font.Bold = true;
 
             // HEADERS
-            // COUNTA OF HOUSEHOLD SIZE
+            // COUNT OF HOUSEHOLD SIZE
             int householdSizeRowIndex = pwdDataRowIndex + 2;
-            worksheet.Cell(householdSizeRowIndex, 1).Value = "COUNTA OF HOUSEHOLD SIZE";
+            worksheet.Cell(householdSizeRowIndex, 1).Value = "COUNT OF HOUSEHOLD SIZE";
             worksheet.Cell(householdSizeRowIndex + 1, 1).Value = "HH Size";
             worksheet.Cell(householdSizeRowIndex + 1, 2).Value = "Grand Total";
 
@@ -1018,9 +1018,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Row(totalHouseholdSizeRowIndex).Style.Font.Bold = true;
 
             // HEADERS
-            // COUNTA OF LIGHT SOURCE
+            // COUNT OF LIGHT SOURCE
             int lightSourceRowIndex = totalHouseholdSizeRowIndex + 2;
-            worksheet.Cell(lightSourceRowIndex, 1).Value = "COUNTA OF LIGHT SOURCE";
+            worksheet.Cell(lightSourceRowIndex, 1).Value = "COUNT OF LIGHT SOURCE";
             worksheet.Cell(lightSourceRowIndex + 1, 1).Value = "Light";
             worksheet.Cell(lightSourceRowIndex + 1, 2).Value = "Grand Total";
 
@@ -1044,9 +1044,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Row(totalLightSourceRowIndex).Style.Font.Bold = true;
 
             // HEADERS
-            // COUNTA OF WATER SOURCE
+            // COUNT OF WATER SOURCE
             int waterSourceRowIndex = totalLightSourceRowIndex + 2;
-            worksheet.Cell(waterSourceRowIndex, 1).Value = "COUNTA OF WATER SOURCE";
+            worksheet.Cell(waterSourceRowIndex, 1).Value = "COUNT OF WATER SOURCE";
             worksheet.Cell(waterSourceRowIndex + 1, 1).Value = "Water";
             worksheet.Cell(waterSourceRowIndex + 1, 2).Value = "Grand Total";
 
@@ -1070,9 +1070,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Row(totalWaterSourceRowIndex).Style.Font.Bold = true;
 
             // HEADERS
-            // COUNTA OF FUEL SOURCE
+            // COUNT OF FUEL SOURCE
             int fuelSourceRowIndex = totalWaterSourceRowIndex + 2;
-            worksheet.Cell(fuelSourceRowIndex, 1).Value = "COUNTA OF FUEL SOURCE";
+            worksheet.Cell(fuelSourceRowIndex, 1).Value = "COUNT OF FUEL SOURCE";
             worksheet.Cell(fuelSourceRowIndex + 1, 1).Value = "Fuel";
             worksheet.Cell(fuelSourceRowIndex + 1, 2).Value = "Grand Total";
 
@@ -1096,9 +1096,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Row(totalFuelSourceRowIndex).Style.Font.Bold = true;
 
             // HEADERS
-            // COUNTA OF DWELLING TYPE
+            // COUNT OF DWELLING TYPE
             int dwellingTypeRowIndex = totalFuelSourceRowIndex + 2;
-            worksheet.Cell(dwellingTypeRowIndex, 1).Value = "COUNTA OF DWELLING TYPE";
+            worksheet.Cell(dwellingTypeRowIndex, 1).Value = "COUNT OF DWELLING TYPE";
             worksheet.Cell(dwellingTypeRowIndex + 1, 1).Value = "Dwell";
             worksheet.Cell(dwellingTypeRowIndex + 1, 2).Value = "Grand Total";
 
@@ -1122,9 +1122,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Row(totalDwellingTypeRowIndex).Style.Font.Bold = true;
 
             // HEADERS
-            // COUNTA OF STATS OCCUPATION
+            // COUNT OF STATS OCCUPATION
             int statsOccupationRowIndex = totalDwellingTypeRowIndex + 2;
-            worksheet.Cell(statsOccupationRowIndex, 1).Value = "COUNTA OF STATS OCCUPATION";
+            worksheet.Cell(statsOccupationRowIndex, 1).Value = "COUNT OF STATS OCCUPATION";
             worksheet.Cell(statsOccupationRowIndex + 1, 1).Value = "Stat's Occupation";
             worksheet.Cell(statsOccupationRowIndex + 1, 2).Value = "Grand Total";
 
@@ -1148,9 +1148,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Row(totalStatsOccupationRowIndex).Style.Font.Bold = true;
 
             // HEADERS
-            // COUNTA OF INCOME RANGE
+            // COUNT OF INCOME RANGE
             int incomeRangeRowIndex = totalStatsOccupationRowIndex + 2;
-            worksheet.Cell(incomeRangeRowIndex, 1).Value = "COUNTA OF INCOME RANGE";
+            worksheet.Cell(incomeRangeRowIndex, 1).Value = "COUNT OF INCOME RANGE";
             worksheet.Cell(incomeRangeRowIndex + 1, 1).Value = "Income Range";
             worksheet.Cell(incomeRangeRowIndex + 1, 2).Value = "Grand Total";
 
@@ -1174,9 +1174,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Row(totalIncomeRangeRowIndex).Style.Font.Bold = true;
 
             // HEADERS
-            // COUNTA OF OCCUPATION
+            // COUNT OF OCCUPATION
             int occupationRowIndex = totalIncomeRangeRowIndex + 2;
-            worksheet.Cell(occupationRowIndex, 1).Value = "COUNTA OF OCCUPATION";
+            worksheet.Cell(occupationRowIndex, 1).Value = "COUNT OF OCCUPATION";
             worksheet.Cell(occupationRowIndex + 1, 1).Value = "Occupation";
             worksheet.Cell(occupationRowIndex + 1, 2).Value = "Grand Total";
 
@@ -1200,9 +1200,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Row(totalOccupationRowIndex).Style.Font.Bold = true;
 
             // HEADERS
-            // COUNTA OF MONTHLY INCOME
+            // COUNT OF MONTHLY INCOME
             int monthlyIncomeRowIndex = totalOccupationRowIndex + 2;
-            worksheet.Cell(monthlyIncomeRowIndex, 1).Value = "COUNTA OF MONTHLY INCOME";
+            worksheet.Cell(monthlyIncomeRowIndex, 1).Value = "COUNT OF MONTHLY INCOME";
             worksheet.Cell(monthlyIncomeRowIndex + 1, 1).Value = "Monthly Income";
             worksheet.Cell(monthlyIncomeRowIndex + 1, 2).Value = "Grand Total";
 
@@ -1445,8 +1445,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
 
             // HEADERS
-            // COUNTA OF DATE PROCESSED BY MSW
-            worksheet.Cell(4, 1).Value = "COUNTA OF DATE PROCESSED BY MSW";
+            // COUNT OF DATE PROCESSED BY MSW
+            worksheet.Cell(4, 1).Value = "COUNT OF DATE PROCESSED BY MSW";
             worksheet.Cell(5, 1).Value = "Date Processed by MSW";
 
             int dateColIndex = 2;
@@ -1593,8 +1593,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
 
             // HEADERS
-            // COUNTA OF DATE PROCESSED BY MSW
-            worksheet.Cell(4, 1).Value = "COUNTA OF REFERRAL BY MSW";
+            // COUNT OF DATE PROCESSED BY MSW
+            worksheet.Cell(4, 1).Value = "COUNT OF REFERRAL BY MSW";
             worksheet.Cell(5, 1).Value = "Referral";
 
             int referralColIndex = 2;
@@ -1643,9 +1643,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Cell(totalDateRowIndex, totalDateColIndex).Value = groupedOPD.Sum(g => g.Count()); // Grand Total
             worksheet.Row(totalDateRowIndex).Style.Font.Bold = true;
 
-            // COUNTA OF OLD/NEW
+            // COUNT OF OLD/NEW
             int oldNewStartRowIndex = totalDateRowIndex + 2;
-            worksheet.Cell(oldNewStartRowIndex, 1).Value = "COUNTA OF OLD/NEW";
+            worksheet.Cell(oldNewStartRowIndex, 1).Value = "COUNT OF OLD/NEW";
             worksheet.Cell(oldNewStartRowIndex + 1, 1).Value = "Old/New";
 
             int oldNewDataColIndex = 2;
@@ -1693,9 +1693,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Cell(oldNewDataRowIndex, colIndexTotal).Value = generalAdmissions.Count();
             worksheet.Row(oldNewDataRowIndex).Style.Font.Bold = true;
 
-            // COUNTA OF PWD
+            // COUNT OF PWD
             int pwdStartRowIndex = oldNewDataRowIndex + 2;
-            worksheet.Cell(pwdStartRowIndex, 1).Value = "COUNTA OF PWD";
+            worksheet.Cell(pwdStartRowIndex, 1).Value = "COUNT OF PWD";
             worksheet.Cell(pwdStartRowIndex + 1, 1).Value = "PWD";
 
             int pwdDataColIndex = 2;
@@ -1841,8 +1841,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
 
             // HEADERS
-            // COUNTA OF DATE PROCESSED BY MSW
-            worksheet.Cell(4, 1).Value = "COUNTA OF PHIC BY MSW";
+            // COUNT OF DATE PROCESSED BY MSW
+            worksheet.Cell(4, 1).Value = "COUNT OF PHIC BY MSW";
             worksheet.Cell(5, 1).Value = "PHIC";
 
             int referralColIndex = 2;
