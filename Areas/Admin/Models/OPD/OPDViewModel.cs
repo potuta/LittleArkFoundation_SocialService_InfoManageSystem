@@ -19,6 +19,8 @@ namespace LittleArkFoundation.Areas.Admin.Models.OPD
         public int? TotalPages => (int)Math.Ceiling((double)TotalCount.Value / PageSize.Value);
 
         // Statistics filtering properties
+        public Dictionary<int, int>? TotalSourcesMonthly { get; set; } = new Dictionary<int, int>();
+        public Dictionary<int, int>? TotalCaseloadMonthly { get; set; } = new Dictionary<int, int>();
         public Dictionary<int, int>? TotalOPDMonthly { get; set; } = new Dictionary<int, int>();
         public Dictionary<int, Dictionary<string, int>>? TotalStatisticsMonthly { get; set; } = new Dictionary<int, Dictionary<string, int>>();
     }

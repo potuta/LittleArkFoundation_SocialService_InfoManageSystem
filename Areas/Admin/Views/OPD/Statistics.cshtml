@@ -307,20 +307,20 @@ else
 
                         @for (int i = 1; i <= 6; i++)
                         {
-                            <td style="white-space: nowrap; font-weight: bold;">@Model.TotalOPDMonthly[i]</td>
+                            <td style="white-space: nowrap; font-weight: bold;">@Model.TotalSourcesMonthly[i]</td>
                         }
 
                         <td style="white-space: nowrap; font-weight: bold;">
-                            @(Enumerable.Range(1, 6).Sum(i => Model.TotalOPDMonthly[i]))
+                            @(Enumerable.Range(1, 6).Sum(i => Model.TotalSourcesMonthly[i]))
                         </td>
 
                         @for (int i = 7; i <= 12; i++)
                         {
-                            <td style="white-space: nowrap; font-weight: bold;">@Model.TotalOPDMonthly[i]</td>
+                            <td style="white-space: nowrap; font-weight: bold;">@Model.TotalSourcesMonthly[i]</td>
                         }
 
                         <td style="white-space: nowrap; font-weight: bold;">
-                            @(Enumerable.Range(7, 6).Sum(i => Model.TotalOPDMonthly[i]))
+                            @(Enumerable.Range(7, 6).Sum(i => Model.TotalSourcesMonthly[i]))
                         </td>
                     </tr>
 
@@ -1425,20 +1425,24 @@ else
 
                         @for (int i = 1; i <= 6; i++)
                         {
-                            <td style="white-space: nowrap; font-weight: bold;">@Model.TotalOPDMonthly[i]</td>
+                            <td style="white-space: nowrap; font-weight: bold;">
+                                @(Model.TotalCaseloadMonthly[i] + Model.TotalStatisticsMonthly[i].Values.Sum())
+                            </td>
                         }
 
                         <td style="white-space: nowrap; font-weight: bold;">
-                            @(Enumerable.Range(1, 6).Sum(i => Model.TotalOPDMonthly[i]))
+                            @(Enumerable.Range(1, 6).Sum(i => Model.TotalCaseloadMonthly[i] + Model.TotalStatisticsMonthly[i].Values.Sum()))
                         </td>
 
                         @for (int i = 7; i <= 12; i++)
                         {
-                            <td style="white-space: nowrap; font-weight: bold;">@Model.TotalOPDMonthly[i]</td>
+                            <td style="white-space: nowrap; font-weight: bold;">
+                                @(Model.TotalCaseloadMonthly[i] + Model.TotalStatisticsMonthly[i].Values.Sum())
+                            </td>
                         }
 
                         <td style="white-space: nowrap; font-weight: bold;">
-                            @(Enumerable.Range(7, 6).Sum(i => Model.TotalOPDMonthly[i]))
+                            @(Enumerable.Range(7, 6).Sum(i => Model.TotalCaseloadMonthly[i] + Model.TotalStatisticsMonthly[i].Values.Sum()))
                         </td>
                     </tr>
                 }

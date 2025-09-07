@@ -325,6 +325,38 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
             var users = await context.Users.ToListAsync();
 
+            var sourceOfReferral = new Dictionary<string, string>
+                    {
+                                { "1. Government Hospital", "Govt. Hosp." },
+                                { "2. Private Hospital", "Private/Clinic" },
+                                { "3. Politicians", "Politicians" },
+                                { "4. Media", "Media" },
+                                { "5. Health Care Team", "Health Care Team" },
+                                { "6. NGOs/Private Welfare Agencies", "NGO/Private Welfare" },
+                                { "7. Government Agencies (DSWD, DOH Officials)", "Govt. Agencies" },
+                                { "8. Walk-in", "Walk in" },
+                                { "9. Others (employers, former pts, colleagues, friends)", "Others" },
+
+                    };
+
+            var totalSourcesMonthly = new Dictionary<int, int>();
+            for (int i = 1; i <= 12; i++)
+            {
+                totalSourcesMonthly[i] = sourceOfReferral.Sum(source =>
+                    opdList.Count(m =>
+                        m.SourceOfReferral.Equals(source.Value, StringComparison.OrdinalIgnoreCase) &&
+                        m.Date.Month == i));
+            }
+
+            var totalCaseloadMonthly = new Dictionary<int, int>();
+            for (int i = 1; i <= 12; i++)
+            {
+                totalCaseloadMonthly[i] =
+                    opdList.Count(m => !m.IsOld && m.Date.Month == i) +
+                    opdList.Count(m => m.IsOld && m.Date.Month == i) +
+                    opdList.Count(m => m.IsPWD && m.Date.Month == i);
+            }
+
             var totalOPDMonthlyDictionary = new Dictionary<int, int>();
             var totalStatisticsMonthlyDictionary = new Dictionary<int, Dictionary<string, int>>();
             for (int i = 1; i <= 12; i++)
@@ -338,6 +370,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 OPDList = opdList,
                 StatisticsList = statisticsList,
                 Users = users,
+                TotalSourcesMonthly = totalSourcesMonthly,
+                TotalCaseloadMonthly = totalCaseloadMonthly,
                 TotalOPDMonthly = totalOPDMonthlyDictionary,
                 TotalStatisticsMonthly = totalStatisticsMonthlyDictionary
             };
@@ -1283,6 +1317,38 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
             var users = await context.Users.ToListAsync();
 
+            var sourceOfReferral = new Dictionary<string, string>
+                    {
+                                { "1. Government Hospital", "Govt. Hosp." },
+                                { "2. Private Hospital", "Private/Clinic" },
+                                { "3. Politicians", "Politicians" },
+                                { "4. Media", "Media" },
+                                { "5. Health Care Team", "Health Care Team" },
+                                { "6. NGOs/Private Welfare Agencies", "NGO/Private Welfare" },
+                                { "7. Government Agencies (DSWD, DOH Officials)", "Govt. Agencies" },
+                                { "8. Walk-in", "Walk in" },
+                                { "9. Others (employers, former pts, colleagues, friends)", "Others" },
+
+                    };
+
+            var totalSourcesMonthly = new Dictionary<int, int>();
+            for (int month = 1; month <= 12; month++)
+            {
+                totalSourcesMonthly[month] = sourceOfReferral.Sum(source =>
+                    opdList.Count(m =>
+                        m.SourceOfReferral.Equals(source.Value, StringComparison.OrdinalIgnoreCase) &&
+                        m.Date.Month == month));
+            }
+
+            var totalCaseloadMonthly = new Dictionary<int, int>();
+            for (int month = 1; month <= 12; month++)
+            {
+                totalCaseloadMonthly[month] = 
+                    opdList.Count(m => !m.IsOld && m.Date.Month == month) +
+                    opdList.Count(m => m.IsOld && m.Date.Month == month) +
+                    opdList.Count(m => m.IsPWD && m.Date.Month == month);
+            }
+
             var totalOPDMonthlyDictionary = new Dictionary<int, int>();
             var totalStatisticsMonthlyDictionary = new Dictionary<int, Dictionary<string, int>>();
             for (int month = 1; month <= 12; month++)
@@ -1296,6 +1362,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 OPDList = opdList,
                 Users = users,
                 StatisticsList = statisticsList,
+                TotalSourcesMonthly = totalSourcesMonthly,
+                TotalCaseloadMonthly = totalCaseloadMonthly,
                 TotalOPDMonthly = totalOPDMonthlyDictionary,
                 TotalStatisticsMonthly = totalStatisticsMonthlyDictionary
             };
@@ -1333,6 +1401,14 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             {
                 TempData["ErrorMessage"] = "No OPD records found for selected filters.";
                 return RedirectToAction("Statistics");
+            }
+
+            var totalOPDMonthlyDictionary = new Dictionary<int, int>();
+            var totalStatisticsMonthlyDictionary = new Dictionary<int, Dictionary<string, int>>();
+            for (int i = 1; i <= 12; i++)
+            {
+                totalOPDMonthlyDictionary[i] = opdList.Count(o => o.Date.Month == i);
+                totalStatisticsMonthlyDictionary[i] = StatisticsHelper.SumForMonth(statisticsList, i);
             }
 
             // File name generation
@@ -1479,33 +1555,41 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 referralRow++;
             }
 
+            var totalSourcesMonthly = new Dictionary<int, int>();
+
+            for (int i = 1; i <= 12; i++)
+            {
+                totalSourcesMonthly[i] = sourceOfReferral.Sum(source =>
+                    opdList.Count(m =>
+                        m.SourceOfReferral.Equals(source.Value, StringComparison.OrdinalIgnoreCase) &&
+                        m.Date.Month == i));
+            }
+
             worksheet.Cell(referralRow, 1).Value = "TOTAL";
             worksheet.Cell(referralRow, 1).Style.Font.Bold = true;
             worksheet.Cell(referralRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
             for (int i = 1; i <= 6; i++)
             {
-                var count = opdList.Count(opd => opd.Date.Month == i);
-                worksheet.Cell(referralRow, i + 1).Value = count;
+                worksheet.Cell(referralRow, i + 1).Value = totalSourcesMonthly[i];
                 worksheet.Cell(referralRow, i + 1).Style.Font.Bold = true;
                 worksheet.Cell(referralRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             }
 
             worksheet.Cell(referralRow, 8).Value =
-                Enumerable.Range(1, 6).Sum(i => opdList.Count(opd => opd.Date.Month == i));
+                Enumerable.Range(1, 6).Sum(i => totalSourcesMonthly[i]);
             worksheet.Cell(referralRow, 8).Style.Font.Bold = true;
             worksheet.Cell(referralRow, 8).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
             for (int i = 7; i <= 12; i++)
             {
-                var count = opdList.Count(opd => opd.Date.Month == i);
-                worksheet.Cell(referralRow, i + 2).Value = count;
+                worksheet.Cell(referralRow, i + 2).Value = totalSourcesMonthly[i];
                 worksheet.Cell(referralRow, i + 2).Style.Font.Bold = true;
                 worksheet.Cell(referralRow, i + 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             }
 
             worksheet.Cell(referralRow, 15).Value =
-                Enumerable.Range(7, 6).Sum(i => opdList.Count(opd => opd.Date.Month == i));
+                Enumerable.Range(7, 6).Sum(i => totalSourcesMonthly[i]);
             worksheet.Cell(referralRow, 15).Style.Font.Bold = true;
             worksheet.Cell(referralRow, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
@@ -2819,33 +2903,40 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             serviceRow++;
 
+            var totalCaseloadMonthly = new Dictionary<int, int>();
+            for (int i = 1; i <= 12; i++)
+            {
+                totalCaseloadMonthly[i] =
+                    opdList.Count(m => !m.IsOld && m.Date.Month == i) +
+                    opdList.Count(m => m.IsOld && m.Date.Month == i) +
+                    opdList.Count(m => m.IsPWD && m.Date.Month == i);
+            }
+
             worksheet.Cell(serviceRow, 1).Value = "TOTAL";
             worksheet.Cell(serviceRow, 1).Style.Font.Bold = true;
             worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
             for (int i = 1; i <= 6; i++)
             {
-                var count = opdList.Count(opd => opd.Date.Month == i);
-                worksheet.Cell(serviceRow, i + 1).Value = count;
+                worksheet.Cell(serviceRow, i + 1).Value = totalCaseloadMonthly[i] + totalStatisticsMonthlyDictionary[i].Values.Sum();
                 worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
                 worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             }
 
             worksheet.Cell(serviceRow, 8).Value =
-                Enumerable.Range(1, 6).Sum(i => opdList.Count(opd => opd.Date.Month == i));
+                Enumerable.Range(1, 6).Sum(i => totalCaseloadMonthly[i] + totalStatisticsMonthlyDictionary[i].Values.Sum());
             worksheet.Cell(serviceRow, 8).Style.Font.Bold = true;
             worksheet.Cell(serviceRow, 8).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
             for (int i = 7; i <= 12; i++)
             {
-                var count = opdList.Count(opd => opd.Date.Month == i);
-                worksheet.Cell(serviceRow, i + 2).Value = count;
+                worksheet.Cell(serviceRow, i + 2).Value = totalCaseloadMonthly[i] + totalStatisticsMonthlyDictionary[i].Values.Sum();
                 worksheet.Cell(serviceRow, i + 2).Style.Font.Bold = true;
                 worksheet.Cell(serviceRow, i + 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             }
 
             worksheet.Cell(serviceRow, 15).Value =
-                Enumerable.Range(7, 6).Sum(i => opdList.Count(opd => opd.Date.Month == i));
+                Enumerable.Range(7, 6).Sum(i => totalCaseloadMonthly[i] + totalStatisticsMonthlyDictionary[i].Values.Sum());
             worksheet.Cell(serviceRow, 15).Style.Font.Bold = true;
             worksheet.Cell(serviceRow, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
@@ -2868,12 +2959,11 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         public async Task<IActionResult> EditStatistics(string? sortToggle)
         {
             string sortToggleValue = sortToggle ?? "01";
-            ViewBag.sortToggle = sortToggleValue;
 
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
 
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await context.Users.FirstOrDefaultAsync(u => u.UserID == int.Parse(userId));
 
             if (user == null)
@@ -2882,38 +2972,40 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 return RedirectToAction("Statistics");
             }
 
-            var query = context.Statistics.AsQueryable();
-            int monthNumber = int.Parse(sortToggleValue);
-            int yearNumber = DateOnly.FromDateTime(DateTime.Now).Year;
+            // Parse selected month/year
+            int monthNumber = int.TryParse(sortToggleValue, out var parsedMonth) ? parsedMonth : 1;
+            int yearNumber = DateTime.Now.Year;
 
-            if (int.TryParse(sortToggleValue, out monthNumber) && monthNumber >= 1 && monthNumber <= 12)
-            {
-                query = query.Where(opd => opd.Date.Value.Month == monthNumber);
-                ViewBag.sortToggle = monthNumber.ToString("D2"); // "01", "02", etc.
-            }
+            ViewBag.sortToggle = monthNumber.ToString("D2"); // keep 2-digit format for the UI
 
-            var statistics = await context.Statistics.FirstOrDefaultAsync(u =>
-                u.Type == "OPD" &&
-                u.UserID == user.UserID &&
-                u.Date.HasValue &&
-                u.Date.Value.Month == monthNumber &&
-                u.Date.Value.Year == yearNumber
-            );
+            // Try to get existing statistics for this user, type, month & year
+            var statistics = await context.Statistics.FirstOrDefaultAsync(s =>
+                s.Type == "OPD" &&
+                s.UserID == user.UserID &&
+                s.Date.HasValue &&
+                s.Date.Value.Month == monthNumber &&
+                s.Date.Value.Year == yearNumber);
 
+            // If not found, create new
             if (statistics == null)
             {
                 statistics = new StatisticsModel
                 {
                     Type = "OPD",
                     UserID = user.UserID,
-                    Date = new DateOnly(yearNumber, monthNumber, 1) // store first day of the month
+                    Date = new DateOnly(yearNumber, monthNumber, 1)
                 };
 
                 await context.Statistics.AddAsync(statistics);
                 await context.SaveChangesAsync();
             }
 
-            var opdList = await context.OPD.Where(o => o.UserID == user.UserID).ToListAsync();
+            // Get OPDs for the same user and same month/year
+            var opdList = await context.OPD
+                .Where(o => o.UserID == user.UserID &&
+                            o.Date.Month == monthNumber &&
+                            o.Date.Year == yearNumber)
+                .ToListAsync();
 
             var model = new OPDViewModel
             {
