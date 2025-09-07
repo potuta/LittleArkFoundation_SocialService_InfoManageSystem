@@ -50,7 +50,7 @@ namespace LittleArkFoundation.Areas.Admin.Services.Reports
                 {
                     var totalRange = worksheet.Range(totalRowIndex, 1, totalRowIndex, lastColumn);
                     totalRange.Style.Font.Bold = true;
-                    totalRange.Style.Fill.BackgroundColor = XLColor.LightYellow;
+                    totalRange.Style.Fill.BackgroundColor = XLColor.FromHtml("#de8e8e");
                 }
             }
 
@@ -83,6 +83,12 @@ namespace LittleArkFoundation.Areas.Admin.Services.Reports
 
                     rowCounter++;
                 }
+            }
+
+            if (isStats == true)
+            {
+                worksheet.Range(5, 8, lastRowIndex, 8).Style.Fill.BackgroundColor = XLColor.FromHtml("#de8e8e");
+                worksheet.Range(5, 15, lastRowIndex, 15).Style.Fill.BackgroundColor = XLColor.FromHtml("#de8e8e");
             }
 
             // Signature block
