@@ -85,8 +85,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 .Take(pageSize)
                 .ToListAsync();
 
-            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
-            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            var users = await context.Users.ToListAsync();
 
             var viewModel = new DischargeViewModel
             {
@@ -110,8 +111,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
 
-            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
-            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            var users = await context.Users.ToListAsync();
 
             var searchWords = searchString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
@@ -183,8 +185,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 .Take(pageSize)
                 .ToListAsync();
 
-            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
-            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            var users = await context.Users.ToListAsync();
 
             var viewModel = new DischargeViewModel
             {
@@ -221,8 +224,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             var discharges = await query.ToListAsync();
 
-            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
-            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            var users = await context.Users.ToListAsync();
 
             var viewModel = new DischargeViewModel
             {
@@ -1241,8 +1245,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 return RedirectToAction("Index");
             }
 
-            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
-            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            var users = await context.Users.ToListAsync();
 
             var viewModel = new DischargeViewModel
             {
@@ -1296,8 +1301,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var workbook = new XLWorkbook();
             var worksheet = workbook.Worksheets.Add(safeSheetName);
 
-            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
-            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            var users = await context.Users.ToListAsync();
 
             // HEADERS
             // COUNT OF DATE PROCESSED BY MSW

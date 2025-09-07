@@ -75,8 +75,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 scoredList.Add((opd, scores, isEligible));
             }
 
-            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
-            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            var users = await context.Users.ToListAsync();
 
             var viewModel = new OPDViewModel
             {
@@ -151,8 +152,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 scoredList.Add((opd, scores, isEligible));
             }
 
-            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
-            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            var users = await context.Users.ToListAsync();
 
             var viewModel = new OPDViewModel
             {
@@ -216,8 +218,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 scoredList.Add((opd, scores, isEligible));
             }
 
-            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
-            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            var users = await context.Users.ToListAsync();
 
             var viewModel = new OPDViewModel
             {
@@ -273,8 +276,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 opdList = await query.ToListAsync();
             }
 
-            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
-            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            var users = await context.Users.ToListAsync();
 
             var viewModel = new OPDViewModel
             {
@@ -311,8 +315,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             var opdList = await query.ToListAsync();
 
-            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
-            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            var users = await context.Users.ToListAsync();
 
             var viewModel = new OPDViewModel
             {
@@ -625,8 +630,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 opdList = await query.ToListAsync();
             }
 
-            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
-            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            var users = await context.Users.ToListAsync();
 
             var viewModel = new OPDViewModel
             {
@@ -700,8 +706,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var workbook = new XLWorkbook();
             var worksheet = workbook.Worksheets.Add(safeSheetName);
 
-            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
-            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            var users = await context.Users.ToListAsync();
 
             // HEADERS
             // COUNT OF DATE PROCESSED BY MSW
@@ -1253,8 +1260,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 return RedirectToAction("Index");
             }
 
-            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
-            var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            var users = await context.Users.ToListAsync();
 
             var viewModel = new OPDViewModel
             {
