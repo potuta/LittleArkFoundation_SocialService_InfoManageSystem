@@ -6,6 +6,7 @@ using LittleArkFoundation.Areas.Admin.Data;
 using LittleArkFoundation.Areas.Admin.Models.Discharges;
 using LittleArkFoundation.Areas.Admin.Models.Form;
 using LittleArkFoundation.Areas.Admin.Models.OPD;
+using LittleArkFoundation.Areas.Admin.Models.Statistics;
 using LittleArkFoundation.Areas.Admin.Services.Reports;
 using LittleArkFoundation.Authorize;
 using LittleArkFoundation.Data;
@@ -2819,6 +2820,66 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                             $"{fileName}.xlsx");
             }
+        }
+
+        public async Task<IActionResult> EditStatistics(string? sortToggle)
+        {
+            string sortToggleValue = sortToggle ?? "01";
+            ViewBag.sortToggle = sortToggleValue;
+
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var user = await context.Users.FirstOrDefaultAsync(u => u.UserID == int.Parse(userId));
+
+            if (user == null)
+            {
+                TempData["ErrorMessage"] = "User not found";
+                return RedirectToAction("Statistics");
+            }
+
+            var query = context.Statistics.AsQueryable();
+            int monthNumber = int.Parse(sortToggleValue);
+            int yearNumber = DateOnly.FromDateTime(DateTime.Now).Year;
+
+            if (int.TryParse(sortToggleValue, out monthNumber) && monthNumber >= 1 && monthNumber <= 12)
+            {
+                query = query.Where(opd => opd.Date.Value.Month == monthNumber);
+                ViewBag.sortToggle = monthNumber.ToString("D2"); // "01", "02", etc.
+            }
+
+            var statistics = await context.Statistics.FirstOrDefaultAsync(u =>
+                u.Type == "OPD" &&
+                u.UserID == user.UserID &&
+                u.Date.HasValue &&
+                u.Date.Value.Month == monthNumber &&
+                u.Date.Value.Year == yearNumber
+            );
+
+            if (statistics == null)
+            {
+                statistics = new StatisticsModel
+                {
+                    Type = "OPD",
+                    UserID = user.UserID,
+                    Date = new DateOnly(yearNumber, monthNumber, 1) // store first day of the month
+                };
+
+                await context.Statistics.AddAsync(statistics);
+                await context.SaveChangesAsync();
+            }
+
+            var opdList = await context.OPD.Where(o => o.UserID == user.UserID).ToListAsync();
+
+            var model = new OPDViewModel
+            {
+                User = user,
+                OPDList = opdList,
+                Statistics = statistics
+            };
+
+            return View(model);
         }
     }
 }

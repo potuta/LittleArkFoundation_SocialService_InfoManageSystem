@@ -1,4 +1,6 @@
-﻿namespace LittleArkFoundation.Areas.Admin.Models.OPD
+﻿using LittleArkFoundation.Areas.Admin.Models.Statistics;
+
+namespace LittleArkFoundation.Areas.Admin.Models.OPD
 {
     public class OPDViewModel
     {
@@ -7,6 +9,7 @@
         public List<(OPDModel opd, Dictionary<string, int> scores, bool isEligible)> OPDScoringList { get; set; } = new List<(OPDModel opd, Dictionary<string, int> scores, bool isEligible)>();
         public UsersModel User { get; set; } = new UsersModel();
         public List<UsersModel> Users { get; set; } = new List<UsersModel> { new UsersModel() };
+        public StatisticsModel? Statistics { get; set; } = new StatisticsModel();
 
         // Pagination properties
         public int? CurrentPage { get; set; } = 1;

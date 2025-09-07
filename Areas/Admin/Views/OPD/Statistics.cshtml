@@ -46,7 +46,8 @@
 
         <a class="btn btn-outline-dark @(
                 ViewContext.RouteData.Values["action"]?.ToString() == "Statistics" ||
-                ViewContext.RouteData.Values["action"]?.ToString() == "SortByStatistics"
+                ViewContext.RouteData.Values["action"]?.ToString() == "SortByStatistics" ||
+                ViewContext.RouteData.Values["action"]?.ToString() == "EditStatistics" 
                 ? "active" : "")"
            asp-action="Statistics" asp-controller="OPD">Statistics</a>
     </div>
@@ -58,7 +59,14 @@
     <a class="btn btn-outline-secondary mb-3" asp-controller="OPD" asp-action="Index">← Back to List</a>
 </div>
 
-<div class="d-flex justify-content-end align-items-start flex-wrap gap-2 mb-3">
+<div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+    @* Left toggles/buttons *@
+    <div class="d-flex align-items-center gap-3">
+        <a class="btn btn-success hide-when-archived" asp-action="EditStatistics" asp-controller="OPD">
+            <i class="bx bx-edit"></i> Edit Your Statistics (@User.FindFirst(System.Security.Claims.ClaimTypes.Name).Value)
+        </a>
+    </div>
+
     @* Right toggles/buttons *@
     <div class="btn-group">
         <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-1 me-2" data-bs-toggle="dropdown" aria-expanded="false">
