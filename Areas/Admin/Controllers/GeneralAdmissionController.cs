@@ -2145,7 +2145,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
 
                 worksheet.Cell(referralRow, 15).Value =
-                    Enumerable.Range(7, 12).Sum(i => generalAdmissions.Count(ga => ga.Referral.Equals(value, StringComparison.OrdinalIgnoreCase) && ga.Date.Month == i));
+                    Enumerable.Range(7, 6).Sum(i => generalAdmissions.Count(ga => ga.Referral.Equals(value, StringComparison.OrdinalIgnoreCase) && ga.Date.Month == i));
                 worksheet.Cell(referralRow, 15).Style.Font.Bold = true;
                 worksheet.Cell(referralRow, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
@@ -2178,7 +2178,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
 
             worksheet.Cell(referralRow, 15).Value =
-                Enumerable.Range(7, 12).Sum(i => generalAdmissions.Count(ga => ga.Date.Month == i));
+                Enumerable.Range(7, 6).Sum(i => generalAdmissions.Count(ga => ga.Date.Month == i));
             worksheet.Cell(referralRow, 15).Style.Font.Bold = true;
             worksheet.Cell(referralRow, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
@@ -2246,7 +2246,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
 
             worksheet.Cell(caseloadRow, 15).Value =
-                Enumerable.Range(7, 12).Sum(i => generalAdmissions.Count(ga => !ga.isOld && ga.Date.Month == i));
+                Enumerable.Range(7, 6).Sum(i => generalAdmissions.Count(ga => !ga.isOld && ga.Date.Month == i));
             worksheet.Cell(caseloadRow, 15).Style.Font.Bold = true;
             worksheet.Cell(caseloadRow, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
@@ -2276,7 +2276,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
 
             worksheet.Cell(caseloadRow, 15).Value =
-                Enumerable.Range(7, 12).Sum(i => generalAdmissions.Count(ga => ga.isOld && ga.Date.Month == i));
+                Enumerable.Range(7, 6).Sum(i => generalAdmissions.Count(ga => ga.isOld && ga.Date.Month == i));
             worksheet.Cell(caseloadRow, 15).Style.Font.Bold = true;
             worksheet.Cell(caseloadRow, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
@@ -2345,7 +2345,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
 
             worksheet.Cell(caseloadRow, 15).Value =
-                Enumerable.Range(7, 12).Sum(i => generalAdmissions.Count(ga => ga.isPWD && ga.Date.Month == i));
+                Enumerable.Range(7, 6).Sum(i => generalAdmissions.Count(ga => ga.isPWD && ga.Date.Month == i));
             worksheet.Cell(caseloadRow, 15).Style.Font.Bold = true;
             worksheet.Cell(caseloadRow, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
@@ -3427,7 +3427,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
 
             worksheet.Cell(serviceRow, 15).Value =
-                Enumerable.Range(7, 12).Sum(i => progressNotes.Count(ga => ga.Date.Month == i));
+                Enumerable.Range(7, 6).Sum(i => progressNotes.Count(ga => ga.Date.Month == i));
             worksheet.Cell(serviceRow, 15).Style.Font.Bold = true;
             worksheet.Cell(serviceRow, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
@@ -3579,7 +3579,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
 
             worksheet.Cell(serviceRow, 15).Value =
-                Enumerable.Range(7, 12).Sum(i => generalAdmissions.Count(ga => ga.Date.Month == i) + progressNotes.Count(ga => ga.Date.Month == i));
+                Enumerable.Range(7, 6).Sum(i => generalAdmissions.Count(ga => ga.Date.Month == i) + progressNotes.Count(ga => ga.Date.Month == i));
             worksheet.Cell(serviceRow, 15).Style.Font.Bold = true;
             worksheet.Cell(serviceRow, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 

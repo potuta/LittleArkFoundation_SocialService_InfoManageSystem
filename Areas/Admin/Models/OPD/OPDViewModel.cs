@@ -17,5 +17,9 @@ namespace LittleArkFoundation.Areas.Admin.Models.OPD
         public int? PageSize { get; set; } = 20; // Show 20 logs per page by default
         public int? TotalCount { get; set; } = 0;
         public int? TotalPages => (int)Math.Ceiling((double)TotalCount.Value / PageSize.Value);
+
+        // Statistics filtering properties
+        public Dictionary<int, int>? TotalOPDMonthly { get; set; } = new Dictionary<int, int>();
+        public Dictionary<int, Dictionary<string, int>>? TotalStatisticsMonthly { get; set; } = new Dictionary<int, Dictionary<string, int>>();
     }
 }

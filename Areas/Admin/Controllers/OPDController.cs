@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Office2016.Drawing.Command;
 using DocumentFormat.OpenXml.Spreadsheet;
@@ -8,6 +9,7 @@ using LittleArkFoundation.Areas.Admin.Models.Form;
 using LittleArkFoundation.Areas.Admin.Models.OPD;
 using LittleArkFoundation.Areas.Admin.Models.Statistics;
 using LittleArkFoundation.Areas.Admin.Services.Reports;
+using LittleArkFoundation.Areas.Admin.Services.Statistics;
 using LittleArkFoundation.Authorize;
 using LittleArkFoundation.Data;
 using Microsoft.AspNetCore.Mvc;
@@ -323,11 +325,21 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
             var users = await context.Users.ToListAsync();
 
+            var totalOPDMonthlyDictionary = new Dictionary<int, int>();
+            var totalStatisticsMonthlyDictionary = new Dictionary<int, Dictionary<string, int>>();
+            for (int i = 1; i <= 12; i++)
+            {
+                totalOPDMonthlyDictionary[i] = opdList.Count(o => o.Date.Month == i);
+                totalStatisticsMonthlyDictionary[i] = StatisticsHelper.SumForMonth(statisticsList, i);
+            }
+
             var viewModel = new OPDViewModel
             {
                 OPDList = opdList,
                 StatisticsList = statisticsList,
-                Users = users
+                Users = users,
+                TotalOPDMonthly = totalOPDMonthlyDictionary,
+                TotalStatisticsMonthly = totalStatisticsMonthlyDictionary
             };
 
             return View(viewName, viewModel);
@@ -1271,11 +1283,21 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
             var users = await context.Users.ToListAsync();
 
+            var totalOPDMonthlyDictionary = new Dictionary<int, int>();
+            var totalStatisticsMonthlyDictionary = new Dictionary<int, Dictionary<string, int>>();
+            for (int month = 1; month <= 12; month++)
+            {
+                totalOPDMonthlyDictionary[month] = opdList.Count(o => o.Date.Month == month);
+                totalStatisticsMonthlyDictionary[month] = StatisticsHelper.SumForMonth(statisticsList, month);
+            }
+
             var viewModel = new OPDViewModel
             {
                 OPDList = opdList,
                 Users = users,
-                StatisticsList = statisticsList
+                StatisticsList = statisticsList,
+                TotalOPDMonthly = totalOPDMonthlyDictionary,
+                TotalStatisticsMonthly = totalStatisticsMonthlyDictionary
             };
 
             return View(viewModel);
@@ -1450,7 +1472,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
 
                 worksheet.Cell(referralRow, 15).Value =
-                    Enumerable.Range(7, 12).Sum(i => opdList.Count(opd => opd.SourceOfReferral.Equals(value, StringComparison.OrdinalIgnoreCase) && opd.Date.Month == i));
+                    Enumerable.Range(7, 6).Sum(i => opdList.Count(opd => opd.SourceOfReferral.Equals(value, StringComparison.OrdinalIgnoreCase) && opd.Date.Month == i));
                 worksheet.Cell(referralRow, 15).Style.Font.Bold = true;
                 worksheet.Cell(referralRow, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
@@ -1483,7 +1505,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
 
             worksheet.Cell(referralRow, 15).Value =
-                Enumerable.Range(7, 12).Sum(i => opdList.Count(opd => opd.Date.Month == i));
+                Enumerable.Range(7, 6).Sum(i => opdList.Count(opd => opd.Date.Month == i));
             worksheet.Cell(referralRow, 15).Style.Font.Bold = true;
             worksheet.Cell(referralRow, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
@@ -1551,7 +1573,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
 
             worksheet.Cell(caseloadRow, 15).Value =
-                Enumerable.Range(7, 12).Sum(i => opdList.Count(opd => !opd.IsOld && opd.Date.Month == i));
+                Enumerable.Range(7, 6).Sum(i => opdList.Count(opd => !opd.IsOld && opd.Date.Month == i));
             worksheet.Cell(caseloadRow, 15).Style.Font.Bold = true;
             worksheet.Cell(caseloadRow, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
@@ -1581,7 +1603,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
 
             worksheet.Cell(caseloadRow, 15).Value =
-                Enumerable.Range(7, 12).Sum(i => opdList.Count(opd => opd.IsOld && opd.Date.Month == i));
+                Enumerable.Range(7, 6).Sum(i => opdList.Count(opd => opd.IsOld && opd.Date.Month == i));
             worksheet.Cell(caseloadRow, 15).Style.Font.Bold = true;
             worksheet.Cell(caseloadRow, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
@@ -1650,7 +1672,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
 
             worksheet.Cell(caseloadRow, 15).Value =
-                Enumerable.Range(7, 12).Sum(i => opdList.Count(opd => opd.IsPWD && opd.Date.Month == i));
+                Enumerable.Range(7, 6).Sum(i => opdList.Count(opd => opd.IsPWD && opd.Date.Month == i));
             worksheet.Cell(caseloadRow, 15).Style.Font.Bold = true;
             worksheet.Cell(caseloadRow, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
@@ -2823,7 +2845,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
 
             worksheet.Cell(serviceRow, 15).Value =
-                Enumerable.Range(7, 12).Sum(i => opdList.Count(opd => opd.Date.Month == i));
+                Enumerable.Range(7, 6).Sum(i => opdList.Count(opd => opd.Date.Month == i));
             worksheet.Cell(serviceRow, 15).Style.Font.Bold = true;
             worksheet.Cell(serviceRow, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 

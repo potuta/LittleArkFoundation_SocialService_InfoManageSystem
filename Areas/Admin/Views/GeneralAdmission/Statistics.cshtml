@@ -296,7 +296,7 @@ else
                             }
 
                             <td style="white-space: nowrap;">
-                                @(Enumerable.Range(7, 12).Sum(i => Model.GeneralAdmissions.Count(m => m.Referral.Equals(value, StringComparison.OrdinalIgnoreCase) && m.Date.Month == i)))
+                                @(Enumerable.Range(7, 6).Sum(i => Model.GeneralAdmissions.Count(m => m.Referral.Equals(value, StringComparison.OrdinalIgnoreCase) && m.Date.Month == i)))
                             </td>
                         </tr>
                     }
@@ -319,7 +319,7 @@ else
                         }
 
                         <td style="white-space: nowrap; font-weight: bold;">
-                            @(Enumerable.Range(7, 12).Sum(i => Model.GeneralAdmissions.Count(m => m.Date.Month == i)))
+                            @(Enumerable.Range(7, 6).Sum(i => Model.GeneralAdmissions.Count(m => m.Date.Month == i)))
                         </td>
                     </tr>
 
@@ -373,7 +373,7 @@ else
                         }
 
                         <td style="white-space: nowrap;">
-                            @(Enumerable.Range(7, 12).Sum(i => Model.GeneralAdmissions.Count(m => !m.isOld && m.Date.Month == i)))
+                            @(Enumerable.Range(7, 6).Sum(i => Model.GeneralAdmissions.Count(m => !m.isOld && m.Date.Month == i)))
                         </td>
                     </tr>
 
@@ -397,7 +397,7 @@ else
                         }
 
                         <td style="white-space: nowrap;">
-                            @(Enumerable.Range(7, 12).Sum(i => Model.GeneralAdmissions.Count(m => m.isOld && m.Date.Month == i)))
+                            @(Enumerable.Range(7, 6).Sum(i => Model.GeneralAdmissions.Count(m => m.isOld && m.Date.Month == i)))
                         </td>
                     </tr>
 
@@ -451,7 +451,7 @@ else
                         }
 
                         <td style="white-space: nowrap;">
-                            @(Enumerable.Range(7, 12).Sum(i => Model.GeneralAdmissions.Count(m => m.isPWD && m.Date.Month == i)))
+                            @(Enumerable.Range(7, 6).Sum(i => Model.GeneralAdmissions.Count(m => m.isPWD && m.Date.Month == i)))
                         </td>
                     </tr>
 
@@ -1348,7 +1348,7 @@ else
                         }
 
                         <td style="white-space: nowrap;">
-                            @(Enumerable.Range(7, 12).Sum(i => Model.ProgressNotes.Count(m => m.Date.Month == i)))
+                            @(Enumerable.Range(7, 6).Sum(i => Model.ProgressNotes.Count(m => m.Date.Month == i)))
                         </td>
                     </tr>
 
@@ -1474,7 +1474,7 @@ else
                         }
 
                         <td style="white-space: nowrap; font-weight: bold;">
-                            @(Enumerable.Range(7, 12).Sum(i => Model.GeneralAdmissions.Count(m => m.Date.Month == i) + Model.ProgressNotes.Count(m => m.Date.Month == i)))
+                            @(Enumerable.Range(7, 6).Sum(i => Model.GeneralAdmissions.Count(m => m.Date.Month == i) + Model.ProgressNotes.Count(m => m.Date.Month == i)))
                         </td>
                     </tr>
                 }
