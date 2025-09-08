@@ -331,7 +331,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         }
 
         // 🟡 ARCHIVE: Archive the user
-        [HasPermission("ArchiveUser")]
+        [HasPermission("ArchiveUnarchiveUser")]
         public async Task<IActionResult> Archive(int id)
         {
             try
@@ -384,7 +384,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         }
 
         // 🟡 UNARCHIVE: Unarchive the user
-        [HasPermission("UnarchiveUser")]
+        [HasPermission("ArchiveUnarchiveUser")]
         public async Task<IActionResult> Unarchive(int id)
         {
             try
