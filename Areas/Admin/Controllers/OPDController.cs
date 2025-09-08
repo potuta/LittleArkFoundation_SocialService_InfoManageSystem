@@ -2647,9 +2647,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 await using var context = new ApplicationDbContext(connectionString);
                 context.Statistics.Update(viewModel.Statistics);
                 await context.SaveChangesAsync();
-                TempData["SuccessMessage"] = $"Successfully edited/updated Statistics: {viewModel.Statistics.UserID}";
-                LoggingService.LogInformation($"UserID: {User.FindFirst(ClaimTypes.NameIdentifier).Value}. Statistics edited/updated successfully");
-                return RedirectToAction("Index");
+                TempData["SuccessMessage"] = $"Successfully edited/updated Statistics for OPD: {viewModel.Statistics.UserID}";
+                LoggingService.LogInformation($"UserID: {User.FindFirst(ClaimTypes.NameIdentifier).Value}. Statistics edited/updated successfully for OPD");
+                return RedirectToAction("Statistics");
             }
             catch (SqlException se)
             {

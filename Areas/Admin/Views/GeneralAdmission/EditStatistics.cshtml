@@ -1,4 +1,4 @@
-﻿@model LittleArkFoundation.Areas.Admin.Models.OPD.OPDViewModel
+﻿@model LittleArkFoundation.Areas.Admin.Models.GeneralAdmission.GeneralAdmissionViewModel
 @{
     ViewData["Title"] = "Edit Statistics";
     Layout = "_AdminLayout";
@@ -30,91 +30,91 @@
 
 <!-- Back to List -->
 <div class="mt-2">
-    <a class="btn btn-outline-secondary mb-3" asp-controller="OPD" asp-action="Statistics">← Back to Statistics</a>
+    <a class="btn btn-outline-secondary mb-3" asp-controller="GeneralAdmission" asp-action="Statistics">← Back to Statistics</a>
 </div>
 
 <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
 @* Left toggles/buttons *@
     <div class="d-flex align-items-center gap-3">
         <div class="btn-group btn-group-toggle" data-toggle="buttons">
-            <a asp-action="EditStatistics" asp-controller="OPD" asp-route-sortToggle="01"
+            <a asp-action="EditStatistics" asp-controller="GeneralAdmission" asp-route-sortToggle="01"
                class="btn btn-secondary @(sortToggle == "01" ? "active" : "")">
                 <div class="custom-radio">
                     <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "01" ? "checked" : "")>
                     <label style="margin-bottom: 0">JAN</label>
                 </div>
             </a>
-            <a asp-action="EditStatistics" asp-controller="OPD" asp-route-sortToggle="02"
+            <a asp-action="EditStatistics" asp-controller="GeneralAdmission" asp-route-sortToggle="02"
                class="btn btn-secondary @(sortToggle == "02" ? "active" : "")">
                 <div class="custom-radio">
                     <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "02" ? "checked" : "")>
                     <label style="margin-bottom: 0">FEB</label>
                 </div>
             </a>
-            <a asp-action="EditStatistics" asp-controller="OPD" asp-route-sortToggle="03"
+            <a asp-action="EditStatistics" asp-controller="GeneralAdmission" asp-route-sortToggle="03"
                class="btn btn-secondary @(sortToggle == "03" ? "active" : "")">
                 <div class="custom-radio">
                     <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "03" ? "checked" : "")>
                     <label style="margin-bottom: 0">MARCH</label>
                 </div>
             </a>
-            <a asp-action="EditStatistics" asp-controller="OPD" asp-route-sortToggle="04"
+            <a asp-action="EditStatistics" asp-controller="GeneralAdmission" asp-route-sortToggle="04"
                class="btn btn-secondary @(sortToggle == "04" ? "active" : "")">
                 <div class="custom-radio">
                     <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "04" ? "checked" : "")>
                     <label style="margin-bottom: 0">APRIL</label>
                 </div>
             </a>
-            <a asp-action="EditStatistics" asp-controller="OPD" asp-route-sortToggle="05"
+            <a asp-action="EditStatistics" asp-controller="GeneralAdmission" asp-route-sortToggle="05"
                class="btn btn-secondary @(sortToggle == "05" ? "active" : "")">
                 <div class="custom-radio">
                     <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "05" ? "checked" : "")>
                     <label style="margin-bottom: 0">MAY</label>
                 </div>
             </a>
-            <a asp-action="EditStatistics" asp-controller="OPD" asp-route-sortToggle="06"
+            <a asp-action="EditStatistics" asp-controller="GeneralAdmission" asp-route-sortToggle="06"
                class="btn btn-secondary @(sortToggle == "06" ? "active" : "")">
                 <div class="custom-radio">
                     <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "06" ? "checked" : "")>
                     <label style="margin-bottom: 0">JUNE</label>
                 </div>
             </a>
-            <a asp-action="EditStatistics" asp-controller="OPD" asp-route-sortToggle="07"
+            <a asp-action="EditStatistics" asp-controller="GeneralAdmission" asp-route-sortToggle="07"
                class="btn btn-secondary @(sortToggle == "07" ? "active" : "")">
                 <div class="custom-radio">
                     <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "07" ? "checked" : "")>
                     <label style="margin-bottom: 0">JULY</label>
                 </div>
             </a>
-            <a asp-action="EditStatistics" asp-controller="OPD" asp-route-sortToggle="08"
+            <a asp-action="EditStatistics" asp-controller="GeneralAdmission" asp-route-sortToggle="08"
                class="btn btn-secondary @(sortToggle == "08" ? "active" : "")">
                 <div class="custom-radio">
                     <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "08" ? "checked" : "")>
                     <label style="margin-bottom: 0">AUG</label>
                 </div>
             </a>
-            <a asp-action="EditStatistics" asp-controller="OPD" asp-route-sortToggle="09"
+            <a asp-action="EditStatistics" asp-controller="GeneralAdmission" asp-route-sortToggle="09"
                class="btn btn-secondary @(sortToggle == "09" ? "active" : "")">
                 <div class="custom-radio">
                     <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "09" ? "checked" : "")>
                     <label style="margin-bottom: 0">SEPT</label>
                 </div>
             </a>
-            <a asp-action="EditStatistics" asp-controller="OPD" asp-route-sortToggle="10"
+            <a asp-action="EditStatistics" asp-controller="GeneralAdmission" asp-route-sortToggle="10"
                class="btn btn-secondary @(sortToggle == "10" ? "active" : "")">
                 <div class="custom-radio">
                     <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "10" ? "checked" : "")>
                     <label style="margin-bottom: 0">OCT</label>
                 </div>
             </a>
-            <a asp-action="EditStatistics" asp-controller="OPD" asp-route-sortToggle="11"
+            <a asp-action="EditStatistics" asp-controller="GeneralAdmission" asp-route-sortToggle="11"
                class="btn btn-secondary @(sortToggle == "11" ? "active" : "")">
                 <div class="custom-radio">
                     <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "11" ? "checked" : "")>
                     <label style="margin-bottom: 0">NOV</label>
                 </div>
             </a>
-            <a asp-action="EditStatistics" asp-controller="OPD" asp-route-sortToggle="12"
+            <a asp-action="EditStatistics" asp-controller="GeneralAdmission" asp-route-sortToggle="12"
                class="btn btn-secondary @(sortToggle == "12" ? "active" : "")">
                 <div class="custom-radio">
                     <input type="radio" style="accent-color: dodgerblue" value="main" @(sortToggle == "12" ? "checked" : "")>
@@ -190,7 +190,7 @@
                         {
                             var key = source.Key;
                             var value = source.Value;
-                            var count = Model.OPDList.Count(m => m.SourceOfReferral.Equals(value, StringComparison.OrdinalIgnoreCase) && m.Date.Month == int.Parse(sortToggle));
+                            var count = Model.GeneralAdmissions.Count(m => m.Referral.Equals(value, StringComparison.OrdinalIgnoreCase) && m.Date.Month == int.Parse(sortToggle));
 
                             <tr>
                                 <td style="white-space: nowrap;">@key</td>
@@ -219,7 +219,7 @@
 
                             <td style="white-space: nowrap;">
                                 <input type="number"
-                                       asp-for="Statistics.ii_DuringCensus_NewCases" value="@Model.OPDList.Count(m => !m.IsOld && m.Date.Month == int.Parse(sortToggle))"
+                                       asp-for="Statistics.ii_DuringCensus_NewCases" value="@Model.GeneralAdmissions.Count(m => !m.isOld && m.Date.Month == int.Parse(sortToggle))"
                                        class="text-muted"
                                        style="cursor: not-allowed;"
                                        disabled />
@@ -231,7 +231,7 @@
 
                             <td style="white-space: nowrap;">
                                 <input type="number"
-                                       asp-for="Statistics.ii_DuringCensus_OldCases" value="@Model.OPDList.Count(m => m.IsOld && m.Date.Month == int.Parse(sortToggle))"
+                                       asp-for="Statistics.ii_DuringCensus_OldCases" value="@Model.GeneralAdmissions.Count(m => m.isOld && m.Date.Month == int.Parse(sortToggle))"
                                        class="text-muted"
                                        style="cursor: not-allowed;"
                                        disabled />
@@ -256,7 +256,7 @@
 
                             <td style="white-space: nowrap;">
                                 <input type="number"
-                                       asp-for="Statistics.ii_NoPatients_PWD" value="@Model.OPDList.Count(m => m.IsPWD && m.Date.Month == int.Parse(sortToggle))"
+                                       asp-for="Statistics.ii_NoPatients_PWD" value="@Model.GeneralAdmissions.Count(m => m.isPWD && m.Date.Month == int.Parse(sortToggle))"
                                        class="text-muted"
                                        style="cursor: not-allowed;"
                                        disabled />

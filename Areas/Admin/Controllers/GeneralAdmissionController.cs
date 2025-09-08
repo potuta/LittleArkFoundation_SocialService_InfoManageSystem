@@ -4,7 +4,9 @@ using LittleArkFoundation.Areas.Admin.Data;
 using LittleArkFoundation.Areas.Admin.Models.Discharges;
 using LittleArkFoundation.Areas.Admin.Models.GeneralAdmission;
 using LittleArkFoundation.Areas.Admin.Models.OPD;
+using LittleArkFoundation.Areas.Admin.Models.Statistics;
 using LittleArkFoundation.Areas.Admin.Services.Reports;
+using LittleArkFoundation.Areas.Admin.Services.Statistics;
 using LittleArkFoundation.Authorize;
 using LittleArkFoundation.Data;
 using Microsoft.AspNetCore.Mvc;
@@ -246,11 +248,13 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             var query = context.GeneralAdmission.AsQueryable();
             var progressNotesQuery = context.ProgressNotes.AsQueryable();
+            var statisticsQuery = context.Statistics.AsQueryable();
 
             if (!string.IsNullOrEmpty(sortByUserID))
             {
                 query = query.Where(d => d.UserID == int.Parse(sortByUserID));
                 progressNotesQuery = progressNotesQuery.Where(p => p.UserID == int.Parse(sortByUserID));
+                statisticsQuery = statisticsQuery.Where(s => s.UserID == int.Parse(sortByUserID));
                 var user = await context.Users.FindAsync(int.Parse(sortByUserID));
                 ViewBag.sortBy = user.Username;
                 ViewBag.sortByUserID = user.UserID.ToString();
@@ -260,21 +264,69 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             {
                 query = query.Where(d => d.Date.Month == month.Month && d.Date.Year == month.Year);
                 progressNotesQuery = progressNotesQuery.Where(p => p.Date.Month == month.Month && p.Date.Year == month.Year);
+                statisticsQuery = statisticsQuery.Where(s => s.Date.HasValue && s.Date.Value.Month == month.Month && s.Date.Value.Year == month.Year);
                 ViewBag.sortByMonth = month.ToString("yyyy-MM");
             }
 
             var generalAdmissions = await query.ToListAsync();
             var progressNotes = await progressNotesQuery.ToListAsync();
+            var statisticsList = await statisticsQuery.Where(s => s.Type == "Admission").ToListAsync();
 
             //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
             var users = await context.Users.ToListAsync();
 
+            var sourceOfReferral = new Dictionary<string, string>
+                    {
+                                { "1. Government Hospital", "Govt. Hosp." },
+                                { "2. Private Hospital", "Private/Clinic" },
+                                { "3. Politicians", "Politicians" },
+                                { "4. Media", "Media" },
+                                { "5. Health Care Team", "Health Care Team" },
+                                { "6. NGOs/Private Welfare Agencies", "NGO/Private Welfare" },
+                                { "7. Government Agencies (DSWD, DOH Officials)", "Govt. Agencies" },
+                                { "8. Walk-in", "Walk in" },
+                                { "9. Others (employers, former pts, colleagues, friends)", "Others" },
+
+                    };
+
+            var totalSourcesMonthly = new Dictionary<int, int>();
+            for (int i = 1; i <= 12; i++)
+            {
+                totalSourcesMonthly[i] = sourceOfReferral.Sum(source =>
+                    generalAdmissions.Count(m =>
+                        m.Referral.Equals(source.Value, StringComparison.OrdinalIgnoreCase) &&
+                        m.Date.Month == i));
+            }
+
+            var totalCaseloadMonthly = new Dictionary<int, int>();
+            for (int i = 1; i <= 12; i++)
+            {
+                totalCaseloadMonthly[i] =
+                    generalAdmissions.Count(m => !m.isOld && m.Date.Month == i) +
+                    generalAdmissions.Count(m => m.isOld && m.Date.Month == i) +
+                    generalAdmissions.Count(m => m.isPWD && m.Date.Month == i) +
+                    progressNotes.Count(m => m.Date.Month == i);
+            }
+
+            var totalOPDMonthlyDictionary = new Dictionary<int, int>();
+            var totalStatisticsMonthlyDictionary = new Dictionary<int, Dictionary<string, int>>();
+            for (int i = 1; i <= 12; i++)
+            {
+                totalOPDMonthlyDictionary[i] = generalAdmissions.Count(o => o.Date.Month == i);
+                totalStatisticsMonthlyDictionary[i] = StatisticsHelper.SumForMonth(statisticsList, i);
+            }
+
             var viewModel = new GeneralAdmissionViewModel
             {
                 GeneralAdmissions = generalAdmissions,
                 ProgressNotes = progressNotes,
-                Users = users
+                Users = users,
+                StatisticsList = statisticsList,
+                TotalCaseloadMonthly = totalCaseloadMonthly,
+                TotalSourcesMonthly = totalSourcesMonthly,
+                TotalOPDMonthly = totalOPDMonthlyDictionary,
+                TotalStatisticsMonthly = totalStatisticsMonthlyDictionary
             };
 
             return View(viewName, viewModel);
@@ -1965,16 +2017,62 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
 
             var progressNotes = await context.ProgressNotes.ToListAsync();
+            var statisticsList = await context.Statistics.Where(s => s.Type == "Admission").ToListAsync();
 
             //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
             var users = await context.Users.ToListAsync();
 
+            var sourceOfReferral = new Dictionary<string, string>
+                    {
+                                { "1. Government Hospital", "Govt. Hosp." },
+                                { "2. Private Hospital", "Private/Clinic" },
+                                { "3. Politicians", "Politicians" },
+                                { "4. Media", "Media" },
+                                { "5. Health Care Team", "Health Care Team" },
+                                { "6. NGOs/Private Welfare Agencies", "NGO/Private Welfare" },
+                                { "7. Government Agencies (DSWD, DOH Officials)", "Govt. Agencies" },
+                                { "8. Walk-in", "Walk in" },
+                                { "9. Others (employers, former pts, colleagues, friends)", "Others" },
+
+                    };
+
+            var totalSourcesMonthly = new Dictionary<int, int>();
+            for (int i = 1; i <= 12; i++)
+            {
+                totalSourcesMonthly[i] = sourceOfReferral.Sum(source =>
+                    generalAdmissions.Count(m =>
+                        m.Referral.Equals(source.Value, StringComparison.OrdinalIgnoreCase) &&
+                        m.Date.Month == i));
+            }
+
+            var totalCaseloadMonthly = new Dictionary<int, int>();
+            for (int i = 1; i <= 12; i++)
+            {
+                totalCaseloadMonthly[i] =
+                    generalAdmissions.Count(m => !m.isOld && m.Date.Month == i) +
+                    generalAdmissions.Count(m => m.isOld && m.Date.Month == i) +
+                    generalAdmissions.Count(m => m.isPWD && m.Date.Month == i) +
+                    progressNotes.Count(m => m.Date.Month == i);
+            }
+
+            var totalOPDMonthlyDictionary = new Dictionary<int, int>();
+            var totalStatisticsMonthlyDictionary = new Dictionary<int, Dictionary<string, int>>();
+            for (int i = 1; i <= 12; i++)
+            {
+                totalOPDMonthlyDictionary[i] = generalAdmissions.Count(o => o.Date.Month == i);
+                totalStatisticsMonthlyDictionary[i] = StatisticsHelper.SumForMonth(statisticsList, i);
+            }
+
             var viewModel = new GeneralAdmissionViewModel
             {
                 Users = users,
                 GeneralAdmissions = generalAdmissions,
-                ProgressNotes = progressNotes
+                ProgressNotes = progressNotes,
+                TotalSourcesMonthly = totalSourcesMonthly,
+                TotalCaseloadMonthly = totalCaseloadMonthly,
+                TotalOPDMonthly = totalOPDMonthlyDictionary,
+                TotalStatisticsMonthly = totalStatisticsMonthlyDictionary,
             };
 
             return View(viewModel);
@@ -1989,23 +2087,41 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             bool filterByMonth = DateTime.TryParseExact(month, "yyyy-MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedMonth);
 
             var query = context.GeneralAdmission.AsQueryable();
+            var progressQuery = context.ProgressNotes.AsQueryable();
+            var statisticsQuery = context.Statistics.AsQueryable();
 
             if (userID > 0)
             {
                 query = query.Where(ga => ga.UserID == userID);
+                progressQuery = progressQuery.Where(ga => ga.UserID == userID);
+                statisticsQuery = statisticsQuery.Where(s => s.UserID == userID);
             }
 
             if (filterByMonth)
             {
                 query = query.Where(ga => ga.Date.Month == parsedMonth.Month && ga.Date.Year == parsedMonth.Year);
+                progressQuery = progressQuery.Where(ga => ga.Date.Month == parsedMonth.Month && ga.Date.Year == parsedMonth.Year);
+                statisticsQuery = statisticsQuery.Where(stat => stat.Date.Value.Month == parsedMonth.Month && stat.Date.Value.Year == parsedMonth.Year);
             }
 
             var generalAdmissions = await query.ToListAsync();
+            var progressNotes = await progressQuery.ToListAsync();
+            var statisticsList = await statisticsQuery
+                .Where(s => s.Type == "Admission")
+                .ToListAsync();
 
             if (generalAdmissions == null || !generalAdmissions.Any())
             {
                 TempData["ErrorMessage"] = "No Admission records found for selected filters.";
                 return RedirectToAction("Statistics");
+            }
+
+            var totalOPDMonthlyDictionary = new Dictionary<int, int>();
+            var totalStatisticsMonthlyDictionary = new Dictionary<int, Dictionary<string, int>>();
+            for (int i = 1; i <= 12; i++)
+            {
+                totalOPDMonthlyDictionary[i] = generalAdmissions.Count(o => o.Date.Month == i);
+                totalStatisticsMonthlyDictionary[i] = StatisticsHelper.SumForMonth(statisticsList, i);
             }
 
             // File name generation
@@ -2152,33 +2268,40 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 referralRow++;
             }
 
+            var totalSourcesMonthly = new Dictionary<int, int>();
+            for (int i = 1; i <= 12; i++)
+            {
+                totalSourcesMonthly[i] = sourceOfReferral.Sum(source =>
+                    generalAdmissions.Count(m =>
+                        m.Referral.Equals(source.Value, StringComparison.OrdinalIgnoreCase) &&
+                        m.Date.Month == i));
+            }
+
             worksheet.Cell(referralRow, 1).Value = "TOTAL";
             worksheet.Cell(referralRow, 1).Style.Font.Bold = true;
             worksheet.Cell(referralRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
             for (int i = 1; i <= 6; i++)
             {
-                var count = generalAdmissions.Count(ga => ga.Date.Month == i);
-                worksheet.Cell(referralRow, i + 1).Value = count;
+                worksheet.Cell(referralRow, i + 1).Value = totalSourcesMonthly[i];
                 worksheet.Cell(referralRow, i + 1).Style.Font.Bold = true;
                 worksheet.Cell(referralRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             }
 
             worksheet.Cell(referralRow, 8).Value =
-                Enumerable.Range(1, 6).Sum(i => generalAdmissions.Count(ga => ga.Date.Month == i));
+                Enumerable.Range(1, 6).Sum(i => totalSourcesMonthly[i]);
             worksheet.Cell(referralRow, 8).Style.Font.Bold = true;
             worksheet.Cell(referralRow, 8).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
             for (int i = 7; i <= 12; i++)
             {
-                var count = generalAdmissions.Count(ga => ga.Date.Month == i);
-                worksheet.Cell(referralRow, i + 2).Value = count;
+                worksheet.Cell(referralRow, i + 2).Value = totalSourcesMonthly[i];
                 worksheet.Cell(referralRow, i + 2).Style.Font.Bold = true;
                 worksheet.Cell(referralRow, i + 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             }
 
             worksheet.Cell(referralRow, 15).Value =
-                Enumerable.Range(7, 6).Sum(i => generalAdmissions.Count(ga => ga.Date.Month == i));
+                Enumerable.Range(7, 6).Sum(i => totalSourcesMonthly[i]);
             worksheet.Cell(referralRow, 15).Style.Font.Bold = true;
             worksheet.Cell(referralRow, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
@@ -2282,22 +2405,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             caseloadRow++;
 
-            worksheet.Cell(caseloadRow, 1).Value = "2. Closed Summary";
-            worksheet.Cell(caseloadRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-            worksheet.Cell(caseloadRow, 1).Style.Alignment.Indent = 1;
-            for (int i = 1; i <= headers.Length; i++)
-            {
-                if (i == 7 || i == 14)
-                {
-                    worksheet.Cell(caseloadRow, i + 1).Value = 0;
-                    worksheet.Cell(caseloadRow, i + 1).Style.Font.Bold = true;
-                    worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                }
-                else
-                {
-                    worksheet.Cell(caseloadRow, i + 1).Value = "";
-                }
-            }
+            StatisticsHelper.ApplyWorksheetStatistics(worksheet, caseloadRow, "2. Closed Summary", 1, totalStatisticsMonthlyDictionary, "ii_ClosedSummary");
 
             caseloadRow++;
 
@@ -2327,65 +2435,35 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             for (int i = 1; i <= 6; i++)
             {
-                var count = generalAdmissions.Count(ga => ga.isPWD && ga.Date.Month == i);
+                var count = generalAdmissions.Count(opd => opd.isPWD && opd.Date.Month == i);
                 worksheet.Cell(caseloadRow, i + 1).Value = count == 0 ? "" : count;
                 worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             }
 
             worksheet.Cell(caseloadRow, 8).Value =
-                Enumerable.Range(1, 6).Sum(i => generalAdmissions.Count(ga => ga.isPWD && ga.Date.Month == i));
+                Enumerable.Range(1, 6).Sum(i => generalAdmissions.Count(opd => opd.isPWD && opd.Date.Month == i));
             worksheet.Cell(caseloadRow, 8).Style.Font.Bold = true;
             worksheet.Cell(caseloadRow, 8).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
             for (int i = 7; i <= 12; i++)
             {
-                var count = generalAdmissions.Count(ga => ga.isPWD && ga.Date.Month == i);
+                var count = generalAdmissions.Count(opd => opd.isPWD && opd.Date.Month == i);
                 worksheet.Cell(caseloadRow, i + 2).Value = count == 0 ? "" : count;
                 worksheet.Cell(caseloadRow, i + 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             }
 
             worksheet.Cell(caseloadRow, 15).Value =
-                Enumerable.Range(7, 6).Sum(i => generalAdmissions.Count(ga => ga.isPWD && ga.Date.Month == i));
+                Enumerable.Range(7, 6).Sum(i => generalAdmissions.Count(opd => opd.isPWD && opd.Date.Month == i));
             worksheet.Cell(caseloadRow, 15).Style.Font.Bold = true;
             worksheet.Cell(caseloadRow, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
             caseloadRow++;
 
-            worksheet.Cell(caseloadRow, 1).Value = "b. Indigenous People";
-            worksheet.Cell(caseloadRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-            worksheet.Cell(caseloadRow, 1).Style.Alignment.Indent = 2;
-            for (int i = 1; i <= headers.Length; i++)
-            {
-                if (i == 7 || i == 14)
-                {
-                    worksheet.Cell(caseloadRow, i + 1).Value = 0;
-                    worksheet.Cell(caseloadRow, i + 1).Style.Font.Bold = true;
-                    worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                }
-                else
-                {
-                    worksheet.Cell(caseloadRow, i + 1).Value = "";
-                }
-            }
+            StatisticsHelper.ApplyWorksheetStatistics(worksheet, caseloadRow, "b. Indigenous People", 2, totalStatisticsMonthlyDictionary, "ii_NoPatients_IndigenousPeople");
 
             caseloadRow++;
 
-            worksheet.Cell(caseloadRow, 1).Value = "c. Government Workers";
-            worksheet.Cell(caseloadRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-            worksheet.Cell(caseloadRow, 1).Style.Alignment.Indent = 2;
-            for (int i = 1; i <= headers.Length; i++)
-            {
-                if (i == 7 || i == 14)
-                {
-                    worksheet.Cell(caseloadRow, i + 1).Value = 0;
-                    worksheet.Cell(caseloadRow, i + 1).Style.Font.Bold = true;
-                    worksheet.Cell(caseloadRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                }
-                else
-                {
-                    worksheet.Cell(caseloadRow, i + 1).Value = "";
-                }
-            }
+            StatisticsHelper.ApplyWorksheetStatistics(worksheet, caseloadRow, "c. Government Workers", 2, totalStatisticsMonthlyDictionary, "ii_NoPatients_GovernmentWorkers");
 
             // SERVICES
             int serviceRow = caseloadRow + 1;
@@ -2424,61 +2502,18 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
             }
 
-            serviceRow++;
-
-            worksheet.Cell(serviceRow, 1).Value = "1.1 Socio Economic Classification";
-            worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-            worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
-            for (int i = 1; i <= headers.Length; i++)
+            var ii_planning = new Dictionary<string, string>
             {
-                if (i == 7 || i == 14)
-                {
-                    worksheet.Cell(serviceRow, i + 1).Value = 0;
-                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
-                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                }
-                else
-                {
-                    worksheet.Cell(serviceRow, i + 1).Value = "";
-                }
-            }
+                { "1.1 Socio Economic Classification", "ii_Planning_SocioEconomicClassification"},
+                { "1.2 Pre-admission Planning", "ii_Planning_PreAdmissionPlanning"},
+                { "1.3 Information Services/Orientation", "ii_Planning_InformationServices"},
+            };
 
-            serviceRow++;
-
-            worksheet.Cell(serviceRow, 1).Value = "1.2 Pre-admission Planning";
-            worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-            worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
-            for (int i = 1; i <= headers.Length; i++)
+            foreach (var key in ii_planning.Keys)
             {
-                if (i == 7 || i == 14)
-                {
-                    worksheet.Cell(serviceRow, i + 1).Value = 0;
-                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
-                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                }
-                else
-                {
-                    worksheet.Cell(serviceRow, i + 1).Value = "";
-                }
-            }
+                serviceRow++;
 
-            serviceRow++;
-
-            worksheet.Cell(serviceRow, 1).Value = "1.3 Information Services/Orientation";
-            worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-            worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
-            for (int i = 1; i <= headers.Length; i++)
-            {
-                if (i == 7 || i == 14)
-                {
-                    worksheet.Cell(serviceRow, i + 1).Value = 0;
-                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
-                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                }
-                else
-                {
-                    worksheet.Cell(serviceRow, i + 1).Value = "";
-                }
+                StatisticsHelper.ApplyWorksheetStatistics(worksheet, serviceRow, key, 1, totalStatisticsMonthlyDictionary, ii_planning[key]);
             }
 
             serviceRow++;
@@ -2501,41 +2536,11 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             serviceRow++;
 
-            worksheet.Cell(serviceRow, 1).Value = "2.1 Provision of Discount";
-            worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-            worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
-            for (int i = 1; i <= headers.Length; i++)
-            {
-                if (i == 7 || i == 14)
-                {
-                    worksheet.Cell(serviceRow, i + 1).Value = 0;
-                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
-                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                }
-                else
-                {
-                    worksheet.Cell(serviceRow, i + 1).Value = "";
-                }
-            }
+            StatisticsHelper.ApplyWorksheetStatistics(worksheet, serviceRow, "2.1 Provision of Discount", 1, totalStatisticsMonthlyDictionary, "ii_Concrete_ProvisionDiscount");
 
             serviceRow++;
 
-            worksheet.Cell(serviceRow, 1).Value = "2.2 Facilitating Referrals";
-            worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-            worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
-            for (int i = 1; i <= headers.Length; i++)
-            {
-                if (i == 7 || i == 14)
-                {
-                    worksheet.Cell(serviceRow, i + 1).Value = 0;
-                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
-                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                }
-                else
-                {
-                    worksheet.Cell(serviceRow, i + 1).Value = "";
-                }
-            }
+            StatisticsHelper.ApplyWorksheetStatistics(worksheet, serviceRow, "2.2 Facilitating Referrals", 1, totalStatisticsMonthlyDictionary, "ii_Concrete_FacilitatingReferrals");
 
             serviceRow++;
 
@@ -2556,57 +2561,27 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
             }
 
-            var outgoingReferrals = new List<string>
+            var outgoingReferrals = new Dictionary<string, string>
             {
-                "a. Medical Assistance",
-                "b. Discount on Procedure/Hospital Expenses",
-                "c. Transportation Fare",
-                "d. Institutional Placement",
-                "e. Temporary Shelter",
-                "f. Funeral Assistance/Pauper's Burial",
-                "g. Others specify (networking)"
+                { "a. Medical Assistance", "ii_Concrete_OutgoingReferrals_MedicalAssistance" },
+                { "b. Discount on Procedure/Hospital Expenses", "ii_Concrete_OutgoingReferrals_DiscountProcedure" },
+                { "c. Transportation Fare", "ii_Concrete_OutgoingReferrals_TransportationFare" },
+                { "d. Institutional Placement", "ii_Concrete_OutgoingReferrals_InstitutionalPlacement" },
+                { "e. Temporary Shelter", "ii_Concrete_OutgoingReferrals_TemporaryShelter" },
+                { "f. Funeral Assistance/Pauper's Burial", "ii_Concrete_OutgoingReferrals_FuneralAssistance" },
+                { "g. Others specify (networking)", "ii_Concrete_OutgoingReferrals_OthersSpecify" }
             };
 
-            foreach (var value in outgoingReferrals)
+            foreach (var key in outgoingReferrals.Keys)
             {
                 serviceRow++;
 
-                worksheet.Cell(serviceRow, 1).Value = value;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 2;
-                for (int i = 1; i <= headers.Length; i++)
-                {
-                    if (i == 7 || i == 14)
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = 0;
-                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
-                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                    }
-                    else
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = "";
-                    }
-                }
+                StatisticsHelper.ApplyWorksheetStatistics(worksheet, serviceRow, key, 2, totalStatisticsMonthlyDictionary, outgoingReferrals[key]);
             }
 
             serviceRow++;
 
-            worksheet.Cell(serviceRow, 1).Value = "2.2.2 Incoming Referrals";
-            worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-            worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
-            for (int i = 1; i <= headers.Length; i++)
-            {
-                if (i == 7 || i == 14)
-                {
-                    worksheet.Cell(serviceRow, i + 1).Value = 0;
-                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
-                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                }
-                else
-                {
-                    worksheet.Cell(serviceRow, i + 1).Value = "";
-                }
-            }
+            StatisticsHelper.ApplyWorksheetStatistics(worksheet, serviceRow, "2.2.2 Incoming Referrals", 1, totalStatisticsMonthlyDictionary, "ii_Concrete_IncomingReferrals");
 
             serviceRow++;
 
@@ -2645,40 +2620,25 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
             }
 
-            var tenLeadingCauses = new List<string>
+            var tenLeadingCauses = new Dictionary<string, string>
             {
-                "1. Stress of the family",
-                "2. Refusal of patient to take home",
-                "3. Anxiety of health cost",
-                "4. Marital problem",
-                "5. Refusal of patient for treatment",
-                "6. Unbecoming attitude due to postponement if surgery",
-                "7. Emotional problem",
-                "8. Neglected children",
-                "9. Sexually abuse",
-                "10. Adjustment problem"
+                { "1. Stress of the family", "ii_Psychosocial_TenLeading_StressFamily" },
+                { "2. Refusal of patient to take home", "ii_Psychosocial_TenLeading_RefusalPatientTakeHome" },
+                { "3. Anxiety of health cost", "ii_Psychosocial_TenLeading_AnxietyHealth" },
+                { "4. Marital problem", "ii_Psychosocial_TenLeading_MaritalProblem" },
+                { "5. Refusal of patient for treatment", "ii_Psychosocial_TenLeading_RefusalPatientTreatment" },
+                { "6. Unbecoming attitude due to postponement if surgery", "ii_Psychosocial_TenLeading_UnbecomingAttitude" },
+                { "7. Emotional problem", "ii_Psychosocial_TenLeading_EmotionalProblem" },
+                { "8. Neglected children", "ii_Psychosocial_TenLeading_NeglectedChildren" },
+                { "9. Sexually abuse", "ii_Psychosocial_TenLeading_SexuallyAbuse" },
+                { "10. Adjustment problem", "ii_Psychosocial_TenLeading_AdjustedProblem" }
             };
 
-            foreach (var value in tenLeadingCauses)
+            foreach (var key in tenLeadingCauses.Keys)
             {
                 serviceRow++;
 
-                worksheet.Cell(serviceRow, 1).Value = value;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 2;
-                for (int i = 1; i <= headers.Length; i++)
-                {
-                    if (i == 7 || i == 14)
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = 0;
-                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
-                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                    }
-                    else
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = "";
-                    }
-                }
+                StatisticsHelper.ApplyWorksheetStatistics(worksheet, serviceRow, key, 2, totalStatisticsMonthlyDictionary, tenLeadingCauses[key]);
             }
 
             serviceRow++;
@@ -2700,63 +2660,28 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
             }
 
-            var familyCounseling = new List<string>
+            serviceRow++;
+
+            StatisticsHelper.ApplyWorksheetStatistics(worksheet, serviceRow, "a. Social Worker", 2, totalStatisticsMonthlyDictionary, "ii_Psychosocial_FamilyCounseling_SocialWorker");
+
+            serviceRow++;
+
+            StatisticsHelper.ApplyWorksheetStatistics(worksheet, serviceRow, "b. Health Care Team", 2, totalStatisticsMonthlyDictionary, "ii_Psychosocial_FamilyCounseling_HealthCareTeam");
+
+            var psychologicalCounseling = new Dictionary<string, string>
             {
-                "a. Social Worker",
-                "b. Health Care Team"
+                { "3.3 Psychosocial Crisis Intervention", "ii_Psychosocial_PsychosocialCrisis"},
+                { "3.4 Group Work/Per Session", "ii_Psychosocial_GroupWork"},
+                { "3.5 Patients/Watchers Education", "ii_Psychosocial_PatientsEducation"},
+                { "3.6 Mutual Support Group Session", "ii_Psychosocial_MutualSupport"},
+                { "3.7 Advocacy Group", "ii_Psychosocial_AdvocacyGroup"}
             };
 
-            foreach (var value in familyCounseling)
+            foreach (var key in psychologicalCounseling.Keys)
             {
                 serviceRow++;
 
-                worksheet.Cell(serviceRow, 1).Value = value;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 2;
-                for (int i = 1; i <= headers.Length; i++)
-                {
-                    if (i == 7 || i == 14)
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = 0;
-                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
-                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                    }
-                    else
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = "";
-                    }
-                }
-            }
-
-            var psychologicalCounseling = new List<string>
-            {
-                "3.3 Psychosocial Crisis Intervention",
-                "3.4 Group Work/Per Session",
-                "3.5 Patients/Watchers Education",
-                "3.6 Mutual Support Group Session",
-                "3.7 Advocacy Group"
-            };
-
-            foreach (var value in psychologicalCounseling)
-            {
-                serviceRow++;
-
-                worksheet.Cell(serviceRow, 1).Value = value;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
-                for (int i = 1; i <= headers.Length; i++)
-                {
-                    if (i == 7 || i == 14)
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = 0;
-                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
-                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                    }
-                    else
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = "";
-                    }
-                }
+                StatisticsHelper.ApplyWorksheetStatistics(worksheet, serviceRow, key, 1, totalStatisticsMonthlyDictionary, psychologicalCounseling[key]);
             }
 
             serviceRow++;
@@ -2777,34 +2702,19 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
             }
 
-            var dischargesServices = new List<string>
+            var dischargesServices = new Dictionary<string, string>
             {
-                "a. Discharge Planning",
-                "b. Facilitation of Discharge",
-                "c. Pre-termination Counseling",
-                "d. Home Conduction"
+                { "a. Discharge Planning", "ii_Discharges_DischargePlanning" },
+                { "b. Facilitation of Discharge", "ii_Discharges_FacilitationDischarge" },
+                { "c. Pre-termination Counseling", "ii_Discharges_PreTerminationCounseling" },
+                { "d. Home Conduction", "ii_Discharges_HomeConduction" }
             };
 
-            foreach (var value in dischargesServices)
+            foreach (var key in dischargesServices.Keys)
             {
                 serviceRow++;
 
-                worksheet.Cell(serviceRow, 1).Value = value;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
-                for (int i = 1; i <= headers.Length; i++)
-                {
-                    if (i == 7 || i == 14)
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = 0;
-                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
-                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                    }
-                    else
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = "";
-                    }
-                }
+                StatisticsHelper.ApplyWorksheetStatistics(worksheet, serviceRow, key, 1, totalStatisticsMonthlyDictionary, dischargesServices[key]);
             }
 
             serviceRow++;
@@ -2844,32 +2754,17 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
             }
 
-            var wardVisitation = new List<string>
+            var wardVisitation = new Dictionary<string, string>
             {
-                "a. Individual",
-                "b. Team"
+                { "a. Individual", "ii_Support_Ward_Individual" },
+                { "b. Team", "ii_Support_Ward_Team" }
             };
 
-            foreach (var value in wardVisitation)
+            foreach (var key in wardVisitation.Keys)
             {
                 serviceRow++;
 
-                worksheet.Cell(serviceRow, 1).Value = value;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 2;
-                for (int i = 1; i <= headers.Length; i++)
-                {
-                    if (i == 7 || i == 14)
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = 0;
-                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
-                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                    }
-                    else
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = "";
-                    }
-                }
+                StatisticsHelper.ApplyWorksheetStatistics(worksheet, serviceRow, key, 2, totalStatisticsMonthlyDictionary, wardVisitation[key]);
             }
 
             serviceRow++;
@@ -2890,32 +2785,17 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
             }
 
-            var caseConferences = new List<string>
+            var caseConferences = new Dictionary<string, string>
             {
-                "a. Multi Disciplinary",
-                "b. MSWD"
+                { "a. Multi Disciplinary", "ii_Case_MultiDisciplinary" },
+                { "b. MSWD", "ii_Case_MSWD" }
             };
 
-            foreach (var value in caseConferences)
+            foreach (var key in caseConferences.Keys)
             {
                 serviceRow++;
 
-                worksheet.Cell(serviceRow, 1).Value = value;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
-                for (int i = 1; i <= headers.Length; i++)
-                {
-                    if (i == 7 || i == 14)
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = 0;
-                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
-                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                    }
-                    else
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = "";
-                    }
-                }
+                StatisticsHelper.ApplyWorksheetStatistics(worksheet, serviceRow, key, 1, totalStatisticsMonthlyDictionary, caseConferences[key]);
             }
 
             serviceRow++;
@@ -2936,34 +2816,19 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
             }
 
-            var followUpServices = new List<string>
+            var followUpServices = new Dictionary<string, string>
             {
-                "7.1 Home Visit",
-                "7.2 Letters Sent",
-                "7.3 Contact of Relatives by Telephone",
-                "7.4 Contact of Relatives through Mass Media"
+                { "7.1 Home Visit", "ii_FollowUp_HomeVisit" },
+                { "7.2 Letters Sent", "ii_FollowUp_LettersSent" },
+                { "7.3 Contact of Relatives by Telephone", "ii_FollowUp_ContactRelativesTelephone" },
+                { "7.4 Contact of Relatives through Mass Media", "ii_FollowUp_ContactRelativesMassMedia" }
             };
 
-            foreach (var value in followUpServices)
+            foreach (var key in followUpServices.Keys)
             {
                 serviceRow++;
 
-                worksheet.Cell(serviceRow, 1).Value = value;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
-                for (int i = 1; i <= headers.Length; i++)
-                {
-                    if (i == 7 || i == 14)
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = 0;
-                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
-                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                    }
-                    else
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = "";
-                    }
-                }
+                StatisticsHelper.ApplyWorksheetStatistics(worksheet, serviceRow, key, 1, totalStatisticsMonthlyDictionary, followUpServices[key]);
             }
 
             serviceRow++;
@@ -2984,36 +2849,21 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
             }
 
-            var coordinationsByMSW = new List<string>
+            var coordinationsByMSW = new Dictionary<string, string>
             {
-                "a. Physicians",
-                "b. Nurses",
-                "c. Pharmacist",
-                "d. Nutritionist",
-                "e. Other Staff",
-                "f. Management"
+                { "a. Physicians", "ii_Coordination_Physicians" },
+                { "b. Nurses", "ii_Coordination_Nurses" },
+                { "c. Pharmacist", "ii_Coordination_Pharmacist" },
+                { "d. Nutritionist", "ii_Coordination_Nutritionist" },
+                { "e. Other Staff", "ii_Coordination_OtherStaff" },
+                { "f. Management", "ii_Coordination_Management" }
             };
 
-            foreach (var value in coordinationsByMSW)
+            foreach (var key in coordinationsByMSW.Keys)
             {
                 serviceRow++;
 
-                worksheet.Cell(serviceRow, 1).Value = value;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
-                for (int i = 1; i <= headers.Length; i++)
-                {
-                    if (i == 7 || i == 14)
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = 0;
-                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
-                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                    }
-                    else
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = "";
-                    }
-                }
+                StatisticsHelper.ApplyWorksheetStatistics(worksheet, serviceRow, key, 1, totalStatisticsMonthlyDictionary, coordinationsByMSW[key]);
             }
 
             serviceRow++;
@@ -3034,33 +2884,18 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
             }
 
-            var consultatives = new List<string>
+            var consultatives = new Dictionary<string, string>
             {
-                "a. Physicians",
-                "b. Office Staff",
-                "c. Outside Hospital"
+                { "a. Physicians", "ii_Consultive_Physicians" },
+                { "b. Office Staff", "ii_Consultive_OfficeStaff" },
+                { "c. Outside Hospital", "ii_Consultive_OutsideHospital" },
             };
 
-            foreach (var value in consultatives)
+            foreach (var key in consultatives.Keys)
             {
                 serviceRow++;
 
-                worksheet.Cell(serviceRow, 1).Value = value;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
-                for (int i = 1; i <= headers.Length; i++)
-                {
-                    if (i == 7 || i == 14)
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = 0;
-                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
-                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                    }
-                    else
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = "";
-                    }
-                }
+                StatisticsHelper.ApplyWorksheetStatistics(worksheet, serviceRow, key, 1, totalStatisticsMonthlyDictionary, consultatives[key]);
             }
 
             serviceRow++;
@@ -3099,72 +2934,60 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
             }
 
-            var caseManagements = new List<string>
+            var caseManagements = new Dictionary<string, string>
             {
-                "1.1 Pre admission Counselling",
-                "1.2 Intake Interview",
-                "1.3 Collateral Interview",
-                "1.4 Issuance of MSS Card",
-                "1.5 Indicate classification in the chart (in pts only)",
-                "1.6 Psychosocial Assessment",
-                "1.7 Psychosocial Counselling",
-                "1.8 Coordination w/ Multidiciplinary Team",
-                "1.9 Completion of Intake Form",
-                "1.10 Health Education",
-                "1.11 Crisis Intervention",
-                "1.12 Concrete Services"
+                { "1.1 Pre admission Counselling", "iii_PreAdmissionCounseling" },
+                { "1.2 Intake Interview", "iii_IntakeInterview" },
+                { "1.3 Collateral Interview", "iii_CollateralInterview" },
+                { "1.4 Issuance of MSS Card", "iii_IssuanceMSSCard" },
+                { "1.5 Indicate classification in the chart (in pts only)", "iii_IndicateClassification" },
+                { "1.6 Psychosocial Assessment", "iii_PsychosocialAssessment" },
+                { "1.7 Psychosocial Counselling", "iii_PsychosocialCounseling" },
+                { "1.8 Coordination w/ Multidiciplinary Team", "iii_CoordinationMultidisciplinary" },
+                { "1.9 Completion of Intake Form", "iii_CompletionIntakeForm" },
+                { "1.10 Health Education", "iii_HealthEducation" },
+                { "1.11 Crisis Intervention", "iii_CrisisIntervention" },
             };
 
-            foreach (var value in caseManagements)
+            foreach (var key in caseManagements.Keys)
             {
                 serviceRow++;
 
-                worksheet.Cell(serviceRow, 1).Value = value;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
-                for (int i = 1; i <= headers.Length; i++)
+                StatisticsHelper.ApplyWorksheetStatistics(worksheet, serviceRow, key, 1, totalStatisticsMonthlyDictionary, caseManagements[key]);
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "1.12 Concrete Services";
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
                 {
-                    if (i == 7 || i == 14)
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = 0;
-                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
-                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                    }
-                    else
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = "";
-                    }
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
                 }
             }
 
-            var concreteServices = new List<string>
+            var concreteServices = new Dictionary<string, string>
             {
-                "1.12.1 Facilitaion/Provision of Meds/Procedures",
-                "1.12.2 Transportation Assistance (w/in MSS resources)",
-                "1.12.3 Material Assistance (food, clothing)",
-                "1.12.4 Financial Assistance (w/in MSS resources)"
+                { "1.12.1 Facilitaion/Provision of Meds/Procedures", "iii_ConcreteServices_Facilitation" },
+                { "1.12.2 Transportation Assistance (w/in MSS resources)", "iii_ConcreteServices_Transportation" },
+                { "1.12.3 Material Assistance (food, clothing)", "iii_ConcreteServices_MaterialAssistance" },
+                { "1.12.4 Financial Assistance (w/in MSS resources)", "iii_ConcreteServices_FinancialAssistance" }
             };
 
-            foreach (var value in concreteServices)
+            foreach (var key in concreteServices.Keys)
             {
                 serviceRow++;
 
-                worksheet.Cell(serviceRow, 1).Value = value;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 2;
-                for (int i = 1; i <= headers.Length; i++)
-                {
-                    if (i == 7 || i == 14)
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = 0;
-                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
-                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                    }
-                    else
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = "";
-                    }
-                }
+                StatisticsHelper.ApplyWorksheetStatistics(worksheet, serviceRow, key, 2, totalStatisticsMonthlyDictionary, concreteServices[key]);
             }
 
             serviceRow++;
@@ -3186,193 +3009,130 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
             }
 
-            var referralServices = new List<string>
+            var referralServices = new Dictionary<string, string>
             {
-                "1.13.1 Facilitating Incoming Referral",
-                "1.13.2 Preparing the Referral",
-                "1.13.3 Coordination w/ the Receiveing Agency"
+                { "1.13.1 Facilitating Incoming Referral", "iii_Referral_Facilitating" },
+                { "1.13.2 Preparing the Referral", "iii_Referral_Preparing" },
+                { "1.13.3 Coordination w/ the Receiveing Agency", "iii_Referral_Coordination" }
             };
 
-            foreach (var value in referralServices)
+            foreach (var key in referralServices.Keys)
             {
                 serviceRow++;
 
-                worksheet.Cell(serviceRow, 1).Value = value;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 2;
-                for (int i = 1; i <= headers.Length; i++)
-                {
-                    if (i == 7 || i == 14)
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = 0;
-                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
-                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                    }
-                    else
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = "";
-                    }
-                }
+                StatisticsHelper.ApplyWorksheetStatistics(worksheet, serviceRow, key, 2, totalStatisticsMonthlyDictionary, referralServices[key]);
             }
 
-            var caseManagements2 = new List<string>
+            var caseManagements2 = new Dictionary<string, string>
             {
-                "1.14 Ward Rounds (no. of pts visited)",
-                "1.15 Home Visitation",
-                "1.16 Advocacy Role",
-                "1.17 Education",
-                "1.18 Therapeutic Social Work Services"
+                { "1.14 Ward Rounds (no. of pts visited)", "iii_WardRounds" },
+                { "1.15 Home Visitation", "iii_HomeVisitation" },
+                { "1.16 Advocacy Role", "iii_AdvocacyRole" },
+                { "1.17 Education", "iii_Education" },
             };
 
-            foreach (var value in caseManagements2)
+            foreach (var key in caseManagements2.Keys)
             {
                 serviceRow++;
 
-                worksheet.Cell(serviceRow, 1).Value = value;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
-                for (int i = 1; i <= headers.Length; i++)
-                {
-                    if (i == 7 || i == 14)
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = 0;
-                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
-                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                    }
-                    else
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = "";
-                    }
-                }
-            }
-
-            var therapeuticServices = new List<string>
-            {
-                "1.18.1 Abandoned",
-                "1.18.2 Sexually Abused",
-                "1.18.3 Neglected",
-                "1.18.4 Battered"
-            };
-
-            foreach (var value in therapeuticServices)
-            {
-                serviceRow++;
-
-                worksheet.Cell(serviceRow, 1).Value = value;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 2;
-                for (int i = 1; i <= headers.Length; i++)
-                {
-                    if (i == 7 || i == 14)
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = 0;
-                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
-                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                    }
-                    else
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = "";
-                    }
-                }
-            }
-
-            var caseManagements3 = new List<string>
-            {
-                "1.19 Protective Services",
-                "1.20 Grief Work",
-                "1.21 Behavioral Modification ",
-                "1.22 Networking (meeting w/ other institution/grp org.)",
-                "1.23 Politicians",
-                "1.24 Coordination w/ Mass Media",
-                "1.25 Consultaion/Advisory Services",
-                "1.26 Attendance to Case Conferences Committee Meetings",
-                "1.27 Attendance to Clinical Comittees"
-            };
-
-            foreach (var value in caseManagements3)
-            {
-                serviceRow++;
-
-                worksheet.Cell(serviceRow, 1).Value = value;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
-                for (int i = 1; i <= headers.Length; i++)
-                {
-                    if (i == 7 || i == 14)
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = 0;
-                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
-                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                    }
-                    else
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = "";
-                    }
-                }
-            }
-
-            var attendances = new List<string>
-            {
-                "1.27.1 Disharge Planning",
-                "1.27.2 Facilitation of Discharge",
-                "1.27.3 Home Conduction"
-            };
-
-            foreach (var value in attendances)
-            {
-                serviceRow++;
-
-                worksheet.Cell(serviceRow, 1).Value = value;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 2;
-                for (int i = 1; i <= headers.Length; i++)
-                {
-                    if (i == 7 || i == 14)
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = 0;
-                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
-                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                    }
-                    else
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = "";
-                    }
-                }
-            }
-
-            var caseManagements4 = new List<string>
-            {
-                "1.28 Follow up Services",
-                "1.29 Documentation"
-            };
-
-            foreach (var value in caseManagements4)
-            {
-                serviceRow++;
-
-                worksheet.Cell(serviceRow, 1).Value = value;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
-                for (int i = 1; i <= headers.Length; i++)
-                {
-                    if (i == 7 || i == 14)
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = 0;
-                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
-                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                    }
-                    else
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = "";
-                    }
-                }
+                StatisticsHelper.ApplyWorksheetStatistics(worksheet, serviceRow, key, 1, totalStatisticsMonthlyDictionary, caseManagements2[key]);
             }
 
             serviceRow++;
 
-            worksheet.Cell(serviceRow, 1).Value = "1.29.1 Profile";
+            worksheet.Cell(serviceRow, 1).Value = "1.18 Therapeutic Social Work Services";
             worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-            worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 2;
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            var therapeuticServices = new Dictionary<string, string>
+            {
+                { "1.18.1 Abandoned", "iii_Therapeutic_Abandoned" },
+                { "1.18.2 Sexually Abused", "iii_Therapeutic_SexuallyAbused" },
+                { "1.18.3 Neglected", "iii_Therapeutic_Neglected" },
+                { "1.18.4 Battered", "iii_Therapeutic_Battered" }
+            };
+
+            foreach (var key in therapeuticServices.Keys)
+            {
+                serviceRow++;
+
+                StatisticsHelper.ApplyWorksheetStatistics(worksheet, serviceRow, key, 2, totalStatisticsMonthlyDictionary, therapeuticServices[key]);
+            }
+
+            var caseManagements3 = new Dictionary<string, string>
+            {
+                { "1.19 Protective Services", "iii_ProtectiveServices" },
+                { "1.20 Grief Work", "iii_GriefWork" },
+                { "1.21 Behavioral Modification ", "iii_Behavioral" },
+                { "1.22 Networking (meeting w/ other institution/grp org.)", "iii_Networking" },
+                { "1.23 Politicians", "iii_Politicians" },
+                { "1.24 Coordination w/ Mass Media", "iii_CoordinationMassMedia" },
+                { "1.25 Consultaion/Advisory Services", "iii_ConsultationAdvisory" },
+                { "1.26 Attendance to Case Conferences Committee Meetings", "iii_AttendanceCaseConference" },
+            };
+
+            foreach (var key in caseManagements3.Keys)
+            {
+                serviceRow++;
+
+                StatisticsHelper.ApplyWorksheetStatistics(worksheet, serviceRow, key, 1, totalStatisticsMonthlyDictionary, caseManagements3[key]);
+            }
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "1.27 Attendance to Clinical Comittees";
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            var attendances = new Dictionary<string, string>
+            {
+                { "1.27.1 Disharge Planning", "iii_AttendanceClinical_Discharge" },
+                { "1.27.2 Facilitation of Discharge", "iii_AttendanceClinical_Facilitation" },
+                { "1.27.3 Home Conduction", "iii_AttendanceClinical_Home" }
+            };
+
+            foreach (var key in attendances.Keys)
+            {
+                serviceRow++;
+
+                StatisticsHelper.ApplyWorksheetStatistics(worksheet, serviceRow, key, 2, totalStatisticsMonthlyDictionary, attendances[key]);
+            }
+
+            serviceRow++;
+
+            StatisticsHelper.ApplyWorksheetStatistics(worksheet, serviceRow, "1.28 Follow up Services", 1, totalStatisticsMonthlyDictionary, "iii_FollowUpServices");
+
+            serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "1.29 Documentation";
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
             for (int i = 1; i <= headers.Length; i++)
             {
                 if (i == 7 || i == 14)
@@ -3389,19 +3149,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             serviceRow++;
 
-            var progressQuery = context.ProgressNotes.AsQueryable();
+            StatisticsHelper.ApplyWorksheetStatistics(worksheet, serviceRow, "1.29.1 Profile", 2, totalStatisticsMonthlyDictionary, "iii_Documentation_Profile");
 
-            if (userID > 0)
-            {
-                progressQuery = progressQuery.Where(ga => ga.UserID == userID);
-            }
-
-            if (filterByMonth)
-            {
-                progressQuery = progressQuery.Where(ga => ga.Date.Month == parsedMonth.Month && ga.Date.Year == parsedMonth.Year);
-            }
-
-            var progressNotes = await progressQuery.ToListAsync();
+            serviceRow++;
 
             worksheet.Cell(serviceRow, 1).Value = "1.29.2 Progress Notes";
             worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
@@ -3431,127 +3181,95 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             worksheet.Cell(serviceRow, 15).Style.Font.Bold = true;
             worksheet.Cell(serviceRow, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
-            var documentations = new List<string>
+            var documentations = new Dictionary<string, string>
             {
-                "1.29.3 Groupwork Recording",
-                "1.29.4 Social Case Study Report/Social Case Summary",
-                "1.29.5 Home Visit Report"
+                { "1.29.3 Groupwork Recording", "iii_Documentation_GroupWork" },
+                { "1.29.4 Social Case Study Report/Social Case Summary", "iii_Documentation_SocialCase" },
+                { "1.29.5 Home Visit Report", "iii_Documentation_HomeVisit" }
             };
 
-            foreach (var value in documentations)
+            foreach (var key in documentations.Keys)
             {
                 serviceRow++;
 
-                worksheet.Cell(serviceRow, 1).Value = value;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 2;
-                for (int i = 1; i <= headers.Length; i++)
-                {
-                    if (i == 7 || i == 14)
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = 0;
-                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
-                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                    }
-                    else
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = "";
-                    }
-                }
+                StatisticsHelper.ApplyWorksheetStatistics(worksheet, serviceRow, key, 2, totalStatisticsMonthlyDictionary, documentations[key]);
             }
 
-            var caseManagements5 = new List<string>
+            var caseManagements5 = new Dictionary<string, string>
             {
-                "1.30 Palliative Care",
-                "1.31 Facilitation of Unclaimed Cadaver",
-                "1.32 Post Discharge Services",
-                "1.33 Follow up Services through text/phone",
-                "1.34 Follow up Treatment Plans",
-                "1.35 Follow up of Rehabilitation Plans",
-                "1.36 Rehabilitation Services"
+                { "1.30 Palliative Care", "iii_Palliative" },
+                { "1.31 Facilitation of Unclaimed Cadaver", "iii_FacilitationUnclaimed" },
+                { "1.32 Post Discharge Services", "iii_PostDischarge" },
+                { "1.33 Follow up Services through text/phone", "iii_FollowUpServicesText" },
+                { "1.34 Follow up Treatment Plans", "iii_FollowUpTreatment" },
+                { "1.35 Follow up of Rehabilitation Plans", "iii_FollowUpRehabilitation" },
             };
 
-            foreach (var value in caseManagements5)
+            foreach (var key in caseManagements5.Keys)
             {
                 serviceRow++;
 
-                worksheet.Cell(serviceRow, 1).Value = value;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
-                for (int i = 1; i <= headers.Length; i++)
-                {
-                    if (i == 7 || i == 14)
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = 0;
-                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
-                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                    }
-                    else
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = "";
-                    }
-                }
-            }
-
-            var rehabilitationServices = new List<string>
-            {
-                "1.36.1 Skills Training",
-                "1.36.2 Job Placement",
-                "1.36.3 Capital Assistance"
-            };
-
-            foreach (var value in rehabilitationServices)
-            {
-                serviceRow++;
-
-                worksheet.Cell(serviceRow, 1).Value = value;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 2;
-                for (int i = 1; i <= headers.Length; i++)
-                {
-                    if (i == 7 || i == 14)
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = 0;
-                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
-                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                    }
-                    else
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = "";
-                    }
-                }
-            }
-
-            var caseManagements6 = new List<string>
-            {
-                "1.37 MSWD Fund Raising Activity",
-                "1.38 Hospital Activity",
-                "1.39 Linkage w/ Donors"
-            };
-
-            foreach (var value in caseManagements6)
-            {
-                serviceRow++;
-
-                worksheet.Cell(serviceRow, 1).Value = value;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-                worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
-                for (int i = 1; i <= headers.Length; i++)
-                {
-                    if (i == 7 || i == 14)
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = 0;
-                        worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
-                        worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                    }
-                    else
-                    {
-                        worksheet.Cell(serviceRow, i + 1).Value = "";
-                    }
-                }
+                StatisticsHelper.ApplyWorksheetStatistics(worksheet, serviceRow, key, 1, totalStatisticsMonthlyDictionary, caseManagements5[key]);
             }
 
             serviceRow++;
+
+            worksheet.Cell(serviceRow, 1).Value = "1.36 Rehabilitation Services";
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            worksheet.Cell(serviceRow, 1).Style.Alignment.Indent = 1;
+            for (int i = 1; i <= headers.Length; i++)
+            {
+                if (i == 7 || i == 14)
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = 0;
+                    worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
+                    worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+                else
+                {
+                    worksheet.Cell(serviceRow, i + 1).Value = "";
+                }
+            }
+
+            var rehabilitationServices = new Dictionary<string, string>
+            {
+                { "1.36.1 Skills Training", "iii_Rehabilitation_Skills" },
+                { "1.36.2 Job Placement", "iii_Rehabilitation_Job" },
+                { "1.36.3 Capital Assistance", "iii_Rehabilitation_Capital" }
+            };
+
+            foreach (var key in rehabilitationServices.Keys)
+            {
+                serviceRow++;
+
+                StatisticsHelper.ApplyWorksheetStatistics(worksheet, serviceRow, key, 2, totalStatisticsMonthlyDictionary, rehabilitationServices[key]);
+            }
+
+            var caseManagements6 = new Dictionary<string, string>
+            {
+                { "1.37 MSWD Fund Raising Activity", "iii_MSWDFund" },
+                { "1.38 Hospital Activity", "iii_HospitalActivity" },
+                { "1.39 Linkage w/ Donors", "iii_LinkageDonors" }
+            };
+
+            foreach (var key in caseManagements6.Keys)
+            {
+                serviceRow++;
+
+                StatisticsHelper.ApplyWorksheetStatistics(worksheet, serviceRow, key, 1, totalStatisticsMonthlyDictionary, caseManagements6[key]);
+            }
+
+            serviceRow++;
+
+            var totalCaseloadMonthly = new Dictionary<int, int>();
+            for (int i = 1; i <= 12; i++)
+            {
+                totalCaseloadMonthly[i] =
+                    generalAdmissions.Count(m => !m.isOld && m.Date.Month == i) +
+                    generalAdmissions.Count(m => m.isOld && m.Date.Month == i) +
+                    generalAdmissions.Count(m => m.isPWD && m.Date.Month == i) +
+                    progressNotes.Count(m => m.Date.Month == i);
+            }
 
             worksheet.Cell(serviceRow, 1).Value = "TOTAL";
             worksheet.Cell(serviceRow, 1).Style.Font.Bold = true;
@@ -3559,27 +3277,25 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             for (int i = 1; i <= 6; i++)
             {
-                var count = generalAdmissions.Count(ga => ga.Date.Month == i) + progressNotes.Count(ga => ga.Date.Month == i);
-                worksheet.Cell(serviceRow, i + 1).Value = count;
+                worksheet.Cell(serviceRow, i + 1).Value = totalCaseloadMonthly[i] + totalStatisticsMonthlyDictionary[i].Values.Sum();
                 worksheet.Cell(serviceRow, i + 1).Style.Font.Bold = true;
                 worksheet.Cell(serviceRow, i + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             }
 
             worksheet.Cell(serviceRow, 8).Value =
-                Enumerable.Range(1, 6).Sum(i => generalAdmissions.Count(ga => ga.Date.Month == i) + progressNotes.Count(ga => ga.Date.Month == i));
+                Enumerable.Range(1, 6).Sum(i => totalCaseloadMonthly[i] + totalStatisticsMonthlyDictionary[i].Values.Sum());
             worksheet.Cell(serviceRow, 8).Style.Font.Bold = true;
             worksheet.Cell(serviceRow, 8).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
             for (int i = 7; i <= 12; i++)
             {
-                var count = generalAdmissions.Count(ga => ga.Date.Month == i) + progressNotes.Count(ga => ga.Date.Month == i);
-                worksheet.Cell(serviceRow, i + 2).Value = count;
+                worksheet.Cell(serviceRow, i + 2).Value = totalCaseloadMonthly[i] + totalStatisticsMonthlyDictionary[i].Values.Sum();
                 worksheet.Cell(serviceRow, i + 2).Style.Font.Bold = true;
                 worksheet.Cell(serviceRow, i + 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             }
 
             worksheet.Cell(serviceRow, 15).Value =
-                Enumerable.Range(7, 6).Sum(i => generalAdmissions.Count(ga => ga.Date.Month == i) + progressNotes.Count(ga => ga.Date.Month == i));
+                Enumerable.Range(7, 6).Sum(i => totalCaseloadMonthly[i] + totalStatisticsMonthlyDictionary[i].Values.Sum());
             worksheet.Cell(serviceRow, 15).Style.Font.Bold = true;
             worksheet.Cell(serviceRow, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
@@ -3598,7 +3314,97 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
+        [HasPermission("EditForm")]
+        public async Task<IActionResult> EditStatistics(string? sortToggle)
+        {
+            string sortToggleValue = sortToggle ?? "01";
 
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await context.Users.FirstOrDefaultAsync(u => u.UserID == int.Parse(userId));
+
+            if (user == null)
+            {
+                TempData["ErrorMessage"] = "User not found";
+                return RedirectToAction("Statistics");
+            }
+
+            // Parse selected month/year
+            int monthNumber = int.TryParse(sortToggleValue, out var parsedMonth) ? parsedMonth : 1;
+            int yearNumber = DateTime.Now.Year;
+
+            ViewBag.sortToggle = monthNumber.ToString("D2"); // keep 2-digit format for the UI
+            ViewBag.sortToggleText = new DateOnly(yearNumber, monthNumber, 1).ToString("MMMM");
+
+            // Try to get existing statistics for this user, type, month & year
+            var statistics = await context.Statistics.FirstOrDefaultAsync(s =>
+                s.Type == "Admission" &&
+                s.UserID == user.UserID &&
+                s.Date.HasValue &&
+                s.Date.Value.Month == monthNumber &&
+                s.Date.Value.Year == yearNumber);
+
+            // If not found, create new
+            if (statistics == null)
+            {
+                statistics = new StatisticsModel
+                {
+                    Type = "Admission",
+                    UserID = user.UserID,
+                    Date = new DateOnly(yearNumber, monthNumber, 1)
+                };
+
+                await context.Statistics.AddAsync(statistics);
+                await context.SaveChangesAsync();
+            }
+
+            // Get OPDs for the same user and same month/year
+            var generalAdmissions = await context.GeneralAdmission
+                .Where(o => o.UserID == user.UserID &&
+                            o.Date.Month == monthNumber &&
+                            o.Date.Year == yearNumber)
+                .ToListAsync();
+
+            var model = new GeneralAdmissionViewModel
+            {
+                User = user,
+                GeneralAdmissions = generalAdmissions,
+                Statistics = statistics
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [HasPermission("EditForm")]
+        public async Task<IActionResult> EditStatistics(GeneralAdmissionViewModel viewModel)
+        {
+            try
+            {
+                string connectionString = _connectionService.GetCurrentConnectionString();
+                await using var context = new ApplicationDbContext(connectionString);
+                context.Statistics.Update(viewModel.Statistics);
+                await context.SaveChangesAsync();
+                TempData["SuccessMessage"] = $"Successfully edited/updated Statistics for Admission: {viewModel.Statistics.UserID}";
+                LoggingService.LogInformation($"UserID: {User.FindFirst(ClaimTypes.NameIdentifier).Value}. Statistics edited/updated successfully for Admission");
+                return RedirectToAction("Statistics");
+            }
+            catch (SqlException se)
+            {
+                TempData["ErrorMessage"] = "SQL Error: " + se.Message;
+                LoggingService.LogError("SQL Error: " + se);
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Error: " + ex.Message;
+                LoggingService.LogError("Error: " + ex);
+                return RedirectToAction("Index");
+            }
+        }
 
 
     }

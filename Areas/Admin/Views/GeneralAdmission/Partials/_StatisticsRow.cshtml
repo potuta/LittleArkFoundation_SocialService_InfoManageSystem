@@ -1,0 +1,50 @@
+﻿@using LittleArkFoundation.Areas.Admin.Models.GeneralAdmission
+@model (string Label, string FieldName, GeneralAdmissionViewModel Data)
+
+<tr>
+    <td style="white-space: nowrap;">@Model.Label</td>
+
+    @for (int i = 1; i <= 6; i++)
+    {
+        var count = Model.Data.TotalStatisticsMonthly.ContainsKey(i) &&
+        Model.Data.TotalStatisticsMonthly[i].ContainsKey(Model.FieldName)
+        ? Model.Data.TotalStatisticsMonthly[i][Model.FieldName]
+        : 0;
+
+        <td style="white-space: nowrap;">@(count == 0 ? "" : count.ToString())</td>
+    }
+
+    <td style="white-space: nowrap;">
+        @{
+            var firstHalf = Enumerable.Range(1, 6).Sum(i =>
+            Model.Data.TotalStatisticsMonthly.ContainsKey(i) &&
+            Model.Data.TotalStatisticsMonthly[i].ContainsKey(Model.FieldName)
+            ? Model.Data.TotalStatisticsMonthly[i][Model.FieldName]
+            : 0
+            );
+        }
+        @(firstHalf == 0 ? 0 : firstHalf.ToString())
+    </td>
+
+    @for (int i = 7; i <= 12; i++)
+    {
+        var count = Model.Data.TotalStatisticsMonthly.ContainsKey(i) &&
+        Model.Data.TotalStatisticsMonthly[i].ContainsKey(Model.FieldName)
+        ? Model.Data.TotalStatisticsMonthly[i][Model.FieldName]
+        : 0;
+
+        <td style="white-space: nowrap;">@(count == 0 ? "" : count.ToString())</td>
+    }
+
+    <td style="white-space: nowrap;">
+        @{
+            var secondHalf = Enumerable.Range(7, 6).Sum(i =>
+            Model.Data.TotalStatisticsMonthly.ContainsKey(i) &&
+            Model.Data.TotalStatisticsMonthly[i].ContainsKey(Model.FieldName)
+            ? Model.Data.TotalStatisticsMonthly[i][Model.FieldName]
+            : 0
+            );
+        }
+        @(secondHalf == 0 ? 0 : secondHalf.ToString())
+    </td>
+</tr>
