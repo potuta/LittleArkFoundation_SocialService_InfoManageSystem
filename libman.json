@@ -5,6 +5,11 @@
     {
       "library": "@microsoft/signalr@8.0.0",
       "destination": "wwwroot/lib/microsoft/signalr/"
+    },
+    {
+      "provider": "cdnjs",
+      "library": "Chart.js@4.5.0",
+      "destination": "wwwroot/lib/Chart.js/"
     }
   ]
 }

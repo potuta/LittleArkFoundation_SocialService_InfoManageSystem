@@ -189,7 +189,7 @@
         </div>
     </div>
 
-    <div class="container-general">
+    @* <div class="container-general">
         <p>General Performance</p>
         <div class="general-grid">
             <h3 class="users"><i class="bi bi-box-arrow-left"></i> OPD: @Model.OPDList.Count</h3>
@@ -197,7 +197,13 @@
             <h3 class="users"><i class="bi bi-box-arrow-right"></i> Discharge: @Model.DischargesList.Count</h3>
             <h3 class="users"><i class="bi bi-card-text"></i> Progress Notes: @Model.ProgressNotesList.Count</h3>
         </div>
+    </div> *@
+
+    <div class="container-general">
+        <p>General Performance</p>
+        <canvas id="generalChart" width="400" height="200"></canvas>
     </div>
+
 </div>
 
 @section Scripts {
@@ -253,6 +259,52 @@
             }
         }
     </script>
+
+    <script src="~/lib/Chart.js/chart.umd.min.js"></script>
+
+    <script>
+        var ctx = document.getElementById('generalChart').getContext('2d');
+        var generalChart = new Chart(ctx, {
+            type: 'doughnut', // can also use 'pie' or 'doughnut'
+            data: {
+                labels: ['OPD', 'Admission', 'Discharge', 'Progress Notes'],
+                datasets: [{
+                    label: 'Counts',
+                    data: [
+                        @Model.OPDList.Count,
+                        @Model.AssessmentsList.Count,
+                        @Model.DischargesList.Count,
+                        @Model.ProgressNotesList.Count
+                    ],
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(255, 206, 86, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(255, 206, 86, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0 // ensures whole numbers
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
 
 }
 
