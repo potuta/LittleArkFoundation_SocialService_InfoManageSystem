@@ -1401,7 +1401,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 .Where(s => s.Type == "OPD")
                 .ToListAsync();
 
-            if (opdList == null || !opdList.Any())
+            if ((opdList == null || !opdList.Any()) && (statisticsList == null || !statisticsList.Any()))
             {
                 TempData["ErrorMessage"] = "No OPD records found for selected filters.";
                 return RedirectToAction("Statistics");
@@ -1416,8 +1416,27 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
 
             // File name generation
-            string mswName = userID > 0 ? opdList.First().MSW : "All MSW";
-            string monthLabel = filterByMonth ? parsedMonth.ToString("MMMM_yyyy") : opdList.First().Date.Year.ToString();
+            var user = await context.Users.FindAsync(userID);
+            string mswName = userID > 0 ? user.Username : "All MSW";
+
+            string yearLabel;
+
+            // Use FirstOrDefault instead of Any() + First()
+            var firstOpd = opdList?.FirstOrDefault();
+            if (firstOpd != null)
+            {
+                yearLabel = firstOpd.Date.Year.ToString();
+            }
+            else
+            {
+                var firstStat = statisticsList?.FirstOrDefault();
+                yearLabel = firstStat?.Date?.Year.ToString() ?? DateTime.Now.Year.ToString();
+            }
+
+            string monthLabel = filterByMonth
+                ? parsedMonth.ToString("MMMM_yyyy")
+                : yearLabel;
+
             string fileName = $"OPD_Statistics_{monthLabel}_{mswName}";
 
             // Sanitize sheet name (for Excel)

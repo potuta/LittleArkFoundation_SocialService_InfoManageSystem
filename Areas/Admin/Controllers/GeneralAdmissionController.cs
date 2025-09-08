@@ -2110,7 +2110,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 .Where(s => s.Type == "Admission")
                 .ToListAsync();
 
-            if (generalAdmissions == null || !generalAdmissions.Any())
+            if ((generalAdmissions == null || !generalAdmissions.Any()) 
+                && (progressNotes == null || !progressNotes.Any()) 
+                && (statisticsList == null || !statisticsList.Any()))
             {
                 TempData["ErrorMessage"] = "No Admission records found for selected filters.";
                 return RedirectToAction("Statistics");
@@ -2125,8 +2127,32 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
 
             // File name generation
-            string mswName = userID > 0 ? generalAdmissions.First().MSW : "All MSW";
-            string monthLabel = filterByMonth ? parsedMonth.ToString("MMMM_yyyy") : generalAdmissions.First().Date.Year.ToString();
+            var user = await context.Users.FindAsync(userID);
+            string mswName = userID > 0 ? user.Username : "All MSW";
+
+            string yearLabel;
+
+            // Use FirstOrDefault instead of Any() + First()
+            var firstGA = generalAdmissions?.FirstOrDefault();
+            var firstStat = statisticsList?.FirstOrDefault();
+            if (firstGA != null)
+            {
+                yearLabel = firstGA.Date.Year.ToString();
+            }
+            else if (firstStat != null)
+            {
+                yearLabel = firstStat?.Date?.Year.ToString() ?? DateTime.Now.Year.ToString();
+            }
+            else
+            {
+                var secondStat = progressNotes?.FirstOrDefault();
+                yearLabel = secondStat?.Date.Year.ToString() ?? DateTime.Now.Year.ToString();
+            }
+
+            string monthLabel = filterByMonth
+                ? parsedMonth.ToString("MMMM_yyyy")
+                : yearLabel;
+
             string fileName = $"GA_Statistics_{monthLabel}_{mswName}";
 
             // Sanitize sheet name (for Excel)
