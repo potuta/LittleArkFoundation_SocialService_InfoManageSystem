@@ -3395,12 +3395,18 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                             o.Date.Month == monthNumber &&
                             o.Date.Year == yearNumber)
                 .ToListAsync();
+            var progressNotes = await context.ProgressNotes
+                .Where(p => p.UserID == user.UserID &&
+                            p.Date.Month == monthNumber &&
+                            p.Date.Year == yearNumber)
+                .ToListAsync();
 
             var model = new GeneralAdmissionViewModel
             {
                 User = user,
                 GeneralAdmissions = generalAdmissions,
-                Statistics = statistics
+                Statistics = statistics,
+                ProgressNotes = progressNotes
             };
 
             return View(model);

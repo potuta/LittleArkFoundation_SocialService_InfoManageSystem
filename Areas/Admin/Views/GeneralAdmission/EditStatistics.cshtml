@@ -1109,7 +1109,11 @@
                             <td style="white-space: nowrap;">1.29.2 Progress Notes</td>
                             <td style="white-space: nowrap;">
                                 <input type="number"
-                                       asp-for="Statistics.iii_Documentation_ProgressNotes" />
+                                       asp-for="Statistics.iii_Documentation_ProgressNotes"
+                                       value = "@Model.ProgressNotes.Count(p => p.Date.Month == int.Parse(sortToggle))"
+                                       class="text-muted"
+                                       style="cursor: not-allowed;"
+                                       disabled />
                             </td>
                         </tr>
 
