@@ -6,7 +6,7 @@
         public int AssessmentID { get; set; }
         public int PatientID { get; set; }
         public string MainClassification { get; set; }
-        public string SubClassification { get; set; } = "";
+        public string SubClassification { get; set; } = "N/A";
         public string MembershipSector { get; set; }
     }
 }
