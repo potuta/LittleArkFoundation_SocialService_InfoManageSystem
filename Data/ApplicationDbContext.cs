@@ -513,7 +513,7 @@ namespace LittleArkFoundation.Data
 
             // Statistics
             modelBuilder.Entity<StatisticsModel>()
-                .ToTable("Statistics")
+                .ToTable("Stats")
                 .HasKey(s => s.Id);
 
             modelBuilder.Entity<StatisticsModel>()

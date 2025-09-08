@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using LittleArkFoundation.Areas.Admin.Data;
 using LittleArkFoundation.Areas.Admin.Models.Discharges;
@@ -295,7 +296,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             {
                 totalSourcesMonthly[i] = sourceOfReferral.Sum(source =>
                     generalAdmissions.Count(m =>
-                        m.Referral.Equals(source.Value, StringComparison.OrdinalIgnoreCase) &&
+                        string.Equals(m.Referral, source.Value, StringComparison.OrdinalIgnoreCase) &&
                         m.Date.Month == i));
             }
 
@@ -2010,14 +2011,24 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             await using var context = new ApplicationDbContext(connectionString);
 
             var generalAdmissions = await context.GeneralAdmission.ToListAsync();
-            if (generalAdmissions == null || !generalAdmissions.Any())
-            {
-                TempData["ErrorMessage"] = "No General Admission records found.";
-                return RedirectToAction("Index");
-            }
-
             var progressNotes = await context.ProgressNotes.ToListAsync();
             var statisticsList = await context.Statistics.Where(s => s.Type == "Admission").ToListAsync();
+
+            var totalOPDMonthlyDictionary = new Dictionary<int, int>();
+            var totalStatisticsMonthlyDictionary = new Dictionary<int, Dictionary<string, int>>();
+            for (int i = 1; i <= 12; i++)
+            {
+                totalOPDMonthlyDictionary[i] = generalAdmissions?.Count(o => o.Date.Month == i) ?? 0;
+                totalStatisticsMonthlyDictionary[i] = StatisticsHelper.SumForMonth(statisticsList, i);
+            }
+
+            if ((generalAdmissions == null || !generalAdmissions.Any())
+                && (progressNotes == null || !progressNotes.Any())
+                && (totalStatisticsMonthlyDictionary.Values.Sum(dict => dict.Values.Sum()) == 0))
+            {
+                TempData["ErrorMessage"] = "No Admission records found for selected filters.";
+                return RedirectToAction("Index");
+            }
 
             //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
@@ -2042,7 +2053,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             {
                 totalSourcesMonthly[i] = sourceOfReferral.Sum(source =>
                     generalAdmissions.Count(m =>
-                        m.Referral.Equals(source.Value, StringComparison.OrdinalIgnoreCase) &&
+                        string.Equals(m.Referral, source.Value, StringComparison.OrdinalIgnoreCase) &&
                         m.Date.Month == i));
             }
 
@@ -2054,14 +2065,6 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     generalAdmissions.Count(m => m.isOld && m.Date.Month == i) +
                     generalAdmissions.Count(m => m.isPWD && m.Date.Month == i) +
                     progressNotes.Count(m => m.Date.Month == i);
-            }
-
-            var totalOPDMonthlyDictionary = new Dictionary<int, int>();
-            var totalStatisticsMonthlyDictionary = new Dictionary<int, Dictionary<string, int>>();
-            for (int i = 1; i <= 12; i++)
-            {
-                totalOPDMonthlyDictionary[i] = generalAdmissions.Count(o => o.Date.Month == i);
-                totalStatisticsMonthlyDictionary[i] = StatisticsHelper.SumForMonth(statisticsList, i);
             }
 
             var viewModel = new GeneralAdmissionViewModel
@@ -2110,20 +2113,20 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 .Where(s => s.Type == "Admission")
                 .ToListAsync();
 
-            if ((generalAdmissions == null || !generalAdmissions.Any()) 
-                && (progressNotes == null || !progressNotes.Any()) 
-                && (statisticsList == null || !statisticsList.Any()))
-            {
-                TempData["ErrorMessage"] = "No Admission records found for selected filters.";
-                return RedirectToAction("Statistics");
-            }
-
             var totalOPDMonthlyDictionary = new Dictionary<int, int>();
             var totalStatisticsMonthlyDictionary = new Dictionary<int, Dictionary<string, int>>();
             for (int i = 1; i <= 12; i++)
             {
-                totalOPDMonthlyDictionary[i] = generalAdmissions.Count(o => o.Date.Month == i);
+                totalOPDMonthlyDictionary[i] = generalAdmissions?.Count(o => o.Date.Month == i) ?? 0;
                 totalStatisticsMonthlyDictionary[i] = StatisticsHelper.SumForMonth(statisticsList, i);
+            }
+
+            if ((generalAdmissions == null || !generalAdmissions.Any())
+                && (progressNotes == null || !progressNotes.Any())
+                && (totalStatisticsMonthlyDictionary.Values.Sum(dict => dict.Values.Sum()) == 0))
+            {
+                TempData["ErrorMessage"] = "No Admission records found for selected filters.";
+                return RedirectToAction("Statistics");
             }
 
             // File name generation
@@ -2299,7 +2302,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             {
                 totalSourcesMonthly[i] = sourceOfReferral.Sum(source =>
                     generalAdmissions.Count(m =>
-                        m.Referral.Equals(source.Value, StringComparison.OrdinalIgnoreCase) &&
+                        string.Equals(m.Referral, source.Value, StringComparison.OrdinalIgnoreCase) &&
                         m.Date.Month == i));
             }
 

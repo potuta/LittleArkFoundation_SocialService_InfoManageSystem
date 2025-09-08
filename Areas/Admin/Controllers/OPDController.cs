@@ -344,7 +344,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             {
                 totalSourcesMonthly[i] = sourceOfReferral.Sum(source =>
                     opdList.Count(m =>
-                        m.SourceOfReferral.Equals(source.Value, StringComparison.OrdinalIgnoreCase) &&
+                        string.Equals(m.SourceOfReferral, source.Value, StringComparison.OrdinalIgnoreCase) &&
                         m.Date.Month == i));
             }
 
@@ -1305,15 +1305,25 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             await using var context = new ApplicationDbContext(connectionString);
 
             var opdList = await context.OPD.ToListAsync();
-            if (opdList == null || !opdList.Any())
-            {
-                TempData["ErrorMessage"] = "No OPD records found.";
-                return RedirectToAction("Index");
-            }
-
             var statisticsList = await context.Statistics
                 .Where(s => s.Type == "OPD")
                 .ToListAsync();
+
+            var totalOPDMonthlyDictionary = new Dictionary<int, int>();
+            var totalStatisticsMonthlyDictionary = new Dictionary<int, Dictionary<string, int>>();
+
+            for (int month = 1; month <= 12; month++)
+            {
+                totalOPDMonthlyDictionary[month] = opdList?.Count(o => o.Date.Month == month) ?? 0;
+                totalStatisticsMonthlyDictionary[month] = StatisticsHelper.SumForMonth(statisticsList, month);
+            }
+
+            if ((opdList == null || !opdList.Any()) &&
+                (totalStatisticsMonthlyDictionary.Values.Sum(dict => dict.Values.Sum()) == 0))
+            {
+                TempData["ErrorMessage"] = "No OPD records found for selected filters.";
+                return RedirectToAction("Index");
+            }
 
             //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
@@ -1338,7 +1348,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             {
                 totalSourcesMonthly[month] = sourceOfReferral.Sum(source =>
                     opdList.Count(m =>
-                        m.SourceOfReferral.Equals(source.Value, StringComparison.OrdinalIgnoreCase) &&
+                        string.Equals(m.SourceOfReferral, source.Value, StringComparison.OrdinalIgnoreCase) &&
                         m.Date.Month == month));
             }
 
@@ -1349,14 +1359,6 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     opdList.Count(m => !m.IsOld && m.Date.Month == month) +
                     opdList.Count(m => m.IsOld && m.Date.Month == month) +
                     opdList.Count(m => m.IsPWD && m.Date.Month == month);
-            }
-
-            var totalOPDMonthlyDictionary = new Dictionary<int, int>();
-            var totalStatisticsMonthlyDictionary = new Dictionary<int, Dictionary<string, int>>();
-            for (int month = 1; month <= 12; month++)
-            {
-                totalOPDMonthlyDictionary[month] = opdList.Count(o => o.Date.Month == month);
-                totalStatisticsMonthlyDictionary[month] = StatisticsHelper.SumForMonth(statisticsList, month);
             }
 
             var viewModel = new OPDViewModel
@@ -1401,18 +1403,20 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 .Where(s => s.Type == "OPD")
                 .ToListAsync();
 
-            if ((opdList == null || !opdList.Any()) && (statisticsList == null || !statisticsList.Any()))
+            var totalOPDMonthlyDictionary = new Dictionary<int, int>();
+            var totalStatisticsMonthlyDictionary = new Dictionary<int, Dictionary<string, int>>();
+
+            for (int i = 1; i <= 12; i++)
+            {
+                totalOPDMonthlyDictionary[i] = opdList?.Count(o => o.Date.Month == i) ?? 0;
+                totalStatisticsMonthlyDictionary[i] = StatisticsHelper.SumForMonth(statisticsList, i);
+            }
+
+            if ((opdList == null || !opdList.Any()) &&
+                (totalStatisticsMonthlyDictionary.Values.Sum(dict => dict.Values.Sum()) == 0))
             {
                 TempData["ErrorMessage"] = "No OPD records found for selected filters.";
                 return RedirectToAction("Statistics");
-            }
-
-            var totalOPDMonthlyDictionary = new Dictionary<int, int>();
-            var totalStatisticsMonthlyDictionary = new Dictionary<int, Dictionary<string, int>>();
-            for (int i = 1; i <= 12; i++)
-            {
-                totalOPDMonthlyDictionary[i] = opdList.Count(o => o.Date.Month == i);
-                totalStatisticsMonthlyDictionary[i] = StatisticsHelper.SumForMonth(statisticsList, i);
             }
 
             // File name generation
@@ -1584,7 +1588,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             {
                 totalSourcesMonthly[i] = sourceOfReferral.Sum(source =>
                     opdList.Count(m =>
-                        m.SourceOfReferral.Equals(source.Value, StringComparison.OrdinalIgnoreCase) &&
+                        string.Equals(m.SourceOfReferral, source.Value, StringComparison.OrdinalIgnoreCase) &&
                         m.Date.Month == i));
             }
 

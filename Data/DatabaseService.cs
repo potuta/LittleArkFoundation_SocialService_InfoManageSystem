@@ -389,7 +389,8 @@ namespace LittleArkFoundation.Data
                     "DELETE FROM Patients;",
                     "TRUNCATE TABLE GeneralAdmission;",
                     "TRUNCATE TABLE OPD;",
-                    "TRUNCATE TABLE Logs;"
+                    "TRUNCATE TABLE Logs;",
+                    "TRUNCATE TABLE Stats;"
                 };
 
                 foreach (var query in commands)
