@@ -8,7 +8,7 @@
     .container {
         margin: 10px;
         padding: 25px;
-        /* width: 250px; */
+        width: 300px;
         height: max-content;
         /* border: 1px solid #ffffff; */
         border-radius: 5%;
@@ -41,7 +41,8 @@
     .container-users {
         margin: 10px;
         padding: 25px;
-        /* width: 300px; */
+        width: 100%;
+        max-width: 1250px;
         height: max-content;
         /* border: 1px solid #494949; */
         border-radius: 5%;
@@ -78,8 +79,9 @@
     .container-general {
         margin: 10px;
         padding: 25px;
-        /* width: 300px; */
-        height: max-content;
+        width: 100%;
+        max-width: 1250px;
+        /* height: 500px; */
         /* border: 1px solid #5a5a5a; */
         border-radius: 5%;
         align-items: center;
@@ -128,6 +130,7 @@
             font-size: 0.9rem;
             word-wrap: break-word; /* prevents long names from breaking layout */
         }
+
 </style>
 
 <link rel="stylesheet" href="~/css/liveDot.css">
@@ -137,7 +140,7 @@
 
 <div class="mx-auto d-flex justify-content-center mt-2 mb-2">
     <button id="selectBtn" type="button" class="btn btn-md dropdown-toggle d-flex align-items-center gap-1 me-2" style="font-weight: bold;" data-bs-toggle="dropdown" aria-expanded="false">
-        Daily Performance
+        Daily Performance (Individual)
     </button>
     <ul class="dropdown-menu dropdown-menu-end">
         <li><a class="dropdown-item" onclick="OnSelectClick(this)" name="Daily">Daily</a></li>
@@ -181,14 +184,16 @@
     </div>
 </div>
 
-<div class="">
+<div class="d-flex justify-content-center align-items-center">
     <div class="container-users">
         <p>Active Users:</p>
         <div class="users-grid">
             <ul id="activeUsersList" class="list-unstyled"></ul>
         </div>
     </div>
+</div>
 
+<div class="d-flex justify-content-center align-items-center">
     @* <div class="container-general">
         <p>General Performance</p>
         <div class="general-grid">
@@ -200,10 +205,11 @@
     </div> *@
 
     <div class="container-general">
-        <p>General Performance</p>
-        <canvas id="generalChart" width="400" height="200"></canvas>
+        <div>
+            @* <p>General Performance (All)</p> *@
+            <canvas id="generalChart" width="400" height="200"></canvas>
+        </div>
     </div>
-
 </div>
 
 @section Scripts {
@@ -236,7 +242,7 @@
             const selection = selectedElement.name;
 
             let btn = document.getElementById("selectBtn");
-            btn.innerHTML = selection + " Performance";
+            btn.innerHTML = selection + " Performance (Individual)";
 
             const dailyClasses = document.querySelectorAll(".daily");
             const monthlyClasses = document.querySelectorAll(".monthly");
@@ -261,49 +267,83 @@
     </script>
 
     <script src="~/lib/Chart.js/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
     <script>
         var ctx = document.getElementById('generalChart').getContext('2d');
+
         var generalChart = new Chart(ctx, {
-            type: 'doughnut', // can also use 'pie' or 'doughnut'
+            type: 'bar',
             data: {
                 labels: ['OPD', 'Admission', 'Discharge', 'Progress Notes'],
                 datasets: [{
                     label: 'Counts',
                     data: [
-                        @Model.OPDList.Count,
-                        @Model.AssessmentsList.Count,
-                        @Model.DischargesList.Count,
-                        @Model.ProgressNotesList.Count
+                        @(Model.OPDList?.Count ?? 0),
+                        @(Model.AssessmentsList?.Count ?? 0),
+                        @(Model.DischargesList?.Count ?? 0),
+                        @(Model.ProgressNotesList?.Count ?? 0)
                     ],
                     backgroundColor: [
-                        'rgba(75, 192, 192, 0.6)',
-                        'rgba(54, 162, 235, 0.6)',
-                        'rgba(255, 99, 132, 0.6)',
-                        'rgba(255, 206, 86, 0.6)'
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(255, 159, 64, 0.7)',
+                        'rgba(255, 99, 132, 0.7)'
                     ],
-                    borderColor: [
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(255, 206, 86, 1)'
-                    ],
-                    borderWidth: 1
+                    borderRadius: 8, // rounded corners
+                    borderSkipped: false
                 }]
             },
             options: {
                 responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'General Performance Overview (All)',
+                        color: 'white', 
+                        font: {
+                            size: 18,
+                            weight: 'bold'
+                        },
+                        padding: { top: 10, bottom: 20 }
+                    },
+                    legend: {
+                        display: false
+                    },
+                    datalabels: {
+                        color: 'white', // labels visible on dark background
+                        anchor: 'end',
+                        align: 'top',
+                        font: {
+                            weight: 'bold'
+                        }
+                    }
+                },
                 scales: {
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)' // faint gridlines
+                        },
+                        ticks: {
+                            color: 'white'
+                        }
+                    },
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            precision: 0 // ensures whole numbers
+                            precision: 0,
+                            color: 'white'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
                         }
                     }
                 }
-            }
+            },
+            plugins: [ChartDataLabels]
         });
     </script>
+
 
 
 }
