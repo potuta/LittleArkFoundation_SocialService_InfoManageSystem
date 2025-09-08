@@ -44,7 +44,8 @@
     <div class="menu-bar d-flex gap-2">
         <a class="btn btn-outline-dark @(
            ViewContext.RouteData.Values["action"]?.ToString() == "Index" ||
-           ViewContext.RouteData.Values["action"]?.ToString() == "SortBy"
+           ViewContext.RouteData.Values["action"]?.ToString() == "SortBy" ||
+           ViewContext.RouteData.Values["action"]?.ToString() == "Search"
            ? "active" : "")"
            asp-action="Index" asp-controller="Discharge">Main</a>
 
