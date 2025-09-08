@@ -50,11 +50,12 @@ body {
         }
 
 .navbar-left {
+    color: white;
     grid-column: 1;
     grid-row: 2;
     display: flex;
     flex-direction: column;
-    background-color: #f8f8f8;
+    background-color: #3d9953;
     box-sizing: border-box;
     /*    width: fit-content;*/
     width: var(--navbar-left-width);
@@ -190,7 +191,7 @@ body.sidebar-collapsed .navbar-left {
 }
 
 .btn-left {
-    color: rgb(0, 0, 0);
+    color: white;
     text-decoration: none;
     padding: 0.3rem 1rem; /* 10px 20px */
     border-radius: 0.3125rem; /* 5px */
@@ -203,12 +204,12 @@ body.sidebar-collapsed .navbar-left {
     white-space: normal;
     text-align: left;
     font-weight: bold;
-    border: black 1px solid;
+    /*border: #327e44 2px solid;*/
     width: calc(var(--navbar-left-width) - 30px);
 }
 
 .btn-left-sub {
-    color: rgb(0, 0, 0);
+    color: white;
     text-decoration: none;
     padding: 0.3rem 1rem; /* 10px 20px */
     border-radius: 0.3125rem; /* 5px */
@@ -221,7 +222,7 @@ body.sidebar-collapsed .navbar-left {
     white-space: normal;
     text-align: left;
     font-weight: bold;
-    border: black 1px solid;
+    /*border: #327e44 2px solid;*/
     width: calc(var(--navbar-left-width) - 41px);
     margin-left: 1rem;
 }
@@ -246,14 +247,14 @@ body.sidebar-collapsed .navbar-left {
     .btn-main:hover,
     .btn-left:hover,
     .btn-navbar:hover {
-        background-color: #44ac5c;
+        background-color: #327e44;
         color: white;
         text-decoration: none;
     }
 
 .btn-left-sub.active,
 .btn-left.active {
-    background-color: #44ac5c;
+    background-color: #327e44;
     color: white;
     text-decoration: none;
 }
