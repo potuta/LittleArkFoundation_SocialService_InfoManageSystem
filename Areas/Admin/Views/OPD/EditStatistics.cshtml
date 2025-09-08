@@ -4,6 +4,7 @@
     Layout = "_AdminLayout";
     string? sortToggle = ViewBag.sortToggle ?? "01";
     string? sortByUserID = ViewBag.sortByUserID ?? "";
+	string? sortToggleText = ViewBag.sortToggleText ?? "JAN";
 }
 
 <style>
@@ -1267,13 +1268,13 @@
         </div>
     </div>
 
-    <div class="mt-2" class="d-flex justify-content-center align-items-center">
+    <div class="d-flex justify-content-center align-items-center mt-2">
         <button type="submit" class="btn btn-sm btn-primary"
                 onclick="return confirm('Are you sure you want to save changes?');">
-            Submit
+            Save Changes (@sortToggleText)
         </button>
     </div>
-    <div class="mt-2" class="d-flex justify-content-center align-items-center">
+    <div class="d-flex justify-content-center align-items-center mt-2">
         <a class="btn btn-sm btn-outline-primary" asp-action="Statistics"
            onclick="return confirm('Are you sure you want to exit this page?');">Back to Statistics</a>
     </div>

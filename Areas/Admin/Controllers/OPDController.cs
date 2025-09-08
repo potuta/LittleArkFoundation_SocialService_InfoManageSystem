@@ -2595,6 +2595,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             int yearNumber = DateTime.Now.Year;
 
             ViewBag.sortToggle = monthNumber.ToString("D2"); // keep 2-digit format for the UI
+            ViewBag.sortToggleText = new DateOnly(yearNumber, monthNumber, 1).ToString("MMMM");
 
             // Try to get existing statistics for this user, type, month & year
             var statistics = await context.Statistics.FirstOrDefaultAsync(s =>
