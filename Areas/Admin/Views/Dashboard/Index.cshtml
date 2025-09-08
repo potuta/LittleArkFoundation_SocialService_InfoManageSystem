@@ -8,14 +8,14 @@
     .container {
         margin: 10px;
         padding: 25px;
-        width: 250px;
+        /* width: 250px; */
         height: max-content;
-        border: 1px solid #ffffff;
+        /* border: 1px solid #ffffff; */
         border-radius: 5%;
         align-items: center;
         text-align: center;
-        color: #ffffff;
-        background-color: rgb(0, 126, 63);
+        color: white;
+        background-color: rgb(61 153 83);
         box-shadow: 0px 0px 15px rgb(217, 217, 217);
     }
 
@@ -35,20 +35,20 @@
     .daily,
     .monthly,
     .yearly {
-        color: #ffffff;
+        color: white;
     }
 
     .container-users {
         margin: 10px;
         padding: 25px;
-        width: 300px;
+        /* width: 300px; */
         height: max-content;
-        border: 1px solid #494949;
+        /* border: 1px solid #494949; */
         border-radius: 5%;
         align-items: center;
         text-align: center;
-        color: #ffffff;
-        background-color: rgb(51, 51, 51);
+        color: white;
+        background-color: rgb(61 153 83);
         box-shadow: 0px 0px 15px rgb(217, 217, 217);
     }
 
@@ -78,15 +78,14 @@
     .container-general {
         margin: 10px;
         padding: 25px;
-        width: 300px;
+        /* width: 300px; */
         height: max-content;
-        border: 1px solid #5a5a5a;
+        /* border: 1px solid #5a5a5a; */
         border-radius: 5%;
         align-items: center;
         text-align: center;
-        color: #ffffff;
-        background-color: rgb(51, 51, 51);
-        background: #2d2d2d;
+        color: white;
+        background-color: rgb(61 153 83);
         box-shadow: 0px 0px 15px rgb(217, 217, 217);
     }
 
@@ -121,7 +120,7 @@
 
         #activeUsersList li {
             flex: 0 0 calc(33.333% - 8px); /* 3 columns */
-            background: #2d2d2d; /* optional styling */
+            background: #327e44; /* optional styling */
             border-radius: 5px;
             padding: 4px 8px;
             text-align: center;
@@ -137,7 +136,7 @@
 <hr />
 
 <div class="mx-auto d-flex justify-content-center mt-2 mb-2">
-    <button id="selectBtn" type="button" class="btn btn-success btn-sm dropdown-toggle d-flex align-items-center gap-1 me-2" data-bs-toggle="dropdown" aria-expanded="false">
+    <button id="selectBtn" type="button" class="btn btn-md dropdown-toggle d-flex align-items-center gap-1 me-2" style="font-weight: bold;" data-bs-toggle="dropdown" aria-expanded="false">
         Daily Performance
     </button>
     <ul class="dropdown-menu dropdown-menu-end">
@@ -182,7 +181,7 @@
     </div>
 </div>
 
-<div class="d-flex justify-content-center">
+<div class="">
     <div class="container-users">
         <p>Active Users:</p>
         <div class="users-grid">
