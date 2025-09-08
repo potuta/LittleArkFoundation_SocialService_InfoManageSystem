@@ -103,6 +103,11 @@
             font-weight: bold;
         }
 
+    canvas#generalChart {
+        width: 100% !important;
+        height: auto !important;
+    }
+
     .general-grid {
         display: grid;
         grid-template-columns: repeat(1, 1fr); /* 3 equal columns */
@@ -207,7 +212,7 @@
     <div class="container-general">
         <div>
             @* <p>General Performance (All)</p> *@
-            <canvas id="generalChart" width="400" height="200"></canvas>
+            <canvas id="generalChart"></canvas>
         </div>
     </div>
 </div>
@@ -296,6 +301,7 @@
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
                     title: {
                         display: true,
