@@ -333,24 +333,24 @@
                     <div class="row g-3">
                         <div class="col-md-4">
                             <label>First Name</label>
-                            <input type="text" class="form-control" asp-for="Discharge.FirstName" id="dischargeFirstName" readonly />
+                            <input type="text" class="form-control text-muted" style="cursor: not-allowed;" asp-for="Discharge.FirstName" id="dischargeFirstName" readonly />
                         </div>
                         <div class="col-md-4">
                             <label>Middle Name</label>
-                            <input type="text" class="form-control" asp-for="Discharge.MiddleName" id="dischargeMiddleName" readonly />
+                            <input type="text" class="form-control text-muted" style="cursor: not-allowed;" asp-for="Discharge.MiddleName" id="dischargeMiddleName" readonly />
                         </div>
                         <div class="col-md-4">
                             <label>Last Name</label>
-                            <input type="text" class="form-control" asp-for="Discharge.LastName" id="dischargeLastName" readonly />
+                            <input type="text" class="form-control text-muted" style="cursor: not-allowed;" asp-for="Discharge.LastName" id="dischargeLastName" readonly />
                         </div>
 
                         <div class="col-md-4">
                             <label>Ward</label>
-                            <input type="text" class="form-control" asp-for="Discharge.Ward" id="dischargeWard" readonly />
+                            <input type="text" class="form-control text-muted" style="cursor: not-allowed;" asp-for="Discharge.Ward" id="dischargeWard" readonly />
                         </div>
                         <div class="col-md-4">
                             <label>Class</label>
-                            <input type="text" class="form-control" asp-for="Discharge.Class" id="dischargeClass" readonly />
+                            <input type="text" class="form-control text-muted" style="cursor: not-allowed;" asp-for="Discharge.Class" id="dischargeClass" readonly />
                         </div>
 
                         <div class="col-md-4">
@@ -364,15 +364,15 @@
 
                         <div class="col-md-4">
                             <label>Received HB</label>
-                            <input type="time" id="receivedHB" class="form-control" asp-for="Discharge.ReceivedHB" readonly/>
+                            <input type="time" id="receivedHB" class="form-control text-muted" style="cursor: not-allowed;" asp-for="Discharge.ReceivedHB" readonly />
                         </div>
                         <div class="col-md-4">
                             <label>Issued MSS</label>
-                            <input type="time" id="issuedMSS" class="form-control" asp-for="Discharge.IssuedMSS" readonly/>
+                            <input type="time" id="issuedMSS" class="form-control text-muted" style="cursor: not-allowed;" asp-for="Discharge.IssuedMSS" readonly />
                         </div>
                         <div class="col-md-4">
                             <label>Duration</label>
-                            <input type="text" id="duration" class="form-control" asp-for="Discharge.Duration" readonly />
+                            <input type="text" id="duration" class="form-control text-muted" style="cursor: not-allowed;" asp-for="Discharge.Duration" readonly />
                         </div>
 
                         <div class="col-md-4">
@@ -389,19 +389,19 @@
                         </div>
                         <div class="col-md-4">
                             <label>PHIC Used</label>
-                            <select class="form-select" id="phicUsed" onchange="toggleRemarks(this.value)" asp-for="Discharge.PHICUsed">
+                            <select class="form-select" id="phicUsed" asp-for="Discharge.PHICUsed">
                                 <option value="true">Yes</option>
                                 <option value="false">No</option>
                             </select>
                         </div>
                         <div class="col-md-4">
                             <label>MSW</label>
-                            <input type="text" class="form-control" id="dischargeMSW" asp-for="Discharge.MSW" readonly />
+                            <input type="text" class="form-control text-muted" style="cursor: not-allowed;" id="dischargeMSW" asp-for="Discharge.MSW" readonly />
                         </div>
 
-                        <div class="col-12 d-none" id="remarksContainer">
+                        <div class="col-12" id="remarksContainer">
                             <label>Remarks (If No)</label>
-                            <textarea class="form-control" rows="2" asp-for="Discharge.RemarksIfNo"></textarea>
+                            <textarea class="form-control" rows="2" asp-for="Discharge.RemarksIfNo" placeholder="N/A if no answer" required></textarea>
                         </div>
                     </div>
                 </form>
@@ -579,15 +579,16 @@
 
             // Ask for confirmation before submitting
             if (confirm("Are you sure you want to confirm discharge?")) {
-                document.getElementById('dischargeForm').submit(); // <-- Submit the form
-            }
-        }
+                const form = document.getElementById('dischargeForm');
+                if (form.checkValidity()) {
+                    form.requestSubmit(); 
+                } else {
+                    form.reportValidity(); 
+                }
+            }   
 
-
-        function toggleRemarks(value) {
-            const container = document.getElementById('remarksContainer');
-            container.classList.toggle('d-none', value === "Yes");
         }
+       
     </script>
 
 
