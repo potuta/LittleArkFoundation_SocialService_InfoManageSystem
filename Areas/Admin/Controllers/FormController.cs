@@ -246,6 +246,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 Gender = opd.Gender,
                 PermanentAddress = opd.Address,
                 MonthlyIncome = opd.MonthlyIncome,
+                ContactNo = opd.ContactNo
             };
 
             var mswdClassification = new MSWDClassificationModel
