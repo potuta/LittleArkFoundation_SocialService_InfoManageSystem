@@ -273,7 +273,9 @@
                                     {
                                         <a href="@Url.Action("ReAdmitPatient", "Discharge", new { area = "Admin", id = patient.PatientID, assessmentID = assessment.AssessmentID })"
                                            class="btn btn-success hide-when-archived"
-                                           onclick="return confirm('Are you sure you want to re-admit this patient?');">Re-Admit</a>
+                                           onclick="return confirmLinkClick(this.href, 'Confirm Re-Admission', 'Are you sure you want to re-admit this patient?');">
+                                           Re-Admit
+                                       </a>
                                     }
                                     else
                                     {
@@ -578,14 +580,28 @@
             }
 
             // Ask for confirmation before submitting
-            if (confirm("Are you sure you want to confirm discharge?")) {
-                const form = document.getElementById('dischargeForm');
-                if (form.checkValidity()) {
-                    form.requestSubmit(); 
-                } else {
-                    form.reportValidity(); 
-                }
-            }   
+            // if (confirm("Are you sure you want to confirm discharge?")) {
+            //     const form = document.getElementById('dischargeForm');
+            //     if (form.checkValidity()) {
+            //         form.requestSubmit(); 
+            //     } else {
+            //         form.reportValidity(); 
+            //     }
+            // }   
+
+            const form = document.getElementById('dischargeForm');
+
+            if (!form.checkValidity()) {
+                form.reportValidity(); // show browser validation
+                return;
+            }
+
+            // Show custom confirm modal
+            showConfirmModal(
+                "Confirm Discharge",
+                "Are you sure you want to confirm discharge?",
+                () => form.requestSubmit() // only called on confirm
+            );
 
         }
        
