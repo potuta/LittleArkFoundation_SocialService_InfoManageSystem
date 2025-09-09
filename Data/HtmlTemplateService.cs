@@ -186,7 +186,7 @@ namespace LittleArkFoundation.Data
             var patientcontactno = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Contactnopatient']");
             if (patientcontactno != null)
             {
-                patientcontactno.InnerHtml = patient.ContactNo;
+                patientcontactno.InnerHtml = assessment.ContactNo;
             }
 
             var patientplaceofbirth = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Placeofbirth']");
@@ -195,7 +195,7 @@ namespace LittleArkFoundation.Data
                 patientplaceofbirth.InnerHtml = patient.PlaceOfBirth;
             }
 
-            switch (patient.Gender)
+            switch (assessment.Gender)
             {
                 case "Male":
                     var gendermalecheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Gendermalecheckbox']");
@@ -226,7 +226,7 @@ namespace LittleArkFoundation.Data
             var patientreligion = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Religion']");
             if (patientreligion != null)
             {
-                patientreligion.InnerHtml = patient.Religion;
+                patientreligion.InnerHtml = assessment.Religion;
             }
 
             var patientnationality = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Nationality']");
@@ -238,16 +238,16 @@ namespace LittleArkFoundation.Data
             var permanentaddress = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Permanentaddress']");
             if (permanentaddress != null)
             {
-                permanentaddress.InnerHtml = patient.PermanentAddress;
+                permanentaddress.InnerHtml = assessment.PermanentAddress;
             }
 
             var temporaryaddress = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Temporaryaddress']");
             if (temporaryaddress != null)
             {
-                temporaryaddress.InnerHtml = patient.TemporaryAddress;
+                temporaryaddress.InnerHtml = assessment.TemporaryAddress;
             }
 
-            switch (patient.CivilStatus)
+            switch (assessment.CivilStatus)
             {
                 case "Legitimate":
                     var civillegitimatecheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Legitimatecheckbox']");
@@ -291,7 +291,7 @@ namespace LittleArkFoundation.Data
                     break;
             }
 
-            switch (patient.EducationLevel)
+            switch (assessment.EducationLevel)
             {
                 case "Primary":
                     var primarycheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Primarycheckbox']");
@@ -338,22 +338,22 @@ namespace LittleArkFoundation.Data
             var patientoccupation = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Occupation']");
             if (patientoccupation != null)
             {
-                patientoccupation.InnerHtml = patient.Occupation;
+                patientoccupation.InnerHtml = assessment.Occupation;
             }
 
             var patientmonthlyincome = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Patientsmonthlyincome']");
             if (patientmonthlyincome != null)
             {
-                patientmonthlyincome.InnerHtml = patient.MonthlyIncome.ToString();
+                patientmonthlyincome.InnerHtml = assessment.MonthlyIncome.ToString();
             }
 
             var philhealthpin = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Pin']");
             if (philhealthpin != null)
             {
-                philhealthpin.InnerHtml = patient.PhilhealthPIN.ToString();
+                philhealthpin.InnerHtml = assessment.PhilhealthPIN.ToString();
             }
 
-            switch (patient.PhilhealthMembership)
+            switch (assessment.PhilhealthMembership)
             {
                 case "Direct Contributor":
                     var directcheckbox = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='Directcontributorcheckbox']");

@@ -334,7 +334,18 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                         HealthRecordNo = assessment.HealthRecordNo,
                         MSWDNo = assessment.MSWDNo,
                         AssessmentStatement = assessment.AssessmentStatement,
-                        UserID = int.Parse(userIdClaim.Value)
+                        UserID = int.Parse(userIdClaim.Value),
+                        ContactNo = assessment.ContactNo,
+                        Gender = assessment.Gender,
+                        Religion = assessment.Religion,
+                        PermanentAddress = assessment.PermanentAddress,
+                        TemporaryAddress = assessment.TemporaryAddress,
+                        CivilStatus = assessment.CivilStatus,
+                        EducationLevel = assessment.EducationLevel,
+                        Occupation = assessment.Occupation,
+                        MonthlyIncome = assessment.MonthlyIncome,
+                        PhilhealthPIN = assessment.PhilhealthPIN,
+                        PhilhealthMembership = assessment.PhilhealthMembership
                     };
 
                     // REFERRALS

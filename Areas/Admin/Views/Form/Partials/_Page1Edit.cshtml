@@ -198,13 +198,13 @@
         <td>
             Contact No: <span class="required">*</span>
             <input type="tel" 
-                asp-for="Patient.ContactNo"
+                asp-for="Assessments.ContactNo"
                 required inputmode="numeric"
                 pattern="(^09\d{9}$)|(^0\d{1,2}\d{7,8}$)"
                 title="Mobile: 11 digits starting with 09. Or landline e.g. 02xxxxxxx"
                 maxlength="11"
                 required>
-            <span asp-validation-for="Patient.ContactNo" class="text-danger"></span>
+            <span asp-validation-for="Assessments.ContactNo" class="text-danger"></span>
 
         </td>
         <td>
@@ -215,20 +215,20 @@
         </td>
         <td>
             Gender: <span class="required">*</span>
-            <select asp-for="Patient.Gender" required>
+            <select asp-for="Assessments.Gender" required>
                 <option>Male</option>
                 <option>Female</option>
                 <option>LGBTQIA+</option>
             </select>
-            <span asp-validation-for="Patient.Gender" class="text-danger"></span>
+            <span asp-validation-for="Assessments.Gender" class="text-danger"></span>
 
         </td>
     </tr>
     <tr>
         <td>
             Religion: <span class="required">*</span>
-            <input type="text" asp-for="Patient.Religion" required>
-            <span asp-validation-for="Patient.Religion" class="text-danger"></span>
+            <input type="text" asp-for="Assessments.Religion" required>
+            <span asp-validation-for="Assessments.Religion" class="text-danger"></span>
 
         </td>
         <td colspan="2">
@@ -241,14 +241,14 @@
     <tr>
         <td>
             Permanent Address: <span class="required">*</span>
-            <input type="text" asp-for="Patient.PermanentAddress" required>
-            <span asp-validation-for="Patient.PermanentAddress" class="text-danger"></span>
+            <input type="text" asp-for="Assessments.PermanentAddress" required>
+            <span asp-validation-for="Assessments.PermanentAddress" class="text-danger"></span>
 
         </td>
         <td colspan="2">
             Temporary Address: <span class="required">*</span>
-            <input type="text" asp-for="Patient.TemporaryAddress" required>
-            <span asp-validation-for="Patient.TemporaryAddress" class="text-danger"></span>
+            <input type="text" asp-for="Assessments.TemporaryAddress" required>
+            <span asp-validation-for="Assessments.TemporaryAddress" class="text-danger"></span>
 
         </td>
     </tr>
@@ -260,25 +260,25 @@
         <td colspan="2">
             <div class="radio-group">
                 <div class="radio-group">
-                    <input type="radio" asp-for="Patient.CivilStatus" value="Legitimate" required> Legitimate
+                    <input type="radio" asp-for="Assessments.CivilStatus" value="Legitimate" required> Legitimate
                 </div>
 
                 <div class="radio-group">
-                    <input type="radio" asp-for="Patient.CivilStatus" value="Illegitimate"> Illegitimate
+                    <input type="radio" asp-for="Assessments.CivilStatus" value="Illegitimate"> Illegitimate
                 </div>
 
                 <div class="radio-group">
-                    <input type="radio" asp-for="Patient.CivilStatus" value="Married"> Married
+                    <input type="radio" asp-for="Assessments.CivilStatus" value="Married"> Married
                 </div>
 
                 <div class="radio-group">
-                    <input type="radio" asp-for="Patient.CivilStatus" value="Common Law"> Common Law
+                    <input type="radio" asp-for="Assessments.CivilStatus" value="Common Law"> Common Law
                 </div>
 
                 <div class="radio-group">
-                    <input type="radio" asp-for="Patient.CivilStatus" value="Widowed"> Widowed
+                    <input type="radio" asp-for="Assessments.CivilStatus" value="Widowed"> Widowed
                 </div>
-                <span asp-validation-for="Patient.CivilStatus" class="text-danger"></span>
+                <span asp-validation-for="Assessments.CivilStatus" class="text-danger"></span>
             </div>
         </td>
 
@@ -290,12 +290,12 @@
         </td>
         <td colspan="2">
             <div class="radio-group">
-                <input type="radio" asp-for="Patient.EducationLevel" value="Primary" required> Primary
-                <input type="radio" asp-for="Patient.EducationLevel" value="Secondary"> Secondary
-                <input type="radio" asp-for="Patient.EducationLevel" value="Vocational"> Vocational
-                <input type="radio" asp-for="Patient.EducationLevel" value="Tertiary"> Tertiary
-                <input type="radio" asp-for="Patient.EducationLevel" value="No Educational Attainment"> No Educational Attainment
-                <span asp-validation-for="Patient.EducationLevel" class="text-danger"></span>
+                <input type="radio" asp-for="Assessments.EducationLevel" value="Primary" required> Primary
+                <input type="radio" asp-for="Assessments.EducationLevel" value="Secondary"> Secondary
+                <input type="radio" asp-for="Assessments.EducationLevel" value="Vocational"> Vocational
+                <input type="radio" asp-for="Assessments.EducationLevel" value="Tertiary"> Tertiary
+                <input type="radio" asp-for="Assessments.EducationLevel" value="No Educational Attainment"> No Educational Attainment
+                <span asp-validation-for="Assessments.EducationLevel" class="text-danger"></span>
 
             </div>
         </td>
@@ -304,17 +304,17 @@
     <tr>
         <td>
             Occupation: <span class="required">*</span>
-            <input type="text" asp-for="Patient.Occupation" required>
-            <span asp-validation-for="Patient.Occupation" class="text-danger"></span>
+            <input type="text" asp-for="Assessments.Occupation" required>
+            <span asp-validation-for="Assessments.Occupation" class="text-danger"></span>
 
         </td>
         <td colspan="2">
             Patient's Monthly Income: <span class="required">*</span>
-            <input type="number" asp-for="Patient.MonthlyIncome"
+            <input type="number" asp-for="Assessments.MonthlyIncome"
                    min="0"
                    max="99999999.99"
                    step="0.01" required>
-            <span asp-validation-for="Patient.MonthlyIncome" class="text-danger"></span>
+            <span asp-validation-for="Assessments.MonthlyIncome" class="text-danger"></span>
 
         </td>
     </tr>
@@ -322,8 +322,8 @@
     <tr>
         <td>
             PhilHealth Identification Number (PIN): <span class="required">*</span>
-            <input type="number" asp-for="Patient.PhilhealthPIN" step="any" required>
-            <span asp-validation-for="Patient.PhilhealthPIN" class="text-danger"></span>
+            <input type="number" asp-for="Assessments.PhilhealthPIN" step="any" required>
+            <span asp-validation-for="Assessments.PhilhealthPIN" class="text-danger"></span>
 
         </td>
 
@@ -331,9 +331,9 @@
             <div class="radio-group">
                 PhilHealth Membership (Check): <span class="required">*</span>
                 <div class="radio-group">
-                    <input type="radio" asp-for="Patient.PhilhealthMembership" value="Direct Contributor" required> Direct Contributor
-                    <input type="radio" asp-for="Patient.PhilhealthMembership" value="Indirect Contributor"> Indirect Contributor
-                    <span asp-validation-for="Patient.PhilhealthMembership" class="text-danger"></span>
+                    <input type="radio" asp-for="Assessments.PhilhealthMembership" value="Direct Contributor" required> Direct Contributor
+                    <input type="radio" asp-for="Assessments.PhilhealthMembership" value="Indirect Contributor"> Indirect Contributor
+                    <span asp-validation-for="Assessments.PhilhealthMembership" class="text-danger"></span>
                 </div>
             </div>
         </td>

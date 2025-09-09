@@ -238,14 +238,14 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 FirstName = opd.FirstName,
                 MiddleName = opd.MiddleName,
                 LastName = opd.LastName,
-                Gender = opd.Gender,
-                PermanentAddress = opd.Address,
-                MonthlyIncome = opd.MonthlyIncome,
             };
 
             var assessment = new AssessmentsModel
             {
                 Age = opd.Age,
+                Gender = opd.Gender,
+                PermanentAddress = opd.Address,
+                MonthlyIncome = opd.MonthlyIncome,
             };
 
             var mswdClassification = new MSWDClassificationModel
@@ -308,14 +308,15 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 FirstName = generalAdmission.FirstName,
                 MiddleName = generalAdmission.MiddleName,
                 LastName = generalAdmission.LastName,
-                Gender = generalAdmission.Gender,
-                PermanentAddress = generalAdmission.CompleteAddress,
-                MonthlyIncome = generalAdmission.MonthlyIncome,
             };
 
             var assessment = new AssessmentsModel
             {
                 Age = generalAdmission.Age,
+                ContactNo = generalAdmission.ContactNumber,
+                Gender = generalAdmission.Gender,
+                PermanentAddress = generalAdmission.CompleteAddress,
+                MonthlyIncome = generalAdmission.MonthlyIncome,
             };
 
             var mswdClassification = new MSWDClassificationModel
@@ -575,14 +576,14 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                             Ward = formViewModel.Assessments.BasicWard,
                             Class = formViewModel.MSWDClassification.SubClassification,
                             Age = formViewModel.Assessments.Age,
-                            Gender = formViewModel.Patient.Gender,
+                            Gender = formViewModel.Assessments.Gender,
                             Time = formViewModel.Assessments.TimeOfInterview,
                             Diagnosis = formViewModel.MedicalHistory.AdmittingDiagnosis,
-                            CompleteAddress = formViewModel.Patient.PermanentAddress,
-                            ContactNumber = formViewModel.Patient.ContactNo,
+                            CompleteAddress = formViewModel.Assessments.PermanentAddress,
+                            ContactNumber = formViewModel.Assessments.ContactNo,
                             Referral = formViewModel.Referrals.ReferralType,
-                            Occupation = formViewModel.Patient.Occupation,
-                            MonthlyIncome = formViewModel.Patient.MonthlyIncome,
+                            Occupation = formViewModel.Assessments.Occupation,
+                            MonthlyIncome = formViewModel.Assessments.MonthlyIncome.Value,
                             HouseholdSize = formViewModel.Household.HouseholdSize,
                             //EducationalAttainment = formViewModel.Patient.EducationLevel,
                             isInterviewed = true,
@@ -1080,14 +1081,14 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     generalAdmission.Ward = formViewModel.Assessments.BasicWard;
                     generalAdmission.Class = formViewModel.MSWDClassification.SubClassification;
                     generalAdmission.Age = formViewModel.Assessments.Age;
-                    generalAdmission.Gender = formViewModel.Patient.Gender;
+                    generalAdmission.Gender = formViewModel.Assessments.Gender;
                     generalAdmission.Time = formViewModel.Assessments.TimeOfInterview;
                     generalAdmission.Diagnosis = formViewModel.MedicalHistory.AdmittingDiagnosis;
-                    generalAdmission.CompleteAddress = formViewModel.Patient.PermanentAddress;
-                    generalAdmission.ContactNumber = formViewModel.Patient.ContactNo;
+                    generalAdmission.CompleteAddress = formViewModel.Assessments.PermanentAddress;
+                    generalAdmission.ContactNumber = formViewModel.Assessments.ContactNo;
                     generalAdmission.Referral = formViewModel.Referrals.ReferralType;
-                    generalAdmission.Occupation = formViewModel.Patient.Occupation;
-                    generalAdmission.MonthlyIncome = formViewModel.Patient.MonthlyIncome;
+                    generalAdmission.Occupation = formViewModel.Assessments.Occupation;
+                    generalAdmission.MonthlyIncome = formViewModel.Assessments.MonthlyIncome.Value;
                     generalAdmission.HouseholdSize = formViewModel.Household.HouseholdSize;
                     // No need to call Update here unless using a detached context
                     // context.GeneralAdmission.Update(generalAdmission);
