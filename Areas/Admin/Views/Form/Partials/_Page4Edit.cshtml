@@ -352,7 +352,7 @@
             Action
         </th>
     </tr>
-    <tbody class="mentalhealth-input">
+    <tbody class="mentalhealth-input mentalhealth-dependent">
         @for (int i = 0; i < Model.MentalHealthHistory.Count; i++)
         {
             <tr>
@@ -381,6 +381,43 @@
     </tbody>
 </table>
 <button type="button" id="mentalhealth-button-add" onclick="addRow(this)">➕ Add Row</button>
+
+<script>
+    function toggleMentalHealthFields() {
+        const hasCounseling = document.querySelector('input[name="MentalHealthHistory[0].HasReceivedCounseling"]:checked')?.value === "True";
+        const dependents = document.querySelectorAll('.mentalhealth-dependent input, .mentalhealth-dependent textarea, .mentalhealth-dependent select');
+        const addButton = document.getElementById("mentalhealth-button-add");
+        const removeButtons = document.querySelectorAll("#mentalhealth-button-remove");
+
+        dependents.forEach(el => {
+            if (hasCounseling) {
+                el.disabled = false;
+                el.setAttribute("required", "true");
+            } else {
+                el.disabled = true;
+                el.removeAttribute("required");
+                el.value = ""; // clear values
+            }
+        });
+
+        // Toggle Add/Remove buttons
+        if (hasCounseling) {
+            addButton.disabled = false;
+            removeButtons.forEach(btn => btn.disabled = false);
+        } else {
+            addButton.disabled = true;
+            removeButtons.forEach(btn => btn.disabled = true);
+        }
+    }
+
+    // Attach to radio buttons
+    document.querySelectorAll('input[name="MentalHealthHistory[0].HasReceivedCounseling"]').forEach(radio => {
+        radio.addEventListener('change', toggleMentalHealthFields);
+    });
+
+    // Run on page load
+    toggleMentalHealthFields();
+</script>
 
 <table>
     <tr>
