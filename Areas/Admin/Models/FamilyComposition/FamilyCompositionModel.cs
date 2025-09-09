@@ -5,14 +5,14 @@
         public int Id { get; set; }
         public int AssessmentID { get; set; }
         public int PatientID { get; set; }
-        public string Name { get; set; }
-        public decimal Age { get; set; }
-        public DateOnly DateOfBirth { get; set; }
-        public string CivilStatus { get; set; }
-        public string RelationshipToPatient { get; set; }
-        public bool LivingWithChild {  get; set; }
-        public string EducationalAttainment { get; set; }
-        public string Occupation { get; set; }
-        public decimal MonthlyIncome { get; set; }
+        public string Name { get; set; } = "N/A";
+        public decimal Age { get; set; } = 0;
+        public DateOnly DateOfBirth { get; set; } = DateOnly.MinValue;
+        public string CivilStatus { get; set; } = "N/A";
+        public string RelationshipToPatient { get; set; } = "N/A";
+        public bool LivingWithChild {  get; set; } = false;
+        public string EducationalAttainment { get; set; } = "N/A";
+        public string Occupation { get; set; } = "N/A";
+        public decimal MonthlyIncome { get; set; } = 0;
     }
 }

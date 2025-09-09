@@ -7,7 +7,7 @@ namespace LittleArkFoundation.Areas.Admin.Models.ProgressNotes
         public int ProgressNotesID { get; set; }
         public int PatientID { get; set; }
         public int AssessmentID { get; set; }
-        public DateOnly Date { get; set; } = DateOnly.FromDateTime(DateTime.Now);
+        public DateOnly Date { get; set; } = DateOnly.MinValue;
         public string ProgressNotes { get; set; } = "N/A";
         public byte[]? Attachment { get; set; }
         public string? AttachmentContentType { get; set; } = "application/octet-stream";

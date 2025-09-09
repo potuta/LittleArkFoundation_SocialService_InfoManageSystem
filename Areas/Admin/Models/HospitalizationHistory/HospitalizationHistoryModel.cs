@@ -5,9 +5,9 @@
         public int HospitalizationID { get; set; }
         public int AssessmentID { get; set; }
         public int PatientID { get; set; }
-        public bool? HasSeriousAccidentOrIllness {  get; set; }
-        public string? Reason { get; set; }
-        public DateOnly? Date {  get; set; }
-        public string? Location { get; set; }
+        public bool? HasSeriousAccidentOrIllness {  get; set; } = false;
+        public string? Reason { get; set; } = "N/A";
+        public DateOnly? Date {  get; set; } = DateOnly.MinValue;
+        public string? Location { get; set; } = "N/A";
     }
 }

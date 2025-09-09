@@ -14,7 +14,7 @@
         public bool HousingLoss { get; set; } = false;
         public bool NoneLoss { get; set; } = false;
         public string Name { get; set; } = "N/A";
-        public DateOnly Date { get; set; } = new DateOnly(1900, 1, 1);
+        public DateOnly Date { get; set; } = DateOnly.MinValue;
         public string NatureOfLoss { get; set; } = "N/A";
         public string OtherLosses { get; set; } = "N/A";
         public string AdditionalInfo { get; set; } = "N/A";

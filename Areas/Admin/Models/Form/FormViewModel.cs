@@ -40,42 +40,42 @@ namespace LittleArkFoundation.Areas.Admin.Models.Form
     public class FormViewModel
     {
         public List<UsersModel>? Users { get; set; } 
-        public AssessmentsModel? Assessments { get; set; }
-        public ReferralsModel? Referrals { get; set; }
-        public InformantsModel? Informants { get; set; }
-        public PatientsModel? Patient { get; set; }
-        public List<FamilyCompositionModel>? FamilyMembers { get; set; }
-        public HouseholdModel? Household { get; set; }
-        public MSWDClassificationModel? MSWDClassification { get; set; }
-        public MonthlyExpensesModel? MonthlyExpenses { get; set; }
-        public UtilitiesModel? Utilities { get; set; }
-        public MedicalHistoryModel? MedicalHistory { get; set; }
-        public ChildHealthModel? ChildHealth { get; set; }
-        public List<DiagnosesModel>? Diagnoses { get; set; }
-        public List<MedicationsModel>? Medications { get; set; }
-        public List<HospitalizationHistoryModel>? HospitalizationHistory { get; set; }
-        public MedicalScreeningsModel? MedicalScreenings {  get; set; }
-        public PrimaryCareDoctorModel? PrimaryCareDoctor { get; set; }
-        public PresentingProblemsModel? PresentingProblems { get; set; }
-        public RecentLossesModel? RecentLosses { get; set; }
-        public PregnancyBirthHistoryModel? PregnancyBirthHistory { get; set; }
-        public DevelopmentalHistoryModel? DevelopmentalHistory { get; set; }
-        public List<MentalHealthHistoryModel>? MentalHealthHistory { get; set; }
-        public List<FamilyHistoryModel>? FamilyHistory { get; set; }
-        public SafetyConcernsModel? SafetyConcerns { get; set; }
-        public CurrentFunctioningModel? CurrentFunctioning { get; set; }
-        public ParentChildRelationshipModel? ParentChildRelationship { get; set; }
-        public EducationModel? Education { get; set; }
-        public EmploymentModel? Employment { get; set; }
-        public HousingModel? Housing { get; set; }
-        public FosterCareModel? FosterCare { get; set; }
-        public AlcoholDrugAssessmentModel? AlcoholDrugAssessment { get; set; }
-        public LegalInvolvementModel? LegalInvolvement { get; set; }
-        public HistoryOfAbuseModel? HistoryOfAbuse { get; set; }
-        public HistoryOfViolenceModel? HistoryOfViolence { get; set; }
-        public StrengthsResourcesModel? StrengthsResources { get; set; }
-        public GoalsModel? Goals { get; set; }
-        public List<ProgressNotesModel>? ProgressNotes { get; set; } 
+        public AssessmentsModel? Assessments { get; set; }  = new AssessmentsModel();
+        public ReferralsModel? Referrals { get; set; } = new ReferralsModel();
+        public InformantsModel? Informants { get; set; } = new InformantsModel();
+        public PatientsModel? Patient { get; set; } = new PatientsModel();
+        public List<FamilyCompositionModel>? FamilyMembers { get; set; } = new List<FamilyCompositionModel>() { new FamilyCompositionModel() };
+        public HouseholdModel? Household { get; set; } = new HouseholdModel();
+        public MSWDClassificationModel? MSWDClassification { get; set; } = new MSWDClassificationModel();
+        public MonthlyExpensesModel? MonthlyExpenses { get; set; } = new MonthlyExpensesModel();
+        public UtilitiesModel? Utilities { get; set; } = new UtilitiesModel();
+        public MedicalHistoryModel? MedicalHistory { get; set; } = new MedicalHistoryModel();
+        public ChildHealthModel? ChildHealth { get; set; } = new ChildHealthModel();
+        public List<DiagnosesModel>? Diagnoses { get; set; } = new List<DiagnosesModel>() { new DiagnosesModel() };
+        public List<MedicationsModel>? Medications { get; set; } = new List<MedicationsModel>() { new MedicationsModel() };
+        public List<HospitalizationHistoryModel>? HospitalizationHistory { get; set; } = new List<HospitalizationHistoryModel>() { new HospitalizationHistoryModel() };
+        public MedicalScreeningsModel? MedicalScreenings {  get; set; } = new MedicalScreeningsModel();
+        public PrimaryCareDoctorModel? PrimaryCareDoctor { get; set; } = new PrimaryCareDoctorModel();
+        public PresentingProblemsModel? PresentingProblems { get; set; } = new PresentingProblemsModel();
+        public RecentLossesModel? RecentLosses { get; set; } = new RecentLossesModel();
+        public PregnancyBirthHistoryModel? PregnancyBirthHistory { get; set; } = new PregnancyBirthHistoryModel();
+        public DevelopmentalHistoryModel? DevelopmentalHistory { get; set; } = new DevelopmentalHistoryModel();
+        public List<MentalHealthHistoryModel>? MentalHealthHistory { get; set; } = new List<MentalHealthHistoryModel>() { new MentalHealthHistoryModel() };
+        public List<FamilyHistoryModel>? FamilyHistory { get; set; } = new List<FamilyHistoryModel>() { new FamilyHistoryModel() };
+        public SafetyConcernsModel? SafetyConcerns { get; set; } = new SafetyConcernsModel();
+        public CurrentFunctioningModel? CurrentFunctioning { get; set; } = new CurrentFunctioningModel();
+        public ParentChildRelationshipModel? ParentChildRelationship { get; set; } = new ParentChildRelationshipModel();
+        public EducationModel? Education { get; set; } = new EducationModel();
+        public EmploymentModel? Employment { get; set; } = new EmploymentModel();
+        public HousingModel? Housing { get; set; } = new HousingModel();
+        public FosterCareModel? FosterCare { get; set; } = new FosterCareModel();
+        public AlcoholDrugAssessmentModel? AlcoholDrugAssessment { get; set; } = new AlcoholDrugAssessmentModel();
+        public LegalInvolvementModel? LegalInvolvement { get; set; } = new LegalInvolvementModel();
+        public HistoryOfAbuseModel? HistoryOfAbuse { get; set; } = new HistoryOfAbuseModel();
+        public HistoryOfViolenceModel? HistoryOfViolence { get; set; } = new HistoryOfViolenceModel();
+        public StrengthsResourcesModel? StrengthsResources { get; set; } = new StrengthsResourcesModel();
+        public GoalsModel? Goals { get; set; } = new GoalsModel();
+        public List<ProgressNotesModel>? ProgressNotes { get; set; } = new List<ProgressNotesModel>() { new ProgressNotesModel() };
         public int OpdId { get; set; } = 0;
         public int GeneralAdmissionId { get; set; } = 0;
 

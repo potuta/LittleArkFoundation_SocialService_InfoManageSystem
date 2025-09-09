@@ -5,11 +5,11 @@
         public int ChildHealthID {  get; set; }
         public int AssessmentID { get; set; }
         public int PatientID { get; set; }
-        public string? OverallHealth { get; set; }
-        public bool? HasHealthIssues { get; set; }
-        public string? DescribeHealthIssues { get; set; }
-        public bool? HasRecurrentConditions { get; set; }
-        public string? DescribeRecurrentConditions { get; set; }
-        public bool? HasEarTubes { get; set; }
+        public string? OverallHealth { get; set; } = "N/A";
+        public bool? HasHealthIssues { get; set; } = false;
+        public string? DescribeHealthIssues { get; set; } = "N/A";
+        public bool? HasRecurrentConditions { get; set; } = false;
+        public string? DescribeRecurrentConditions { get; set; } = "N/A";
+        public bool? HasEarTubes { get; set; } = false;
     }
 }

@@ -8,22 +8,22 @@
         public decimal Age { get; set; }
         public DateOnly DateOfInterview { get; set; }
         public TimeOnly TimeOfInterview { get; set; }
-        public string? BasicWard { get; set; }
-        public string? NonBasicWard { get; set; }
-        public string? HealthRecordNo { get; set; }
-        public string? MSWDNo { get; set; }
-        public string? AssessmentStatement { get; set; }
-        public int? UserID { get; set; }
-        public string? ContactNo { get; set; }
-        public string? Gender { get; set; }
-        public string? Religion { get; set; }
-        public string? PermanentAddress { get; set; }
-        public string? TemporaryAddress { get; set; }
-        public string? CivilStatus { get; set; }
-        public string? EducationLevel { get; set; }
-        public string? Occupation { get; set; }
-        public decimal? MonthlyIncome { get; set; }
-        public string? PhilhealthPIN { get; set; }
-        public string? PhilhealthMembership { get; set; }
+        public string? BasicWard { get; set; } = "N/A";
+        public string? NonBasicWard { get; set; } = "N/A";
+        public string? HealthRecordNo { get; set; } = "N/A";
+        public string? MSWDNo { get; set; } = "N/A";
+        public string? AssessmentStatement { get; set; } = "N/A";
+        public int? UserID { get; set; } = 0;
+        public string? ContactNo { get; set; } = "N/A";
+        public string? Gender { get; set; } = "N/A";
+        public string? Religion { get; set; } = "N/A";
+        public string? PermanentAddress { get; set; } = "N/A";
+        public string? TemporaryAddress { get; set; } = "N/A";
+        public string? CivilStatus { get; set; } = "N/A";
+        public string? EducationLevel { get; set; } = "N/A";
+        public string? Occupation { get; set; } = "N/A";
+        public decimal? MonthlyIncome { get; set; } = 0;
+        public string? PhilhealthPIN { get; set; } = "N/A";
+        public string? PhilhealthMembership { get; set; } = "N/A";
     }
 }

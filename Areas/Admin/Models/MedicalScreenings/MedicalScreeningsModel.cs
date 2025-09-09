@@ -6,11 +6,11 @@
         public int AssessmentID { get; set; }
         public int PatientID { get; set; }
         public bool HasScreeningDone { get; set; } = false;
-        public DateOnly HearingTestDate { get; set; } = new DateOnly(1900, 1, 1);
+        public DateOnly HearingTestDate { get; set; } = DateOnly.MinValue;
         public string HearingTestOutcome { get; set; } = "N/A";
-        public DateOnly VisionTestDate { get; set; } = new DateOnly(1900, 1, 1);
+        public DateOnly VisionTestDate { get; set; } = DateOnly.MinValue;
         public string VisionTestOutcome { get; set; } = "N/A";
-        public DateOnly SpeechTestDate { get; set; } = new DateOnly(1900, 1, 1);
+        public DateOnly SpeechTestDate { get; set; } = DateOnly.MinValue;
         public string SpeechTestOutcome { get; set; } = "N/A"; 
     }
 }
