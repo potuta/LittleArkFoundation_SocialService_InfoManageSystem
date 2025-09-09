@@ -386,7 +386,7 @@ namespace LittleArkFoundation.Data
                 var age = htmlDoc.DocumentNode.SelectSingleNode($"//div[@class='Familyage{i}']");
                 if (age != null)
                 {
-                    age.InnerHtml = familyMember.Age.ToString();
+                    age.InnerHtml = familyMember.Age.ToString("0.##");
                 }
 
                 var dateofbirth = htmlDoc.DocumentNode.SelectSingleNode($"//div[@class='Familydateofbirth{i}']");

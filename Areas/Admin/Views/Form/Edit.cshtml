@@ -381,7 +381,10 @@
 
                 let cols = `
                     <td><input type="text" name="FamilyMembers[${rowCount}].Name" required></td>
-                    <td><input type="number" name="FamilyMembers[${rowCount}].Age" required></td>
+                    <td><input type="number" name="FamilyMembers[${rowCount}].Age"
+                        min="0"
+                        max="999.99"
+                        step="0.01" required></td>
                     <td><input type="date" name="FamilyMembers[${rowCount}].DateOfBirth" required></td>
                     <td><input type="text" name="FamilyMembers[${rowCount}].CivilStatus" required></td>
                     <td><input type="text" name="FamilyMembers[${rowCount}].RelationshipToPatient" required></td>
@@ -393,7 +396,10 @@
                     </td>
                     <td><input type="text" name="FamilyMembers[${rowCount}].EducationalAttainment" required></td>
                     <td><input type="text" name="FamilyMembers[${rowCount}].Occupation" required></td>
-                    <td><input type="number" name="FamilyMembers[${rowCount}].MonthlyIncome" required></td>
+                    <td><input type="number" name="FamilyMembers[${rowCount}].MonthlyIncome" 
+                            min="0"
+                           max="99999999.99"
+                           step="0.01" required></td>
                     <td><button type="button" id="family-button-remove" onclick="removeRow(this)">❌</button></td>
                 `;
                 newRow.innerHTML = cols;
