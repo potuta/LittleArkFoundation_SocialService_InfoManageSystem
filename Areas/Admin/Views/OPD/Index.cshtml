@@ -269,7 +269,7 @@
                                     @if (User.HasClaim("Permission", "CreateForm"))
                                     {
                                         <a class="btn btn-primary hide-when-archived" asp-action="AdmitOPD" asp-controller="Form" asp-route-id="@opd.Id"
-                                           onclick="return confirm('Are you sure you want to admit this OPD?');"
+                                           onclick="return confirmLinkClick(this.href, 'Confirm Admission', 'Are you sure you want to admit this patient?');"
                                         data-bs-toggle="tooltip"
                                         title="Admit Patient">
                                             <i class="bi bi-box-arrow-in-right"></i>

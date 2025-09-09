@@ -56,7 +56,9 @@
 
 <!-- Back to List -->
 <div class="mt-2">
-    <a class="btn btn-outline-secondary mb-3" asp-controller="OPD" asp-action="Index">← Back to List</a>
+    <a class="btn btn-outline-secondary mb-3" asp-controller="OPD" asp-action="Index">
+        <i class="bi bi-arrow-left-square"></i> Back to List
+    </a>
 </div>
 
 <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
@@ -64,7 +66,8 @@
     <div class="d-flex align-items-center gap-3">
         @if (User.HasClaim("Permission", "EditOPD"))
         {
-            <a class="btn btn-success hide-when-archived" asp-action="EditStatistics" asp-controller="OPD">
+            <a class="btn btn-success hide-when-archived" asp-action="EditStatistics" asp-controller="OPD"
+               onclick="return confirmLinkClick(this.href, 'Confirm Edit', 'Are you sure you want to edit your statistics?');">
                 <i class="bx bx-edit"></i> Edit Your Statistics (@User.FindFirst(System.Security.Claims.ClaimTypes.Name).Value)
             </a>
         }
