@@ -180,7 +180,8 @@
                                     {
                                         if (user.RoleID != 1 && user.UserID != int.Parse(currentUserId))
                                         {
-                                            <a href="@Url.Action("Archive", new { id = user.UserID })" class="btn btn-danger hide-when-archived" onclick="return confirm('Are you sure you want to archive this user?');"
+                                            <a href="@Url.Action("Archive", new { id = user.UserID })" class="btn btn-danger hide-when-archived"
+                                               onclick="return confirmLinkClick(this.href, 'Confirm Archive', 'Are you sure you want to archive this user?');"
                                                data-bs-toggle="tooltip"
                                                title="Archive User">
                                                 <i class="bi bi-archive"></i>
@@ -218,7 +219,8 @@
                                 <td class="sticky-col d-flex gap-1" style="white-space: nowrap; left: 0; z-index: 1;">
                                     @if (User.HasClaim("Permission", "ArchiveUnarchiveUser"))
                                     {
-                                        <a href="@Url.Action("Unarchive", new { id = user.UserID })" class="btn btn-success hide-when-archived" onclick="return confirm('Are you sure you want to unarchive this user?');"
+                                        <a href="@Url.Action("Unarchive", new { id = user.UserID })" class="btn btn-success hide-when-archived"
+                                           onclick="return confirmLinkClick(this.href, 'Confirm Unarchive', 'Are you sure you want to unarchive this user?');"
                                                data-bs-toggle="tooltip"
                                                title="Unarchive User">
                                                 <i class="bi bi-box-arrow-in-left"></i>
@@ -262,7 +264,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form asp-action="Create" asp-controller="Users" method="post">
+                <form id="createUserForm" asp-action="Create" asp-controller="Users" method="post">
                     @Html.AntiForgeryToken()
                     <div class="form-group">
                         <label asp-for="NewUser.Username" class="control-label"></label>
@@ -304,7 +306,10 @@
                         <span asp-validation-for="NewUser.RoleID" class="text-danger"></span>
                     </div>
                     <div class="form-group mt-2">
-                        <button type="submit" class="btn btn-primary">Create</button>
+                        <button type="submit" class="btn btn-success"
+                                onclick="return confirmFormSubmit('createUserForm', 'Confirm Create User', 'Are you sure you want to create this user?')">
+                            Create
+                        </button>
                     </div>
                 </form>
             </div>

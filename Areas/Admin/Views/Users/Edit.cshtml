@@ -12,7 +12,7 @@
 
 <div>
     <hr />
-    <form asp-action="Edit" asp-controller="Users" method="post">
+    <form id="editUserForm" asp-action="Edit" asp-controller="Users" method="post">
         @Html.AntiForgeryToken()
         @* <input type="hidden" asp-for="NewUser.UserID"/> *@
         <input type="hidden" asp-for="NewUser.PasswordSalt" />
@@ -81,12 +81,17 @@
             <input asp-for="NewUser.CreatedAt" class="form-control" readonly />
         </div>
         <div class="form-group mt-2">
-            <input type="submit" value="Save" class="btn btn-primary" />
+            <button type="submit" class="btn btn-success"
+                    onclick="return confirmFormSubmit('editUserForm', 'Confirm Edit', 'Are you sure you want to save changes?')">
+                Save
+            </button>
         </div>
     </form>
 </div>
 <div class="mt-2">
-    <a class="btn btn-sm btn-outline-primary" asp-action="Index">Back to List</a>
+    <a class="btn btn-sm btn-outline-secondary" asp-action="Index">
+        <i class="bi bi-arrow-left-square"></i> Back to List
+    </a>
 </div>
 
 @section Scripts {
@@ -104,31 +109,36 @@
         });
 
         document.getElementById('togglePasswordButton').addEventListener('click', function () {
-            if (!confirm("Warning! Are you sure you want to reset this user's password?")) {
-                return; 
-            }
+            const button = this;
 
-            var passwordField = document.getElementById('passwordField');
-            var originalPassword = document.getElementById('originalPassword').value;
-            var isEditPasswordEnabledField = document.getElementById('isEditPasswordEnabled');
+            showConfirmModal(
+                "Warning!",
+                "Are you sure you want to reset this user's password?",
+                () => {
+                    const passwordField = document.getElementById('passwordField');
+                    const originalPassword = document.getElementById('originalPassword').value;
+                    const isEditPasswordEnabledField = document.getElementById('isEditPasswordEnabled');
 
-            if (isEditPasswordEnabledField.value === "false") {
-                // passwordField.removeAttribute('readonly');
-                passwordField.value = '@Model.DefaultUserPassword'; // Allow user to enter a new password
-                passwordField.style.backgroundColor = "#ffffff"; // Restore white background
-                passwordField.style.cursor = "text";
-                passwordField.style.opacity = "1";
-                this.textContent = "Don't Reset Password";
-                isEditPasswordEnabledField.value = 'true';
-            } else {
-                passwordField.setAttribute('readonly', 'readonly');
-                passwordField.value = originalPassword; // Restore original password
-                passwordField.style.backgroundColor = "#e9ecef"; // Grey background when readonly
-                passwordField.style.cursor = "not-allowed";
-                passwordField.style.opacity = "0.6";
-                this.textContent = 'Reset Password';
-                isEditPasswordEnabledField.value = 'false';
-            }
+                    if (isEditPasswordEnabledField.value === "false") {
+                        // Enable editing
+                        passwordField.value = '@Model.DefaultUserPassword';
+                        passwordField.style.backgroundColor = "#ffffff";
+                        passwordField.style.cursor = "text";
+                        passwordField.style.opacity = "1";
+                        button.textContent = "Don't Reset Password";
+                        isEditPasswordEnabledField.value = 'true';
+                    } else {
+                        // Revert to original
+                        passwordField.setAttribute('readonly', 'readonly');
+                        passwordField.value = originalPassword;
+                        passwordField.style.backgroundColor = "#e9ecef";
+                        passwordField.style.cursor = "not-allowed";
+                        passwordField.style.opacity = "0.6";
+                        button.textContent = 'Reset Password';
+                        isEditPasswordEnabledField.value = 'false';
+                    }
+                }
+            );
         });
 
         // Prevent form submission with empty password
