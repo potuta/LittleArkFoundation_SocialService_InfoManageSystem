@@ -194,7 +194,7 @@
                         .FirstOrDefault();
 
 					    var mswdclassification = Model.MSWDClassifications
-					    .FirstOrDefault(m => m.AssessmentID == assessment.AssessmentID);
+					    .FirstOrDefault(m => m.PatientID == assessment.PatientID && m.AssessmentID == assessment.AssessmentID);
 
                         var userIdName = User.FindFirst(ClaimTypes.Name);
                         var userId = User.FindFirst(ClaimTypes.NameIdentifier);
