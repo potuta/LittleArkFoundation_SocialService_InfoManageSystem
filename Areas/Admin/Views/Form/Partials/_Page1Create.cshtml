@@ -503,22 +503,29 @@
 </table>
 
 <script>
-    document.querySelectorAll('input[name="MSWDClassification.MainClassification"]').forEach(mainRadio => {
-        mainRadio.addEventListener('change', function () {
-            let subRadios = document.querySelectorAll('input[name="MSWDClassification.SubClassification"]');
+    function toggleSubRadios() {
+        let mainSelected = document.querySelector('input[name="MSWDClassification.MainClassification"]:checked');
+        let subRadios = document.querySelectorAll('input[name="MSWDClassification.SubClassification"]');
 
-            if (this.value === "Financially Incapable/Incapacitated") {
-                subRadios.forEach(r => {
-                    r.disabled = false;
-                    r.required = true;
-                });
-            } else {
-                subRadios.forEach(r => {
-                    r.checked = false;   // uncheck if previously selected
-                    r.disabled = true;
-                    r.required = false;
-                });
-            }
-        });
+        if (mainSelected && mainSelected.value === "Financially Incapable/Incapacitated") {
+            subRadios.forEach(r => {
+                r.disabled = false;
+                r.required = true;
+            });
+        } else {
+            subRadios.forEach(r => {
+                r.checked = false;   // uncheck if previously selected
+                r.disabled = true;
+                r.required = false;
+            });
+        }
+    }
+
+    // Attach event listeners
+    document.querySelectorAll('input[name="MSWDClassification.MainClassification"]').forEach(mainRadio => {
+        mainRadio.addEventListener('change', toggleSubRadios);
     });
+
+    // Run once on page load (important for edit scenarios)
+    toggleSubRadios();
 </script>
