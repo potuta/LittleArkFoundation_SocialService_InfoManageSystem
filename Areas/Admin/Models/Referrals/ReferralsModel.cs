@@ -8,7 +8,7 @@
         public string ReferralType { get; set; } = "N/A";
         public string Name { get; set; } = "N/A";
         public string Address { get; set; } = "N/A";
-        public string ContactNo { get; set; } = "N/A";
+        public string ContactNo { get; set; } = "0";
         public DateTime DateOfReferral { get; set; } = DateTime.Now;
     }
 }

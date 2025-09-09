@@ -13,7 +13,7 @@
         public string ProbationParoleLength { get; set; } = "N/A";
         public string Charges { get; set; } = "N/A";
         public string OfficerName { get; set; } = "N/A";
-        public string OfficerContactNum { get; set; } = "N/A";
+        public string OfficerContactNum { get; set; } = "0";
         public string AdditionalInfo { get; set; } = "N/A";
     }
 }

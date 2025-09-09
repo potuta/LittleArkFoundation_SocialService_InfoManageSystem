@@ -14,7 +14,7 @@
         public string? MSWDNo { get; set; } = "N/A";
         public string? AssessmentStatement { get; set; } = "N/A";
         public int? UserID { get; set; } = 0;
-        public string? ContactNo { get; set; } = "N/A";
+        public string? ContactNo { get; set; } = "0";
         public string? Gender { get; set; } = "N/A";
         public string? Religion { get; set; } = "N/A";
         public string? PermanentAddress { get; set; } = "N/A";
