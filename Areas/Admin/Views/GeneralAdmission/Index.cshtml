@@ -346,6 +346,7 @@
                                     {
                                         <a asp-action="InterviewGeneral" asp-controller="Form" asp-route-Id="@patient.Id"
                                            class="btn btn-secondary hide-when-archived"
+                                           onclick="return confirmLinkClick(this.href, 'Confirm Admission', 'Are you sure you want to Interview this patient?');"
                                            data-bs-toggle="tooltip"
                                            title="Interview Patient">
                                             <i class="bi bi-box-arrow-in-left"></i>

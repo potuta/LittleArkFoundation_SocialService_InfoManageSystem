@@ -30,7 +30,10 @@
 
 <!-- Back to List -->
 <div class="mt-2">
-    <a class="btn btn-outline-secondary mb-3" asp-controller="GeneralAdmission" asp-action="Statistics">← Back to Statistics</a>
+    <a class="btn btn-outline-secondary mb-3" asp-controller="GeneralAdmission" asp-action="Statistics"
+       onclick="return confirmLinkClick(this.href, 'Confirm Exit', 'Are you sure you want to exit this page?');">
+        <i class="bi bi-arrow-left-square"></i> Back to Statistics
+    </a>
 </div>
 
 <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
@@ -141,7 +144,7 @@
     </div>
 }
 
-<form asp-action="EditStatistics" asp-route-userID="@Model.User.UserID" asp-route-sortToggle="@sortToggle" method="post">
+<form id="editGAStatisticsForm" asp-action="EditStatistics" asp-route-userID="@Model.User.UserID" asp-route-sortToggle="@sortToggle" method="post">
     <input type="hidden" asp-for="Statistics.Id" />
     <input type="hidden" asp-for="Statistics.Type" />
     <input type="hidden" asp-for="Statistics.UserID" />
@@ -1249,13 +1252,15 @@
     </div>
 
     <div class="d-flex justify-content-center align-items-center mt-2">
-        <button type="submit" class="btn btn-sm btn-primary"
-                onclick="return confirm('Are you sure you want to save changes?');">
-            Save Changes (@sortToggleText)
+        <button type="submit" class="btn btn-sm btn-success"
+                onclick="return confirmFormSubmit('editGAStatisticsForm', 'Confirm Edit', 'Are you sure you want to save changes?')">
+            <i class="bi bi-floppy"></i> Save Changes (@sortToggleText)
         </button>
     </div>
     <div class="d-flex justify-content-center align-items-center mt-2">
-        <a class="btn btn-sm btn-outline-primary" asp-action="Statistics"
-           onclick="return confirm('Are you sure you want to exit this page?');">Back to Statistics</a>
+        <a class="btn btn-sm btn-outline-secondary" asp-action="Statistics"
+           onclick="return confirmLinkClick(this.href, 'Confirm Exit', 'Are you sure you want to exit this page?');">
+           <i class="bi bi-arrow-left-square"></i> Back to Statistics
+       </a>
     </div>
 </form>

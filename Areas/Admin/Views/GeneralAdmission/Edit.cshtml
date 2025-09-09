@@ -85,10 +85,12 @@
 
 <div class="mt-2">
     <a class="btn btn-outline-secondary mb-3" asp-action="Index"
-       onclick="return confirm('Are you sure you want to exit this page?');">← Back to List</a>
+       onclick="return confirmLinkClick(this.href, 'Confirm Exit', 'Are you sure you want to exit this page?');">
+        <i class="bi bi-arrow-left-square"></i> Back to List
+    </a>
 </div>
 
-<form asp-action="Edit" method="post">
+<form id="editGAForm" asp-action="Edit" method="post">
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="GeneralAdmission.Id" />
     <input type="hidden" asp-for="GeneralAdmission.AssessmentID" />
@@ -97,6 +99,7 @@
     <input type="hidden" asp-for="GeneralAdmission.UserID" />
 
     <div class="form-container">
+        <h2 style="text-align: center;">Edit</h2>
         <h2 style="text-align: center;">General Admission</h2>
         <!-- <h3 style="text-align: center;">MSWD Assessment Tool for Children/Adolescent</h3> -->
 
@@ -601,14 +604,16 @@
         @* --- Add new here --- *@
 
         <div class="mt-2" style="text-align: center;">
-            <button type="submit" class="btn btn-sm btn-primary"
-                    onclick="return confirm('Are you sure you want to save changes?');">
-                Submit
+            <button type="submit" class="btn btn-sm btn-success"
+                    onclick="return confirmFormSubmit('editGAForm', 'Confirm Edit', 'Are you sure you want to save changes?')">
+                <i class="bi bi-floppy"></i> Save Changes
             </button>
         </div>
         <div class="mt-2" style="text-align: center;">
-            <a class="btn btn-sm btn-outline-primary" asp-action="Index"
-               onclick="return confirm('Are you sure you want to exit this page?');">Back to List</a>
+            <a class="btn btn-sm btn-outline-secondary" asp-action="Index"
+               onclick="return confirmLinkClick(this.href, 'Confirm Exit', 'Are you sure you want to exit this page?');">
+                <i class="bi bi-arrow-left-square"></i> Back to List
+            </a>
         </div>
     </div>
 
