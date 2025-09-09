@@ -111,7 +111,9 @@
 
 <div class="mt-2">
     <a class="btn btn-outline-secondary mb-3" asp-action="ViewForm" asp-route-id="@Model.Patient.PatientID" asp-route-assessmentID="@Model.Assessments.AssessmentID"
-       onclick="return confirm('Are you sure you want to exit this page?');">← Back to Form</a>
+       onclick="return confirmLinkClick(this.href, 'Confirm Exit', 'Are you sure you want to exit this page?');">
+        <i class="bi bi-arrow-left-square"></i> Back to Form
+   </a>
 </div>
 
 @if (TempData["SuccessMessage"] != null)
@@ -129,7 +131,7 @@
     </div>
 }
 
-<form asp-action="Edit" method="post" enctype="multipart/form-data" novalidate>
+<form id="editAdmissionForm" asp-action="Edit" method="post" enctype="multipart/form-data" novalidate>
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="Assessments.Id" />
     <input type="hidden" asp-for="Assessments.AssessmentID" />
@@ -346,11 +348,15 @@
         @* --- Add new here --- *@
 
         <div class="mt-2" style="text-align: center;">
-            <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('Are you sure you want to save changes?');">Save Changes</button>
+            <button type="submit" class="btn btn-sm btn-success">
+                <i class="bi bi-floppy"></i> Save Changes
+            </button>
         </div>
         <div class="mt-2" style="text-align: center;">
-            <a class="btn btn-sm btn-outline-primary" asp-action="ViewForm" asp-route-id="@Model.Patient.PatientID" asp-route-assessmentID="@Model.Assessments.AssessmentID"
-               onclick="return confirm('Are you sure you want to exit this page?');">Back to Form</a>
+            <a class="btn btn-sm btn-outline-secondary" asp-action="ViewForm" asp-route-id="@Model.Patient.PatientID" asp-route-assessmentID="@Model.Assessments.AssessmentID"
+               onclick="return confirmLinkClick(this.href, 'Confirm Exit', 'Are you sure you want to exit this page?');">
+                <i class="bi bi-arrow-left-square"></i> Back to Form
+           </a>
         </div>
     </div>
 
@@ -989,9 +995,17 @@
         }
 
         document.addEventListener("DOMContentLoaded", function () {
-            const form = document.querySelector("form");
+            const form = document.getElementById("editAdmissionForm");
 
             form.addEventListener("submit", function (e) {
+                // If already confirmed, allow submission
+                if (form.dataset.confirmed === "true") {
+                    form.dataset.confirmed = ""; // reset for next time
+                    return;
+                }
+
+                e.preventDefault(); // stop immediate submission
+
                 // Remove old highlights first
                 form.querySelectorAll(".invalid-highlight").forEach(el => {
                     el.classList.remove("invalid-highlight");
@@ -999,51 +1013,54 @@
 
                 const collapses = document.querySelectorAll(".accordion-collapse");
 
-                // Forcefully show all collapsible sections (ignore Bootstrap JS)
+                // Forcefully show all collapsible sections
                 collapses.forEach(collapseEl => {
                     collapseEl.classList.add("show");
-                    collapseEl.classList.remove("collapsing"); // in case it's stuck
+                    collapseEl.classList.remove("collapsing");
                 });
 
                 // Count the number of invalid fields
                 const invalidFields = form.querySelectorAll(":invalid");
                 const errorCount = invalidFields.length;
 
-                // If novalidate is present, we're in "first pass"
-                if (form.hasAttribute("novalidate")) {
-                    if (errorCount > 0) {
-                        e.preventDefault();
-                        alert(`You have ${errorCount} field(s) that need attention.`);
+                if (errorCount > 0) {
+                    showAlertModal(`You have ${errorCount} field(s) that need attention.`);
 
-                        setTimeout(() => {
-                            invalidFields.forEach(field => {
-                                if ((field.type === "radio" || field.type === "checkbox") && field.name) {
-                                    const group = form.querySelectorAll(`input[name="${field.name}"]`);
-                                    group.forEach(input => {
-                                        input.classList.add("invalid-highlight");
-                                        const label = input.closest("label");
-                                        if (label) label.classList.add("invalid-highlight");
-                                    });
-                                } else {
-                                    field.classList.add("invalid-highlight");
-                                }
-                                  field.scrollIntoView({ behavior: "smooth", block: "center" });
-                                  field.focus();
-                              });
-                        }, 100);
-
-
-                        // Collapse sections without invalid fields
-                        collapses.forEach(collapseEl => {
-                            const hasInvalid = collapseEl.querySelector(":invalid");
-                            if (!hasInvalid) {
-                                collapseEl.classList.remove("show");
+                    setTimeout(() => {
+                        invalidFields.forEach(field => {
+                            if ((field.type === "radio" || field.type === "checkbox") && field.name) {
+                                const group = form.querySelectorAll(`input[name="${field.name}"]`);
+                                group.forEach(input => {
+                                    input.classList.add("invalid-highlight");
+                                    const label = input.closest("label");
+                                    if (label) label.classList.add("invalid-highlight");
+                                });
+                            } else {
+                                field.classList.add("invalid-highlight");
                             }
+                            field.scrollIntoView({ behavior: "smooth", block: "center" });
+                            field.focus();
                         });
+                    }, 100);
 
-                    }
+                    // Collapse sections without invalid fields
+                    collapses.forEach(collapseEl => {
+                        const hasInvalid = collapseEl.querySelector(":invalid");
+                        if (!hasInvalid) {
+                            collapseEl.classList.remove("show");
+                        }
+                    });
+                } else {
+                    // Show confirm modal only once
+                    showConfirmModal(
+                        "Confirm Edit",
+                        "Are you sure you want to save changes?",
+                        () => {
+                            form.dataset.confirmed = "true"; // mark confirmed
+                            form.requestSubmit(); // now passes without reopening modal
+                        }
+                    );
                 }
-                     
             });
         });
 
