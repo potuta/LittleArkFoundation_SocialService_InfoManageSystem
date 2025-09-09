@@ -89,7 +89,7 @@
                 <option>Govt. Agencies</option>
                 <option>Others</option>
             </select>
-            <input type="text" asp-for="Referrals.Name" placeholder="Type N/A if no answer" required>
+            <input type="text" asp-for="Referrals.Name" placeholder="Type N/A if no answer" >
             <span asp-validation-for="Referrals.Name" class="text-danger"></span>
 
         </td>
@@ -101,13 +101,14 @@
         </td>
         <td>
             Contact No: <span class="required">*</span>
-            <input type="tel" 
-                asp-for="Referrals.ContactNo" 
-                required inputmode="numeric"
-                pattern="(^09\d{9}$)|(^0\d{1,2}\d{7,8}$)"
-                title="Mobile: 11 digits starting with 09. Or landline e.g. 02xxxxxxx"
-                maxlength="11"
-                required>
+            <input type="tel"
+                   asp-for="Referrals.ContactNo"
+                   inputmode="numeric"
+                   pattern="^(0|09\d{9}|0\d{1,2}\d{7,8})$"
+                   title="Mobile: 11 digits starting with 09. Or landline e.g. 02xxxxxxx. Or just '0'"
+                   maxlength="11"
+                   required>
+
             <span asp-validation-for="Referrals.ContactNo" class="text-danger"></span>
 
         </td>
@@ -134,9 +135,9 @@
             Contact No: <span class="required">*</span>
             <input type="tel" 
                 asp-for="Informants.ContactNo"
-                required inputmode="numeric"
-                pattern="(^09\d{9}$)|(^0\d{1,2}\d{7,8}$)"
-                title="Mobile: 11 digits starting with 09. Or landline e.g. 02xxxxxxx"
+                inputmode="numeric"
+                pattern="^(0|09\d{9}|0\d{1,2}\d{7,8})$"
+                title="Mobile: 11 digits starting with 09. Or landline e.g. 02xxxxxxx. Or just '0'"
                 maxlength="11"
                 required>
             <span asp-validation-for="Informants.ContactNo" class="text-danger"></span>
@@ -199,7 +200,7 @@
             Contact No: <span class="required">*</span>
             <input type="tel" 
                 asp-for="Assessments.ContactNo"
-                required inputmode="numeric"
+                inputmode="numeric"
                 pattern="(^09\d{9}$)|(^0\d{1,2}\d{7,8}$)"
                 title="Mobile: 11 digits starting with 09. Or landline e.g. 02xxxxxxx"
                 maxlength="11"

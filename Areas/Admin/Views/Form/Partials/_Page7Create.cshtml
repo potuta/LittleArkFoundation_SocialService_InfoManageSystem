@@ -67,9 +67,9 @@
                 Contact #:
                 <input type="tel" 
                     asp-for="LegalInvolvement.OfficerContactNum"
-                    required inputmode="numeric"
-                    pattern="(^09\d{9}$)|(^0\d{1,2}\d{7,8}$)"
-                    title="Mobile: 11 digits starting with 09. Or landline e.g. 02xxxxxxx"
+                    inputmode="numeric"
+                    pattern="^(0|09\d{9}|0\d{1,2}\d{7,8})$"
+                    title="Mobile: 11 digits starting with 09. Or landline e.g. 02xxxxxxx. Or just '0'"
                     maxlength="11"
                     required>
             </div>
