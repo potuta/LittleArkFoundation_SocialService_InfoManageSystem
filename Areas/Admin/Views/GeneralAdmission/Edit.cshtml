@@ -174,7 +174,10 @@
                 </td>
                 <td>
                     Age: <span class="required">*</span>
-                    <input type="number" asp-for="GeneralAdmission.Age" step="any" placeholder="Type N/A if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly>
+                    <input type="number" asp-for="GeneralAdmission.Age"
+                           min="0"
+                           max="999.99"
+                           step="0.01" placeholder="Type N/A if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly>
                 </td>
             </tr>
 
@@ -407,7 +410,10 @@
 
                 <td>
                     Monthly Income: <span class="required">*</span>
-                    <input type="number" asp-for="GeneralAdmission.MonthlyIncome" step="any" placeholder="Type 0 if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly>
+                    <input type="number" asp-for="GeneralAdmission.MonthlyIncome"
+                           min="0"
+                           max="99999999.99"
+                           step="0.01" placeholder="Type 0 if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly>
                 </td>
 
                 <td>

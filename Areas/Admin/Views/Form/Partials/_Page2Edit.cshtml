@@ -12,39 +12,79 @@
     </tr>
     <tr>
         <td>House & Lot</td>
-        <td><input type="number" asp-for="MonthlyExpenses.HouseAndLot" step="any" class="expense" required></td>
+        <td>
+            <input type="number" asp-for="MonthlyExpenses.HouseAndLot" 
+                    min="0"
+                   max="99999999.99"
+                   step="0.01" class="expense" required>
+        </td>
         <td>Communication</td>
-        <td><input type="number" asp-for="MonthlyExpenses.Communication" step="any" class="expense" required></td>
+        <td><input type="number" asp-for="MonthlyExpenses.Communication"
+                   min="0"
+                   max="99999999.99"
+                   step="0.01" class="expense" required>
+        </td>
     </tr>
     <tr>
         <td>Food & Water</td>
-        <td><input type="number" asp-for="MonthlyExpenses.FoodAndWater" step="any" class="expense" required></td>
+        <td><input type="number" asp-for="MonthlyExpenses.FoodAndWater"
+                   min="0"
+                   max="99999999.99"
+                   step="0.01" class="expense" required>
+        </td>
         <td>House Help</td>
-        <td><input type="number" asp-for="MonthlyExpenses.HouseHelp" step="any" class="expense" required></td>
+        <td><input type="number" asp-for="MonthlyExpenses.HouseHelp"
+                   min="0"
+                   max="99999999.99"
+                   step="0.01" class="expense" required>
+        </td>
     </tr>
     <tr>
         <td>Education</td>
-        <td><input type="number" asp-for="MonthlyExpenses.Education" step="any" class="expense" required></td>
+        <td><input type="number" asp-for="MonthlyExpenses.Education"
+                   min="0"
+                   max="99999999.99"
+                   step="0.01" class="expense" required>
+        </td>
         <td>Medical Expenses</td>
-        <td><input type="number" asp-for="MonthlyExpenses.MedicalExpenses" step="any" class="expense" required></td>
+        <td><input type="number" asp-for="MonthlyExpenses.MedicalExpenses"
+                   min="0"
+                   max="99999999.99"
+                   step="0.01" class="expense" required>
+        </td>
     </tr>
     <tr>
         <td>Clothing</td>
-        <td><input type="number" asp-for="MonthlyExpenses.Clothing" step="any" class="expense" required></td>
+        <td><input type="number" asp-for="MonthlyExpenses.Clothing"
+                   min="0"
+                   max="99999999.99"
+                   step="0.01" class="expense" required>
+        </td>
         <td>Others</td>
         <td>
             <input type="text" asp-for="MonthlyExpenses.Others" placeholder="Specify">
-            <input type="number" asp-for="MonthlyExpenses.OthersAmount" step="any" class="expense">
+            <input type="number" asp-for="MonthlyExpenses.OthersAmount"
+                   min="0"
+                   max="99999999.99"
+                   step="0.01" class="expense">
         </td>
     </tr>
     <tr>
         <td>Transportation</td>
-        <td colspan="3"><input type="number" asp-for="MonthlyExpenses.Transportation" step="any" class="expense" required></td>
+        <td colspan="3"><input type="number" asp-for="MonthlyExpenses.Transportation"
+                   min="0"
+                   max="99999999.99"
+                   step="0.01" class="expense" required>
+        </td>
 
     </tr>
     <tr>
         <td><strong>Total</strong></td>
-        <td colspan="3"><input type="number" asp-for="MonthlyExpenses.Total" step="any" id="total-expenses" readonly></td>
+        <td colspan="3"><input type="number" asp-for="MonthlyExpenses.Total"
+                   min="0"
+                   max="9999999999.99"
+                   step="0.01" id="total-expenses" readonly>
+        </td>
     </tr>
 </table>
 
@@ -62,13 +102,19 @@
                 {
                     <input type="radio" asp-for="Utilities.LightSource" value="Electric" data-target="electric-amount" onchange="toggleRequiredRadio(this)" checked>
                     <label>Electric</label>
-                    <input type="number" asp-for="Utilities.LightSourceAmount" step="any" id="electric-amount" placeholder="State amount" disabled>
+                    <input type="number" asp-for="Utilities.LightSourceAmount"
+                           min="0"
+                           max="99999999.99"
+                           step="0.01" id="electric-amount" placeholder="State amount" disabled>
                 }
                 else
                 {
                     <input type="radio" asp-for="Utilities.LightSource" value="Electric" data-target="electric-amount" onchange="toggleRequiredRadio(this)">
                     <label>Electric</label>
-                    <input type="number" id="electric-amount" step="any" placeholder="State amount" oninput="updateLightSourceValue(this)" disabled>
+                    <input type="number" id="electric-amount"
+                           min="0"
+                           max="99999999.99"
+                           step="0.01" placeholder="State amount" oninput="updateLightSourceValue(this)" disabled>
                     <input type="hidden" asp-for="Utilities.LightSourceAmount" id="light-source-amount" />
                 }
 
@@ -79,13 +125,19 @@
                 {
                     <input type="radio" asp-for="Utilities.LightSource" value="Kerosene" data-target="kerosene-amount" onchange="toggleRequiredRadio(this)" checked>
                     <label>Kerosene</label>
-                    <input type="number" asp-for="Utilities.LightSourceAmount" step="any" id="kerosene-amount" placeholder="State amount" disabled>
+                    <input type="number" asp-for="Utilities.LightSourceAmount"
+                           min="0"
+                           max="99999999.99"
+                           step="0.01" id="kerosene-amount" placeholder="State amount" disabled>
                 }
                 else
                 {
                     <input type="radio" asp-for="Utilities.LightSource" value="Kerosene" data-target="kerosene-amount" onchange="toggleRequiredRadio(this)">
                     <label>Kerosene</label>
-                    <input type="number" id="kerosene-amount" step="any" placeholder="State amount" oninput="updateLightSourceValue(this)" disabled>
+                    <input type="number" id="kerosene-amount"
+                           min="0"
+                           max="99999999.99"
+                           step="0.01" placeholder="State amount" oninput="updateLightSourceValue(this)" disabled>
                     <input type="hidden" asp-for="Utilities.LightSourceAmount" id="light-source-amount" />
 
                 }
@@ -96,13 +148,19 @@
                 {
                     <input type="radio" asp-for="Utilities.LightSource" value="Candle" data-target="candle-amount" onchange="toggleRequiredRadio(this)" checked>
                     <label>Candle</label>
-                    <input type="number" asp-for="Utilities.LightSourceAmount" step="any" id="candle-amount" placeholder="State amount" disabled>
+                    <input type="number" asp-for="Utilities.LightSourceAmount"
+                           min="0"
+                           max="99999999.99"
+                           step="0.01" id="candle-amount" placeholder="State amount" disabled>
                 }
                 else
                 {
                     <input type="radio" asp-for="Utilities.LightSource" value="Candle" data-target="candle-amount" onchange="toggleRequiredRadio(this)">
                     <label>Candle</label>
-                    <input type="number" id="candle-amount" step="any" placeholder="State amount" oninput="updateLightSourceValue(this)" disabled>
+                    <input type="number" id="candle-amount"
+                           min="0"
+                           max="99999999.99"
+                           step="0.01" placeholder="State amount" oninput="updateLightSourceValue(this)" disabled>
                     <input type="hidden" asp-for="Utilities.LightSourceAmount" id="light-source-amount" />
 
                 }
@@ -115,13 +173,19 @@
                 {
                     <input type="radio" asp-for="Utilities.FuelSource" value="Gas" data-target="gas-amount" onchange="toggleRequiredRadio(this)" checked>
                     <label>Gas</label>
-                    <input type="number" asp-for="Utilities.FuelSourceAmount" step="any" id="gas-amount" placeholder="State amount" disabled>
+                    <input type="number" asp-for="Utilities.FuelSourceAmount"
+                           min="0"
+                           max="99999999.99"
+                           step="0.01" id="gas-amount" placeholder="State amount" disabled>
                 }
                 else
                 {
                     <input type="radio" asp-for="Utilities.FuelSource" value="Gas" data-target="gas-amount" onchange="toggleRequiredRadio(this)">
                     <label>Gas</label>
-                    <input type="number" id="gas-amount" step="any" placeholder="State amount" oninput="updateFuelSourceValue(this)" disabled>
+                    <input type="number" id="gas-amount"
+                           min="0"
+                           max="99999999.99"
+                           step="0.01" placeholder="State amount" oninput="updateFuelSourceValue(this)" disabled>
                     <input type="hidden" asp-for="Utilities.FuelSourceAmount" id="fuel-source-amount" />
                 }
 
@@ -132,13 +196,19 @@
                 {
                     <input type="radio" asp-for="Utilities.FuelSource" value="Firewood" data-target="firewood-amount" onchange="toggleRequiredRadio(this)" checked>
                     <label>Firewood</label>
-                    <input type="number" asp-for="Utilities.FuelSourceAmount" step="any" id="firewood-amount" placeholder="State amount" disabled>
+                    <input type="number" asp-for="Utilities.FuelSourceAmount"
+                           min="0"
+                           max="99999999.99"
+                           step="0.01" id="firewood-amount" placeholder="State amount" disabled>
                 }
                 else
                 {
                     <input type="radio" asp-for="Utilities.FuelSource" value="Firewood" data-target="firewood-amount" onchange="toggleRequiredRadio(this)">
                     <label>Firewood</label>
-                    <input type="number" id="firewood-amount" step="any" placeholder="State amount" oninput="updateFuelSourceValue(this)" disabled>
+                    <input type="number" id="firewood-amount"
+                           min="0"
+                           max="99999999.99"
+                           step="0.01" placeholder="State amount" oninput="updateFuelSourceValue(this)" disabled>
                     <input type="hidden" asp-for="Utilities.FuelSourceAmount" id="fuel-source-amount" />
 
                 }
@@ -149,13 +219,19 @@
                 {
                     <input type="radio" asp-for="Utilities.FuelSource" value="Charcoal" data-target="charcoal-amount" onchange="toggleRequiredRadio(this)" checked>
                     <label>Charcoal</label>
-                    <input type="number" asp-for="Utilities.FuelSourceAmount" step="any" id="charcoal-amount" placeholder="State amount" disabled>
+                    <input type="number" asp-for="Utilities.FuelSourceAmount"
+                           min="0"
+                           max="99999999.99"
+                           step="0.01" id="charcoal-amount" placeholder="State amount" disabled>
                 }
                 else
                 {
                     <input type="radio" asp-for="Utilities.FuelSource" value="Charcoal" data-target="charcoal-amount" onchange="toggleRequiredRadio(this)">
                     <label>Charcoal</label>
-                    <input type="number" id="charcoal-amount" step="any" placeholder="State amount" oninput="updateFuelSourceValue(this)" disabled>
+                    <input type="number" id="charcoal-amount"
+                           min="0"
+                           max="99999999.99"
+                           step="0.01" placeholder="State amount" oninput="updateFuelSourceValue(this)" disabled>
                     <input type="hidden" asp-for="Utilities.FuelSourceAmount" id="fuel-source-amount" />
                 }
 
