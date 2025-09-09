@@ -22,7 +22,7 @@
 	<link href="~/lib/bootstrap-icons-1.13.1/bootstrap-icons.css" rel="stylesheet" />
 
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="~/css/adminStyle.css">
+    <link rel="stylesheet" href="~/css/adminStyle.css" asp-append-version="true">
 
 </head>
 <body data-controller ="@ViewContext.RouteData.Values["controller"]"
@@ -286,6 +286,10 @@
     </div>
 
     @await Html.PartialAsync("Partials/_FilePreviewModal")
+    @await Html.PartialAsync("Partials/_ConfirmModal")
+    @await Html.PartialAsync("Partials/_AlertModal")
+
+	<script src="~/js/customModal.js" asp-append-version="true"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
