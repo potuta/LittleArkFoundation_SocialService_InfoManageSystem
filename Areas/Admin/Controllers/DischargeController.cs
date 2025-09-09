@@ -81,6 +81,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var totalCount = await query.CountAsync();
             var discharges = await query
                 .OrderByDescending(d => d.DischargedDate)
+                .ThenByDescending(d => d.ReceivedHB)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -140,6 +141,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var totalCount = await query.CountAsync();
             var discharges = await query
                 .OrderByDescending(d => d.DischargedDate)
+                .ThenByDescending(d => d.ReceivedHB)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -181,6 +183,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var totalCount = await query.CountAsync();
             var discharges = await query
                 .OrderByDescending(d => d.DischargedDate)
+                .ThenByDescending(d => d.ReceivedHB)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
