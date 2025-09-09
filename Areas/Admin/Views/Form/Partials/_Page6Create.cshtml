@@ -115,28 +115,70 @@
             O. Employment
 
             <div style="display: flex;">
-                1. Is your child currently enrolled employed?
+                1. Is your child currently employed?
                 <div class="radio-group">
                     <input type="radio" asp-for="Employment.IsCurrentlyEmployed" value="True" required> Yes
                     <input type="radio" asp-for="Employment.IsCurrentlyEmployed" value="False"> No
                 </div>
             </div>
-            <div style="display: flex; width: 100%;">
+
+            <div style="display: flex; width: 100%;" class="employment-dependent">
                 If employed, where are they working?
-                <input type="text" asp-for="Employment.Location" placeholder="Type N/A if no answer" required>
+                <input type="text" asp-for="Employment.Location"
+                       placeholder="Type N/A if no answer"
+                       data-was-required="true">
             </div>
-            <div style="display: flex; width: 100%;">
+
+            <div style="display: flex; width: 100%;" class="employment-dependent">
                 How long?
-                <input type="text" asp-for="Employment.JobDuration" placeholder="Type N/A if no answer" required>
+                <input type="text" asp-for="Employment.JobDuration"
+                       placeholder="Type N/A if no answer"
+                       data-was-required="true">
             </div>
-            <div style="display: flex; width: 100%;">
+
+            <div style="display: flex; width: 100%;" class="employment-dependent">
                 Does your child enjoy their current job?
                 <div class="radio-group">
-                    <input type="radio" asp-for="Employment.IsEnjoyingJob" value="True" required> Yes
+                    <input type="radio" asp-for="Employment.IsEnjoyingJob" value="True" data-was-required="true"> Yes
                     <input type="radio" asp-for="Employment.IsEnjoyingJob" value="False"> No
                 </div>
             </div>
+
+            <script>
+                function toggleEmploymentFields() {
+                    const isEmployed = document.querySelector('input[name="Employment.IsCurrentlyEmployed"]:checked')?.value === "True";
+                    const dependents = document.querySelectorAll('.employment-dependent input');
+
+                    dependents.forEach(el => {
+                        if (isEmployed) {
+                            el.disabled = false;
+                            if (el.hasAttribute("data-was-required")) {
+                                el.setAttribute("required", "true");
+                            }
+                        } else {
+                            el.disabled = true;
+                            el.removeAttribute("required");
+
+                            // Clear values if not applicable
+                            if (el.type === "radio" || el.type === "checkbox") {
+                                el.checked = false;
+                            } else {
+                                el.value = "";
+                            }
+                        }
+                    });
+                }
+
+                // Attach event listeners
+                document.querySelectorAll('input[name="Employment.IsCurrentlyEmployed"]').forEach(radio => {
+                    radio.addEventListener('change', toggleEmploymentFields);
+                });
+
+                // Run once on page load (important for edit mode)
+                toggleEmploymentFields();
+            </script>
         </th>
+
     </tr>
 </table>
 
@@ -211,57 +253,95 @@
                 </div>
             </div>
 
-            <div style="display: flex;">
+            <div style="display: flex;" class="foster-dependent">
                 From
                 <input type="number" asp-for="FosterCare.FosterAgeStart"
-                       min="0"
-                       max="999.99"
-                       step="0.01" style="width: 10%; margin-left: 10px; margin-right: 10px;" required>
+                       min="0" max="999.99" step="0.01"
+                       style="width: 10%; margin: 0 10px;"
+                       data-was-required="true">
                 Age
                 To
                 <input type="number" asp-for="FosterCare.FosterAgeEnd"
-                       min="0"
-                       max="999.99"
-                       step="0.01" style="width: 10%; margin-left: 10px; margin-right: 10px;" required>
+                       min="0" max="999.99" step="0.01"
+                       style="width: 10%; margin: 0 10px;"
+                       data-was-required="true">
                 Age
             </div>
-            <div style="display: flex;">
+
+            <div style="display: flex;" class="foster-dependent">
                 Reason
-                <textarea asp-for="FosterCare.Reason" rows="2" cols="120" placeholder="Type N/A if no answer" style="margin-left: 10px; margin-right: 10px;" required></textarea>
+                <textarea asp-for="FosterCare.Reason" rows="2" cols="120"
+                          placeholder="Type N/A if no answer"
+                          style="margin: 0 10px;"
+                          data-was-required="true"></textarea>
             </div>
 
             <hr />
-            <div style="display: flex;">
+            <div style="display: flex;" class="foster-dependent">
                 2. Type of Placement:
                 <div class="radio-group">
-                    <input type="radio" asp-for="FosterCare.PlacementType" value="Familial Placement" required> Familial Placement
+                    <input type="radio" asp-for="FosterCare.PlacementType" value="Familial Placement" data-was-required="true"> Familial Placement
                     <input type="radio" asp-for="FosterCare.PlacementType" value="Non-Familial Placement"> Non-Familial Placement
                 </div>
             </div>
 
             <hr />
-            <div style="display: flex;">
+            <div style="display: flex;" class="foster-dependent">
                 3. Current Status:
                 <div class="radio-group">
-                    <input type="radio" asp-for="FosterCare.CurrentStatus" value="In-Care" required> In-Care
+                    <input type="radio" asp-for="FosterCare.CurrentStatus" value="In-Care" data-was-required="true"> In-Care
                     <input type="radio" asp-for="FosterCare.CurrentStatus" value="Out of Care"> Out of Care
                 </div>
             </div>
 
             <hr />
-            <div style="display: flex;">
+            <div style="display: flex;" class="foster-dependent">
                 4. If Out of Care, reason for leaving:
                 <div class="radio-group">
-                    <input type="radio" asp-for="FosterCare.OutOfCareReason" value="Adopted" onchange="toggleRequiredRadio(this)" required> Adopted
-                    <input type="radio" asp-for="FosterCare.OutOfCareReason" value="Returned to Home" onchange="toggleRequiredRadio(this)"> Returned to Home
-                    <input type="radio" asp-for="FosterCare.OutOfCareReason" value="Emancipated" onchange="toggleRequiredRadio(this)"> Emancipated
-                    <input type="radio" asp-for="FosterCare.OutOfCareReason" value="Ran away from care" onchange="toggleRequiredRadio(this)"> Ran away from care
+                    <input type="radio" asp-for="FosterCare.OutOfCareReason" value="Adopted" data-was-required="true"> Adopted
+                    <input type="radio" asp-for="FosterCare.OutOfCareReason" value="Returned to Home"> Returned to Home
+                    <input type="radio" asp-for="FosterCare.OutOfCareReason" value="Emancipated"> Emancipated
+                    <input type="radio" asp-for="FosterCare.OutOfCareReason" value="Ran away from care"> Ran away from care
                 </div>
                 <div class="radio-group">
-                    <input type="radio" asp-for="FosterCare.OutOfCareReason" value="Others" data-target="fostercare-others-specify" onchange="toggleRequiredRadio(this)"> Others:
+                    <input type="radio" asp-for="FosterCare.OutOfCareReason" value="Others" data-target="fostercare-others-specify"> Others:
                     <input type="text" id="fostercare-others-specify" placeholder="Specify" disabled oninput="updateOthersValue(this)">
                 </div>
             </div>
+
+            <script>
+                function toggleFosterCareFields() {
+                    const fosterValue = document.querySelector('input[name="FosterCare.HasBeenFosterCared"]:checked')?.value;
+                    const dependents = document.querySelectorAll('.foster-dependent input, .foster-dependent textarea');
+
+                    dependents.forEach(el => {
+                        if (fosterValue === "Yes") {
+                            el.disabled = false;
+                            if (el.hasAttribute("data-was-required")) {
+                                el.setAttribute("required", "true");
+                            }
+                        } else {
+                            el.disabled = true;
+                            el.removeAttribute("required");
+
+                            // Clear values if not applicable
+                            if (el.type === "radio" || el.type === "checkbox") {
+                                el.checked = false;
+                            } else {
+                                el.value = "";
+                            }
+                        }
+                    });
+                }
+
+                // Attach to "HasBeenFosterCared" radios
+                document.querySelectorAll('input[name="FosterCare.HasBeenFosterCared"]').forEach(radio => {
+                    radio.addEventListener('change', toggleFosterCareFields);
+                });
+
+                // Run once on page load (important for edit mode)
+                toggleFosterCareFields();
+            </script>
         </th>
     </tr>
 </table>

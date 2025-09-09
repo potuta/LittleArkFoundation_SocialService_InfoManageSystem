@@ -171,18 +171,54 @@
             <input type="number" asp-for="PregnancyBirthHistory.ChildAdoptedAge"
                    min="0"
                    max="999.99"
-                   step="0.01" placeholder="Type 0 if no answer" required>
+                   step="0.01"
+                   placeholder="Type 0 if no answer"
+                   class="adoption-dependent"
+                   required>
 
-            <div class="radio-group">
+            <div class="radio-group adoption-dependent">
                 <input type="radio" asp-for="PregnancyBirthHistory.AdoptionType" value="Domestic adoption" required> Domestic adoption
                 <input type="radio" asp-for="PregnancyBirthHistory.AdoptionType" value="International adoption"> International adoption
                 <input type="radio" asp-for="PregnancyBirthHistory.AdoptionType" value="Undocumented adoption"> Undocumented adoption
             </div>
 
             Country (if International adoption):
-            <input type="text" asp-for="PregnancyBirthHistory.AdoptionCountry" placeholder="Type N/A if no answer" required>
+            <input type="text" asp-for="PregnancyBirthHistory.AdoptionCountry"
+                   placeholder="Type N/A if no answer"
+                   class="adoption-dependent"
+                   required>
+
+            <script>
+                function toggleAdoptionFields() {
+                    const isAdopted = document.querySelector('input[name="PregnancyBirthHistory.WasChildAdopted"]:checked')?.value === "True";
+                    const dependents = document.querySelectorAll('.adoption-dependent input, .adoption-dependent');
+
+                    dependents.forEach(el => {
+                        if (isAdopted) {
+                            el.disabled = false;
+                            el.required = true;
+                        } else {
+                            el.disabled = true;
+                            el.required = false;
+                            if (el.type === "radio" || el.type === "checkbox") {
+                                el.checked = false; // clear selection
+                            } else {
+                                el.value = ""; // clear text/number
+                            }
+                        }
+                    });
+                }
+
+                document.querySelectorAll('input[name="PregnancyBirthHistory.WasChildAdopted"]').forEach(radio => {
+                    radio.addEventListener('change', toggleAdoptionFields);
+                });
+
+                // Run once on page load (important when editing existing data)
+                toggleAdoptionFields();
+            </script>
         </th>
     </tr>
+
 </table>
 
 <table>
