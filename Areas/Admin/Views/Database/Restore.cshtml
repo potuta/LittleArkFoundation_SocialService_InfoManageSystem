@@ -72,6 +72,8 @@
                         }
                     }
 
+                    int formCounter = 0;
+
                     // Second pass: render the table
                     @foreach (var file in Model.DatabaseBackupFiles)
                     {
@@ -113,14 +115,17 @@
 							continue; // Skip files that do not match the expected format
                         }
 
+                        var formId = $"restoreDatabaseForm_{formCounter}";
+                        formCounter++; // increment for next row
+
                         <tr>
                             <td class="sticky-col d-flex gap-1" style="white-space: nowrap; left: 0; z-index: 1;">
-                                <form id="restoreDatabaseForm" asp-action="Restore" method="post">
+                                <form id="@formId" asp-action="Restore" method="post">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="name" value="@Model.DefaultDatabaseName" />
                                     <input type="hidden" name="backupFileName" value="@file" />
                                     <button type="submit" class="btn btn-primary"
-                                            onclick="return confirmFormSubmit('restoreDatabaseForm', 'Confirm Selection', 'Are you sure you want to select this backup file?')">
+                                            onclick="return confirmFormSubmit('@formId', 'Confirm Selection', 'Are you sure you want to select this backup file?')">
                                         Select
                                     </button>
                                 </form>
