@@ -273,7 +273,7 @@
                 let table = document.getElementById("family-table");
 
                 if (table.rows.length - 1 == 12){
-                    alert("Only 12 rows allowed");
+                    showAlertModal("Only 12 rows allowed");
                     return;
                 }
 
@@ -306,7 +306,7 @@
                 let table = document.getElementById("diagnosis-table");
 
                 if (table.rows.length - 1 == 3){
-                    alert("Only 3 rows allowed");
+                    showAlertModal("Only 3 rows allowed");
                     return;
                 }
 
@@ -339,7 +339,7 @@
                 let table = document.getElementById("medication-table");
 
                 if (table.rows.length - 1 == 3){
-                    alert("Only 3 rows allowed");
+                    showAlertModal("Only 3 rows allowed");
                     return;
                 }
 
@@ -361,7 +361,7 @@
                 let table = document.getElementById("hospitalization-table");
 
                 if (table.rows.length - 1 == 3){
-                    alert("Only 3 rows allowed");
+                    showAlertModal("Only 3 rows allowed");
                     return;
                 }
 
@@ -381,7 +381,7 @@
                 let table = document.getElementById("mentalhealth-table");
 
                 if (table.rows.length - 1 == 3){
-                    alert("Only 3 rows allowed");
+                    showAlertModal("Only 3 rows allowed");
                     return;
                 }
 
@@ -407,7 +407,7 @@
                 let table = document.getElementById("familyhistory-table");
 
                 if (table.rows.length - 1 == 2){
-                    alert("Only 2 rows allowed");
+                    showAlertModal("Only 2 rows allowed");
                     return;
                 }
 
@@ -556,7 +556,7 @@
                     row.remove();
                     updateNames(button);
                 } else {
-                    alert("At least one row is required!");
+                    showAlertModal("At least one row is required!");
                 }
             }
             else if (button.id == "diagnosis-button-remove") {
@@ -567,7 +567,7 @@
                     row.remove();
                     updateNames(button);
                 } else {
-                    alert("At least one row is required!");
+                    showAlertModal("At least one row is required!");
                 }
             }
             else if (button.id == "medication-button-remove") {
@@ -578,7 +578,7 @@
                     row.remove();
                     updateNames(button);
                 } else {
-                    alert("At least one row is required!");
+                    showAlertModal("At least one row is required!");
                 }
             }
             else if (button.id == "hospitalization-button-remove") {
@@ -589,7 +589,7 @@
                     row.remove();
                     updateNames(button);
                 } else {
-                    alert("At least one row is required!");
+                    showAlertModal("At least one row is required!");
                 }
             }
             else if (button.id == "mentalhealth-button-remove") {
@@ -600,7 +600,7 @@
                     row.remove();
                     updateNames(button);
                 } else {
-                    alert("At least one row is required!");
+                    showAlertModal("At least one row is required!");
                 }
             }
             else if (button.id == "familyhistory-button-remove") {
@@ -611,7 +611,7 @@
                     row.remove();
                     updateNames(button);
                 } else {
-                    alert("At least one row is required!");
+                    showAlertModal("At least one row is required!");
                 }
             }
             else if (button.id == "progressnotes-button-remove") {
@@ -622,7 +622,7 @@
                     row.remove();
                     updateNames(button);
                 } else {
-                    alert("At least one row is required!");
+                    showAlertModal("At least one row is required!");
                 }
             }
 
@@ -875,7 +875,7 @@
                 const errorCount = invalidFields.length;
 
                 if (errorCount > 0) {
-                    showAlertModal(`You have ${errorCount} field(s) that need attention.`);
+                    showAlertModal(`You have ${errorCount} field(s) that need attention.`, 'Validation Error');
 
                     setTimeout(() => {
                         invalidFields.forEach(field => {
