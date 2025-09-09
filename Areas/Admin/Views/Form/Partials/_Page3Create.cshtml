@@ -92,7 +92,7 @@
             Action
         </th>
     </tr>
-    <tbody class="medication-input">
+    <tbody class="medication-input medication-dependent">
         @for (int i = 0; i < Model.Medications.Count; i++)
         {
             <tr>
@@ -117,6 +117,42 @@
     </tbody>
 </table>
 <button type="button" id="medication-button-add" onclick="addRow(this)">➕ Add Row</button>
+
+<script>
+    function toggleMedicationFields() {
+        const takesMeds = document.querySelector('input[name="Medications[0].DoesTakeAnyMedication"]:checked')?.value === "True";
+        const dependents = document.querySelectorAll('.medication-dependent input');
+        const addBtn = document.getElementById('medication-button-add');
+        const removeBtns = document.querySelectorAll('#medication-table button');
+
+        dependents.forEach(el => {
+            if (takesMeds) {
+                el.disabled = false;
+                el.setAttribute("required", "true");
+            } else {
+                el.disabled = true;
+                el.removeAttribute("required");
+                el.value = ""; // clear value if "No"
+            }
+        });
+
+        // Toggle add/remove buttons
+        if (takesMeds) {
+            addBtn.disabled = false;
+            removeBtns.forEach(btn => btn.disabled = false);
+        } else {
+            addBtn.disabled = true;
+            removeBtns.forEach(btn => btn.disabled = true);
+        }
+    }
+
+    document.querySelectorAll('input[name="Medications[0].DoesTakeAnyMedication"]').forEach(radio => {
+        radio.addEventListener('change', toggleMedicationFields);
+    });
+
+    // Run once on page load (important for edit mode)
+    toggleMedicationFields();
+</script>
 
 <table>
     <tr>
@@ -183,6 +219,43 @@
 </table>
 <button type="button" id="hospitalization-button-add" onclick="addRow(this)">➕ Add Row</button>
 
+<script>
+    function toggleHospitalizationFields() {
+        const hadHospitalization = document.querySelector('input[name="HospitalizationHistory[0].HasSeriousAccidentOrIllness"]:checked')?.value === "True";
+        const dependents = document.querySelectorAll('#hospitalization-table input');
+        const addBtn = document.getElementById('hospitalization-button-add');
+        const removeBtns = document.querySelectorAll('#hospitalization-table button');
+
+        dependents.forEach(el => {
+            if (hadHospitalization) {
+                el.disabled = false;
+                el.setAttribute("required", "true");
+            } else {
+                el.disabled = true;
+                el.removeAttribute("required");
+                el.value = ""; // clear values if "No"
+            }
+        });
+
+        // Toggle add/remove buttons
+        if (hadHospitalization) {
+            addBtn.disabled = false;
+            removeBtns.forEach(btn => btn.disabled = false);
+        } else {
+            addBtn.disabled = true;
+            removeBtns.forEach(btn => btn.disabled = true);
+        }
+    }
+
+    // Attach listeners
+    document.querySelectorAll('input[name="HospitalizationHistory[0].HasSeriousAccidentOrIllness"]').forEach(radio => {
+        radio.addEventListener('change', toggleHospitalizationFields);
+    });
+
+    // Run once on page load (important for edit mode)
+    toggleHospitalizationFields();
+</script>
+
 <table>
     <tr>
         <th colspan="3">
@@ -199,11 +272,11 @@
         </td>
         <td>
             Date
-            <input type="date" asp-for="MedicalScreenings.HearingTestDate" required>
+            <input type="date" asp-for="MedicalScreenings.HearingTestDate" class="medical-dependent" required>
         </td>
         <td>
             Outcome
-            <input type="text" asp-for="MedicalScreenings.HearingTestOutcome" placeholder="Type N/A if no answer" required>
+            <input type="text" asp-for="MedicalScreenings.HearingTestOutcome" class="medical-dependent" placeholder="Type N/A if no answer" required>
         </td>
     </tr>
     <tr>
@@ -212,11 +285,11 @@
         </td>
         <td>
             Date
-            <input type="date" asp-for="MedicalScreenings.VisionTestDate" required>
+            <input type="date" asp-for="MedicalScreenings.VisionTestDate" class="medical-dependent" required>
         </td>
         <td>
             Outcome
-            <input type="text" asp-for="MedicalScreenings.VisionTestOutcome" placeholder="Type N/A if no answer" required>
+            <input type="text" asp-for="MedicalScreenings.VisionTestOutcome" class="medical-dependent" placeholder="Type N/A if no answer" required>
         </td>
     </tr>
     <tr>
@@ -225,34 +298,61 @@
         </td>
         <td>
             Date
-            <input type="date" asp-for="MedicalScreenings.SpeechTestDate" required>
+            <input type="date" asp-for="MedicalScreenings.SpeechTestDate" class="medical-dependent" required>
         </td>
         <td>
             Outcome
-            <input type="text" asp-for="MedicalScreenings.SpeechTestOutcome" placeholder="Type N/A if no answer" required>
+            <input type="text" asp-for="MedicalScreenings.SpeechTestOutcome" class="medical-dependent" placeholder="Type N/A if no answer" required>
         </td>
     </tr>
     <tr>
         <td>
             Primary Care Doctor:
-            <input type="text" asp-for="PrimaryCareDoctor.DoctorName" placeholder="Type N/A if no answer" required>
+            <input type="text" asp-for="PrimaryCareDoctor.DoctorName" class="medical-dependent" placeholder="Type N/A if no answer" required>
         </td>
         <td>
             Facility
-            <input type="text" asp-for="PrimaryCareDoctor.Facility" placeholder="Type N/A if no answer" required>
+            <input type="text" asp-for="PrimaryCareDoctor.Facility" class="medical-dependent" placeholder="Type N/A if no answer" required>
         </td>
         <td>
             PhoneNumber
-            <input type="tel" 
-                asp-for="PrimaryCareDoctor.PhoneNumber"
-                inputmode="numeric"
-                pattern="^(0|09\d{9}|0\d{1,2}\d{7,8})$"
-                title="Mobile: 11 digits starting with 09. Or landline e.g. 02xxxxxxx. Or just '0'"
-                maxlength="11"
-                required>
+            <input type="tel"
+                   asp-for="PrimaryCareDoctor.PhoneNumber"
+                   class="medical-dependent"
+                   inputmode="numeric"
+                   pattern="^(0|09\d{9}|0\d{1,2}\d{7,8})$"
+                   title="Mobile: 11 digits starting with 09. Or landline e.g. 02xxxxxxx. Or just '0'"
+                   maxlength="11"
+                   required>
         </td>
     </tr>
 </table>
+
+<script>
+    function toggleMedicalScreeningFields() {
+        const hasScreening = document.querySelector('input[name="MedicalScreenings.HasScreeningDone"]:checked')?.value === "True";
+        const dependents = document.querySelectorAll('.medical-dependent');
+
+        dependents.forEach(el => {
+            if (hasScreening) {
+                el.disabled = false;
+                el.setAttribute("required", "true");
+            } else {
+                el.disabled = true;
+                el.removeAttribute("required");
+                el.value = ""; // clear only editable fields
+            }
+        });
+    }
+
+    // Attach event
+    document.querySelectorAll('input[name="MedicalScreenings.HasScreeningDone"]').forEach(radio => {
+        radio.addEventListener('change', toggleMedicalScreeningFields);
+    });
+
+    // Run on load
+    toggleMedicalScreeningFields();
+</script>
 
 <table>
     <tr>
