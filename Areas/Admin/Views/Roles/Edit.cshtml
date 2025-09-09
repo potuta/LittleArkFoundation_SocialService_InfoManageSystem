@@ -10,11 +10,13 @@
 
 <!-- Back to List -->
 <div class="mt-2">
-    <a class="btn btn-outline-secondary mb-3" asp-controller="Roles" asp-action="Index">← Back to List</a>
+    <a class="btn btn-outline-secondary mb-3" asp-controller="Roles" asp-action="Index">
+        <i class="bi bi-arrow-left-square"></i> Back to List
+    </a>
 </div>
 
 <div>
-    <form asp-action="Edit" asp-controller="Roles" method="post">
+    <form id="editRoleForm" asp-action="Edit" asp-controller="Roles" method="post">
         @Html.AntiForgeryToken()
         <input type="hidden" asp-for="NewRole.RoleID" />
 
@@ -180,7 +182,13 @@
         </div>
 
         <div class="mt-4">
-            <input type="submit" value="Save" class="btn btn-primary" />
+            @if (Model.NewRole.RoleID != 1)
+            {
+                <button type="submit" class="btn btn-success"
+                        onclick="return confirmFormSubmit('editRoleForm', 'Confirm Edit', 'Are you sure you want to save changes?')">
+                    Save
+                </button>
+            }
         </div>
     </form>
 </div>
