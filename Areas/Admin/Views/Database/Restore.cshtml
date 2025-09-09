@@ -115,12 +115,12 @@
 
                         <tr>
                             <td class="sticky-col d-flex gap-1" style="white-space: nowrap; left: 0; z-index: 1;">
-                                <form asp-action="Restore" method="post">
+                                <form id="restoreDatabaseForm" asp-action="Restore" method="post">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="name" value="@Model.DefaultDatabaseName" />
                                     <input type="hidden" name="backupFileName" value="@file" />
                                     <button type="submit" class="btn btn-primary"
-                                        onclick="return confirm('Are you sure you want to select this database?');">
+                                            onclick="return confirmFormSubmit('restoreDatabaseForm', 'Confirm Selection', 'Are you sure you want to select this backup file?')">
                                         Select
                                     </button>
                                 </form>
