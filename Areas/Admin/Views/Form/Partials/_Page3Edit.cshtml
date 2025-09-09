@@ -295,6 +295,7 @@
                 <input type="radio" asp-for="PresentingProblems.ChangeInSleepPattern" value="Difficulty staying asleep"> d. Difficulty staying asleep
                 <input type="radio" asp-for="PresentingProblems.ChangeInSleepPattern" value="Difficulty waking up"> e. Difficulty waking up
                 <input type="radio" asp-for="PresentingProblems.ChangeInSleepPattern" value="Difficulty staying awake"> f. Difficulty staying awake
+                <input type="radio" asp-for="PresentingProblems.ChangeInSleepPattern" value="N/A"> N/A
             </div>
         </th>
     </tr>
@@ -304,6 +305,7 @@
             <div class="radio-group">
                 <input type="radio" asp-for="PresentingProblems.Concentration" value="Decreased concentration" required> a. Decreased concentration
                 <input type="radio" asp-for="PresentingProblems.Concentration" value="Increased or excessive concentration"> b. Increased or excessive concentration
+                <input type="radio" asp-for="PresentingProblems.Concentration" value="N/A"> N/A
             </div>
         </th>
     </tr>
@@ -313,6 +315,7 @@
             <div class="radio-group">
                 <input type="radio" asp-for="PresentingProblems.ChangeInAppetite" value="Increased appetite" required> a. Increased appetite
                 <input type="radio" asp-for="PresentingProblems.ChangeInAppetite" value="Decreased appetite"> b. Decreased appetite
+                <input type="radio" asp-for="PresentingProblems.ChangeInAppetite" value="N/A"> N/A
             </div>
         </th>
     </tr>
@@ -366,7 +369,9 @@
                     <label>k. Other</label>
                     <input type="text" id="victimization-others-specify" placeholder="Specify" disabled oninput="updateOthersValue(this)">
                 }
-
+            </div>
+            <div class="radio-group">
+                <input type="radio" asp-for="PresentingProblems.Victimization" value="N/A" onchange="toggleRequiredRadio(this)"> N/A
             </div>
         </th>
     </tr>
