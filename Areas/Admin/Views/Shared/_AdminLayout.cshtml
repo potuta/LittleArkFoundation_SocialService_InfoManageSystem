@@ -368,5 +368,10 @@
     <script src="~/lib/bootstrap/bootstrap-5.3.0-dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @if (User.HasClaim("Permission", "ManageDatabase"))
+    {
+        <script src="~/js/connectionArchiveAlert.js" asp-append-version="true"></script>
+    }
 </body>
 </html>
