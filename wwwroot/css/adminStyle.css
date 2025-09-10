@@ -453,39 +453,22 @@ input[type="radio"] {
     }
 
     .container {
-        width: 90%; /* full width on small screens */
-        margin: 10px auto;
+        width: 90% !important; /* full width on small screens */
     }
 
     .container-users,
     .container-general {
-        width: 95%; /* shrink big boxes */
-        padding: 15px;
+        width: 90% !important; /* shrink big boxes */
     }
 
     #activeUsersList li {
-        flex: 0 0 100%; /* 1 column instead of 3 */
-        font-size: 0.85rem;
+        flex: 0 0 100% !important; /* 1 column instead of 3 */
+        font-size: 0.85rem !important;
     }
 
     canvas#generalChart {
-        max-width: 100%;
-        height: auto; /* chart scales responsively */
+        max-width: 100% !important;
+        height: auto !important; /* chart scales responsively */
     }
 }
 
-/* Tablet adjustments */
-@media (min-width: 769px) and (max-width: 1200px) {
-    .container {
-        width: 45%; /* 2 per row */
-    }
-
-    .container-users,
-    .container-general {
-        width: 90%;
-    }
-
-    #activeUsersList li {
-        flex: 0 0 48%; /* 2 columns instead of 3 */
-    }
-}
