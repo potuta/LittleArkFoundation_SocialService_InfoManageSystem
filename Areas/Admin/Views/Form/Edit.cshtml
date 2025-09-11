@@ -110,8 +110,7 @@
 </style>
 
 <div class="mt-2">
-    <a class="btn btn-outline-secondary mb-3" asp-action="ViewForm" asp-route-id="@Model.Patient.PatientID" asp-route-assessmentID="@Model.Assessments.AssessmentID"
-       onclick="return confirmLinkClick(this.href, 'Confirm Exit', 'Are you sure you want to exit this page?');">
+    <a class="btn btn-back btn-outline-secondary mb-3" asp-action="ViewForm" asp-route-id="@Model.Patient.PatientID" asp-route-assessmentID="@Model.Assessments.AssessmentID">
         <i class="bi bi-arrow-left-square"></i> Back to Form
    </a>
 </div>
@@ -353,9 +352,8 @@
             </button>
         </div>
         <div class="mt-2" style="text-align: center;">
-            <a class="btn btn-sm btn-outline-secondary" asp-action="ViewForm" asp-route-id="@Model.Patient.PatientID" asp-route-assessmentID="@Model.Assessments.AssessmentID"
-               onclick="return confirmLinkClick(this.href, 'Confirm Exit', 'Are you sure you want to exit this page?');">
-                <i class="bi bi-arrow-left-square"></i> Back to Form
+            <a class="btn btn-back btn-sm btn-outline-secondary" asp-action="ViewForm" asp-route-id="@Model.Patient.PatientID" asp-route-assessmentID="@Model.Assessments.AssessmentID">
+                <i class="bi bi-x-square"></i> Cancel
            </a>
         </div>
     </div>
@@ -1128,6 +1126,14 @@
         }
 
 
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            enableUnsavedChangesWarning({
+                formSelector: "#editAdmissionForm"
+            });
+        });
     </script>
 }
 
