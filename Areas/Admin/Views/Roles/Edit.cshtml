@@ -10,7 +10,7 @@
 
 <!-- Back to List -->
 <div class="mt-2">
-    <a class="btn btn-outline-secondary mb-3" asp-controller="Roles" asp-action="Index">
+    <a class="btn btn-back btn-outline-secondary mb-3" asp-controller="Roles" asp-action="Index">
         <i class="bi bi-arrow-left-square"></i> Back to List
     </a>
 </div>
@@ -181,13 +181,18 @@
             </div>
         </div>
 
-        <div class="mt-4">
+        <div class="mt-2" style="text-align: center;">
             @if (Model.NewRole.RoleID != 1)
             {
-                <button type="submit" class="btn btn-success"
+                <button type="submit" class="btn btn-success" style="text-align: center;"
                         onclick="return confirmFormSubmit('editRoleForm', 'Confirm Edit', 'Are you sure you want to save changes?')">
-                    Save
+                    <i class="bi bi-floppy"></i> Save Changes
                 </button>
+                <div class="mt-2" style="text-align: center;">
+                    <a class="btn btn-back btn-sm btn-outline-secondary" asp-action="Index">
+                        <i class="bi bi-x-square"></i> Cancel
+                    </a>
+                </div>
             }
         </div>
     </form>
@@ -205,5 +210,13 @@
             }
         });
 
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            enableUnsavedChangesWarning({
+                formSelector: "#editRoleForm"
+            });
+        });
     </script>
 }
