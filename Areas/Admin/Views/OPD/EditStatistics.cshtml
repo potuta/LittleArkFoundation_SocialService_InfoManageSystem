@@ -30,8 +30,7 @@
 
 <!-- Back to List -->
 <div class="mt-2">
-    <a class="btn btn-outline-secondary mb-3" asp-controller="OPD" asp-action="Statistics"
-       onclick="return confirmLinkClick(this.href, 'Confirm Exit', 'Are you sure you want to exit this page?');">
+    <a class="btn btn-back btn-outline-secondary mb-3" asp-controller="OPD" asp-action="Statistics">
         <i class="bi bi-arrow-left-square"></i> Back to Statistics
     </a>
 </div>
@@ -1254,9 +1253,18 @@
         </button>
     </div>
     <div class="d-flex justify-content-center align-items-center mt-2">
-        <a class="btn btn-sm btn-outline-secondary" asp-action="Statistics"
-           onclick="return confirmLinkClick(this.href, 'Confirm Exit', 'Are you sure you want to exit this page?');">
-            <i class="bi bi-arrow-left-square"></i> Back to Statistics
+        <a class="btn btn-back btn-sm btn-outline-secondary" asp-action="Statistics">
+            <i class="bi bi-x-square"></i> Cancel
        </a>
     </div>
 </form>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            enableUnsavedChangesWarning({
+                formSelector: "#editOPDStatisticsForm"
+            });
+        });
+    </script>
+}
