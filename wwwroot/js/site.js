@@ -224,6 +224,181 @@ document.addEventListener("DOMContentLoaded", async function () {
     connection.start().catch(err => console.error(err));
 });
 
+function enableUnsavedChangesWarning(options = {}) {
+    const formSelector = options.formSelector || "#editForm";
+    const linkSelector = options.linkSelector ||
+        "a.btn-navbar, .dropdown-profile-content a, a.btn-left, a.btn-left-sub, a.btn-back";
+
+    const form = document.querySelector(formSelector);
+    if (!form) return;
+
+    // Prevent duplicate attachment if called multiple times
+    if (form.dataset.unsavedWarningAttached) return;
+    form.dataset.unsavedWarningAttached = "true";
+
+    function shouldSkip(el) {
+        return !el.name || el.disabled || el.type === "hidden" || el.readOnly;
+    }
+
+    // Capture initial values
+    const initialData = {};
+    Array.from(form.elements).forEach(el => {
+        if (shouldSkip(el)) return;
+        const tag = el.tagName.toUpperCase();
+
+        if (el.type === "radio") {
+            if (!(el.name in initialData)) {
+                const checked = form.querySelector(`input[name="${el.name}"]:checked`);
+                initialData[el.name] = checked ? checked.value : null;
+            }
+        } else if (el.type === "checkbox") {
+            const checkboxes = form.querySelectorAll(`input[name="${el.name}"]`);
+            if (checkboxes.length > 1) {
+                initialData[el.name] = Array.from(checkboxes)
+                    .filter(c => c.checked)
+                    .map(c => c.value);
+            } else {
+                initialData[el.name] = el.checked;
+            }
+        } else if (tag === "SELECT" && el.multiple) {
+            initialData[el.name] = Array.from(el.selectedOptions).map(opt => opt.value);
+        } else {
+            initialData[el.name] = el.value;
+        }
+    });
+
+    let changedCount = 0;
+
+    function getChangedCount() {
+        let count = 0;
+        const checkedNames = new Set();
+
+        Array.from(form.elements).forEach(el => {
+            if (shouldSkip(el) || checkedNames.has(el.name)) return;
+            const tag = el.tagName.toUpperCase();
+            let changed = false;
+
+            if (el.type === "radio") {
+                const current = form.querySelector(`input[name="${el.name}"]:checked`);
+                const currentValue = current ? current.value : null;
+                if (currentValue !== (initialData[el.name] ?? null)) changed = true;
+            } else if (el.type === "checkbox") {
+                const checkboxes = form.querySelectorAll(`input[name="${el.name}"]`);
+                if (checkboxes.length > 1) {
+                    const currentValues = Array.from(checkboxes).filter(c => c.checked).map(c => c.value);
+                    const initialValues = initialData[el.name] || [];
+                    if (currentValues.length !== initialValues.length ||
+                        currentValues.some(v => !initialValues.includes(v))) {
+                        changed = true;
+                    }
+                } else {
+                    if (el.checked !== initialData[el.name]) changed = true;
+                }
+            } else if (tag === "SELECT" && el.multiple) {
+                const currentValues = Array.from(el.selectedOptions).map(opt => opt.value);
+                const initialValues = initialData[el.name] || [];
+                if (currentValues.length !== initialValues.length ||
+                    currentValues.some(v => !initialValues.includes(v))) {
+                    changed = true;
+                }
+            } else {
+                if (el.value !== initialData[el.name]) changed = true;
+            }
+
+            if (changed) count++;
+            checkedNames.add(el.name);
+        });
+
+        return count;
+    }
+
+    // Detect changes
+    form.addEventListener("input", () => changedCount = getChangedCount());
+    form.addEventListener("change", () => changedCount = getChangedCount());
+
+    // Warn on tab close/refresh
+    form.dataset.submitting = "false";
+    function beforeUnloadHandler(e) {
+        if (form.dataset.submitting == "false" && changedCount > 0) {
+            e.preventDefault();
+            e.returnValue = `You have ${changedCount} unsaved change(s). Are you sure you want to leave?`;
+        }
+    }
+
+    window.addEventListener("beforeunload", beforeUnloadHandler);
+
+    // Capture submit button clicks BEFORE validation
+    form.querySelectorAll("[type=submit]").forEach(btn => {
+        btn.addEventListener("click", () => {
+            form.dataset.submitting = "true";
+            console.log("Submit button clicked, submitting set to true");
+        });
+    });
+
+    // Reset if form submit is blocked
+    const confirmModalEl = document.getElementById("confirmModal");
+    if (confirmModalEl) {
+        confirmModalEl.setAttribute("data-bs-backdrop", "static"); // prevent closing by clicking outside
+    }
+
+    const cancelBtn = document.querySelector("#confirmModalNo");
+    if (cancelBtn) {
+        cancelBtn.addEventListener("click", () => {
+            if (form.dataset.submitting == "true") {
+                form.dataset.submitting = "false";
+                console.log("Submit cancelled, submitting reset to false");
+            }
+        });
+    }
+
+    const closeBtn = document.querySelector("#confirmModal .btn-close");
+    if (closeBtn) {
+        closeBtn.addEventListener("click", () => {
+            if (form.dataset.submitting == "true") {
+                form.dataset.submitting = "false";
+                console.log("Submit modal closed, submitting reset to false");
+            }
+        });
+    }
+
+    // hide.bs.modal
+    //if (confirmModalEl) {
+    //    confirmModalEl.addEventListener("hide.bs.modal", () => {
+    //        if (submitting) {
+    //            submitting = false;
+    //            console.log("Submit modal dismissed, submitting reset to false");
+    //        }
+    //    });
+    //}
+
+    // Handle confirmed navigation
+    function continueNavigation(href) {
+        window.removeEventListener("beforeunload", beforeUnloadHandler);
+        setTimeout(() => { window.location.href = href; }, 0);
+    }
+
+    // Intercept navigation links
+    document.querySelectorAll(linkSelector).forEach(link => {
+        link.addEventListener("click", function (e) {
+            if (
+                link.getAttribute("href") === "javascript:void(0);" ||
+                link.hasAttribute("aria-controls")
+            ) {
+                return;
+            }
+
+            if (changedCount > 0) {
+                e.preventDefault();
+                showConfirmModal(
+                    "Unsaved Changes",
+                    `You have ${changedCount} unsaved change(s). Do you really want to leave?`,
+                    () => continueNavigation(link.href)
+                );
+            }
+        });
+    });
+}
+
 
 
 
