@@ -173,16 +173,17 @@ body.sidebar-collapsed .navbar-left {
 
 .profile-collapse-indicator {
     position: absolute;
-    bottom: -3px;
-    right: -2px;
-    font-size: 15px; /* adjust size of chevron */
+    bottom: -4px;
+    right: -5px;
+    font-size: 13px; /* adjust size of chevron */
     font-weight: bold;
-    background: #3b3b3b; /* small background to separate it from image */
+    background: #222; /* small background to separate it from image */
     border-radius: 100px;
     padding: 1px;
     line-height: 1;
     color: rgb(255, 255, 255);
     transition: transform 0.15s ease;
+    border: 2px solid #44ac5c;
 }
 
 /* Rotate when open */
