@@ -41,16 +41,11 @@ LibraryLoader.Load();
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-builder.Services.AddSingleton<ConnectionService>();
-builder.Services.AddSingleton<DatabaseService>();
+//builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddScoped<ConnectionService>();
+builder.Services.AddScoped<DatabaseService>();
 builder.Services.AddTransient<EmailService>();
 builder.Services.AddSignalR();
-
-//builder.WebHost.ConfigureKestrel(options =>
-//{
-//    options.ListenAnyIP(16969); // Change port as needed
-//});
 
 builder.Services.AddScoped<ApplicationDbContext>(provider =>
 {
@@ -62,6 +57,8 @@ builder.Services.AddScoped<ApplicationDbContext>(provider =>
 
 var app = builder.Build();
 
+// IMPORTANT: HubContext must be assigned in Program.cs at startup.
+// Otherwise SignalR log broadcasting will not work.
 // assign hub context to static LoggingService
 using (var scope = app.Services.CreateScope())
 {
@@ -69,6 +66,7 @@ using (var scope = app.Services.CreateScope())
     LoggingService.HubContext = hubContext;
 }
 
+LoggingService.LogInformation("HubContext successfully assigned to LoggingService.");
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -82,10 +80,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseSession();
 
 app.MapHub<LogsHub>("/logsHub");
 app.MapHub<UsersHub>("/usersHub");

@@ -47,16 +47,19 @@ namespace LittleArkFoundation.Data
 
         private static async Task BroadcastAsync(string level, string message)
         {
-            if (HubContext != null)
+            if (HubContext == null)
             {
-                await HubContext.Clients.All.SendAsync("ReceiveLog", new
-                {
-                    id = 0, // database auto-generates ID
-                    message,
-                    level,
-                    timeStamp = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss tt")
-                });
+                _logger.Warning("HubContext not assigned — skipping SignalR broadcast.");
+                return;
             }
+
+            await HubContext.Clients.All.SendAsync("ReceiveLog", new
+            {
+                id = 0, // database auto-generates ID
+                message,
+                level,
+                timeStamp = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss tt")
+            });
         }
 
         // Public method to expose the logger
