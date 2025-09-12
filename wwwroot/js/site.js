@@ -1,17 +1,8 @@
 ﻿function toggleDropdown() {
     document.getElementById("dropdown-profile-menu").classList.toggle("show");
+    document.getElementById("profileDropdownToggle").classList.toggle("open");
 }
 
-//function toggleSidebar() {
-//    document.body.classList.toggle('sidebar-collapsed');
-//}
-
-//function toggleSidebar() {
-//    const sidebar = document.querySelector('.navbar-left');
-//    const mainContent = document.querySelector('.main-content');
-//    sidebar.classList.toggle('collapsed');
-//    mainContent.classList.toggle('collapsed'); // Optional: shrink main content too
-//}
 function toggleSidebar() {
     const sidebar = document.querySelector('.navbar-left');
     const mainContent = document.querySelector('.main-content');

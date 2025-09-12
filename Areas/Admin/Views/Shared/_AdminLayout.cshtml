@@ -36,10 +36,13 @@
             </a>
         </div>
         <div class="right-buttons">
-            <div class="dropdown" onclick="toggleDropdown()">
-                <a href="javascript:void(0);" class="btn-navbar-right">
-                    <img src="~/resources/profile-icon-design-free-vector.jpg" alt="profile" class="profile-icon" />
-                    <span class="profile-label" style="margin-left: 0.5rem;font-size: 1rem;">
+            <div class="dropdown">
+                <a href="javascript:void(0);" class="btn-navbar-right d-flex align-items-center" id="profileDropdownToggle" onclick="toggleDropdown()">
+                    <div class="profile-wrapper">
+                        <img src="~/resources/profile-icon-design-free-vector.jpg" alt="profile" class="profile-icon" />
+                        <i class="bx bx-chevron-down profile-collapse-indicator" onclick="toggleDropdown()"></i> <!-- Down arrow -->
+                    </div>
+                    <span class="profile-label ms-2" style="margin-left: 0.5rem;font-size: 1rem;">
                         Welcome @User.FindFirstValue(ClaimTypes.Name)!
                     </span>
                 </a>
@@ -296,7 +299,8 @@
             let collapseKeys = {
                 users: "usersCollapseState",
                 mswd: "mswdCollapseState",
-                database: "databaseCollapseState"
+                database: "databaseCollapseState",
+                profile: "profileCollapseState"
             };
 
             function updateIndicator(iconElement, isOpen) {
@@ -345,6 +349,15 @@
             setupCollapseEvents(usersCollapseElement, usersIndicatorIcon, collapseKeys.users);
             setupCollapseEvents(mswdCollapseElement, mswdIndicatorIcon, collapseKeys.mswd);
             setupCollapseEvents(databaseCollapseElement, databaseIndicatorIcon, collapseKeys.database);
+
+            // Profile dropdown (not Bootstrap collapse, so handle manually)
+            const profileMenu = document.getElementById("dropdown-profile-menu");
+            const profileIndicatorIcon = document.querySelector(".profile-collapse-indicator");
+
+            window.toggleDropdown = function () {
+                const isOpen = profileMenu.classList.toggle("show");
+                updateIndicator(profileIndicatorIcon, isOpen);
+            };
 
             // Ensure clicking on a submenu item keeps the collapsible open
             document.querySelectorAll(".btn-left-sub").forEach(item => {
