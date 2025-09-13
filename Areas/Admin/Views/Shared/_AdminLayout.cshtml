@@ -39,7 +39,7 @@
             <div class="dropdown">
                 <a href="javascript:void(0);" class="btn-navbar-right d-flex align-items-center" id="profileDropdownToggle" onclick="toggleDropdown()">
                     <div class="profile-wrapper">
-                        <img src="~/resources/profile-icon-design-free-vector.jpg" alt="profile" class="profile-icon" />
+                        <img src="@Url.Action("GetProfilePicture", "Profile", new { area = "", id = User.FindFirstValue(ClaimTypes.NameIdentifier), t = DateTime.Now.Ticks })" alt="profile" class="profile-icon" />
                         <i class="bx bx-chevron-down profile-collapse-indicator" onclick="toggleDropdown()"></i> <!-- Down arrow -->
                     </div>
                     <span class="profile-label ms-2" style="margin-left: 0.5rem;font-size: 1rem;">

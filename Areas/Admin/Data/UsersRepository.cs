@@ -114,16 +114,14 @@ namespace LittleArkFoundation.Areas.Admin.Data
         {
             try
             {
-                int userID = roleID * 10000;
+                int userID = 10000;
 
                 await using (var context = new ApplicationDbContext(_connectionString))
                 {
-                    List<UsersModel> usersList = await context.Users
-                        .Where(r => r.RoleID == roleID)
+                    var usersList = await context.Users
                         .ToListAsync();
 
-                    List<UsersArchivesModel> usersArchivesList = await context.UsersArchives
-                        .Where(r => r.RoleID == roleID)
+                    var usersArchivesList = await context.UsersArchives
                         .ToListAsync();
 
                     foreach (var user in usersList)

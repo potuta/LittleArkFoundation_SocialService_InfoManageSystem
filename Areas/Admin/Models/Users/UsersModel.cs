@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace LittleArkFoundation.Areas.Admin.Models
 {
     public class UsersModel
@@ -10,5 +12,10 @@ namespace LittleArkFoundation.Areas.Admin.Models
         public string? PasswordSalt { get; set; }
         public int RoleID { get; set; }
         public DateTime CreatedAt { get; set; }
+        public byte[]? ProfilePicture { get; set; }
+        public string? ProfilePictureContentType { get; set; } = "application/octet-stream";
+
+        [NotMapped]
+        public IFormFile? ProfilePictureFile { get; set; }
     }
 }

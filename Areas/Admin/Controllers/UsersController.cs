@@ -1,13 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using LittleArkFoundation.Data;
-using System.Security.Claims;
-using Microsoft.Data.SqlClient;
-using Microsoft.AspNetCore.Authorization;
-using LittleArkFoundation.Areas.Admin.Data;
+﻿using LittleArkFoundation.Areas.Admin.Data;
 using LittleArkFoundation.Areas.Admin.Models;
 using LittleArkFoundation.Authorize;
+using LittleArkFoundation.Data;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 
 namespace LittleArkFoundation.Areas.Admin.Controllers
 {
@@ -84,7 +85,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                         var usersArchive = await context.UsersArchives
                                             .Where(u => string.IsNullOrEmpty(searchString) ||
                                             u.Username.ToLower().Contains(loweredSearch) ||
-                                            u.UserID.ToString().Contains(searchString)) 
+                                            u.UserID.ToString().Contains(searchString))
                                             .ToListAsync();
 
 
@@ -101,7 +102,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     var users = await context.Users
                                     .Where(u => string.IsNullOrEmpty(searchString) ||
                                     u.Username.ToLower().Contains(loweredSearch) ||
-                                    u.UserID.ToString().Contains(searchString)) 
+                                    u.UserID.ToString().Contains(searchString))
                                     .ToListAsync();
 
                     var viewModel = new UsersViewModel
@@ -115,7 +116,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     return View("Index", viewModel);
                 }
 
-                return RedirectToAction("Index", new {isArchive});
+                return RedirectToAction("Index", new { isArchive });
             }
         }
 
@@ -147,7 +148,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     }
 
                     var users = await context.Users
-                        .Where (u => string.IsNullOrEmpty(sortByRoleID) ||
+                        .Where(u => string.IsNullOrEmpty(sortByRoleID) ||
                         u.RoleID.ToString().Contains(sortByRoleID))
                         .ToListAsync();
 
@@ -313,6 +314,14 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                         user.NewUser.PasswordSalt = Convert.ToBase64String(passwordSalt);
                     }
 
+                    if (user.NewUser.ProfilePictureFile is { Length: > 0 })
+                    {
+                        using var ms = new MemoryStream();
+                        await user.NewUser.ProfilePictureFile.CopyToAsync(ms);
+                        user.NewUser.ProfilePicture = ms.ToArray();
+                        user.NewUser.ProfilePictureContentType = user.NewUser.ProfilePictureFile.ContentType;
+                    }
+
                     context.Users.Update(user.NewUser);
                     await context.SaveChangesAsync();
 
@@ -361,7 +370,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                         RoleID = user.RoleID,
                         CreatedAt = user.CreatedAt,
                         ArchivedAt = DateTime.Now,
-                        ArchivedBy = $"UserID: {userIdClaim.Value}"
+                        ArchivedBy = $"UserID: {userIdClaim.Value}",
+                        ProfilePicture = user.ProfilePicture,
+                        ProfilePictureContentType = user.ProfilePictureContentType
                     };
 
                     await context.UsersArchives.AddAsync(userArchive);
@@ -380,7 +391,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 return RedirectToAction("Index", new { isArchive = false });
             }
 
-            return RedirectToAction("Index", new {isArchive = false});
+            return RedirectToAction("Index", new { isArchive = false });
         }
 
         // UNARCHIVE: Unarchive the user
@@ -408,6 +419,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                         PasswordSalt = userArchive.PasswordSalt,
                         RoleID = userArchive.RoleID,
                         CreatedAt = userArchive.CreatedAt,
+                        ProfilePicture = userArchive.ProfilePicture,
+                        ProfilePictureContentType = userArchive.ProfilePictureContentType
                     };
 
                     await context.Users.AddAsync(user);

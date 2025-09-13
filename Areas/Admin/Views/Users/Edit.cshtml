@@ -8,18 +8,73 @@
     //TODO: Implement Reset Password through email functionality
 }
 
+<style>
+    input[type="file"] {
+        display: none;
+    }
+
+    .custom-file-upload {
+        border: 1px dashed #ccc;
+        display: inline-block;
+        padding: 6px 12px;
+        cursor: pointer;
+        font-size: small;
+    }
+</style>
+
 <h2>Edit User</h2>
 
 <div>
     <hr />
-    <form id="editUserForm" asp-action="Edit" asp-controller="Users" method="post">
+    <form id="editUserForm" asp-action="Edit" asp-controller="Users" method="post" enctype="multipart/form-data">
         @Html.AntiForgeryToken()
         @* <input type="hidden" asp-for="NewUser.UserID"/> *@
         <input type="hidden" asp-for="NewUser.PasswordSalt" />
         <input type="hidden" id="isEditPasswordEnabled" name="isEditPasswordEnabled" value="false" />
         <input type="hidden" value="@Model.NewUser.PasswordHash" id="originalPassword" />
+        <input type="hidden" asp-for="NewUser.ProfilePictureContentType" />
+		<input type="hidden" asp-for="NewUser.ProfilePicture" />
 
-        <div class="form-group mt-2">
+        <div class="form-group d-flex justify-content-center align-items-center mt-3">
+            <div style="text-align: center;">
+
+                @if (Model.NewUser.ProfilePicture != null)
+                {
+					var base64Image = Convert.ToBase64String(Model.NewUser.ProfilePicture);
+					var imageSrc = $"data:image/png;base64,{base64Image}";
+                    <img src="@imageSrc"
+                         style="max-width:150px; max-height:150px; margin-bottom:15px;"
+                         alt="Uploaded image"
+                         id="profilePicture" />
+                }
+                else
+                {
+                    <img src="/resources/profile-icon-design-free-vector.jpg"
+                         style="max-width:150px; max-height:150px; margin-bottom:15px;"
+                         alt="Uploaded image"
+                         id="profilePicture"/>
+                }
+
+                <div class="form-group">
+                    
+                    @if (User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value == Model.NewUser.UserID.ToString())
+                    {
+                        <label for="fileInput" class="custom-file-upload" id="profilePictureLabel">
+                            Upload Profile
+                        </label>
+
+                        <input type="file"
+						    asp-for="NewUser.ProfilePictureFile"
+                            id="fileInput"
+                            accept="image/png,image/jpeg,image/jpg"
+                            class="form-control" />
+                    }
+                    
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
             <label asp-for="NewUser.UserID" class="control-label"></label>
             <input asp-for="NewUser.UserID" class="form-control text-muted" style="background-color:#e9ecef; cursor: not-allowed;" readonly required />
             <span asp-validation-for="NewUser.UserID" class="text-danger"></span>
@@ -160,6 +215,24 @@
                 formSelector: "#editUserForm"
             });
         });
+    </script>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        if (fileInput) {
+            fileInput.addEventListener('change', function (event) {
+                const file = event.target.files[0];
+                const label = document.getElementById('profilePictureLabel');
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        document.getElementById('profilePicture').src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                    label.innerHTML = file.name;
+                }
+            });
+        }
     </script>
 }
 

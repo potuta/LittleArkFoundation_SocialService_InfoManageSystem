@@ -53,6 +53,8 @@ namespace LittleArkFoundation.Controllers
                 string role = await new RolesRepository(_connectionService).GetRoleNameByRoleID(user.RoleID);
                 var permissions = await new PermissionsRepository(connectionString).GetPermissionsByRoleID(user.RoleID);
 
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),

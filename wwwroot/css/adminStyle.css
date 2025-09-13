@@ -167,13 +167,11 @@ body.sidebar-collapsed .navbar-left {
 .profile-wrapper {
     position: relative;
     display: inline-block;
-    width: 40px; /* adjust to match your profile-icon size */
-    height: 40px;
 }
 
 .profile-collapse-indicator {
     position: absolute;
-    bottom: -4px;
+    bottom: -3px;
     right: -5px;
     font-size: 13px; /* adjust size of chevron */
     font-weight: bold;

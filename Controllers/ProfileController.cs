@@ -2,6 +2,7 @@
 using LittleArkFoundation.Areas.Admin.Models;
 using LittleArkFoundation.Authorize;
 using LittleArkFoundation.Data;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,16 +15,23 @@ namespace LittleArkFoundation.Controllers
     public class ProfileController : Controller
     {
         private readonly ConnectionService _connectionService;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public ProfileController(ConnectionService connectionService)
+        public ProfileController(ConnectionService connectionService, IWebHostEnvironment webHostEnvironment)
         {
             _connectionService = connectionService;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public async Task<IActionResult> Index(int id)
         {
             try
             {
+                if (int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value) != id)
+                {
+                    return Forbid();
+                }
+
                 string connectionString = _connectionService.GetCurrentConnectionString();
                 await using var context = new ApplicationDbContext(connectionString);
                 var user = await context.Users.FindAsync(id);
@@ -80,6 +88,14 @@ namespace LittleArkFoundation.Controllers
                         user.NewUser.PasswordSalt = Convert.ToBase64String(passwordSalt);
                     }
 
+                    if (user.NewUser.ProfilePictureFile is { Length: > 0 })
+                    {
+                        using var ms = new MemoryStream();
+                        await user.NewUser.ProfilePictureFile.CopyToAsync(ms);
+                        user.NewUser.ProfilePicture = ms.ToArray();
+                        user.NewUser.ProfilePictureContentType = user.NewUser.ProfilePictureFile.ContentType;
+                    }
+
                     context.Users.Update(user.NewUser);
                     await context.SaveChangesAsync();
 
@@ -94,6 +110,23 @@ namespace LittleArkFoundation.Controllers
             }
 
             return RedirectToAction("Index", "Dashboard", new { area = $"Admin" });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetProfilePicture(int id)
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var user = await context.Users.FirstOrDefaultAsync(u => u.UserID == id);
+            
+            if (user == null || user.ProfilePicture == null || user.ProfilePicture.Length == 0)
+            {
+                var defaultPath = Path.Combine(_webHostEnvironment.WebRootPath, "resources", "profile-icon-design-free-vector.jpg");
+                return PhysicalFile(defaultPath, "image/jpeg");
+            }
+
+            return File(user.ProfilePicture, user.ProfilePictureContentType); // or detect actual content type
         }
     }
 }

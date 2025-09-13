@@ -12,5 +12,7 @@
         public DateTime CreatedAt { get; set; }
         public DateTime ArchivedAt { get; set; }
         public string ArchivedBy { get; set; }
+        public byte[]? ProfilePicture { get; set; }
+        public string? ProfilePictureContentType { get; set; } = "application/octet-stream";
     }
 }
