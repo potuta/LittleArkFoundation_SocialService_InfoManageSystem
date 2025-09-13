@@ -229,7 +229,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return RedirectToAction("Index");
         }
 
-        // 🟢 READ: Show details
+        // READ: Show details
         public async Task<IActionResult> Details(int id)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
@@ -242,7 +242,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
-        // 🟡 EDIT: Show edit page
+        // EDIT: Show edit page
         [HasPermission("EditUser")]
         public async Task<IActionResult> Edit(int id)
         {
@@ -272,7 +272,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
-        // 🔵 UPDATE: Save changes
+        // UPDATE: Save changes
         [HttpPost]
         [ValidateAntiForgeryToken]
         [HasPermission("EditUser")]
@@ -330,7 +330,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return RedirectToAction("Index");
         }
 
-        // 🟡 ARCHIVE: Archive the user
+        // ARCHIVE: Archive the user
         [HasPermission("ArchiveUnarchiveUser")]
         public async Task<IActionResult> Archive(int id)
         {
@@ -383,7 +383,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return RedirectToAction("Index", new {isArchive = false});
         }
 
-        // 🟡 UNARCHIVE: Unarchive the user
+        // UNARCHIVE: Unarchive the user
         [HasPermission("ArchiveUnarchiveUser")]
         public async Task<IActionResult> Unarchive(int id)
         {
