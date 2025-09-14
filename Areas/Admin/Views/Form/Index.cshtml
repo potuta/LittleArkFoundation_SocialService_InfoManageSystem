@@ -190,7 +190,9 @@
                     {
                         var assessment = Model.Assessments
                         .Where(a => a.PatientID == patient.PatientID)
-                        .OrderByDescending(a => a.DateOfInterview)
+                        .OrderByDescending(a => a.Id)
+                        .ThenByDescending(a => a.DateOfInterview)
+                        .ThenByDescending(a => a.TimeOfInterview)
                         .FirstOrDefault();
 
 					    var mswdclassification = Model.MSWDClassifications

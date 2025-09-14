@@ -64,6 +64,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             // Pagination
             var totalCount = await query.CountAsync();
             var opdList = await query
+                .OrderByDescending(o => o.Id)
+                .ThenByDescending(o => o.Date)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -141,6 +143,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             // Pagination
             var totalCount = await query.CountAsync();
             var opdList = await query
+                .OrderByDescending(o => o.Id)
+                .ThenByDescending(o => o.Date)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -207,6 +211,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             // Pagination
             var totalCount = await query.CountAsync();
             var opdList = await query
+                .OrderByDescending(o => o.Id)
+                .ThenByDescending(o => o.Date)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();

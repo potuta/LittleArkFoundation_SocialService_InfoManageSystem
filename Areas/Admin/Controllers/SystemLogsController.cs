@@ -40,7 +40,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                 var totalCount = await query.CountAsync();
                 var logs = await query
-                    .OrderByDescending(l => l.TimeStamp)
+                    .OrderByDescending(l => l.Id)
+                    .ThenByDescending(l => l.TimeStamp)
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
                     .ToListAsync();
@@ -87,7 +88,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                 var totalCount = await query.CountAsync();
                 var logs = await query
-                    .OrderByDescending(l => l.TimeStamp)
+                    .OrderByDescending(l => l.Id)
+                    .ThenByDescending(l => l.TimeStamp)
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
                     .ToListAsync();
@@ -133,7 +135,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             var totalCount = await query.CountAsync();
             var logs = await query
-                .OrderByDescending(l => l.TimeStamp)
+                .OrderByDescending(l => l.Id)
+                .ThenByDescending(l => l.TimeStamp)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();

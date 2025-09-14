@@ -68,7 +68,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     .ToListAsync();
 
                 var assessments = await context.Assessments
-                    .OrderByDescending(a => a.DateOfInterview)
+                    .OrderByDescending(a => a.Id)
+                    .ThenByDescending(a => a.DateOfInterview)
                     .ThenByDescending(a => a.TimeOfInterview)
                     .ToListAsync();
 
@@ -127,7 +128,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 .ToListAsync();
 
             var assessments = await context.Assessments
-                    .OrderByDescending(a => a.DateOfInterview)
+                    .OrderByDescending(a => a.Id)
+                    .ThenByDescending(a => a.DateOfInterview)
                     .ThenByDescending(a => a.TimeOfInterview)
                     .ToListAsync();
 
@@ -156,7 +158,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                 var assessments = await context.Assessments
                     .Where(a => a.PatientID == id)
-                    .OrderByDescending(a => a.DateOfInterview)
+                    .OrderByDescending(a => a.Id)
+                    .ThenByDescending(a => a.DateOfInterview)
                     .ThenByDescending(a => a.TimeOfInterview)
                     .ToListAsync();
 
@@ -798,7 +801,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             var latestAssessment = await context.Assessments
                 .Where(a => a.PatientID == id)
-                .OrderByDescending(a => a.DateOfInterview)
+                .OrderByDescending(a => a.Id)
+                .ThenByDescending(a => a.DateOfInterview)
                 .ThenByDescending(a => a.TimeOfInterview)
                 .FirstOrDefaultAsync();
 

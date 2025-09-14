@@ -57,7 +57,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             // Pagination
             var totalCount = await query.CountAsync();
             var generalAdmissions = await query
-                .OrderByDescending(g => g.Date)
+                .OrderByDescending(g => g.Id)
+                .ThenByDescending(g => g.Date)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -125,7 +126,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             // Pagination
             var totalCount = await query.CountAsync();
             var generalAdmissions = await query
-                .OrderByDescending(g => g.Date)
+                .OrderByDescending(g => g.Id)
+                .ThenByDescending(g => g.Date)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -182,7 +184,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             // Pagination
             var totalCount = await query.CountAsync();
             var generalAdmissions = await query
-                .OrderByDescending(g => g.Date)
+                .OrderByDescending(g => g.Id)
+                .ThenByDescending(g => g.Date)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
