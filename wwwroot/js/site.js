@@ -196,20 +196,28 @@ document.addEventListener("DOMContentLoaded", async function () {
         .withUrl("/usersHub")
         .build();
 
-    connection.on("ActiveUsersUpdated", function(users) {
+    connection.on("ActiveUsersUpdated", function (users) {
         let list = document.getElementById("activeUsersList");
         list.innerHTML = "";
+
         users.forEach(u => {
+
             let li = document.createElement("li");
-            li.textContent = u;
             li.className = "users";
+
+            let img = document.createElement("img");
+            img.src = `/Profile/GetProfilePicture?id=${u.userID}&t=${Date.now()}`;
+            img.className = "profile-icon";
+            img.style = 'width: 3rem; height: 3rem; border-radius: 100px; margin: 5px;'
+
+            li.appendChild(img);
+            li.appendChild(document.createTextNode(" " + u.username));
+
             list.appendChild(li);
         });
 
-        // Update count
         const usersCountElement = document.querySelector(".container-users p");
         usersCountElement.innerHTML = '<span class="live-dot"></span> Active Users: ' + users.length;
-
     });
 
     connection.start().catch(err => console.error(err));
