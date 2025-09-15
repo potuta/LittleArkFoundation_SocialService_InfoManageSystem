@@ -125,6 +125,11 @@
 
                 @foreach (var role in Model.Roles)
                 {
+                    if (Model.NewUser.RoleID == 1 && Model.AdminCount < 2)
+                    {
+                        <option value="1">Admin</option>
+                        break;
+                    }
                     <option value="@role.RoleID">@role.RoleName</option>
                 }
 

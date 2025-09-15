@@ -261,12 +261,17 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     return View("Index");
                 }
 
+                var users = await context.Users
+                    .Where(u => u.RoleID == 1)
+                    .ToListAsync();
+
                 var viewModel = new UsersViewModel
                 {
                     Users = new List<UsersModel>(),
                     NewUser = user,
                     Roles = await new RolesRepository(_connectionService).GetRolesAsync(),
-                    DefaultUserPassword = defaultUserPassword
+                    DefaultUserPassword = defaultUserPassword,
+                    AdminCount = users.Count()
                 };
 
                 return View(viewModel);
