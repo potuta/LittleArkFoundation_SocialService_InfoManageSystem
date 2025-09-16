@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Security.Claims;
+using System.Text;
 
 namespace LittleArkFoundation.Controllers
 {
@@ -150,24 +151,23 @@ namespace LittleArkFoundation.Controllers
 
             // Send email asynchronously
             string connectionString = _connectionService.GetDefaultConnectionString();
-            using (var context = new ApplicationDbContext(connectionString))
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var user = await context.Users.FindAsync(userID);
+            if (user == null || string.IsNullOrEmpty(user.Email))
             {
-                var user = await context.Users.FindAsync(userID);
-                if (user == null || string.IsNullOrEmpty(user.Email))
-                {
-                    return Json(new { success = false, message = "User not found or email missing!" });
-                }
-
-                string emailMessage = $"Your verification code is: {verificationCode}";
-
-                bool emailSent = await _emailService.SendEmailAsync(user.Email, "Verification Code", emailMessage);
-                if (!emailSent)
-                {
-                    return Json(new { success = false, message = "Failed to send email. Try again later." });
-                }
+                return Json(new { success = false, message = "User not found or email missing!" });
             }
 
-            return Json(new { success = true, message = "Verification code sent successfully!" });
+            string emailMessage = $"Your verification code is: {verificationCode}";
+
+            bool emailSent = await _emailService.SendEmailAsync(user.Email, "Verification Code", emailMessage);
+            if (!emailSent)
+            {
+                return Json(new { success = false, message = "Failed to send email. Try again later." });
+            }
+
+            return Json(new { success = true, message = $"Verification code sent to {MaskedEmail(user.Email)} successfully!" });
         }
 
         [HttpPost]
@@ -272,6 +272,31 @@ namespace LittleArkFoundation.Controllers
         {
             LoggingService.LogWarning($"UserID: {User.FindFirst(ClaimTypes.NameIdentifier)?.Value}. Access denied");
             return View();
+        }
+
+        private string MaskedEmail(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                return "";
+            }
+
+            var emailParts = email.Split('@');
+            if (emailParts.Length != 2)
+            {
+                return email; 
+            }
+
+            var local = emailParts[0];
+            var domain = emailParts[1];
+
+            if (local.Length <= 2)
+            {
+                return local[0] + "*" + "@" + domain;
+            }
+
+            var masked = local[0] + new string('*', local.Length - 2) + local[^1]; 
+            return masked + "@" + domain;
         }
     }
 }
