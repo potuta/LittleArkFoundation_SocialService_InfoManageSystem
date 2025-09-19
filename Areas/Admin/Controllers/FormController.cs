@@ -267,10 +267,24 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 AdmittingDiagnosis = opd.Diagnosis,
             };
 
+            var familyMembers = new List<FamilyCompositionModel>()
+            {
+                new FamilyCompositionModel
+                {
+                    Name = $"{opd.MotherFirstName} {opd.MotherMiddleName} {opd.MotherLastName}",
+                    Occupation = opd.MotherOccupation
+                },
+                new FamilyCompositionModel
+                {
+                    Name = $"{opd.FatherFirstName} {opd.FatherMiddleName} {opd.FatherLastName}",
+                    Occupation = opd.FatherOccupation
+                }
+            };
+
             var viewModel = new FormViewModel()
             {
                 Users = users,
-                FamilyMembers = new List<FamilyCompositionModel>() { new FamilyCompositionModel() },
+                FamilyMembers = familyMembers,
                 Diagnoses = new List<DiagnosesModel>() { new DiagnosesModel() },
                 Medications = new List<MedicationsModel> { new MedicationsModel() },
                 HospitalizationHistory = new List<HospitalizationHistoryModel> { new HospitalizationHistoryModel() },
@@ -338,10 +352,22 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 AdmittingDiagnosis = generalAdmission.Diagnosis,
             };
 
+            var familyMembers = new List<FamilyCompositionModel>()
+            {
+                new FamilyCompositionModel
+                {
+                    EducationalAttainment = generalAdmission.MotherEducationalAttainment
+                },
+                new FamilyCompositionModel
+                {
+                    EducationalAttainment = generalAdmission.FatherEducationalAttainment
+                }
+            };
+
             var viewModel = new FormViewModel()
             {
                 Users = users,
-                FamilyMembers = new List<FamilyCompositionModel>() { new FamilyCompositionModel() },
+                FamilyMembers = familyMembers,
                 Diagnoses = new List<DiagnosesModel>() { new DiagnosesModel() },
                 Medications = new List<MedicationsModel> { new MedicationsModel() },
                 HospitalizationHistory = new List<HospitalizationHistoryModel> { new HospitalizationHistoryModel() },
