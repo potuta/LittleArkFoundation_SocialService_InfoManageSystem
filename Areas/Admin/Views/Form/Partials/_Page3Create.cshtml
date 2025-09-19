@@ -34,25 +34,25 @@
         {
             <tr>
                 <td>
-                    <input type="text" name="Diagnoses[@i].MedicalCondition" placeholder="Type N/A if no answer" required>
+                    <input type="text" name="Diagnoses[@i].MedicalCondition" value="@Model.Diagnoses[i].MedicalCondition" placeholder="Type N/A if no answer" required>
                 </td>
                 <td>
-                    <select name="Diagnoses[@i].ReceivingTreatment" required>
+                    <select name="Diagnoses[@i].ReceivingTreatment" value="@Model.Diagnoses[i].ReceivingTreatment" required>
                         <option value="true">Yes</option>
                         <option value="false">No</option>
                     </select>
                 </td>
                 <td>
-                    <input type="text" name="Diagnoses[@i].TreatmentProvider" placeholder="Type N/A if no answer" required>
+                    <input type="text" name="Diagnoses[@i].TreatmentProvider" value="@Model.Diagnoses[i].TreatmentProvider" placeholder="Type N/A if no answer" required>
                 </td>
                 <td>
-                    <select name="Diagnoses[@i].DoesCauseStressOrImpairment" required>
+                    <select name="Diagnoses[@i].DoesCauseStressOrImpairment" value="@Model.Diagnoses[i].DoesCauseStressOrImpairment" required>
                         <option value="true">Yes</option>
                         <option value="false">No</option>
                     </select>
                 </td>
                 <td>
-                    <input type="text" name="Diagnoses[@i].TreatmentHelp" placeholder="Type N/A if no answer" required>
+                    <input type="text" name="Diagnoses[@i].TreatmentHelp" value="@Model.Diagnoses[i].TreatmentHelp" placeholder="Type N/A if no answer" required>
                 </td>
                 <td><button type="button" id="diagnosis-button-remove" onclick="removeRow(this)">❌</button></td>
             </tr>
@@ -97,19 +97,19 @@
         {
             <tr>
                 <td>
-                    <input type="text" name="Medications[@i].Medication" placeholder="Type N/A if no answer" required>
+                    <input type="text" name="Medications[@i].Medication" value="@Model.Medications[i].Medication" placeholder="Type N/A if no answer" required>
                 </td>
                 <td>
-                    <input type="text" name="Medications[@i].Dosage" placeholder="Type N/A if no answer" required>
+                    <input type="text" name="Medications[@i].Dosage" value="@Model.Medications[i].Dosage" placeholder="Type N/A if no answer" required>
                 </td>
                 <td>
-                    <input type="text" name="Medications[@i].Frequency" placeholder="Type N/A if no answer" required>
+                    <input type="text" name="Medications[@i].Frequency" value="@Model.Medications[i].Frequency" placeholder="Type N/A if no answer" required>
                 </td>
                 <td>
-                    <input type="text" name="Medications[@i].PrescribedBy" placeholder="Type N/A if no answer" required>
+                    <input type="text" name="Medications[@i].PrescribedBy" value="@Model.Medications[i].PrescribedBy" placeholder="Type N/A if no answer" required>
                 </td>
                 <td>
-                    <input type="text" name="Medications[@i].ReasonForMedication" placeholder="Type N/A if no answer" required>
+                    <input type="text" name="Medications[@i].ReasonForMedication" value="@Model.Medications[i].ReasonForMedication" placeholder="Type N/A if no answer" required>
                 </td>
                 <td><button type="button" id="medication-button-remove" onclick="removeRow(this)">❌</button></td>
             </tr>
@@ -204,13 +204,13 @@
         {
             <tr>
                 <td>
-                    <input type="text" name="HospitalizationHistory[@i].Reason" placeholder="Type N/A if no answer" required>
+                    <input type="text" name="HospitalizationHistory[@i].Reason" value="@Model.HospitalizationHistory[i].Reason" placeholder="Type N/A if no answer" required>
                 </td>
                 <td>
-                    <input type="date" name="HospitalizationHistory[@i].Date" required>
+                    <input type="date" name="HospitalizationHistory[@i].Date" value="@Model.HospitalizationHistory[i].Date" required>
                 </td>
                 <td>
-                    <input type="text" name="HospitalizationHistory[@i].Location" placeholder="Type N/A if no answer" required>
+                    <input type="text" name="HospitalizationHistory[@i].Location" value="@Model.HospitalizationHistory[i].Location" placeholder="Type N/A if no answer" required>
                 </td>
                 <td><button type="button" id="hospitalization-button-remove" onclick="removeRow(this)">❌</button></td>
             </tr>
