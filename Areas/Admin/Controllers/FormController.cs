@@ -699,7 +699,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             // Load the HTML template
             string templatePath = Path.Combine(_environment.WebRootPath, "templates/page1_form_template.html");
             string templatePath2 = Path.Combine(_environment.WebRootPath, "templates/page2_form_template.html");
-            string templatePath3 = Path.Combine(_environment.WebRootPath, "templates/page3_form_template.html");
+            string templatePath3 = Path.Combine(_environment.WebRootPath, "templates/page3.2_form_template.html");
             string templatePath4 = Path.Combine(_environment.WebRootPath, "templates/page4_form_template.html");
             string templatePath5 = Path.Combine(_environment.WebRootPath, "templates/page5_form_template.html");
             string templatePath6 = Path.Combine(_environment.WebRootPath, "templates/page6_form_template.html");
@@ -1188,7 +1188,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 //// Load the HTML template
                 string templatePath = Path.Combine(_environment.WebRootPath, "templates/page1_form_template.html");
                 string templatePath2 = Path.Combine(_environment.WebRootPath, "templates/page2_form_template.html");
-                string templatePath3 = Path.Combine(_environment.WebRootPath, "templates/page3_form_template.html");
+                string templatePath3 = Path.Combine(_environment.WebRootPath, "templates/page3.2_form_template.html");
                 string templatePath4 = Path.Combine(_environment.WebRootPath, "templates/page4_form_template.html");
                 string templatePath5 = Path.Combine(_environment.WebRootPath, "templates/page5_form_template.html");
                 string templatePath6 = Path.Combine(_environment.WebRootPath, "templates/page6_form_template.html");
