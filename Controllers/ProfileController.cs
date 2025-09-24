@@ -97,6 +97,35 @@ namespace LittleArkFoundation.Controllers
                     }
 
                     context.Users.Update(user.NewUser);
+
+                    var opdList = await context.OPD.Where(i => i.UserID == user.NewUser.UserID).ToListAsync();
+                    var generalAdmissionList = await context.GeneralAdmission.Where(i => i.UserID == user.NewUser.UserID).ToListAsync();
+                    var dischargeList = await context.Discharges.Where(i => i.UserID == user.NewUser.UserID).ToListAsync();
+
+                    if (opdList.Any())
+                    {
+                        foreach (var item in opdList.Where(i => i.MSW != user.NewUser.Username))
+                        {
+                            item.MSW = user.NewUser.Username;
+                        }
+                    }
+
+                    if (generalAdmissionList.Any())
+                    {
+                        foreach (var item in generalAdmissionList.Where(i => i.MSW != user.NewUser.Username))
+                        {
+                            item.MSW = user.NewUser.Username;
+                        }
+                    }
+
+                    if (dischargeList.Any())
+                    {
+                        foreach (var item in dischargeList.Where(i => i.MSW != user.NewUser.Username))
+                        {
+                            item.MSW = user.NewUser.Username;
+                        }
+                    }
+
                     await context.SaveChangesAsync();
 
                     LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Profile edit sucessful. Edited UserID: {user.NewUser.UserID}");
