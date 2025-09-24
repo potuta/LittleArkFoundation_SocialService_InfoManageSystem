@@ -2,6 +2,8 @@
 using LittleArkFoundation.Areas.Admin.Models;
 using LittleArkFoundation.Authorize;
 using LittleArkFoundation.Data;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -127,6 +129,28 @@ namespace LittleArkFoundation.Controllers
                     }
 
                     await context.SaveChangesAsync();
+
+                    // Update username claim
+                    if (userIdClaim.Value == user.NewUser.UserID.ToString())
+                    {
+                        if (User.FindFirstValue(ClaimTypes.Name) != user.NewUser.Username)
+                        {
+                            var identity = (ClaimsIdentity)User.Identity;
+
+                            var oldNameClaim = identity.FindFirst(ClaimTypes.Name);
+                            if (oldNameClaim != null)
+                            {
+                                identity.RemoveClaim(oldNameClaim);
+                            }
+
+                            identity.AddClaim(new Claim(ClaimTypes.Name, user.NewUser.Username));
+
+                            await HttpContext.SignInAsync(
+                                CookieAuthenticationDefaults.AuthenticationScheme,
+                                new ClaimsPrincipal(identity)
+                            );
+                        }
+                    }
 
                     LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Profile edit sucessful. Edited UserID: {user.NewUser.UserID}");
                 }
