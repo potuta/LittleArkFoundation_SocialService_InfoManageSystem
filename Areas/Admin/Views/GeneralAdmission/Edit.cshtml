@@ -128,16 +128,37 @@
             <tr>
                 <td>
                     First Name: <span class="required">*</span>
-                    <input type="text" asp-for="GeneralAdmission.FirstName" placeholder="Type N/A if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly>
+                    @if (Model.GeneralAdmission.isInterviewed)
+                    {
+                        <input type="text" asp-for="GeneralAdmission.FirstName" placeholder="Type N/A if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly>
+                    }
+                    else
+                    {
+                        <input type="text" asp-for="GeneralAdmission.FirstName" placeholder="Type N/A if No Answer" required>
+                    }
 
                 </td>
                 <td>
                     Middle Name: <span class="required">*</span>
-                    <input type="text" asp-for="GeneralAdmission.MiddleName" placeholder="Type N/A if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly>
+                    @if (Model.GeneralAdmission.isInterviewed)
+                    {
+                        <input type="text" asp-for="GeneralAdmission.MiddleName" placeholder="Type N/A if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly>
+                    }
+                    else
+                    {
+                        <input type="text" asp-for="GeneralAdmission.MiddleName" placeholder="Type N/A if No Answer" required>
+                    }
                 </td>
                 <td>
                     Last Name: <span class="required">*</span>
-                    <input type="text" asp-for="GeneralAdmission.LastName" placeholder="Type N/A if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly>
+                    @if (Model.GeneralAdmission.isInterviewed)
+                    {
+                        <input type="text" asp-for="GeneralAdmission.LastName" placeholder="Type N/A if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly>
+                    }
+                    else
+                    {
+                        <input type="text" asp-for="GeneralAdmission.LastName" placeholder="Type N/A if No Answer" required>
+                    }
 
                 </td>
             </tr>
