@@ -294,7 +294,25 @@
                             <option value="false">No</option>
                         </select>
                     </td>
-                    <td><input type="text" name="FamilyMembers[${rowCount}].EducationalAttainment" required></td>
+                    <td>
+                        <select name="FamilyMembers[${rowCount}].EducationalAttainment" required>
+                            <option value="Master’s Degree">Master’s Degree</option>
+                            <option value="College Graduate">College Graduate</option>
+                            <option value="College Level">College Level (Undergraduate, not completed)</option>
+                            <option value="Vocational Graduate">Vocational Graduate</option>
+                            <option value="Senior High School Level">Senior High School Level (not completed)</option>
+                            <option value="Senior High School Graduate">Senior High School Graduate</option>
+                            <option value="Junior High School Level">Junior High School Level (not completed)</option>
+                            <option value="Junior High School Graduate">Junior High School Graduate</option>
+                            <option value="Elementary Graduate">Elementary Graduate</option>
+                            <option value="Elementary Level">Elementary Level (not completed)</option>
+                            <option value="Pre-School">Pre-School</option>
+                            <option value="No Schooling">No Schooling</option>
+                            <option value="Out of School">Out of School</option>
+                            <option value="Illiterate">Illiterate (cannot read and write)</option>
+                            <option value="N/A">No Data / Not Specified</option>
+                        </select>
+                    </td>
                     <td><input type="text" name="FamilyMembers[${rowCount}].Occupation" required></td>
                     <td><input type="number" name="FamilyMembers[${rowCount}].MonthlyIncome" 
                             min="0"
@@ -643,7 +661,7 @@
                     row.cells[3].querySelector("input").name = `FamilyMembers[${i - 1}].CivilStatus`;
                     row.cells[4].querySelector("input").name = `FamilyMembers[${i - 1}].RelationshipToPatient`;
                     row.cells[5].querySelector("select").name = `FamilyMembers[${i - 1}].LivingWithChild`;
-                    row.cells[6].querySelector("input").name = `FamilyMembers[${i - 1}].EducationalAttainment`;
+                    row.cells[6].querySelector("select").name = `FamilyMembers[${i - 1}].EducationalAttainment`;
                     row.cells[7].querySelector("input").name = `FamilyMembers[${i - 1}].Occupation`;
                     row.cells[8].querySelector("input").name = `FamilyMembers[${i - 1}].MonthlyIncome`;
                 }
