@@ -301,17 +301,7 @@
                         <option>ZAMBOANGA</option>
                     </select>
                 </td>
-                <td>
-                    PWD: <span class="required">*</span>
-                    <select asp-for="GeneralAdmission.isPWD" required>
-                        <option value="true">Yes</option>
-                        <option value="false">No</option>
-                    </select>
-                </td>
 
-            </tr>
-
-            <tr>
                 <td>
                     Contact Number: <span class="required">*</span>
                     <input type="tel" 
@@ -322,6 +312,9 @@
                         maxlength="11"
                         required>
                 </td>
+            </tr>
+
+            <tr>
                 <td>
                     Source of Referral: <span class="required">*</span>
                     <select asp-for="GeneralAdmission.Referral" required>
@@ -342,9 +335,6 @@
                     <input type="text" asp-for="GeneralAdmission.Occupation" required/>
                 </td>
 
-            </tr>
-
-            <tr>
                 <td>
                     Stat's Occupation: <span class="required">*</span>
                     <select asp-for="GeneralAdmission.StatsOccupation" required>
@@ -377,7 +367,9 @@
                         <option>WAITER/WAITRESS</option>
                     </select>
                 </td>
+            </tr>
 
+            <tr>
                 <td>
                     Income Range: <span class="required">*</span>
                     <select asp-for="GeneralAdmission.IncomeRange" required>
@@ -413,9 +405,7 @@
                            max="99999999.99"
                            step="0.01" placeholder="Type 0 if No Answer" required>
                 </td>
-            </tr>
 
-            <tr>
                 <td>
                     Economic Status: <span class="required">*</span>
                     <select asp-for="GeneralAdmission.EconomicStatus" required>
@@ -425,6 +415,9 @@
                         <option>J</option>
                     </select>
                 </td>
+            </tr>
+
+            <tr>
 
                 <td>
                     Household Size: <span class="required">*</span>
@@ -440,9 +433,6 @@
                         <option>W</option>
                     </select>
                 </td>
-            </tr>
-
-            <tr>
 
                 <td>
                     PWD: <span class="required">*</span>
@@ -451,6 +441,9 @@
                         <option value="false">No</option>
                     </select>
                 </td>
+            </tr>
+
+            <tr>
 
                 <td>
                     Educational Attainment: <span class="required">*</span>
@@ -493,9 +486,6 @@
                         <option value="N/A">No Data / Not Specified</option>
                     </select>
                 </td>
-            </tr>
-
-            <tr>
 
                 <td>
                     Mother's Educational Attainment: <span class="required">*</span>
@@ -517,6 +507,9 @@
                         <option value="N/A">No Data / Not Specified</option>
                     </select>
                 </td>
+            </tr>
+
+            <tr>
 
                 <td>
                     Interviewed: <span class="required">*</span>
@@ -536,10 +529,6 @@
                         <option>K</option>
                     </select>
                 </td>
-            </tr>
-
-            <tr>
-
 
                 <td>
                     Light: <span class="required">*</span>
@@ -548,6 +537,9 @@
                         <option>C/L</option>
                     </select>
                 </td>
+            </tr>
+
+            <tr>
 
                 <td>
                     Water: <span class="required">*</span>
@@ -568,11 +560,8 @@
                         <option>E</option>
                     </select>
                 </td>
-            </tr>
 
-            <tr>
-
-                <td colspan="3">
+                <td>
                     PHIC: <span class="required">*</span>
                     <select asp-for="GeneralAdmission.PHIC" required>
                         <option>OWWA</option>
