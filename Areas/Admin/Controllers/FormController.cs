@@ -356,10 +356,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             {
                 new FamilyCompositionModel
                 {
+                    RelationshipToPatient = "Mother",
                     EducationalAttainment = generalAdmission.MotherEducationalAttainment
                 },
                 new FamilyCompositionModel
                 {
+                    RelationshipToPatient = "Father",
                     EducationalAttainment = generalAdmission.FatherEducationalAttainment
                 }
             };
