@@ -308,8 +308,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                 await using (var context = new ApplicationDbContext(connectionString))
                 {
-                    //context.Entry(user).State = EntityState.Modified;
-                    //context.Update(user.NewUser);
+                    var changesList = new List<string>();
 
                     if (isEditPasswordEnabled)
                     {
@@ -317,6 +316,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                         string hashedPassword = PasswordService.HashPassword(user.NewUser.PasswordHash, passwordSalt);
                         user.NewUser.PasswordHash = hashedPassword;
                         user.NewUser.PasswordSalt = Convert.ToBase64String(passwordSalt);
+
+                        changesList.Add("Reset password");
                     }
 
                     if (user.NewUser.ProfilePictureFile is { Length: > 0 })
@@ -325,13 +326,19 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                         await user.NewUser.ProfilePictureFile.CopyToAsync(ms);
                         user.NewUser.ProfilePicture = ms.ToArray();
                         user.NewUser.ProfilePictureContentType = user.NewUser.ProfilePictureFile.ContentType;
+
+                        changesList.Add("Changed profile picture");
                     }
 
                     context.Users.Update(user.NewUser);
                     await context.SaveChangesAsync();
 
+                    string changes = (changesList?.Any() ?? false)
+                                    ? string.Join(", ", changesList)
+                                    : "None";
+
                     TempData["SuccessMessage"] = $"Successfully edited user! UserID: {user.NewUser.UserID} Username: {user.NewUser.Username}";
-                    LoggingService.LogInformation($"UserID: {userIdClaim.Value}. User edit sucessful. Edited UserID: {user.NewUser.UserID}");
+                    LoggingService.LogInformation($"UserID: {userIdClaim.Value}. User edit sucessful. Edited UserID: {user.NewUser.UserID}. Changes: {changes}");
                 }
             }
             catch (Exception ex)
