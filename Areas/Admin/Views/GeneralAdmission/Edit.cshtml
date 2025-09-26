@@ -200,14 +200,29 @@
             </td>
             <td>
                 Diagnosis: <span class="required">*</span>
-                <textarea type="text" asp-for="GeneralAdmission.Diagnosis" placeholder="Type N/A if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly></textarea>
+                @if (Model.GeneralAdmission.isInterviewed) {
+                    <textarea type="text" asp-for="GeneralAdmission.Diagnosis" placeholder="Type N/A if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly></textarea>
+                }
+                else
+                {
+                    <textarea type="text" asp-for="GeneralAdmission.Diagnosis" placeholder="Type N/A if No Answer" required></textarea>
+                }
 
             </td>
 
             <tr>
                 <td>
                     Complete Address: <span class="required">*</span>
-                    <textarea type="text" asp-for="GeneralAdmission.CompleteAddress" placeholder="Type N/A if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly></textarea>
+                    @if (Model.GeneralAdmission.isInterviewed)
+                    {
+                        <textarea type="text" asp-for="GeneralAdmission.CompleteAddress" placeholder="Type N/A if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly></textarea>
+                    }
+                    else
+                    {
+                        
+                        <textarea type="text" asp-for="GeneralAdmission.CompleteAddress" placeholder="Type N/A if No Answer" required></textarea>
+                    }
+
 
                 </td>
                 <td>
@@ -322,29 +337,79 @@
             <tr>
                 <td>
                     Contact Number: <span class="required">*</span>
-                    <input type="tel" 
-                        asp-for="GeneralAdmission.ContactNumber"
-                        required inputmode="numeric"
-                        pattern="(^09\d{9}$)|(^0\d{1,2}\d{7,8}$)"
-                        title="Mobile: 11 digits starting with 09. Or landline e.g. 02xxxxxxx"
-                        maxlength="11"
+
+                    @if (Model.GeneralAdmission.isInterviewed)
+                    {
+                        <input type="tel" 
+                            asp-for="GeneralAdmission.ContactNumber"
+                            inputmode="numeric"
+                            pattern="(^09\d{9}$)|(^0\d{1,2}\d{7,8}$)"
+                            title="Mobile: 11 digits starting with 09. Or landline e.g. 02xxxxxxx"
+                            maxlength="11"
                         style="background-color:#e9ecef; cursor: not-allowed;" readonly>
+                    }
+                    else
+                    {
+                        <input type="tel" 
+                            asp-for="GeneralAdmission.ContactNumber"
+                            inputmode="numeric"
+                            pattern="(^09\d{9}$)|(^0\d{1,2}\d{7,8}$)"
+                            title="Mobile: 11 digits starting with 09. Or landline e.g. 02xxxxxxx"
+                            maxlength="11"
+                            required>
+                    }
                 </td>
                 <td>
                     Source of Referral: <span class="required">*</span>
-                    <select asp-for="GeneralAdmission.Referral" disabled>
-                        <option>Walk in</option>
-                        <option>Govt. Hosp.</option>
-                        <option>Private/Clinic</option>
-                        <option>Health Care Team</option>
-                        <option>NGO/Private Welfare</option>
-                        <option>Politicians</option>
-                        <option>Media</option>
-                        <option>Govt. Agencies</option>
-                        <option>Others</option>
-                    </select>
-                    <input type="hidden" asp-for="GeneralAdmission.Referral" />
+
+                    @if (Model.GeneralAdmission.isInterviewed)
+                    {
+                        <select asp-for="GeneralAdmission.Referral" disabled>
+                            <option>Walk in</option>
+                            <option>Govt. Hosp.</option>
+                            <option>Private/Clinic</option>
+                            <option>Health Care Team</option>
+                            <option>NGO/Private Welfare</option>
+                            <option>Politicians</option>
+                            <option>Media</option>
+                            <option>Govt. Agencies</option>
+                            <option>Others</option>
+                        </select>
+                        <input type="hidden" asp-for="GeneralAdmission.Referral" />
+                    }
+                    else
+                    {
+                        <select asp-for="GeneralAdmission.Referral" required>
+                            <option>Walk in</option>
+                            <option>Govt. Hosp.</option>
+                            <option>Private/Clinic</option>
+                            <option>Health Care Team</option>
+                            <option>NGO/Private Welfare</option>
+                            <option>Politicians</option>
+                            <option>Media</option>
+                            <option>Govt. Agencies</option>
+                            <option>Others</option>
+                        </select>
+                    }
                 </td>
+
+                <td>
+                    Occupation: <span class="required">*</span>
+
+                    @if (Model.GeneralAdmission.isInterviewed)
+                    {
+                        <input type="text" asp-for="GeneralAdmission.Occupation" style="background-color:#e9ecef; cursor: not-allowed;" readonly />
+                    }
+                    else
+                    {
+
+                        <input type="text" asp-for="GeneralAdmission.Occupation" required />
+                    }
+                </td>
+
+            </tr>
+
+            <tr>
 
                 <td>
                     Stat's Occupation: <span class="required">*</span>
@@ -379,9 +444,6 @@
                     </select>
                 </td>
 
-            </tr>
-
-            <tr>
                 <td>
                     Income Range: <span class="required">*</span>
                     <select asp-for="GeneralAdmission.IncomeRange" required>
@@ -412,11 +474,25 @@
 
                 <td>
                     Monthly Income: <span class="required">*</span>
-                    <input type="number" asp-for="GeneralAdmission.MonthlyIncome"
-                           min="0"
-                           max="99999999.99"
-                           step="0.01" placeholder="Type 0 if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly>
+
+                    @if (Model.GeneralAdmission.isInterviewed)
+                    {
+                        <input type="number" asp-for="GeneralAdmission.MonthlyIncome"
+                               min="0"
+                               max="99999999.99"
+                        step="0.01" placeholder="Type 0 if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly>
+                    }
+                    else
+                    {
+                        <input type="number" asp-for="GeneralAdmission.MonthlyIncome"
+                               min="0"
+                               max="99999999.99"
+                               step="0.01" placeholder="Type 0 if No Answer" required>
+                    }
                 </td>
+            </tr>
+
+            <tr>
 
                 <td>
                     Economic Status: <span class="required">*</span>
@@ -427,13 +503,18 @@
                         <option>J</option>
                     </select>
                 </td>
-            </tr>
-
-            <tr>
 
                 <td>
                     Household Size: <span class="required">*</span>
-                    <input type="number" asp-for="GeneralAdmission.HouseholdSize" placeholder="Type 0 if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly>
+
+                    @if (Model.GeneralAdmission.isInterviewed)
+                    {
+                        <input type="number" asp-for="GeneralAdmission.HouseholdSize" placeholder="Type 0 if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly>
+                    }
+                    else
+                    {
+                        <input type="number" asp-for="GeneralAdmission.HouseholdSize" placeholder="Type 0 if No Answer" required>
+                    }
                 </td>
 
                 <td>
@@ -445,6 +526,10 @@
                         <option>W</option>
                     </select>
                 </td>
+            </tr>
+
+            <tr>
+
                 <td>
                     PWD: <span class="required">*</span>
                     <select asp-for="GeneralAdmission.isPWD" required>
@@ -452,9 +537,6 @@
                         <option value="false">No</option>
                     </select>
                 </td>
-            </tr>
-
-            <tr>
 
                 <td>
                     Educational Attainment: <span class="required">*</span>
@@ -497,6 +579,10 @@
                         <option>ND</option>
                     </select>
                 </td>
+            </tr>
+
+            <tr>
+
                 <td>
                     Mother's Educational Attainment: <span class="required">*</span>
                     <select asp-for="GeneralAdmission.MotherEducationalAttainment" required>
@@ -517,9 +603,6 @@
                         <option>ND</option>
                     </select>
                 </td>
-            </tr>
-
-            <tr>
 
                 <td>
                     Interviewed: <span class="required">*</span>
@@ -540,6 +623,9 @@
                         <option>K</option>
                     </select>
                 </td>
+            </tr>
+
+            <tr>
 
                 <td>
                     Light: <span class="required">*</span>
@@ -548,9 +634,6 @@
                         <option>C/L</option>
                     </select>
                 </td>
-            </tr>
-
-            <tr>
 
                 <td>
                     Water: <span class="required">*</span>
@@ -571,6 +654,9 @@
                         <option>E</option>
                     </select>
                 </td>
+            </tr>
+
+            <tr>
 
                 <td>
                     PHIC: <span class="required">*</span>
@@ -582,10 +668,8 @@
                         <option>None</option>
                     </select>
                 </td>
-            </tr>
 
-            <tr>
-                <td colspan="3">
+                <td colspan="2">
                     MSW: <span class="required">*</span>
                     @* @foreach (var msw in Model.GeneralAdmission.MSW)
                     {
