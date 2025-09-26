@@ -593,6 +593,34 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     }
                     else
                     {
+                        var educationalAttainment = "N/A";
+                        switch (formViewModel.Assessments.EducationLevel)
+                        {
+                            case "Primary":
+                                educationalAttainment = "Elementary Graduate";
+                                break;
+                            case "Secondary":
+                                educationalAttainment = "Senior High School Graduate";
+                                break;
+                            case "Vocational":
+                                educationalAttainment = "Vocational Graduate";
+                                break;
+                            case "Tertiary":
+                                educationalAttainment = "College Graduate";
+                                break;
+                            case "No Educational Attainment":
+                                educationalAttainment = "N/A";
+                                break;
+                        }
+
+                        var motherEducationalAttainment = formViewModel.FamilyMembers
+                            .FirstOrDefault(f => string.Equals(f.RelationshipToPatient, "Mother", StringComparison.OrdinalIgnoreCase))
+                            ?.EducationalAttainment ?? "N/A";
+
+                        var fatherEducationalAttainment = formViewModel.FamilyMembers
+                            .FirstOrDefault(f => string.Equals(f.RelationshipToPatient, "Father", StringComparison.OrdinalIgnoreCase))
+                            ?.EducationalAttainment ?? "N/A";
+
                         var generalAdmission = new GeneralAdmissionModel
                         {
                             AssessmentID = assessmentID,
@@ -615,7 +643,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                             Occupation = formViewModel.Assessments.Occupation,
                             MonthlyIncome = formViewModel.Assessments.MonthlyIncome.Value,
                             HouseholdSize = formViewModel.Household.HouseholdSize,
-                            //EducationalAttainment = formViewModel.Patient.EducationLevel,
+                            EducationalAttainment = educationalAttainment,
+                            MotherEducationalAttainment = motherEducationalAttainment,
+                            FatherEducationalAttainment = fatherEducationalAttainment,
                             isInterviewed = true,
                             MSW = User.FindFirstValue(ClaimTypes.Name), // Assuming the MSW is the user who is logged in
                             UserID = int.Parse(userIdClaim.Value),
@@ -1106,6 +1136,34 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                 if (generalAdmission != null)
                 {
+                    var educationalAttainment = "N/A";
+                    switch (formViewModel.Assessments.EducationLevel)
+                    {
+                        case "Primary":
+                            educationalAttainment = "Elementary Graduate";
+                            break;
+                        case "Secondary":
+                            educationalAttainment = "Senior High School Graduate";
+                            break;
+                        case "Vocational":
+                            educationalAttainment = "Vocational Graduate";
+                            break;
+                        case "Tertiary":
+                            educationalAttainment = "College Graduate";
+                            break;
+                        case "No Educational Attainment":
+                            educationalAttainment = "N/A";
+                            break;
+                    }
+
+                    var motherEducationalAttainment = formViewModel.FamilyMembers
+                        .FirstOrDefault(f => string.Equals(f.RelationshipToPatient, "Mother", StringComparison.OrdinalIgnoreCase))
+                        ?.EducationalAttainment ?? "N/A";
+
+                    var fatherEducationalAttainment = formViewModel.FamilyMembers
+                        .FirstOrDefault(f => string.Equals(f.RelationshipToPatient, "Father", StringComparison.OrdinalIgnoreCase))
+                        ?.EducationalAttainment ?? "N/A";
+
                     generalAdmission.FirstName = formViewModel.Patient.FirstName;
                     generalAdmission.MiddleName = formViewModel.Patient.MiddleName;
                     generalAdmission.LastName = formViewModel.Patient.LastName;
@@ -1121,6 +1179,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     generalAdmission.Occupation = formViewModel.Assessments.Occupation;
                     generalAdmission.MonthlyIncome = formViewModel.Assessments.MonthlyIncome.Value;
                     generalAdmission.HouseholdSize = formViewModel.Household.HouseholdSize;
+                    generalAdmission.EducationalAttainment = educationalAttainment;
+                    generalAdmission.MotherEducationalAttainment = motherEducationalAttainment;
+                    generalAdmission.FatherEducationalAttainment = fatherEducationalAttainment;
                     // No need to call Update here unless using a detached context
                     // context.GeneralAdmission.Update(generalAdmission);
                 }
