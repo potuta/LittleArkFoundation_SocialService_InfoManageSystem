@@ -272,12 +272,14 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 new FamilyCompositionModel
                 {
                     Name = $"{opd.MotherFirstName} {opd.MotherMiddleName} {opd.MotherLastName}",
-                    Occupation = opd.MotherOccupation
+                    Occupation = opd.MotherOccupation,
+                    RelationshipToPatient = "Mother"
                 },
                 new FamilyCompositionModel
                 {
                     Name = $"{opd.FatherFirstName} {opd.FatherMiddleName} {opd.FatherLastName}",
-                    Occupation = opd.FatherOccupation
+                    Occupation = opd.FatherOccupation,
+                    RelationshipToPatient = "Father"
                 }
             };
 
