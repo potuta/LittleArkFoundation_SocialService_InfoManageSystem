@@ -387,7 +387,9 @@ namespace LittleArkFoundation.Data
                 var commands = new[]
                 {
                     "DELETE FROM Patients;",
+                    "DBCC CHECKIDENT ('Patients', RESEED, 0);",
                     "TRUNCATE TABLE GeneralAdmission;",
+                    "TRUNCATE TABLE Discharges;",
                     "TRUNCATE TABLE OPD;",
                     "TRUNCATE TABLE Logs;",
                     "TRUNCATE TABLE Stats;"
