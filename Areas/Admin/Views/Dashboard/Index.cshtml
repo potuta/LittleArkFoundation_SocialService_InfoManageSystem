@@ -164,9 +164,9 @@
         </div>
     </div>
     <div class="container">
-        <h1 class="daily" style="display: block;">@Model.DailyAssessments.Count</h1>
-        <h1 class="monthly" style="display: none;">@Model.MonthlyAssessments.Count</h1>
-        <h1 class="yearly" style="display: none;">@Model.YearlyAssessments.Count</h1>
+        <h1 class="daily" style="display: block;">@Model.DailyGA.Count</h1>
+        <h1 class="monthly" style="display: none;">@Model.MonthlyGA.Count</h1>
+        <h1 class="yearly" style="display: none;">@Model.YearlyGA.Count</h1>
         <div class="d-flex align-items-center justify-content-center">
             <i class="bi bi-box-arrow-in-right"></i> <p>Admission</p>
         </div>
@@ -285,7 +285,7 @@
                     label: 'Counts',
                     data: [
                         @(Model.OPDList?.Count ?? 0),
-                        @(Model.AssessmentsList?.Count ?? 0),
+                        @(Model.GeneralAdmissionsList?.Count ?? 0),
                         @(Model.DischargesList?.Count ?? 0),
                         @(Model.ProgressNotesList?.Count ?? 0)
                     ],

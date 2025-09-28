@@ -51,21 +51,21 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 .Where(o => o.Date.Year == DateTime.Now.Year)
                 .ToList();
 
-            // Assessments
-            var assessments = await context.Assessments
+            // General Admission
+            var generalAdmissions = await context.GeneralAdmission
                 .Where(a => a.UserID == userId)
                 .ToListAsync();
 
-            var dailyassessments = assessments
-                .Where(a => a.DateOfInterview == DateOnly.FromDateTime(DateTime.Now))
+            var dailyGA = generalAdmissions
+                .Where(a => a.Date == DateOnly.FromDateTime(DateTime.Now))
                 .ToList();
 
-            var monthlyassessments = assessments
-                .Where(a => a.DateOfInterview.Month == DateTime.Now.Month && a.DateOfInterview.Year == DateTime.Now.Year)
+            var monthlyGA = generalAdmissions
+                .Where(a => a.Date.Month == DateTime.Now.Month && a.Date.Year == DateTime.Now.Year)
                 .ToList();
 
-            var yearlyassessments = assessments
-                .Where(a => a.DateOfInterview.Year == DateTime.Now.Year)
+            var yearlyGA = generalAdmissions
+                .Where(a => a.Date.Year == DateTime.Now.Year)
                 .ToList();
 
             // Discharges
@@ -104,7 +104,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             // ALL
             var opdAll = await context.OPD.ToListAsync();
-            var assessmentsAll = await context.Assessments.ToListAsync();
+            var generalAdmissionsAll = await context.GeneralAdmission.ToListAsync();
             var dischargesAll = await context.Discharges.ToListAsync();
             var progressNotesAll = await context.ProgressNotes.ToListAsync();
 
@@ -113,9 +113,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 DailyOPD = dailyOPD,
                 MonthlyOPD = monthlyOPD,
                 YearlyOPD = yearlyOPD,
-                DailyAssessments = dailyassessments,
-                MonthlyAssessments = monthlyassessments,
-                YearlyAssessments = yearlyassessments,
+                DailyGA = dailyGA,
+                MonthlyGA = monthlyGA,
+                YearlyGA = yearlyGA,
                 DailyDischarges = dailydischarges,
                 MonthlyDischarges = monthlydischarges,
                 YearlyDischarges = yearlydischarges,
@@ -123,7 +123,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 MonthlyProgressNotes = monthlyProgressNotes,
                 YearlyProgressNotes = yearlyProgressNotes,
                 OPDList = opdAll,
-                AssessmentsList = assessmentsAll,
+                GeneralAdmissionsList = generalAdmissionsAll,
                 DischargesList = dischargesAll,
                 ProgressNotesList = progressNotesAll
             };
