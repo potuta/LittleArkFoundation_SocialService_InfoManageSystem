@@ -210,8 +210,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             img.className = "profile-icon";
             img.style = 'width: 3rem; height: 3rem; border-radius: 100px; margin: 5px;'
 
+            let name = document.createElement("span");
+            name.textContent = u.username;
+            name.style = 'width: max-content;'
+
             li.appendChild(img);
-            li.appendChild(document.createTextNode(" " + u.username));
+            li.appendChild(name);
 
             list.appendChild(li);
         });

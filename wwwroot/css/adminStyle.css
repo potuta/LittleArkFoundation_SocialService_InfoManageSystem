@@ -487,9 +487,18 @@ input[type="radio"] {
     }
 
     #activeUsersList li {
-        flex: 0 0 100% !important; /* 1 column instead of 3 */
-        font-size: 0.85rem !important;
+        flex-direction: row !important; /* side-by-side */
+        justify-content: flex-start !important;
     }
+
+        #activeUsersList li img {
+            margin-bottom: 0 !important; /* remove stacked spacing */
+            margin-right: 8px !important; /* spacing to username */
+        }
+
+        #activeUsersList li span {
+            text-align: left !important; /* align text properly */
+        }
 
     canvas#generalChart {
         max-width: 100% !important;
