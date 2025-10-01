@@ -60,19 +60,34 @@ namespace LittleArkFoundation.Areas.Admin.Data
             //}
 
             // AGE
-            if (opd.Age == 1)
-            {
-                scores.Add($"Age_Baby: {opd.Age.ToString()}", 10);
-            }
-            else if (opd.Age > 1 && opd.Age <= 5)
-            {
-                scores.Add($"Age_Child: {opd.Age.ToString()}", 5);
-            }
-            else if (opd.Age > 40)
-            {
-                scores.Add($"Age_Adult: {opd.Age.ToString()}", 10);
-            }
+            var opdAge = opd.Age?.Trim();
 
+            if (!string.IsNullOrEmpty(opdAge) && System.Text.RegularExpressions.Regex.IsMatch(opdAge, @"\d"))
+            {
+                if (System.Text.RegularExpressions.Regex.IsMatch(opdAge, @"^\d+$"))
+                {
+                    var age = int.Parse(opdAge);
+
+                    if (age == 1)
+                    {
+                        scores.Add($"Age_Baby: {opd.Age}", 10);
+                    }
+                    else if (age > 1 && age <= 5)
+                    {
+                        scores.Add($"Age_Child: {opd.Age}", 5);
+                    }
+                    else if (age > 40)
+                    {
+                        scores.Add($"Age_Adult: {opd.Age}", 10);
+                    }
+                }
+                else
+                {
+                    // Any non-pure number, but contains digits (like "6/12", "10 D/O")
+                    scores.Add($"Age_Baby: {opd.Age}", 10);
+                }
+            }
+ 
             // DIAGNOSIS
             var diagnosisWeights = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
             {

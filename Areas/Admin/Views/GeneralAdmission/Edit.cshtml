@@ -221,17 +221,13 @@
 
                     @if (Model.GeneralAdmission.isInterviewed)
                     {
-                        <input type="number" asp-for="GeneralAdmission.Age"
-                               min="0"
-                               max="999.99"
-                        step="0.01" placeholder="Type N/A if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly>
+                        <input type="text" asp-for="GeneralAdmission.Age"
+                        placeholder="Type 0 if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly>
                     }
                     else
                     {
-                        <input type="number" asp-for="GeneralAdmission.Age"
-                               min="0"
-                               max="999.99"
-                               step="0.01" placeholder="Type N/A if No Answer" required>
+                        <input type="text" asp-for="GeneralAdmission.Age"
+                               placeholder="Type 0 if No Answer" required>
                     }
                 </td>
             </tr>

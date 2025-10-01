@@ -6,7 +6,7 @@
         public int AssessmentID { get; set; }
         public int PatientID { get; set; }
         public string Name { get; set; } = "N/A";
-        public decimal Age { get; set; } = 0;
+        public string Age { get; set; } = "0";
         public DateOnly DateOfBirth { get; set; } = DateOnly.MinValue;
         public string CivilStatus { get; set; } = "N/A";
         public string RelationshipToPatient { get; set; } = "N/A";

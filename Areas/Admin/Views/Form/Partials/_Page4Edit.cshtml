@@ -168,10 +168,7 @@
             </div>
 
             if yes, at what age?
-            <input type="number" asp-for="PregnancyBirthHistory.ChildAdoptedAge"
-                   min="0"
-                   max="999.99"
-                   step="0.01"
+            <input type="text" asp-for="PregnancyBirthHistory.ChildAdoptedAge"
                    placeholder="Type 0 if no answer"
                    class="adoption-dependent"
                    required>
@@ -237,50 +234,40 @@
             Rolled over?
         </th>
         <th>
-            <input type="number" asp-for="DevelopmentalHistory.RolledOverAge"
-                   min="0"
-                   max="999.99"
-                   step="0.01" placeholder="Type 0 if no answer" required>
+            <input type="text" asp-for="DevelopmentalHistory.RolledOverAge"
+                   placeholder="Type 0 if no answer" required>
         </th>
 
         <th>
             Crawled?
         </th>
         <th>
-            <input type="number" asp-for="DevelopmentalHistory.CrawledAge"
-                   min="0"
-                   max="999.99"
-                   step="0.01" placeholder="Type 0 if no answer" required>
+            <input type="text" asp-for="DevelopmentalHistory.CrawledAge"
+                   placeholder="Type 0 if no answer" required>
         </th>
 
         <th>
             Walked?
         </th>
         <th>
-            <input type="number" asp-for="DevelopmentalHistory.WalkedAge"
-                   min="0"
-                   max="999.99"
-                   step="0.01" placeholder="Type 0 if no answer" required>
+            <input type="text" asp-for="DevelopmentalHistory.WalkedAge"
+                   placeholder="Type 0 if no answer" required>
         </th>
 
         <th>
             Talked (two words)?
         </th>
         <th>
-            <input type="number" asp-for="DevelopmentalHistory.TalkedAge"
-                   min="0"
-                   max="999.99"
-                   step="0.01" placeholder="Type 0 if no answer" required>
+            <input type="text" asp-for="DevelopmentalHistory.TalkedAge"
+                   placeholder="Type 0 if no answer" required>
         </th>
 
         <th>
             Toilet trained?
         </th>
         <th>
-            <input type="number" asp-for="DevelopmentalHistory.ToiletTrainedAge"
-                   min="0"
-                   max="999.99"
-                   step="0.01" placeholder="Type 0 if no answer" required>
+            <input type="text" asp-for="DevelopmentalHistory.ToiletTrainedAge"
+                   placeholder="Type 0 if no answer" required>
         </th>
     </tr>
 

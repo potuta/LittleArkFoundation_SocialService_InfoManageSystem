@@ -226,97 +226,73 @@
             <td>
                 @if (Model.HistoryOfAbuse.SexualAbuse)
                 {
-                    <input type="number" asp-for="HistoryOfAbuse.SexualAbuseAgeOfChild"
-                           min="0"
-                           max="999.99"
-                           step="0.01" class="historyofabuse-sexual" placeholder="Type 0 if no answer" required>
+                    <input type="text" asp-for="HistoryOfAbuse.SexualAbuseAgeOfChild"
+                           class="historyofabuse-sexual" placeholder="Type 0 if no answer" required>
                 }
                 else
                 {
-                    <input type="number" asp-for="HistoryOfAbuse.SexualAbuseAgeOfChild"
-                           min="0"
-                           max="999.99"
-                           step="0.01" class="historyofabuse-sexual" placeholder="Type 0 if no answer" disabled>
+                    <input type="text" asp-for="HistoryOfAbuse.SexualAbuseAgeOfChild"
+                           class="historyofabuse-sexual" placeholder="Type 0 if no answer" disabled>
                 }
 
                 <hr />
                 @if (Model.HistoryOfAbuse.PhysicalAbuse)
                 {
-                    <input type="number" asp-for="HistoryOfAbuse.PhysicalAbuseAgeOfChild"
-                           min="0"
-                           max="999.99"
-                           step="0.01" class="historyofabuse-physical" placeholder="Type 0 if no answer" required>
+                    <input type="text" asp-for="HistoryOfAbuse.PhysicalAbuseAgeOfChild"
+                           class="historyofabuse-physical" placeholder="Type 0 if no answer" required>
                 }
                 else
                 {
-                    <input type="number" asp-for="HistoryOfAbuse.PhysicalAbuseAgeOfChild"
-                           min="0"
-                           max="999.99"
-                           step="0.01" class="historyofabuse-physical" placeholder="Type 0 if no answer" disabled>
+                    <input type="text" asp-for="HistoryOfAbuse.PhysicalAbuseAgeOfChild"
+                           class="historyofabuse-physical" placeholder="Type 0 if no answer" disabled>
                 }
 
                 <hr />
                 @if (Model.HistoryOfAbuse.EmotionalAbuse)
                 {
-                    <input type="number" asp-for="HistoryOfAbuse.EmotionalAbuseAgeOfChild"
-                           min="0"
-                           max="999.99"
-                           step="0.01" class="historyofabuse-emotional" placeholder="Type 0 if no answer" required>
+                    <input type="text" asp-for="HistoryOfAbuse.EmotionalAbuseAgeOfChild"
+                           class="historyofabuse-emotional" placeholder="Type 0 if no answer" required>
                 }
                 else
                 {
-                    <input type="number" asp-for="HistoryOfAbuse.EmotionalAbuseAgeOfChild"
-                           min="0"
-                           max="999.99"
-                           step="0.01" class="historyofabuse-emotional" placeholder="Type 0 if no answer" disabled>
+                    <input type="text" asp-for="HistoryOfAbuse.EmotionalAbuseAgeOfChild"
+                           class="historyofabuse-emotional" placeholder="Type 0 if no answer" disabled>
                 }
 
                 <hr />
                 @if (Model.HistoryOfAbuse.VerbalAbuse)
                 {
-                    <input type="number" asp-for="HistoryOfAbuse.VerbalAbuseAgeOfChild"
-                           min="0"
-                           max="999.99"
-                           step="0.01" class="historyofabuse-verbal" placeholder="Type 0 if no answer" required>
+                    <input type="text" asp-for="HistoryOfAbuse.VerbalAbuseAgeOfChild"
+                           class="historyofabuse-verbal" placeholder="Type 0 if no answer" required>
 
                 }else
                 {
-                    <input type="number" asp-for="HistoryOfAbuse.VerbalAbuseAgeOfChild"
-                           min="0"
-                           max="999.99"
-                           step="0.01" class="historyofabuse-verbal" placeholder="Type 0 if no answer" disabled>
+                    <input type="text" asp-for="HistoryOfAbuse.VerbalAbuseAgeOfChild"
+                           class="historyofabuse-verbal" placeholder="Type 0 if no answer" disabled>
                 }
 
                 <hr />
                 @if (Model.HistoryOfAbuse.AbandonedAbuse)
                 {
-                    <input type="number" asp-for="HistoryOfAbuse.AbandonedAbuseAgeOfChild"
-                           min="0"
-                           max="999.99"
-                           step="0.01" class="historyofabuse-abandoned" placeholder="Type 0 if no answer" required>
+                    <input type="text" asp-for="HistoryOfAbuse.AbandonedAbuseAgeOfChild"
+                           class="historyofabuse-abandoned" placeholder="Type 0 if no answer" required>
                 }
                 else
                 {
-                    <input type="number" asp-for="HistoryOfAbuse.AbandonedAbuseAgeOfChild"
-                           min="0"
-                           max="999.99"
-                           step="0.01" class="historyofabuse-abandoned" placeholder="Type 0 if no answer" disabled>
+                    <input type="text" asp-for="HistoryOfAbuse.AbandonedAbuseAgeOfChild"
+                           class="historyofabuse-abandoned" placeholder="Type 0 if no answer" disabled>
                 }
 
                 <hr />
                 @if (Model.HistoryOfAbuse.PsychologicalAbuse)
                 {
-                    <input type="number" asp-for="HistoryOfAbuse.PsychologicalAbuseAgeOfChild"
-                           min="0"
-                           max="999.99"
-                           step="0.01" class="historyofabuse-psychological" placeholder="Type 0 if no answer" required>
+                    <input type="text" asp-for="HistoryOfAbuse.PsychologicalAbuseAgeOfChild"
+                           class="historyofabuse-psychological" placeholder="Type 0 if no answer" required>
                 }
                 else
                 {
-                    <input type="number" asp-for="HistoryOfAbuse.PsychologicalAbuseAgeOfChild"
-                           min="0"
-                           max="999.99"
-                           step="0.01" class="historyofabuse-psychological" placeholder="Type 0 if no answer" disabled>
+                    <input type="text" asp-for="HistoryOfAbuse.PsychologicalAbuseAgeOfChild"
+                           class="historyofabuse-psychological" placeholder="Type 0 if no answer" disabled>
                 }
             </td>
 
@@ -568,81 +544,61 @@
             <td>
                 @if (Model.HistoryOfViolence.SexualAbuse)
                 {
-                    <input type="number" asp-for="HistoryOfViolence.SexualAbuseAgeOfChild"
-                           min="0"
-                           max="999.99"
-                           step="0.01" class="historyofviolence-sexual" placeholder="Type 0 if no answer" required>
+                    <input type="text" asp-for="HistoryOfViolence.SexualAbuseAgeOfChild"
+                           class="historyofviolence-sexual" placeholder="Type 0 if no answer" required>
                 }
                 else
                 {
-                    <input type="number" asp-for="HistoryOfViolence.SexualAbuseAgeOfChild"
-                           min="0"
-                           max="999.99"
-                           step="0.01" class="historyofviolence-sexual" placeholder="Type 0 if no answer" disabled>
+                    <input type="text" asp-for="HistoryOfViolence.SexualAbuseAgeOfChild"
+                           class="historyofviolence-sexual" placeholder="Type 0 if no answer" disabled>
                 }
 
                 <hr />
                 @if (Model.HistoryOfViolence.PhysicalAbuse)
                 {
-                    <input type="number" asp-for="HistoryOfViolence.PhysicalAbuseAgeOfChild"
-                           min="0"
-                           max="999.99"
-                           step="0.01" class="historyofviolence-physical" placeholder="Type 0 if no answer" required>
+                    <input type="text" asp-for="HistoryOfViolence.PhysicalAbuseAgeOfChild"
+                           class="historyofviolence-physical" placeholder="Type 0 if no answer" required>
                 }
                 else
                 {
-                    <input type="number" asp-for="HistoryOfViolence.PhysicalAbuseAgeOfChild"
-                           min="0"
-                           max="999.99"
-                           step="0.01" class="historyofviolence-physical" placeholder="Type 0 if no answer" disabled>
+                    <input type="text" asp-for="HistoryOfViolence.PhysicalAbuseAgeOfChild"
+                           class="historyofviolence-physical" placeholder="Type 0 if no answer" disabled>
                 }
 
                 <hr />
                 @if (Model.HistoryOfViolence.EmotionalAbuse)
                 {
-                    <input type="number" asp-for="HistoryOfViolence.EmotionalAbuseAgeOfChild"
-                           min="0"
-                           max="999.99"
-                           step="0.01" class="historyofviolence-emotional" placeholder="Type 0 if no answer" required>
+                    <input type="text" asp-for="HistoryOfViolence.EmotionalAbuseAgeOfChild"
+                           class="historyofviolence-emotional" placeholder="Type 0 if no answer" required>
                 }
                 else
                 {
-                    <input type="number" asp-for="HistoryOfViolence.EmotionalAbuseAgeOfChild"
-                           min="0"
-                           max="999.99"
-                           step="0.01" class="historyofviolence-emotional" placeholder="Type 0 if no answer" disabled>
+                    <input type="text" asp-for="HistoryOfViolence.EmotionalAbuseAgeOfChild"
+                           class="historyofviolence-emotional" placeholder="Type 0 if no answer" disabled>
                 }
 
                 <hr />
                 @if (Model.HistoryOfViolence.VerbalAbuse)
                 {
-                    <input type="number" asp-for="HistoryOfViolence.VerbalAbuseAgeOfChild"
-                           min="0"
-                           max="999.99"
-                           step="0.01" class="historyofviolence-verbal" placeholder="Type 0 if no answer" required>
+                    <input type="text" asp-for="HistoryOfViolence.VerbalAbuseAgeOfChild"
+                           class="historyofviolence-verbal" placeholder="Type 0 if no answer" required>
                 }
                 else
                 {
-                    <input type="number" asp-for="HistoryOfViolence.VerbalAbuseAgeOfChild"
-                           min="0"
-                           max="999.99"
-                           step="0.01" class="historyofviolence-verbal" placeholder="Type 0 if no answer" disabled>
+                    <input type="text" asp-for="HistoryOfViolence.VerbalAbuseAgeOfChild"
+                           class="historyofviolence-verbal" placeholder="Type 0 if no answer" disabled>
                 }
 
                 <hr />
                 @if (Model.HistoryOfViolence.AbandonedAbuse)
                 {
-                    <input type="number" asp-for="HistoryOfViolence.AbandonedAbuseAgeOfChild"
-                           min="0"
-                           max="999.99"
-                           step="0.01" class="historyofviolence-abandoned" placeholder="Type 0 if no answer" required>
+                    <input type="text" asp-for="HistoryOfViolence.AbandonedAbuseAgeOfChild"
+                           class="historyofviolence-abandoned" placeholder="Type 0 if no answer" required>
                 }
                 else
                 {
-                    <input type="number" asp-for="HistoryOfViolence.AbandonedAbuseAgeOfChild"
-                           min="0"
-                           max="999.99"
-                           step="0.01" class="historyofviolence-abandoned" placeholder="Type 0 if no answer" disabled>
+                    <input type="text" asp-for="HistoryOfViolence.AbandonedAbuseAgeOfChild"
+                           class="historyofviolence-abandoned" placeholder="Type 0 if no answer" disabled>
                 }
 
             </td>

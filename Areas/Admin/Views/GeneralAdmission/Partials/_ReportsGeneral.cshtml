@@ -339,7 +339,7 @@
                     @foreach (var group in groupedAge)
                     {
                         <tr>
-                            <td>@group.Key.ToString("0.##")</td>
+                            <td>@group.Key</td>
                             <td>@group.Count()</td>
                         </tr>
                         totalCount += group.Count();

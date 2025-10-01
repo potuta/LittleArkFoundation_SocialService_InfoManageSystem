@@ -179,10 +179,7 @@
         </td>
         <td>
             Age: <span class="required">*</span>
-            <input type="number" asp-for="Assessments.Age"
-                   min="0"
-                   max="999.99"
-                   step="0.01"
+            <input type="text" asp-for="Assessments.Age"
                    required>
             <span asp-validation-for="Assessments.Age" class="text-danger"></span>
         </td>
@@ -361,10 +358,7 @@
         {
             <tr>
                 <td><input type="text" asp-for="FamilyMembers[i].Name" required></td>
-                <td><input type="number" asp-for="FamilyMembers[i].Age"
-                           min="0"
-                           max="999.99"
-                           step="0.01" 
+                <td><input type="text" asp-for="FamilyMembers[i].Age"
                            required>
                 </td>
                 <td><input type="date" asp-for="FamilyMembers[i].DateOfBirth" required></td>

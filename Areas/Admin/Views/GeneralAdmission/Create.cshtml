@@ -169,10 +169,8 @@
                 </td>
                 <td>
                     Age: <span class="required">*</span>
-                    <input type="number" asp-for="GeneralAdmission.Age"
-                           min="0"
-                           max="999.99"
-                           step="0.01" placeholder="Type N/A if No Answer" required>
+                    <input type="text" asp-for="GeneralAdmission.Age"
+                           placeholder="Type 0 if No Answer" required>
                 </td>
             </tr>
 

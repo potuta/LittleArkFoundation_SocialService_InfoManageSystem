@@ -17,7 +17,7 @@
         public string LengthOfHospitalStay { get; set; } = "N/A";
         public bool PostpartumDepression { get; set; } = false;
         public bool WasChildAdopted { get; set; } = false;
-        public decimal ChildAdoptedAge { get; set; } = 0;
+        public string ChildAdoptedAge { get; set; } = "0";
         public string AdoptionType { get; set; } = "N/A";
         public string AdoptionCountry { get; set; } = "N/A";
     }
