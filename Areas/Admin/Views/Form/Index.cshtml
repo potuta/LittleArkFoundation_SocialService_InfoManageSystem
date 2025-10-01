@@ -368,15 +368,24 @@
 
                         <div class="col-md-4">
                             <label>Received HB</label>
-                            <input type="time" id="receivedHB" class="form-control text-muted" style="cursor: not-allowed;" asp-for="Discharge.ReceivedHB" readonly />
+                            <input type="time" id="receivedHB" class="form-control"  asp-for="Discharge.ReceivedHB" required />
                         </div>
                         <div class="col-md-4">
                             <label>Issued MSS</label>
-                            <input type="time" id="issuedMSS" class="form-control text-muted" style="cursor: not-allowed;" asp-for="Discharge.IssuedMSS" readonly />
+                            <input type="time" id="issuedMSS" class="form-control"  asp-for="Discharge.IssuedMSS" required />
                         </div>
                         <div class="col-md-4">
                             <label>Duration</label>
-                            <input type="text" id="duration" class="form-control text-muted" style="cursor: not-allowed;" asp-for="Discharge.Duration" readonly />
+                            <div class="d-flex justify-content-center align-items-center">
+								<input type="hidden" id="durationHidden" class="form-control" asp-for="Discharge.Duration" />
+								<input type="number" id="duration" class="form-control" required />
+								<select class="form-select" id="durationOptions">
+									<option value="Minutes">Minutes</option>
+									<option value="Hours">Hours</option>
+									<option value="Days">Days</option>
+									<option value="Seconds">Seconds</option>
+								</select>
+                            </div>
                         </div>
 
                         <div class="col-md-4">
@@ -405,7 +414,7 @@
 
                         <div class="col-12" id="remarksContainer">
                             <label>Remarks (If No)</label>
-                            <textarea class="form-control" rows="2" asp-for="Discharge.RemarksIfNo" placeholder="N/A if no answer" required></textarea>
+                            <textarea class="form-control" rows="2" id="remarksTextArea" asp-for="Discharge.RemarksIfNo" placeholder="N/A if no answer" required></textarea>
                         </div>
                     </div>
                 </form>
@@ -572,31 +581,49 @@
         });
 
         function confirmDischarge() {
-            const now = new Date();
-            document.getElementById('issuedMSS').value = now.toLocaleTimeString('en-GB').slice(0, 5); // HH:mm
+            // const now = new Date();
+            // document.getElementById('issuedMSS').value = now.toLocaleTimeString('en-GB').slice(0, 5); 
 
-            if (dischargeStartTime) {
-                const diffMs = now - dischargeStartTime;
-                const diffMins = Math.floor(diffMs / 60000);
-                const hrs = Math.floor(diffMins / 60);
-                const mins = diffMins % 60;
+            // if (dischargeStartTime) {
+            //     const diffMs = now - dischargeStartTime;
+            //     const diffMins = Math.floor(diffMs / 60000);
+            //     const hrs = Math.floor(diffMins / 60);
+            //     const mins = diffMins % 60;
 
-                let durationText = '';
-                if (hrs > 0) durationText += `${hrs} hour${hrs !== 1 ? 's' : ''} `;
-                if (mins > 0 || hrs === 0) durationText += `${mins} minute${mins !== 1 ? 's' : ''}`;
+            //     let durationText = '';
+            //     if (hrs > 0) durationText += `${hrs} hour${hrs !== 1 ? 's' : ''} `;
+            //     if (mins > 0 || hrs === 0) durationText += `${mins} minute${mins !== 1 ? 's' : ''}`;
 
-                document.getElementById('duration').value = durationText.trim();
-            }
+            //     document.getElementById('duration').value = durationText.trim();
+            // }
 
-            // Ask for confirmation before submitting
-            // if (confirm("Are you sure you want to confirm discharge?")) {
-            //     const form = document.getElementById('dischargeForm');
-            //     if (form.checkValidity()) {
-            //         form.requestSubmit(); 
-            //     } else {
-            //         form.reportValidity(); 
-            //     }
-            // }   
+			let duration = parseInt(document.getElementById('duration').value) || 0;
+			let durationOption = document.getElementById('durationOptions').value;
+            
+            if (duration <= 1) {
+
+                switch (durationOption) {
+                    case "Minutes":
+                        durationOption = "Minute";
+                        break;
+                    case "Hours":
+                        durationOption = "Hour";
+                        break;
+                    case "Days":
+                        durationOption = "Day";
+                        break;
+                    case "Seconds":
+                        durationOption = "Second";
+                        break;
+                    default:
+                        durationOption = durationOption;
+				}
+
+				document.getElementById('durationHidden').value = `1 ${durationOption}`;
+			}
+            else {
+				document.getElementById('durationHidden').value = `${duration} ${durationOption}`;
+			}
 
             const form = document.getElementById('dischargeForm');
 
@@ -613,6 +640,19 @@
             );
 
         }
+
+        document.getElementById('phicUsed').addEventListener('change', function() {
+            const remarksContainer = document.getElementById('remarksContainer');
+            const remarksTextArea = document.getElementById('remarksTextArea');
+            if (this.value === 'false') {
+                remarksContainer.style.display = 'block';
+                remarksTextArea.required = true;
+            } else {
+                remarksContainer.style.display = 'none';
+                remarksTextArea.required = false;
+                remarksTextArea.value = 'N/A';
+            }
+		});
        
     </script>
 
