@@ -223,8 +223,10 @@
                 <tr>
                     <th class="sticky-col" style="width: 100%; left: 0; z-index: 2;">Actions</th>
                     <th id="dssTableHeader">DSS</th>
+                    <th>Status</th>
                     <th>Date</th>
                     <th>No</th>
+                    <th>Id</th>
                     <th>Old/New</th>
                     <th>Class</th>
                     <th>Name of Patient</th>
@@ -263,64 +265,78 @@
                         var modalLabelId = $"{modalId}_label";
                         <tr>
                             <td class="sticky-col d-flex gap-1" style="white-space: nowrap; left: 0; z-index: 1;">
-								@if (!opd.IsAdmitted)
-								{
 
-                                    @if (User.HasClaim("Permission", "CreateForm"))
-                                    {
-                                        <a class="btn btn-primary hide-when-archived" asp-action="AdmitOPD" asp-controller="Form" asp-route-id="@opd.Id"
-                                           onclick="return confirmLinkClick(this.href, 'Confirm Admission', 'Are you sure you want to admit this patient?');"
-                                        data-bs-toggle="tooltip"
-                                        title="Admit Patient">
-                                            <i class="bi bi-box-arrow-in-right"></i>
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        <a class="btn btn-primary text-muted hide-when-archived"
-                                           style="cursor: not-allowed;"
-                                           aria-disabled="true"
-                                           tabindex="-1"
-                                           title="You do not have permission to Admit OPD">
-                                            <i class="bi bi-box-arrow-in-right"></i>
-                                        </a>
-                                    }
+                                <a href="@Url.Action("ViewHistory", new { opdId = opd.OPDId })" 
+                                    class="btn btn-dark text-white"
+                                    data-bs-toggle="tooltip"
+                                    title="View History">
+                                        <i class="bx bx-history"></i>
+                                </a>
 
-                                    @if (User.HasClaim("Permission", "EditOPD"))
-                                    {
-                                        <a class="btn btn-success hide-when-archived" asp-action="Edit" asp-route-id="@opd.Id"
-                                        data-bs-toggle="tooltip"
-                                        title="Edit">
-                                            <i class="bx bx-edit"></i>
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        <a class="btn btn-success text-muted hide-when-archived"
-                                           style="cursor: not-allowed;"
-                                           aria-disabled="true"
-                                           tabindex="-1"
-                                           title="You do not have permission to Edit">
-                                            <i class="bx bx-edit"></i>
-                                        </a>
-                                    }
+                                <a href="@Url.Action("ReAssessment", new { opdId = opd.OPDId })" 
+                                    class="btn btn-success text-white"
+                                    data-bs-toggle="tooltip"
+                                    title="Re-Assessment">
+                                        <i class="bi bi-arrow-repeat"></i>
+                                </a>
 
-                                    @* if (User.HasClaim("Permission", "DeleteOPD"))
-                                    {
-                                        <a class="btn btn-danger" asp-action="Delete" asp-route-id="@opd.Id" onclick="return confirm('Are you sure you want to delete this OPD?');">Delete</a>
-                                    }
-                                    else
-                                    {
-                                        <a class="btn btn-danger text-muted" style="cursor: not-allowed;" title="You do not have permission">
-                                            Delete
-                                        </a>
-                                    } *@
-								}
-                                else
+                                @if (!opd.IsAdmitted)
                                 {
-                                    <span class="badge bg-secondary text-dark ms-2">Admitted</span>
-								}
-		
+                                    
+									@if (User.HasClaim("Permission", "CreateForm"))
+									{
+										<a class="btn btn-primary hide-when-archived" asp-action="AdmitOPD" asp-controller="Form" asp-route-id="@opd.Id"
+										   onclick="return confirmLinkClick(this.href, 'Confirm Admission', 'Are you sure you want to admit this patient?');"
+										data-bs-toggle="tooltip"
+										title="Admit Patient">
+											<i class="bi bi-box-arrow-in-right"></i>
+										</a>
+									}
+									else
+									{
+										<a class="btn btn-primary text-muted hide-when-archived"
+										   style="cursor: not-allowed;"
+										   aria-disabled="true"
+										   tabindex="-1"
+										   title="You do not have permission to Admit OPD">
+											<i class="bi bi-box-arrow-in-right"></i>
+										</a>
+									}
+                                }
+
+                                @if (opd.IsAdmitted)
+                                {
+                                    <a asp-action="ViewForm" asp-controller="Form" asp-route-Id="@opd.PatientID" asp-route-assessmentId="@opd.AssessmentID" 
+                                       class="btn btn-primary"
+                                       data-bs-toggle="tooltip"
+                                       title="View Form">
+                                        <i class="bx bx-file"></i>
+                                    </a>    
+                                }
+
+                                @if (!opd.IsAdmitted)
+                                {
+									@if (User.HasClaim("Permission", "EditOPD"))
+									{
+										<a class="btn btn-success hide-when-archived" asp-action="Edit" asp-route-id="@opd.Id"
+										data-bs-toggle="tooltip"
+										title="Edit">
+											<i class="bx bx-edit"></i>
+										</a>
+									}
+									else
+									{
+										<a class="btn btn-success text-muted hide-when-archived"
+										   style="cursor: not-allowed;"
+										   aria-disabled="true"
+										   tabindex="-1"
+										   title="You do not have permission to Edit">
+											<i class="bx bx-edit"></i>
+										</a>
+									}
+                                }
+
+									
 							</td>
                             <td id="dssTableData">
                                 @if (isEligible)
@@ -355,8 +371,20 @@
                                 }
 
                             </td>
+                            <td style="white-space: nowrap;">
+
+                                @if (opd.IsAdmitted)
+                                {
+                                    <span class="badge bg-primary text-dark ms-2">Admitted</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary text-dark ms-2">Not Admitted</span>
+                                }
+                            </td>
                             <td style="white-space: nowrap;">@opd.Date</td>
                             <td style="white-space: nowrap;">@opd.Id</td>
+							<td style="white-space: nowrap;">@opd.OPDId</td>
                             <td style="white-space: nowrap;">
                                 @if (opd.IsOld)
                                 {

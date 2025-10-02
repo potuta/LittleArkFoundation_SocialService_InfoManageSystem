@@ -3,6 +3,9 @@
     public class OPDModel
     {
         public int Id { get; set; }
+        public int OPDId { get; set; } = 0;
+        public int PatientID { get; set; } = 0;
+        public int AssessmentID { get; set; } = 0;
         public DateOnly Date { get; set; } = DateOnly.MinValue;
         public bool IsOld { get; set; } = false;
         public bool IsAdmitted { get; set; } = false;

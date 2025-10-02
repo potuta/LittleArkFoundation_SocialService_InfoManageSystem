@@ -665,6 +665,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                         if (opd != null)
                         {
                             opd.IsAdmitted = true;
+                            opd.AssessmentID = assessmentID;
+                            opd.PatientID = patientID;
                         }
                     }
 
@@ -1188,6 +1190,28 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     generalAdmission.FatherEducationalAttainment = fatherEducationalAttainment;
                     // No need to call Update here unless using a detached context
                     // context.GeneralAdmission.Update(generalAdmission);
+                }
+
+                // OPD
+                var opd = await context.OPD.FirstOrDefaultAsync(o => o.AssessmentID == assessmentId && o.PatientID == id);
+                if (opd != null)
+                {
+                    if (formViewModel.Patient.FirstName != opd.FirstName ||
+                        formViewModel.Patient.MiddleName != opd.MiddleName ||
+                        formViewModel.Patient.LastName != opd.LastName)
+                    {
+                        var opdList = await context.OPD.Where(o => o.OPDId == opd.OPDId).ToListAsync();
+
+                        foreach (var item in opdList)
+                        {
+                            item.FirstName = formViewModel.Patient.FirstName;
+                            item.MiddleName = formViewModel.Patient.MiddleName;
+                            item.LastName = formViewModel.Patient.LastName;
+                        }
+
+                    }
+                    // No need to call Update here unless using a detached context
+                    // context.OPD.Update(opd);
                 }
 
                 // Update Patient first, avoids Forein Key constraint

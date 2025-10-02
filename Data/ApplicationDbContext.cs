@@ -108,6 +108,7 @@ namespace LittleArkFoundation.Data
         public DbSet<OPDModel> OPD { get; set; }
         public DbSet<GeneralAdmissionModel> GeneralAdmission { get; set; }
         public DbSet<StatisticsModel> Statistics { get; set; }
+        public DbSet<OPDPatientsModel> OPDPatients { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -518,6 +519,15 @@ namespace LittleArkFoundation.Data
 
             modelBuilder.Entity<StatisticsModel>()
                 .Property(s => s.Id)
+                .ValueGeneratedOnAdd();
+
+            // OPDPatients
+            modelBuilder.Entity<OPDPatientsModel>()
+                .ToTable("OPDPatients")
+                .HasKey(o => o.OPDId);
+
+            modelBuilder.Entity<OPDPatientsModel>()
+                .Property(o => o.OPDId)
                 .ValueGeneratedOnAdd();
         }
     }

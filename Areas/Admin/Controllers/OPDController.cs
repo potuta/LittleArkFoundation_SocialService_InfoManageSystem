@@ -42,33 +42,38 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             string sortToggleValue = sortToggle ?? "All";
             ViewBag.sortToggle = sortToggleValue;
 
-            var query = context.OPD.AsQueryable();
-            
+            var latestIds = await context.OPD
+                .GroupBy(o => o.OPDId)
+                .Select(g => g.Max(o => o.Id)) // get latest Id per OPDId
+                .ToListAsync();
+
+            var latestRecords = await context.OPD
+                .Where(o => latestIds.Contains(o.Id))
+                .OrderByDescending(o => o.Id)
+                .ToListAsync();
+
             if (sortToggleValue == "Admitted")
             {
-                // Fetch only admitted patients
-                query = context.OPD.Where(opd => opd.IsAdmitted);
+                latestRecords = latestRecords.Where(o => o.IsAdmitted).ToList();
             }
             else if (sortToggleValue == "Not Admitted")
             {
-                // Fetch only non-admitted patients
-                query = context.OPD.Where(opd => !opd.IsAdmitted);
+                latestRecords = latestRecords.Where(o => !o.IsAdmitted).ToList();
             }
 
             if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
             {
-                query = query.Where(opd => opd.Date.Month == month.Month && opd.Date.Year == month.Year);
+                latestRecords = latestRecords
+                    .Where(o => o.Date.Month == month.Month && o.Date.Year == month.Year)
+                    .ToList();
                 ViewBag.sortByMonth = month.ToString("yyyy-MM");
             }
 
-            // Pagination
-            var totalCount = await query.CountAsync();
-            var opdList = await query
-                .OrderByDescending(o => o.Id)
-                .ThenByDescending(o => o.Date)
+            var totalCount = latestRecords.Count;
+            var opdList = latestRecords
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
-                .ToListAsync();
+                .ToList();
 
             var scoredList = new List<(OPDModel opd, Dictionary<string, int> scores, bool isEligible)>();
             var _scoreService = new OPDScoringService(connectionString);
@@ -79,8 +84,6 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 scoredList.Add((opd, scores, isEligible));
             }
 
-            //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
-            //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
             var users = await context.Users.ToListAsync();
 
             var viewModel = new OPDViewModel
@@ -94,6 +97,114 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             };
 
             return View(viewModel);
+        }
+
+        public async Task<IActionResult> ViewHistory(int opdId)
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var opdList = await context.OPD
+                .Where(o => o.OPDId == opdId)
+                .OrderByDescending(o => o.Id)
+                .ThenByDescending(o => o.Date)
+                .ToListAsync();
+
+            if (opdList == null || opdList.Count == 0)
+            {
+                TempData["ErrorMessage"] = "No history found for the specified OPD ID.";
+                return RedirectToAction("Index");
+            }
+
+            var scoredList = new List<(OPDModel opd, Dictionary<string, int> scores, bool isEligible)>();
+            var _scoreService = new OPDScoringService(connectionString);
+            foreach (var opd in opdList)
+            {
+                var scores = await _scoreService.GetWeightedScoresAsync(opd);
+                var isEligible = await _scoreService.IsEligibleForAdmissionAsync(scores.Values.Sum());
+                scoredList.Add((opd, scores, isEligible));
+            }
+
+            var viewModel = new OPDViewModel
+            {
+                OPDList = opdList,
+                OPDScoringList = scoredList,
+            };
+
+            return View(viewModel);
+        }
+
+        public async Task<IActionResult> ReAssessment(int opdId)
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+            
+            var existingOPD = await context.OPD
+                .Where(o => o.OPDId == opdId)
+                .OrderByDescending(o => o.Id)
+                .ThenByDescending(o => o.Date)
+                .FirstOrDefaultAsync();
+
+            var existingOPDPatient = await context.OPDPatients.FirstOrDefaultAsync(p => p.OPDId == opdId);
+
+            if (existingOPD == null)
+            {
+                TempData["ErrorMessage"] = "No history found for the specified OPD ID.";
+                return RedirectToAction("Index");
+            }
+
+            var viewModel = new OPDViewModel
+            {
+                OPDId = existingOPD.OPDId,
+                OPD = new OPDModel
+                {
+                    OPDId = existingOPD.OPDId,
+                    Date = DateOnly.FromDateTime(DateTime.Now),
+                    IsOld = true,
+                    IsAdmitted = false,
+                    Class = existingOPD.Class,
+                    FirstName = existingOPD.FirstName,
+                    LastName = existingOPD.LastName,
+                    MiddleName = existingOPD.MiddleName,
+                    ContactNo = existingOPD.ContactNo,
+                    Age = existingOPD.Age,
+                    Gender = existingOPD.Gender,
+                    IsPWD = existingOPD.IsPWD,
+                    Diagnosis = existingOPD.Diagnosis,
+                    Address = existingOPD.Address,
+                    SourceOfReferral = existingOPD.SourceOfReferral,
+                    MotherFirstName = existingOPD.MotherFirstName,
+                    MotherMiddleName = existingOPD.MotherMiddleName,
+                    MotherLastName = existingOPD.MotherLastName,
+                    MotherOccupation = existingOPD.MotherOccupation,
+                    FatherFirstName = existingOPD.FatherFirstName,
+                    FatherMiddleName = existingOPD.FatherMiddleName,
+                    FatherLastName = existingOPD.FatherLastName,
+                    FatherOccupation = existingOPD.FatherOccupation,
+                    MonthlyIncome = existingOPD.MonthlyIncome,
+                    NoOfChildren = existingOPD.NoOfChildren,
+                    AssistanceNeeded = existingOPD.AssistanceNeeded,
+                    Amount = existingOPD.Amount,
+                    PtShare = existingOPD.PtShare,
+                    AmountExtended = existingOPD.AmountExtended,
+                    Resources = existingOPD.Resources,
+                    GLProponent = existingOPD.GLProponent,
+                    GLAmountReceived = existingOPD.GLAmountReceived,
+                    MSW = User?.FindFirstValue(ClaimTypes.Name) ?? "N/A",
+                    Category = existingOPD.Category,
+                    UserID = int.Parse(User?.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0")
+                },
+                OPDPatient = new OPDPatientsModel
+                {
+                    OPDId = existingOPDPatient.OPDId,
+                    FirstName = existingOPDPatient.FirstName,
+                    LastName = existingOPDPatient.LastName,
+                    MiddleName = existingOPDPatient.MiddleName,
+                }
+            };
+
+            return View("Create", viewModel);
+
         }
 
         public async Task<IActionResult> Search(string searchString, string? sortToggle, string? sortByMonth, int page = 1, int pageSize = 20)
@@ -112,43 +223,52 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             var searchWords = searchString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-            IQueryable<OPDModel> query = context.OPD.AsQueryable();
+            var latestIds = await context.OPD
+                .GroupBy(o => o.OPDId)
+                .Select(g => g.Max(o => o.Id)) // get latest Id per OPDId
+                .ToListAsync();
+
+            var latestRecords = await context.OPD
+                .Where(o => latestIds.Contains(o.Id))
+                .OrderByDescending(o => o.Id)
+                .ToListAsync();
 
             if (sortToggleValue == "Admitted")
             {
-                query = query.Where(u => u.IsAdmitted);
+                latestRecords = latestRecords.Where(o => o.IsAdmitted).ToList();
             }
             else if (sortToggleValue == "Not Admitted")
             {
-                query = query.Where(u => !u.IsAdmitted);
+                latestRecords = latestRecords.Where(o => !o.IsAdmitted).ToList();
             }
 
             if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
             {
-                query = query.Where(opd => opd.Date.Month == month.Month && opd.Date.Year == month.Year);
+                latestRecords = latestRecords
+                    .Where(o => o.Date.Month == month.Month && o.Date.Year == month.Year)
+                    .ToList();
                 ViewBag.sortByMonth = month.ToString("yyyy-MM");
             }
 
             foreach (var word in searchWords)
             {
-                var term = word.Trim();
+                var term = word.Trim().ToLower();
 
-                query = query.Where(u =>
-                    EF.Functions.Like(u.FirstName, $"%{term}%") ||
-                    EF.Functions.Like(u.MiddleName, $"%{term}%") ||
-                    EF.Functions.Like(u.LastName, $"%{term}%") ||
-                    EF.Functions.Like(u.Id.ToString(), $"%{term}%"));
+                latestRecords = latestRecords.Where(u =>
+                    (!string.IsNullOrEmpty(u.FirstName) && u.FirstName.ToLower().Contains(term)) ||
+                    (!string.IsNullOrEmpty(u.MiddleName) && u.MiddleName.ToLower().Contains(term)) ||
+                    (!string.IsNullOrEmpty(u.LastName) && u.LastName.ToLower().Contains(term)) ||
+                    u.OPDId.ToString().Contains(term)
+                ).ToList();
             }
 
             // Pagination
-            var totalCount = await query.CountAsync();
-            var opdList = await query
-                .OrderByDescending(o => o.Id)
-                .ThenByDescending(o => o.Date)
+            var totalCount = latestRecords.Count;
+            var opdList = latestRecords
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
-                .ToListAsync();
-
+                .ToList();
+            
             var scoredList = new List<(OPDModel opd, Dictionary<string, int> scores, bool isEligible)>();
             var _scoreService = new OPDScoringService(connectionString);
             foreach (var opd in opdList)
@@ -183,11 +303,19 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
 
-            IQueryable<OPDModel> query = context.OPD.AsQueryable();
+            var latestIds = await context.OPD
+                .GroupBy(o => o.OPDId)
+                .Select(g => g.Max(o => o.Id)) // get latest Id per OPDId
+                .ToListAsync();
+
+            var latestRecords = await context.OPD
+                .Where(o => latestIds.Contains(o.Id))
+                .OrderByDescending(o => o.Id)
+                .ToListAsync();
 
             if (!string.IsNullOrEmpty(sortByUserID))
             {
-                query = query.Where(opd => opd.UserID == int.Parse(sortByUserID));
+                latestRecords = latestRecords.Where(opd => opd.UserID == int.Parse(sortByUserID)).ToList();
                 var user = await context.Users.FindAsync(int.Parse(sortByUserID));
                 ViewBag.sortBy = user.Username;
                 ViewBag.sortByUserID = user.UserID.ToString();
@@ -195,27 +323,26 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             if (sortToggleValue == "Admitted")
             {
-                query = query.Where(opd => opd.IsAdmitted);
+                latestRecords = latestRecords.Where(o => o.IsAdmitted).ToList();
             }
             else if (sortToggleValue == "Not Admitted")
             {
-                query = query.Where(opd => !opd.IsAdmitted);
+                latestRecords = latestRecords.Where(o => !o.IsAdmitted).ToList();
             }
 
             if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
             {
-                query = query.Where(opd => opd.Date.Month == month.Month && opd.Date.Year == month.Year);
+                latestRecords = latestRecords
+                    .Where(o => o.Date.Month == month.Month && o.Date.Year == month.Year)
+                    .ToList();
                 ViewBag.sortByMonth = month.ToString("yyyy-MM");
             }
 
-            // Pagination
-            var totalCount = await query.CountAsync();
-            var opdList = await query
-                .OrderByDescending(o => o.Id)
-                .ThenByDescending(o => o.Date)
+            var totalCount = latestRecords.Count;
+            var opdList = latestRecords
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
-                .ToListAsync();
+                .ToList();
 
             var scoredList = new List<(OPDModel opd, Dictionary<string, int> scores, bool isEligible)>();
             var _scoreService = new OPDScoringService(connectionString);
@@ -413,8 +540,62 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 string connectionString = _connectionService.GetCurrentConnectionString();
                 await using var context = new ApplicationDbContext(connectionString);
 
+                if (viewModel.OPDId > 0)
+                {
+                    viewModel.OPD.OPDId = viewModel.OPDId; 
+                    viewModel.OPD.IsOld = true; 
+                    viewModel.OPD.MSW = User?.FindFirstValue(ClaimTypes.Name) ?? "N/A";
+                    viewModel.OPD.UserID = int.Parse(User?.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+                }
+                else
+                {
+                    // Assign a new OPDId
+                    await context.OPDPatients.AddAsync(viewModel.OPDPatient);
+                    await context.SaveChangesAsync();
+                    viewModel.OPD.OPDId = viewModel.OPDPatient.OPDId;
+                    viewModel.OPD.IsOld = false;
+                }
+
                 await context.OPD.AddAsync(viewModel.OPD);
                 await context.SaveChangesAsync();
+
+                var existingOPDList = await context.OPD
+                            .Where(o => o.OPDId == viewModel.OPD.OPDId)
+                            .ToListAsync();                
+
+                if (existingOPDList != null)
+                {
+                    int count = 0;
+                    foreach (var existingOPD in existingOPDList)
+                    {
+                        if (existingOPD.FirstName != viewModel.OPD.FirstName ||
+                            existingOPD.LastName != viewModel.OPD.LastName ||
+                            existingOPD.MiddleName != viewModel.OPD.MiddleName)
+                        {
+                            while (count == 0)
+                            {
+
+                                var existingPatient = await context.OPDPatients
+                                    .FirstOrDefaultAsync(p => p.OPDId == existingOPD.OPDId);
+
+                                if (existingPatient != null)
+                                {
+                                    existingPatient.FirstName = viewModel.OPD.FirstName;
+                                    existingPatient.LastName = viewModel.OPD.LastName;
+                                    existingPatient.MiddleName = viewModel.OPD.MiddleName;
+                                }
+
+                                count++;
+                            }
+
+                            existingOPD.FirstName = viewModel.OPD.FirstName;
+                            existingOPD.LastName = viewModel.OPD.LastName;
+                            existingOPD.MiddleName = viewModel.OPD.MiddleName;
+
+                        }
+                    }
+                    await context.SaveChangesAsync();
+                }
 
                 TempData["SuccessMessage"] = "Successfully created new OPD";
                 LoggingService.LogInformation($"UserID: {User.FindFirst(ClaimTypes.NameIdentifier).Value}. OPD Patient creation successful. Created OPD Id: {viewModel.OPD.Id}");
@@ -462,8 +643,48 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             {
                 string connectionString = _connectionService.GetCurrentConnectionString();
                 await using var context = new ApplicationDbContext(connectionString);
+
                 context.OPD.Update(viewModel.OPD);
                 await context.SaveChangesAsync();
+
+                var existingOPDList = await context.OPD
+                            .Where(o => o.OPDId == viewModel.OPD.OPDId)
+                            .ToListAsync();                
+
+                if (existingOPDList != null)
+                {
+                    int count = 0;
+                    foreach (var existingOPD in existingOPDList)
+                    {
+                        if (existingOPD.FirstName != viewModel.OPD.FirstName ||
+                            existingOPD.LastName != viewModel.OPD.LastName ||
+                            existingOPD.MiddleName != viewModel.OPD.MiddleName)
+                        {
+                            while (count == 0)
+                            {
+
+                                var existingPatient = await context.OPDPatients
+                                    .FirstOrDefaultAsync(p => p.OPDId == existingOPD.OPDId);
+
+                                if (existingPatient != null)
+                                {
+                                    existingPatient.FirstName = viewModel.OPD.FirstName;
+                                    existingPatient.LastName = viewModel.OPD.LastName;
+                                    existingPatient.MiddleName = viewModel.OPD.MiddleName;
+                                }
+
+                                count++;
+                            }
+
+                            existingOPD.FirstName = viewModel.OPD.FirstName;
+                            existingOPD.LastName = viewModel.OPD.LastName;
+                            existingOPD.MiddleName = viewModel.OPD.MiddleName;
+
+                        }
+                    }
+                    await context.SaveChangesAsync();
+                }
+
                 TempData["SuccessMessage"] = $"Successfully edited/updated OPD Id: {viewModel.OPD.Id}";
                 LoggingService.LogInformation($"UserID: {User.FindFirst(ClaimTypes.NameIdentifier).Value}. OPD Patient edited/updated successful. Updated OPD Id: {viewModel.OPD.Id}");
                 return RedirectToAction("Index");

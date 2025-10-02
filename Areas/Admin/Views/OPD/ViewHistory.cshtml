@@ -1,0 +1,353 @@
+﻿@model LittleArkFoundation.Areas.Admin.Models.OPD.OPDViewModel
+@{
+    ViewData["Title"] = "OPD";
+    Layout = "_AdminLayout";
+}
+
+<style>
+    .menu-bar a {
+        min-width: 100px;
+        text-align: center;
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .header-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+    }
+
+        .header-bar h2 {
+            margin-bottom: 0;
+        }
+
+    .sticky-col {
+        position: sticky;
+        left: 0;
+        background: white;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+</style>
+
+<div class="header-bar">
+    <h2>OPD Patient's History</h2>
+
+    <div class="menu-bar d-flex gap-2">
+        <a class="btn btn-outline-dark @(
+           ViewContext.RouteData.Values["action"]?.ToString() == "Index" ||
+           ViewContext.RouteData.Values["action"]?.ToString() == "SortBy" ||
+           ViewContext.RouteData.Values["action"]?.ToString() == "Search" ||
+           ViewContext.RouteData.Values["action"]?.ToString() == "ViewHistory"
+           ? "active" : "")"
+           asp-action="Index" asp-controller="OPD">Main</a>
+
+        <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "Reports" ? "active" : "")"
+           asp-action="Reports" asp-controller="OPD">Reports</a>
+
+        <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "Statistics" ? "active" : "")"
+           asp-action="Statistics" asp-controller="OPD">Statistics</a>
+    </div>
+</div>
+<hr />
+
+<a asp-action="Index" asp-controller="OPD" class="btn btn-outline-secondary mb-3">
+    <i class="bi bi-arrow-left-square"></i> Back to List
+</a>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert" style="width: 60%;">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="width: 60%;">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                <tr>
+                    <th class="sticky-col" style="width: 100%; left: 0; z-index: 2;">Actions</th>
+                    <th id="dssTableHeader">DSS</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>No</th>
+                    <th>Id</th>
+                    <th>Old/New</th>
+                    <th>Class</th>
+                    <th>Name of Patient</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                    <th>PWD</th>
+                    <th>Diagnosis</th>
+                    <th>Complete Address</th>
+                    <th>Source of Referral</th>
+                    <th>Name of Parents</th>
+                    <th>Occupation</th>
+                    <th>Monthly Income</th>
+                    <th>No. of Children</th>
+                    <th>Assistance Needed</th>
+                    <th>Amount</th>
+                    <th>Pt's Share</th>
+                    <th>Amount Extended</th>
+                    <th>Resources</th>
+                    <th>Proponent of GL</th>
+                    <th>Amt of Received GL</th>
+                    <th>MSW</th>
+                    <th>Category</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    var isFirst = true;
+                    @foreach (var item in Model.OPDScoringList)
+                    {
+						var opd = item.opd;
+						var scores = item.scores;
+						var totalScore = scores.Values.Sum();
+                        var isEligible = item.isEligible;
+
+                        var modalId = $"scoreBreakdownModal_{opd.Id}";
+                        var modalLabelId = $"{modalId}_label";
+                        <tr>
+                            <td class="sticky-col d-flex gap-1" style="white-space: nowrap; left: 0; z-index: 1;">
+                                
+                                @if (isFirst)
+                                {
+									<a href="@Url.Action("ReAssessment", new { opdId = opd.OPDId })" 
+										class="btn btn-success text-white"
+										data-bs-toggle="tooltip"
+										title="Re-Assessment">
+											<i class="bi bi-arrow-repeat"></i>
+									</a>
+                                    
+                                    @if (!opd.IsAdmitted)
+									{
+										
+										@if (User.HasClaim("Permission", "CreateForm"))
+										{
+											<a class="btn btn-primary hide-when-archived" asp-action="AdmitOPD" asp-controller="Form" asp-route-id="@opd.Id"
+											   onclick="return confirmLinkClick(this.href, 'Confirm Admission', 'Are you sure you want to admit this patient?');"
+											data-bs-toggle="tooltip"
+											title="Admit Patient">
+												<i class="bi bi-box-arrow-in-right"></i>
+											</a>
+										}
+										else
+										{
+											<a class="btn btn-primary text-muted hide-when-archived"
+											   style="cursor: not-allowed;"
+											   aria-disabled="true"
+											   tabindex="-1"
+											   title="You do not have permission to Admit OPD">
+												<i class="bi bi-box-arrow-in-right"></i>
+											</a>
+										}
+									}
+                                }
+
+                                @if (opd.IsAdmitted)
+                                {
+                                    <a asp-action="ViewForm" asp-controller="Form" asp-route-Id="@opd.PatientID" asp-route-assessmentId="@opd.AssessmentID" 
+                                       class="btn btn-primary"
+                                       data-bs-toggle="tooltip"
+                                       title="View Form">
+                                        <i class="bx bx-file"></i>
+                                    </a>    
+                                }
+
+                                @if (isFirst)
+                                {
+									@if (!opd.IsAdmitted)
+									{
+										@if (User.HasClaim("Permission", "EditOPD"))
+										{
+											<a class="btn btn-success hide-when-archived" asp-action="Edit" asp-route-id="@opd.Id"
+											data-bs-toggle="tooltip"
+											title="Edit">
+												<i class="bx bx-edit"></i>
+											</a>
+										}
+										else
+										{
+											<a class="btn btn-success text-muted hide-when-archived"
+											   style="cursor: not-allowed;"
+											   aria-disabled="true"
+											   tabindex="-1"
+											   title="You do not have permission to Edit">
+												<i class="bx bx-edit"></i>
+											</a>
+										}
+									}
+                                }
+
+							</td>
+                            <td id="dssTableData">
+                                @if (isEligible)
+                                {
+                                    <button type="button"
+                                            class="badge bg-success text-dark ms-2 border-0"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#@modalId">
+                                        <i class="bi bi-flag-fill"></i> Eligible
+                                    </button>
+                                }
+                                else
+                                {
+                                    if (totalScore >= 15 && totalScore < 25)
+                                    {
+                                        <button type="button"
+                                                class="badge bg-warning text-dark ms-2 border-0"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#@modalId">
+                                            <i class="bi bi-flag-fill"></i> Further Review
+                                        </button>
+                                    }
+                                    else if (totalScore < 15)
+                                    {
+                                        <button type="button"
+                                                class="badge bg-danger text-dark ms-2 border-0"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#@modalId">
+                                            <i class="bi bi-flag-fill"></i> Not Eligible
+                                        </button>
+                                    }
+                                }
+
+                            </td>
+                            <td style="white-space: nowrap;">
+                                @if (!opd.IsAdmitted)
+                                {
+                                    <span class="badge bg-secondary text-dark ms-2">Not Admitted</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-primary text-dark ms-2">Admitted</span>
+                                }
+                            </td>
+                            <td style="white-space: nowrap;">@opd.Date</td>
+                            <td style="white-space: nowrap;">@opd.Id</td>
+                            <td style="white-space: nowrap;">@opd.OPDId</td>
+                            <td style="white-space: nowrap;">
+                                @if (opd.IsOld)
+                                {
+                                    <label>Old</label>
+                                }
+                                else
+                                {
+                                    <label>New</label>
+                                }
+                            </td>
+                            <td style="white-space: nowrap;">@opd.Class</td>
+                            <td style="white-space: nowrap;">@opd.LastName, @opd.FirstName @opd.MiddleName</td>
+                            <td style="white-space: nowrap;">@opd.Age</td>
+                            <td style="white-space: nowrap;">@opd.Gender</td>
+                            <td style="white-space: nowrap;">
+                                @if (opd.IsPWD)
+                                {
+                                    <label>Yes</label>
+                                }
+                                else
+                                {
+                                    <label>No</label>
+                                }
+                            </td>
+                            <td style="white-space: nowrap;">@opd.Diagnosis</td>
+                            <td style="white-space: nowrap;">@opd.Address</td>
+                            <td style="white-space: nowrap;">@opd.SourceOfReferral</td>
+                            <td style="white-space: nowrap;">@opd.MotherFirstName / @opd.FatherFirstName</td>
+                            <td style="white-space: nowrap;">@opd.MotherOccupation / @opd.FatherOccupation</td>
+							<td style="white-space: nowrap;">@opd.MonthlyIncome</td>
+							<td style="white-space: nowrap;">@opd.NoOfChildren</td>
+							<td style="white-space: nowrap;">@opd.AssistanceNeeded</td>
+							<td style="white-space: nowrap;">@opd.Amount</td>
+							<td style="white-space: nowrap;">@opd.PtShare</td>
+							<td style="white-space: nowrap;">@opd.AmountExtended</td>
+							<td style="white-space: nowrap;">@opd.Resources</td>
+							<td style="white-space: nowrap;">@opd.GLProponent</td>
+							<td style="white-space: nowrap;">@opd.GLAmountReceived</td>
+							<td style="white-space: nowrap;">@opd.MSW</td>
+							<td style="white-space: nowrap;">@opd.Category</td>
+                        </tr>
+
+                        <!-- Weighted Score Modal -->
+                        <div class="modal fade" id="@modalId" tabindex="-1" aria-labelledby="@modalLabelId" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="@modalLabelId">Weighted Score Breakdown</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                             <h6 class="ms-2">Factors</h6>
+                                             <h6 class="me-2">Points</h6>
+                                        </div>
+                                        <ul class="list-group">
+                                            @foreach (var score in scores)
+                                            {
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    @score.Key 
+                                                    <span class="badge bg-primary rounded-pill">@score.Value</span>
+                                                </li>
+                                            }
+                                        </ul>
+                                        <hr />
+                                        <p class="text-end text-secondary fw-medium small mb-0">
+                                            Threshold: ≥ 25
+                                        </p>
+                                        <p class="text-end fw-bold">
+                                            Total Score: <span class="@(isEligible ? "text-success" : "text-danger")">@totalScore</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        isFirst = false;
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        
+        window.onload = function () {
+            const checkbox = document.getElementById('dssFlexSwitchCheckChecked');
+            const dssEnabled = localStorage.getItem('dssEnabled') === 'true';
+            checkbox.checked = dssEnabled;
+            toggleDSSTable(dssEnabled);
+        };
+
+        function updateDSSEnabled() {
+            const checkbox = document.getElementById('dssFlexSwitchCheckChecked');
+            const dssEnabled = checkbox.checked;
+            localStorage.setItem('dssEnabled', dssEnabled); // store the state
+            toggleDSSTable(dssEnabled);
+        }
+
+        function toggleDSSTable(enabled) {
+            const dssTableHeader = document.getElementById('dssTableHeader');
+            const dssTableData = document.querySelectorAll('#dssTableData');
+
+            dssTableHeader.style.display = enabled ? 'table-cell' : 'none';
+            dssTableData.forEach(td => td.style.display = enabled ? 'table-cell' : 'none');
+        }
+
+    </script>
+}
+

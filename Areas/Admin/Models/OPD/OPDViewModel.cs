@@ -11,6 +11,9 @@ namespace LittleArkFoundation.Areas.Admin.Models.OPD
         public List<UsersModel> Users { get; set; } = new List<UsersModel> { new UsersModel() };
         public StatisticsModel? Statistics { get; set; } = new StatisticsModel();
         public List<StatisticsModel> StatisticsList { get; set; } = new List<StatisticsModel> { new StatisticsModel() };
+        public OPDPatientsModel OPDPatient { get; set; } = new OPDPatientsModel();
+        public List<OPDPatientsModel> OPDPatientsList { get; set; } = new List<OPDPatientsModel> { new OPDPatientsModel() };
+        public int OPDId { get; set; } = 0;
 
         // Pagination properties
         public int? CurrentPage { get; set; } = 1;

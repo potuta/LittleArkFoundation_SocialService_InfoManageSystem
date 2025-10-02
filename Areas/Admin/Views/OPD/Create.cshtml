@@ -93,6 +93,7 @@
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="OPD.MSW" value="@Model.User.Username" />
 	<input type="hidden" asp-for="OPD.UserID" value="@Model.User.UserID" />
+    <input type="hidden" asp-for="OPDId" />
 
     <div class="form-container">
         <h2 style="text-align: center;">Create</h2>
@@ -108,7 +109,7 @@
                 </td>
                 <td>
                     Old/New: <span class="required">*</span>
-                    <select asp-for="OPD.IsOld" required>
+                    <select asp-for="OPD.IsOld" disabled>
                         <option value="true">Old</option>
                         <option value="false">New</option>
                     </select>
@@ -150,7 +151,7 @@
                     Contact Number: <span class="required">*</span>
                     <input type="tel" 
                         asp-for="OPD.ContactNo"
-                        required inputmode="numeric"
+                        inputmode="numeric"
                         pattern="(^09\d{9}$)|(^0\d{1,2}\d{7,8}$)"
                         title="Mobile: 11 digits starting with 09. Or landline e.g. 02xxxxxxx"
                         maxlength="11"

@@ -92,8 +92,12 @@
 <form id="editOPDForm" asp-action="Edit" method="post">
     @Html.AntiForgeryToken()
 	<input type="hidden" asp-for="OPD.Id" />
+    <input type="hidden" asp-for="OPD.OPDId" />
+    <input type="hidden" asp-for="OPD.AssessmentID" />
+    <input type="hidden" asp-for="OPD.PatientID" />
     <input type="hidden" asp-for="OPD.MSW" />
     <input type="hidden" asp-for="OPD.UserID" />
+    <input type="hidden" asp-for="OPD.IsAdmitted" />
 
     <div class="form-container">
         <h2 style="text-align: center;">Edit</h2>
@@ -104,71 +108,72 @@
             <tr>
                 <td>
                     Date of Interview: <span class="required">*</span>
-                    <input type="date" asp-for="OPD.Date" id="dateInput" style="background-color:#e9ecef; cursor: not-allowed;" readonly required>
+                    <input type="date" asp-for="OPD.Date" id="dateInput" style="background-color:#e9ecef; cursor: not-allowed;" readonly>
 
                 </td>
                 <td>
                     Old/New: <span class="required">*</span>
-                    <select asp-for="OPD.IsOld" required>
+                    <select asp-for="OPD.IsOld" disabled>
                         <option value="true">Old</option>
                         <option value="false">New</option>
                     </select>
+                    <input type="hidden" asp-for="OPD.IsOld" />
                 </td>
                 <td>
                     Class: <span class="required">*</span>
-                    <select asp-for="OPD.Class" required>
-                        <option value="N/A">N/A</option>
-                        <option value="A">A</option>
-                        <option value="B">B</option>
-                        <option value="C1">C1</option>
-                        <option value="C2">C2</option>
-                        <option value="C3">C3</option>
-                        <option value="D">D</option>
-                    </select>
+						<select asp-for="OPD.Class" required>
+							<option value="N/A">N/A</option>
+							<option value="A">A</option>
+							<option value="B">B</option>
+							<option value="C1">C1</option>
+							<option value="C2">C2</option>
+							<option value="C3">C3</option>
+							<option value="D">D</option>
+						</select>   
 
                 </td>
             </tr>
 
             <tr>
-                <td>
-                    First Name: <span class="required">*</span>
-                    <input type="text" asp-for="OPD.FirstName" placeholder="Type N/A if No Answer" required>
+					<td>
+						First Name: <span class="required">*</span>
+						<input type="text" asp-for="OPD.FirstName" placeholder="Type N/A if No Answer" required>
 
-                </td>
-                <td>
-                    Middle Name: <span class="required">*</span>
-                    <input type="text" asp-for="OPD.MiddleName" placeholder="Type N/A if No Answer" required>
-                </td>
-                <td>
-                    Last Name: <span class="required">*</span>
-                    <input type="text" asp-for="OPD.LastName" placeholder="Type N/A if No Answer" required>
+					</td>
+					<td>
+						Middle Name: <span class="required">*</span>
+						<input type="text" asp-for="OPD.MiddleName" placeholder="Type N/A if No Answer" required>
+					</td>
+					<td>
+						Last Name: <span class="required">*</span>
+						<input type="text" asp-for="OPD.LastName" placeholder="Type N/A if No Answer" required>
 
-                </td>
+                    </td>
             </tr>
 
             <tr>
                 <td>
                     Contact Number: <span class="required">*</span>
-                    <input type="tel" 
-                        asp-for="OPD.ContactNo"
-                        required inputmode="numeric"
-                        pattern="(^09\d{9}$)|(^0\d{1,2}\d{7,8}$)"
-                        title="Mobile: 11 digits starting with 09. Or landline e.g. 02xxxxxxx"
-                        maxlength="11"
-                        required>
+						<input type="tel" 
+							asp-for="OPD.ContactNo"
+							inputmode="numeric"
+							pattern="(^09\d{9}$)|(^0\d{1,2}\d{7,8}$)"
+							title="Mobile: 11 digits starting with 09. Or landline e.g. 02xxxxxxx"
+							maxlength="11"
+							required>
 
                 </td>
                 <td>
                     Age: <span class="required">*</span>
-                    <input type="text" asp-for="OPD.Age"
-                           placeholder="Type 0 if No Answer" required>
+						<input type="text" asp-for="OPD.Age"
+							   placeholder="Type 0 if No Answer" required>
                 </td>
                 <td>
                     Gender: <span class="required">*</span>
-                    <select asp-for="OPD.Gender" required>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                    </select>
+                        <select asp-for="OPD.Gender" required>
+							<option value="Male">Male</option>
+							<option value="Female">Female</option>
+						</select>
                 </td>
             </tr>
 
