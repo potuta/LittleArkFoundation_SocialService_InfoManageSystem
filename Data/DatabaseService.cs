@@ -392,7 +392,9 @@ namespace LittleArkFoundation.Data
                     "TRUNCATE TABLE Discharges;",
                     "TRUNCATE TABLE OPD;",
                     "TRUNCATE TABLE Logs;",
-                    "TRUNCATE TABLE Stats;"
+                    "TRUNCATE TABLE Stats;",
+                    "DELETE FROM OPDPatients;",
+                    "DBCC CHECKIDENT ('OPDPatients', RESEED, 0);",
                 };
 
                 foreach (var query in commands)
