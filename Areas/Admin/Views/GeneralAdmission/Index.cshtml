@@ -88,7 +88,7 @@
         <form asp-action="Search" asp-route-sortToggle="@sortToggle" asp-route-page="@Model.CurrentPage" asp-route-pageSize="@Model.PageSize">
             <div class="input-group">
                 <input type="hidden" name="sortByMonth" value="@sortByMonth" />
-                <input type="search" name="searchString" class="form-control" placeholder="Search by Id/FullName" aria-label="Search">
+                <input type="search" name="searchString" class="form-control" placeholder="Search by PatientID/FullName" aria-label="Search">
                 <button type="submit" class="btn btn-dark"
                 data-bs-toggle="tooltip"
                 title="Search">
@@ -287,6 +287,7 @@
                         <th class="sticky-col" style="width: 100%; left: 0; z-index: 2;">Actions</th>
                         <th>Date</th>
                         <th>No</th>
+                        <th>PatientID</th>
                         <th>Old/New</th>
                         <th>Hosp No.</th>
                         <th>Name of Patient</th>
@@ -333,12 +334,20 @@
                             <td class="sticky-col d-flex gap-1" style="white-space: nowrap; left: 0; z-index: 1;">
                                 @if (patient.isInterviewed)
                                 {
+                                    <a href="@Url.Action("ViewHistory", new { patientId = patient.PatientID })" 
+										class="btn btn-dark text-white"
+										data-bs-toggle="tooltip"
+										title="View History">
+											<i class="bx bx-history"></i>
+									</a>
+
                                     <a asp-action="ViewForm" asp-controller="Form" asp-route-Id="@patient.PatientID" asp-route-assessmentId="@patient.AssessmentID" 
                                        class="btn btn-primary"
                                        data-bs-toggle="tooltip"
                                        title="View Form">
                                         <i class="bx bx-file"></i>
                                     </a>
+
                                 }
                                 else
                                 {
@@ -386,6 +395,7 @@
                             </td>
                             <td style="white-space: nowrap;">@patient.Date</td>
                             <td style="white-space: nowrap;">@patient.Id</td>
+                            <td style="white-space: nowrap;">@patient.PatientID</td>
                             <td style="white-space: nowrap;">
                                 @if (patient.isOld)
                                 {

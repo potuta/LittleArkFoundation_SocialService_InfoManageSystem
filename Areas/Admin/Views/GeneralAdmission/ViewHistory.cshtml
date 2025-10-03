@@ -1,0 +1,287 @@
+﻿@model LittleArkFoundation.Areas.Admin.Models.GeneralAdmission.GeneralAdmissionViewModel
+@{
+    ViewData["Title"] = "General Admission";
+    Layout = "_AdminLayout";
+}
+
+<style>
+    .menu-bar a {
+        min-width: 100px;
+        text-align: center;
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .header-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+    }
+
+        .header-bar h2 {
+            margin-bottom: 0;
+        }
+
+    .sticky-col {
+        position: sticky;
+        left: 0;
+        background: white;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+</style>
+
+
+<div class="header-bar">
+    <h2>General Admission's History</h2>
+
+    <div class="menu-bar d-flex gap-2">
+        <!-- Main -->
+        <a class="btn btn-outline-dark @(
+           ViewContext.RouteData.Values["controller"]?.ToString() == "Form" &&
+           (
+               ViewContext.RouteData.Values["action"]?.ToString() == "Index" ||
+               ViewContext.RouteData.Values["action"]?.ToString() == "SortBy" ||
+               ViewContext.RouteData.Values["action"]?.ToString() == "Search"
+           ) ? "active" : "")"
+           asp-action="Index" asp-controller="Form">Main</a>
+
+        <!-- General -->
+        <a class="btn btn-outline-dark @(
+            ViewContext.RouteData.Values["controller"]?.ToString() == "GeneralAdmission" &&
+            (
+                ViewContext.RouteData.Values["action"]?.ToString() == "Index" ||
+                ViewContext.RouteData.Values["action"]?.ToString() == "SortBy" ||
+                ViewContext.RouteData.Values["action"]?.ToString() == "Search" ||
+                ViewContext.RouteData.Values["action"]?.ToString() == "ViewHistory"
+            )
+            ? "active" : "")"
+            asp-action="Index" asp-controller="GeneralAdmission">General</a>
+
+        <a class="btn btn-outline-dark @(
+            ViewContext.RouteData.Values["controller"]?.ToString() == "GeneralAdmission" &&
+            (
+                ViewContext.RouteData.Values["action"]?.ToString() == "Reports" ||
+                ViewContext.RouteData.Values["action"]?.ToString() == "SortByReports"
+            ) ? "active" : "")"
+           asp-action="Reports" asp-controller="GeneralAdmission">Reports</a>
+
+        <!-- Statistics -->
+        <a class="btn btn-outline-dark @(
+                               ViewContext.RouteData.Values["controller"]?.ToString() == "GeneralAdmission" &&
+                                   (
+                                       ViewContext.RouteData.Values["action"]?.ToString() == "Statistics" ||
+                                       ViewContext.RouteData.Values["action"]?.ToString() == "SortByStatistics"
+                                   ) ? "active" : "")"
+           asp-action="Statistics" asp-controller="GeneralAdmission">Statistics</a>
+    </div>
+</div>
+<hr />
+
+<a asp-action="Index" asp-controller="GeneralAdmission" class="btn btn-outline-secondary mb-3">
+    <i class="bi bi-arrow-left-square"></i> Back to List
+</a>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert" style="width: 60%;">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="width: 60%;">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        @* <th>AssessmentID</th>
+                        <th>PatientID</th> *@
+                        <th class="sticky-col" style="width: 100%; left: 0; z-index: 2;">Actions</th>
+                        <th>Date</th>
+                        <th>No</th>
+                        <th>Old/New</th>
+                        <th>Hosp No.</th>
+                        <th>Name of Patient</th>
+                        <th>Ward</th>
+                        <th>Class</th>
+                        <th>Age</th>
+                        <th>Gender</th>
+                        <th>Time</th>
+                        <th>Diagnosis</th>
+                        <th>Complete Address</th>
+                        <th>Origin</th>
+                        <th>Contact No.</th>
+                        <th>Referral</th>
+                        <th>Occupation</th>
+                        <th>Stat's Occupation</th>
+                        <th>Income Range</th>
+                        <th>Monthly Income</th>
+                        <th>Eco. Stat</th>
+                        <th>HH Size</th>
+                        <th>M. Stat</th>
+                        <th>PWD</th>
+                        <th>Patient</th>
+                        <th>Father</th>
+                        <th>Mother</th>
+                        <th>Yes</th>
+                        <th>No</th>
+                        <th>Dwell</th>
+                        <th>Light</th>
+                        <th>Water</th>
+                        <th>Fuel</th>
+                        <th>PHIC</th>
+                        <th>MSW</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    var isFirst = true;
+                    @foreach (var patient in Model.GeneralAdmissions)
+                    {
+                        <tr>
+                            @* <td style="white-space: nowrap;">@patient.AssessmentID</td>
+                            <td style="white-space: nowrap;">@patient.PatientID</td> *@
+                            <td class="sticky-col d-flex gap-1" style="white-space: nowrap; left: 0; z-index: 1;">
+                                @if (patient.isInterviewed)
+                                {
+                                    <a asp-action="ViewForm" asp-controller="Form" asp-route-Id="@patient.PatientID" asp-route-assessmentId="@patient.AssessmentID" 
+                                       class="btn btn-primary"
+                                       data-bs-toggle="tooltip"
+                                       title="View Form">
+                                        <i class="bx bx-file"></i>
+                                    </a>
+                                }
+                                else
+                                {
+                                    if (isFirst)
+                                    {
+										@if (User.HasClaim("Permission", "CreateForm"))
+										{
+											<a asp-action="InterviewGeneral" asp-controller="Form" asp-route-Id="@patient.Id"
+											   class="btn btn-secondary hide-when-archived"
+											   onclick="return confirmLinkClick(this.href, 'Confirm Admission', 'Are you sure you want to Interview this patient?');"
+											   data-bs-toggle="tooltip"
+											   title="Interview Patient">
+												<i class="bi bi-box-arrow-in-left"></i>
+											</a>
+										}
+										else
+										{
+											<a class="btn btn-secondary text-muted hide-when-archived"
+											   style="cursor: not-allowed;"
+											   aria-disabled="true"
+											   tabindex="-1"
+											   title="You do not have permission to Interview Patient">
+												<i class="bi bi-box-arrow-in-left"></i>
+											</a>
+										}
+                                    }
+                                }
+
+                                @if (isFirst)
+                                {
+									@if (User.HasClaim("Permission", "EditForm"))
+									{
+										<a asp-action="Edit" asp-controller="GeneralAdmission" asp-route-Id="@patient.Id"
+										   class="btn btn-success hide-when-archived"
+										   data-bs-toggle="tooltip"
+										   title="Edit">
+											<i class="bx bx-edit"></i>
+										</a>
+									}
+									else
+									{
+										<a class="btn btn-success text-muted hide-when-archived"
+										   style="cursor: not-allowed;"
+										   aria-disabled="true"
+										   tabindex="-1"
+										   title="You do not have permission to Edit">
+											<i class="bx bx-edit"></i>
+										</a>
+									}
+                                }
+
+                            </td>
+                            <td style="white-space: nowrap;">@patient.Date</td>
+                            <td style="white-space: nowrap;">@patient.Id</td>
+                            <td style="white-space: nowrap;">
+                                @if (patient.isOld)
+                                {
+                                    <label>Old</label>
+                                }
+                                else
+                                {
+                                    <label>New</label>
+                                }
+                            </td>
+                            <td style="white-space: nowrap;">@patient.HospitalNo</td>
+                            <td style="white-space: nowrap;">@patient.LastName, @patient.FirstName @patient.MiddleName</td>
+                            <td style="white-space: nowrap;">@patient.Ward</td>
+                            <td style="white-space: nowrap;">@patient.Class</td>
+                            <td style="white-space: nowrap;">@patient.Age</td>
+                            <td style="white-space: nowrap;">@patient.Gender</td>
+                            <td style="white-space: nowrap;">@patient.Time</td>
+                            <td style="white-space: nowrap;">@patient.Diagnosis</td>
+                            <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                @patient.CompleteAddress
+                            </td>
+                            <td style="white-space: nowrap;">@patient.Origin</td>
+                            <td style="white-space: nowrap;">@patient.ContactNumber</td>
+                            <td style="white-space: nowrap;">@patient.Referral</td>
+                            <td style="white-space: nowrap;">@patient.Occupation</td>
+                            <td style="white-space: nowrap;">@patient.StatsOccupation</td>
+                            <td style="white-space: nowrap;">@patient.IncomeRange</td>
+                            <td style="white-space: nowrap;">@patient.MonthlyIncome</td>
+                            <td style="white-space: nowrap;">@patient.EconomicStatus</td>
+                            <td style="white-space: nowrap;">@patient.HouseholdSize</td>
+                            <td style="white-space: nowrap;">@patient.MaritalStatus</td>
+                            <td style="white-space: nowrap;">
+                                @if (patient.isPWD)
+                                {
+                                    <label>Yes</label>
+                                }
+                                else
+                                {
+                                    <label>No</label>
+                                }
+                            </td>
+                            <td style="white-space: nowrap;">@patient.EducationalAttainment</td>
+                            <td style="white-space: nowrap;">@patient.FatherEducationalAttainment</td>
+                            <td style="white-space: nowrap;">@patient.MotherEducationalAttainment</td>
+                            @if (patient.isInterviewed)
+                            {
+                                <td style="white-space: nowrap;">✓</td>
+                                <td style="white-space: nowrap;"></td>
+                            }
+                            else
+                            {
+                                <td style="white-space: nowrap;"></td>
+                                <td style="white-space: nowrap;">✓</td>
+							}
+                            <td style="white-space: nowrap;">@patient.DwellingType</td>
+                            <td style="white-space: nowrap;">@patient.LightSource</td>
+                            <td style="white-space: nowrap;">@patient.WaterSource</td>
+                            <td style="white-space: nowrap;">@patient.FuelSource</td>
+                            <td style="white-space: nowrap;">@patient.PHIC</td>
+                            <td style="white-space: nowrap;">@patient.MSW</td>
+                        </tr>
+						isFirst = false;
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

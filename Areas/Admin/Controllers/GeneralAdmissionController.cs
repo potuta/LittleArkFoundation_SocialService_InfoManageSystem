@@ -37,31 +37,49 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             string sortToggleValue = sortToggle ?? "All";
             ViewBag.sortToggle = sortToggleValue;
 
-            var query = context.GeneralAdmission.AsQueryable();
+            var latestIds = await context.GeneralAdmission
+                .Where(o => o.PatientID != 0) // only group valid patient IDs
+                .GroupBy(o => o.PatientID)
+                .Select(g => g.Max(o => o.Id))
+                .ToListAsync();
+
+            // Get the grouped "latest" records
+            var latestRecords = await context.GeneralAdmission
+                .Where(o => latestIds.Contains(o.Id))
+                .ToListAsync();
+
+            // Get all records where PatientID = 0 (no grouping possible)
+            var noPatientIdRecords = await context.GeneralAdmission
+                .Where(o => o.PatientID == 0)
+                .ToListAsync();
+
+            // Merge both
+            var allLatestRecords = latestRecords
+                .Concat(noPatientIdRecords)
+                .OrderByDescending(o => o.Id)
+                .ToList(); 
             
             if (sortToggleValue == "Interviewed")
             {
-                query = context.GeneralAdmission.Where(patient => patient.isInterviewed);
+                allLatestRecords = allLatestRecords.Where(patient => patient.isInterviewed).ToList();
             }
             else if (sortToggleValue == "Not Interviewed")
             {
-                query = context.GeneralAdmission.Where(patient => !patient.isInterviewed);
+                allLatestRecords = allLatestRecords.Where(patient => !patient.isInterviewed).ToList();
             }
 
             if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
             {
-                query = query.Where(opd => opd.Date.Month == month.Month && opd.Date.Year == month.Year);
+                allLatestRecords = allLatestRecords.Where(opd => opd.Date.Month == month.Month && opd.Date.Year == month.Year).ToList();
                 ViewBag.sortByMonth = month.ToString("yyyy-MM");
             }
 
             // Pagination
-            var totalCount = await query.CountAsync();
-            var generalAdmissions = await query
-                .OrderByDescending(g => g.Id)
-                .ThenByDescending(g => g.Date)
+            var totalCount = allLatestRecords.Count;
+            var generalAdmissions = allLatestRecords
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
-                .ToListAsync();
+                .ToList();
 
             //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
@@ -74,6 +92,31 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 CurrentPage = page,
                 PageSize = pageSize,
                 TotalCount = totalCount,
+            };
+
+            return View(viewModel);
+        }
+
+        public async Task<IActionResult> ViewHistory(int patientId)
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var generalAdmissionsList = await context.GeneralAdmission
+                .Where(g => g.PatientID == patientId)
+                .OrderByDescending(g => g.Id)
+                .ThenByDescending(g => g.Date)
+                .ToListAsync();
+
+            if (generalAdmissionsList == null || generalAdmissionsList.Count == 0)
+            {
+                TempData["ErrorMessage"] = "No history found for the specified Patient.";
+                return RedirectToAction("Index");
+            }
+
+            var viewModel = new GeneralAdmissionViewModel
+            {
+                GeneralAdmissions = generalAdmissionsList
             };
 
             return View(viewModel);
@@ -95,42 +138,61 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             var searchWords = searchString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-            var query = context.GeneralAdmission.AsQueryable();
+            var latestIds = await context.GeneralAdmission
+                .Where(o => o.PatientID != 0) // only group valid patient IDs
+                .GroupBy(o => o.PatientID)
+                .Select(g => g.Max(o => o.Id))
+                .ToListAsync();
+
+            // Get the grouped "latest" records
+            var latestRecords = await context.GeneralAdmission
+                .Where(o => latestIds.Contains(o.Id))
+                .ToListAsync();
+
+            // Get all records where PatientID = 0 (no grouping possible)
+            var noPatientIdRecords = await context.GeneralAdmission
+                .Where(o => o.PatientID == 0)
+                .ToListAsync();
+
+            // Merge both
+            var allLatestRecords = latestRecords
+                .Concat(noPatientIdRecords)
+                .OrderByDescending(o => o.Id)
+                .ToList(); 
 
             if (sortToggleValue == "Interviewed")
             {
-                query = context.GeneralAdmission.Where(patient => patient.isInterviewed);
+                allLatestRecords = allLatestRecords.Where(patient => patient.isInterviewed).ToList();
             }
             else if (sortToggleValue == "Not Interviewed")
             {
-                query = context.GeneralAdmission.Where(patient => !patient.isInterviewed);
+                allLatestRecords = allLatestRecords.Where(patient => !patient.isInterviewed).ToList();
             }
 
             if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
             {
-                query = query.Where(opd => opd.Date.Month == month.Month && opd.Date.Year == month.Year);
+                allLatestRecords = allLatestRecords.Where(opd => opd.Date.Month == month.Month && opd.Date.Year == month.Year).ToList();
                 ViewBag.sortByMonth = month.ToString("yyyy-MM");
             }
 
             foreach (var word in searchWords)
             {
-                var term = word.Trim();
+                var term = word.Trim().ToLower();
 
-                query = query.Where(u =>
-                    EF.Functions.Like(u.FirstName, $"%{term}%") ||
-                    EF.Functions.Like(u.MiddleName, $"%{term}%") ||
-                    EF.Functions.Like(u.LastName, $"%{term}%") ||
-                    EF.Functions.Like(u.Id.ToString(), $"%{term}%"));
+                allLatestRecords = allLatestRecords.Where(u =>
+                    (!string.IsNullOrEmpty(u.FirstName) && u.FirstName.ToLower().Contains(term)) ||
+                    (!string.IsNullOrEmpty(u.MiddleName) && u.MiddleName.ToLower().Contains(term)) ||
+                    (!string.IsNullOrEmpty(u.LastName) && u.LastName.ToLower().Contains(term)) ||
+                    u.PatientID.ToString().Contains(term)
+                ).ToList();
             }
 
             // Pagination
-            var totalCount = await query.CountAsync();
-            var generalAdmissions = await query
-                .OrderByDescending(g => g.Id)
-                .ThenByDescending(g => g.Date)
+            var totalCount = allLatestRecords.Count;
+            var generalAdmissions = allLatestRecords
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
-                .ToListAsync();
+                .ToList();
 
             //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
@@ -156,11 +218,31 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
 
-            var query = context.GeneralAdmission.AsQueryable();
+            var latestIds = await context.GeneralAdmission
+                .Where(o => o.PatientID != 0) // only group valid patient IDs
+                .GroupBy(o => o.PatientID)
+                .Select(g => g.Max(o => o.Id))
+                .ToListAsync();
+
+            // Get the grouped "latest" records
+            var latestRecords = await context.GeneralAdmission
+                .Where(o => latestIds.Contains(o.Id))
+                .ToListAsync();
+
+            // Get all records where PatientID = 0 (no grouping possible)
+            var noPatientIdRecords = await context.GeneralAdmission
+                .Where(o => o.PatientID == 0)
+                .ToListAsync();
+
+            // Merge both
+            var allLatestRecords = latestRecords
+                .Concat(noPatientIdRecords)
+                .OrderByDescending(o => o.Id)
+                .ToList(); 
 
             if (!string.IsNullOrEmpty(sortByUserID))
             {
-                query = query.Where(patient => patient.UserID == int.Parse(sortByUserID));
+                allLatestRecords = allLatestRecords.Where(patient => patient.UserID == int.Parse(sortByUserID)).ToList();
                 var user = await context.Users.FindAsync(int.Parse(sortByUserID));
                 ViewBag.sortBy = user.Username;
                 ViewBag.sortByUserID = user.UserID.ToString();
@@ -168,27 +250,25 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             if (sortToggleValue == "Interviewed")
             {
-                query = query.Where(patient => patient.isInterviewed);
+                allLatestRecords = allLatestRecords.Where(patient => patient.isInterviewed).ToList();
             }
             else if (sortToggleValue == "Not Interviewed")
             {
-                query = query.Where(patient => !patient.isInterviewed);
+                allLatestRecords = allLatestRecords.Where(patient => !patient.isInterviewed).ToList();
             }
 
             if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
             {
-                query = query.Where(patient => patient.Date.Month == month.Month && patient.Date.Year == month.Year);
+                allLatestRecords = allLatestRecords.Where(opd => opd.Date.Month == month.Month && opd.Date.Year == month.Year).ToList();
                 ViewBag.sortByMonth = month.ToString("yyyy-MM");
             }
 
             // Pagination
-            var totalCount = await query.CountAsync();
-            var generalAdmissions = await query
-                .OrderByDescending(g => g.Id)
-                .ThenByDescending(g => g.Date)
+            var totalCount = allLatestRecords.Count;
+            var generalAdmissions = allLatestRecords
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
-                .ToListAsync();
+                .ToList();
 
             //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
