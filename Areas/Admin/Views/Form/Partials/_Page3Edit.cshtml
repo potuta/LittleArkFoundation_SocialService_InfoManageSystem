@@ -365,7 +365,8 @@
         <th colspan="3">
             B. How severe do you rate your child’s presenting problems, on a scale of 1‐10 with 1 being the most severe?
             <div class="radio-group">
-                <input type="radio" asp-for="PresentingProblems.Severity" value="1" required> 1
+                <input type="radio" asp-for="PresentingProblems.Severity" value="0" required> 0
+                <input type="radio" asp-for="PresentingProblems.Severity" value="1"> 1
                 <input type="radio" asp-for="PresentingProblems.Severity" value="2"> 2
                 <input type="radio" asp-for="PresentingProblems.Severity" value="3"> 3
                 <input type="radio" asp-for="PresentingProblems.Severity" value="4"> 4
@@ -490,6 +491,7 @@
                 <input type="radio" asp-for="PresentingProblems.DurationOfStress" value="1 – 6 months"> c. 1 – 6 months
                 <input type="radio" asp-for="PresentingProblems.DurationOfStress" value="6 months – 1 year"> d. 6 months – 1 year
                 <input type="radio" asp-for="PresentingProblems.DurationOfStress" value="Longer than one year"> e.  Longer than one year
+                <input type="radio" asp-for="PresentingProblems.DurationOfStress" value="N/A"> N/A
             </div>
         </th>
     </tr>
@@ -497,7 +499,8 @@
         <th colspan="3">
             E. How do you rate your child’s current level of coping on a scale of 1 – 10 with 1 being unable to cope?
             <div class="radio-group">
-                <input type="radio" asp-for="PresentingProblems.CopingLevel" value="1" required> 1
+                <input type="radio" asp-for="PresentingProblems.CopingLevel" value="0" required> 0
+                <input type="radio" asp-for="PresentingProblems.CopingLevel" value="1"> 1
                 <input type="radio" asp-for="PresentingProblems.CopingLevel" value="2"> 2
                 <input type="radio" asp-for="PresentingProblems.CopingLevel" value="3"> 3
                 <input type="radio" asp-for="PresentingProblems.CopingLevel" value="4"> 4

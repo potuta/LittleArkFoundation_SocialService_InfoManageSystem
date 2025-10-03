@@ -26,6 +26,7 @@
                     <input type="radio" asp-for="LegalInvolvement.HasCPSInvolvement" value="None" required> None
                     <input type="radio" asp-for="LegalInvolvement.HasCPSInvolvement" value="Past"> Past
                     <input type="radio" asp-for="LegalInvolvement.HasCPSInvolvement" value="Current"> Current
+                    <input type="radio" asp-for="LegalInvolvement.HasCPSInvolvement" value="N/A"> N/A
                 </div>
             </div>
             <div style="display: flex; width: 100%;">
@@ -67,6 +68,7 @@
                     <input type="radio" asp-for="LegalInvolvement.LegalStatus" value="Pending Charges" onchange="toggleRequiredRadio(this)"> Charges Pending
                     <input type="radio" asp-for="LegalInvolvement.LegalStatus" value="Prior Incarceration" onchange="toggleRequiredRadio(this)"> Prior Incarceration
                     <input type="radio" asp-for="LegalInvolvement.LegalStatus" value="Law Suit or other Court Proceeding" onchange="toggleRequiredRadio(this)"> Law Suit or other Court Proceeding
+                    <input type="radio" asp-for="LegalInvolvement.LegalStatus" value="N/A" onchange="toggleRequiredRadio(this)"> N/A
                 </div>
             </div>
             <div style="display: flex;">
