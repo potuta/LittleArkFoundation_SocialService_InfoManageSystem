@@ -545,10 +545,8 @@
 
         <tr>
             <td>
-                <select asp-for="FamilyHistory[0].IsSelf" required>
-                    <option value="True">Self</option>
-                    @* <option value="False">Others</option> *@
-                </select>
+                <span>Self</span>
+                <input type="hidden" name="FamilyHistory[0].IsSelf" value="True" readonly />
             </td>
 
             <td>
@@ -625,10 +623,8 @@
 
         <tr>
             <td>
-                <select asp-for="FamilyHistory[1].IsSelf" required>
-                    @* <option value="True">Self</option> *@
-                    <option value="False">Others</option>
-                </select>
+                <span>Others</span>
+                <input type="hidden" name="FamilyHistory[1].IsSelf" value="False" readonly />
             </td>
 
             <td>

@@ -105,6 +105,11 @@
         box-shadow: 0 0 0 2px red;
     }
 
+    .disabled-section {
+		opacity: 0.6;
+		pointer-events: none; /* prevent clicks inside */
+	}
+
 </style>
 
 <div class="mt-2">
@@ -148,20 +153,34 @@
             </div>
 
             <div class="accordion-item" id="page3">
-                <h2 class="accordion-header" id="headingPage3">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePage3" aria-expanded="false" aria-controls="collapsePage3">
-                        Page 3
-                    </button>
-                </h2>
-                <div id="collapsePage3" class="accordion-collapse collapse" aria-labelledby="headingPage3">
-                    <div class="accordion-body">
-                        @await Html.PartialAsync("Partials/_Page3Create", Model)
-                    </div>
-                </div>
-            </div>
+				<h2 class="accordion-header d-flex align-items-center justify-content-between" id="headingPage3">
+					<div class="d-flex align-items-center w-100">
+						<!-- Enable Checkbox on Left -->
+						<div class="form-check m-0">
+							<input class="form-check-input page-toggle" type="checkbox" id="togglePage3" data-target="#collapsePage3">
+						</div>
+
+						<!-- Accordion button -->
+						<button class="accordion-button collapsed flex-grow-1" type="button"
+								data-bs-toggle="collapse" data-bs-target="#collapsePage3"
+								aria-expanded="false" aria-controls="collapsePage3">
+							Page 3
+						</button>
+					</div>
+				</h2>
+
+				<div id="collapsePage3" class="accordion-collapse collapse" aria-labelledby="headingPage3">
+					<div class="accordion-body">
+						@await Html.PartialAsync("Partials/_Page3Create", Model)
+					</div>
+				</div>
+			</div>
 
             <div class="accordion-item" id="page4">
-                <h2 class="accordion-header" id="headingPage4">
+                <h2 class="accordion-header d-flex align-items-center justify-content-between" id="headingPage4">
+                    <div class="form-check m-0">
+							<input class="form-check-input page-toggle" type="checkbox" id="togglePage4" data-target="#collapsePage4">
+					</div>
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePage4" aria-expanded="false" aria-controls="collapsePage4">
                         Page 4
                     </button>
@@ -174,7 +193,10 @@
             </div>
 
             <div class="accordion-item" id="page5">
-                <h2 class="accordion-header" id="headingPage5">
+                <h2 class="accordion-header d-flex align-items-center justify-content-between" id="headingPage5">
+                    <div class="form-check m-0">
+							<input class="form-check-input page-toggle" type="checkbox" id="togglePage5" data-target="#collapsePage5">
+					</div>
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePage5" aria-expanded="false" aria-controls="collapsePage5">
                         Page 5
                     </button>
@@ -187,7 +209,10 @@
             </div>
 
             <div class="accordion-item" id="page6">
-                <h2 class="accordion-header" id="headingPage6">
+                <h2 class="accordion-header d-flex align-items-center justify-content-between" id="headingPage6">
+                    <div class="form-check m-0">
+							<input class="form-check-input page-toggle" type="checkbox" id="togglePage6" data-target="#collapsePage6">
+					</div>
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePage6" aria-expanded="false" aria-controls="collapsePage6">
                         Page 6
                     </button>
@@ -200,7 +225,10 @@
             </div>
 
             <div class="accordion-item" id="page7">
-                <h2 class="accordion-header" id="headingPage7">
+                <h2 class="accordion-header d-flex align-items-center justify-content-between" id="headingPage7">
+                    <div class="form-check m-0">
+							<input class="form-check-input page-toggle" type="checkbox" id="togglePage7" data-target="#collapsePage7">
+					</div>
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePage7" aria-expanded="false" aria-controls="collapsePage7">
                         Page 7
                     </button>
@@ -213,7 +241,10 @@
             </div>
 
             <div class="accordion-item" id="page8">
-                <h2 class="accordion-header" id="headingPage8">
+                <h2 class="accordion-header d-flex align-items-center justify-content-between" id="headingPage8">
+                    <div class="form-check m-0">
+							<input class="form-check-input page-toggle" type="checkbox" id="togglePage8" data-target="#collapsePage8">
+					</div>
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePage8" aria-expanded="false" aria-controls="collapsePage8">
                         Page 8
                     </button>
@@ -976,6 +1007,45 @@
                 formSelector: "#createAdmissionForm"
             });
         });
+    </script>
+
+    <script>
+       document.addEventListener("DOMContentLoaded", function () {
+		document.querySelectorAll(".page-toggle").forEach(checkbox => {
+			const targetId = checkbox.getAttribute("data-target");
+			const section = document.querySelector(targetId);
+
+			if (!section) return;
+
+			// Store initial enabled/disabled state for each control (except hidden)
+			section.querySelectorAll("input:not([type=hidden]), select, textarea, button").forEach(el => {
+				el.dataset.initiallyDisabled = el.disabled ? "true" : "false";
+			});
+
+			checkbox.addEventListener("change", function () {
+				const controls = section.querySelectorAll("input:not([type=hidden]), select, textarea, button");
+
+				if (this.checked) {
+					// Enable only fields that were not disabled initially
+					controls.forEach(el => {
+						if (el.dataset.initiallyDisabled === "false") {
+							el.disabled = false;
+						}
+					});
+					section.classList.remove("disabled-section");
+				} else {
+					// Disable everything visible, leave hidden inputs untouched
+					controls.forEach(el => {
+						el.disabled = true;
+					});
+					section.classList.add("disabled-section");
+				}
+			});
+
+			// Trigger initial state
+			checkbox.dispatchEvent(new Event("change"));
+		});
+	});
     </script>
 }
 
