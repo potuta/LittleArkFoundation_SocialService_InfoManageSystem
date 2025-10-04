@@ -6,6 +6,9 @@
 <table id="progressnotes-table">
     <tr>
         <th>
+            MSW
+        </th>
+        <th>
             DATE
         </th>
         <th>
@@ -40,11 +43,32 @@
                 </td>
 
                 <td>
-                    <input type="date" asp-for="ProgressNotes[i].Date" required>
+                    @if (User.FindFirstValue(ClaimTypes.NameIdentifier) == Model.ProgressNotes[i].UserID.ToString())
+                    {
+                        <input type="date" asp-for="ProgressNotes[i].Date" required>
+                    }
+                    else
+                    {
+                        <input type="date" asp-for="ProgressNotes[i].Date"
+							class="text-muted" 
+							style="background-color:#e9ecef; cursor: not-allowed;" 
+							readonly>
+                    }
                 </td>
 
                 <td>
-                    <textarea asp-for="ProgressNotes[i].ProgressNotes" rows="2" cols="30" placeholder="Type N/A if no answer" required></textarea>
+                    @if (User.FindFirstValue(ClaimTypes.NameIdentifier) == Model.ProgressNotes[i].UserID.ToString())
+                    {
+                        <textarea asp-for="ProgressNotes[i].ProgressNotes" rows="2" cols="30" placeholder="Type N/A if no answer" required></textarea>
+                    }
+                    else
+                    {
+                        <textarea asp-for="ProgressNotes[i].ProgressNotes" rows="2" cols="30" placeholder="Type N/A if no answer"
+							class="text-muted" 
+							style="background-color:#e9ecef; cursor: not-allowed;" 
+							readonly>
+						</textarea>
+                    }
                 </td>
 
                 <td>
@@ -53,20 +77,31 @@
                     <input type="hidden" asp-for="ProgressNotes[i].AttachmentContentType" id="attachmentContentType-@i" />
                     <input type="hidden" asp-for="ProgressNotes[i].RemoveAttachment" id="removeAttachment-@i" />
 
-                    @if (hasFile)
+                    @if (User.FindFirstValue(ClaimTypes.NameIdentifier) == Model.ProgressNotes[i].UserID.ToString())
                     {
-                        <input type="file" asp-for="ProgressNotes[i].AttachmentFile" id="uploadedFile-@i"
-                               accept=".pdf,image/png,image/jpeg,image/jpg"
-                               class="form-control mb-2"
-                               style="display: none;"
-                               onchange="handleFileUpload(this, @i)" disabled />
+						@if (hasFile)
+						{
+							<input type="file" asp-for="ProgressNotes[i].AttachmentFile" id="uploadedFile-@i"
+								   accept=".pdf,image/png,image/jpeg,image/jpg"
+								   class="form-control mb-2"
+								   style="display: none;"
+								   onchange="handleFileUpload(this, @i)" disabled />
+						}
+						else
+						{
+							<input type="file" asp-for="ProgressNotes[i].AttachmentFile" id="uploadedFile-@i"
+								   accept=".pdf,image/png,image/jpeg,image/jpg"
+								   class="form-control mb-2"
+								   onchange="handleFileUpload(this, @i)" />
+                        }
                     }
                     else
                     {
                         <input type="file" asp-for="ProgressNotes[i].AttachmentFile" id="uploadedFile-@i"
-                               accept=".pdf,image/png,image/jpeg,image/jpg"
-                               class="form-control mb-2"
-                               onchange="handleFileUpload(this, @i)" />
+								   accept=".pdf,image/png,image/jpeg,image/jpg"
+								   class="form-control mb-2"
+								   style="display: none;"
+								   onchange="handleFileUpload(this, @i)" disabled />    
                     }
 
                     <div id="previewContainer-@i" class="d-flex justify-content-center align-items-center gap-2" style="@(hasFile ? "" : "display: none;")">
@@ -85,12 +120,25 @@
                             title="Download File">
                             <i class="bi bi-file-earmark-arrow-down"></i>
                         </a>
-                        <button type="button" 
-                            class="btn btn-danger"
-                            title="Delete File"
-                            onclick="if (confirm('Are you sure you want to remove this file?')) removeFile(@i);">
-                            <i class="bi bi-trash"></i>
-                        </button>
+                        @if (User.FindFirstValue(ClaimTypes.NameIdentifier) == Model.ProgressNotes[i].UserID.ToString())
+                        {
+							<button type="button" 
+								class="btn btn-danger"
+								title="Delete File"
+								onclick="if (confirm('Are you sure you want to remove this file?')) removeFile(@i);">
+								<i class="bi bi-trash"></i>
+                            </button>
+                        }
+                        else
+                        {
+                            <button type="button" 
+								class="btn btn-danger"
+								onclick="if (confirm('Are you sure you want to remove this file?')) removeFile(@i);"
+                                title="Not allowed to delete other user's progress notes file"
+                                disabled>
+								<i class="bi bi-trash"></i>
+                            </button>
+                        }
                     </div>
 
                     <!-- File Display Modal -->
@@ -130,10 +178,26 @@
 
                 </td>
 
-                <td><button type="button" 
-                    id="progressnotes-button-remove"
-                    class="d-flex justify-content-center align-items-center"
-                    onclick="removeRow(this)">❌</button></td>
+                @if (User.FindFirstValue(ClaimTypes.NameIdentifier) == Model.ProgressNotes[i].UserID.ToString())
+                {
+					<td>
+                        <button type="button" 
+						id="progressnotes-button-remove"
+						class="d-flex justify-content-center align-items-center"
+                        onclick="removeRow(this)">❌</button>
+                    </td>
+                }
+                else
+                {
+                   <td>
+                        <button type="button" 
+						id="progressnotes-button-remove"
+						class="d-flex justify-content-center align-items-center"
+                        onclick="removeRow(this)"
+                        title="Not allowed to remove progress notes of other users"
+                        disabled>❌</button>
+                    </td> 
+                }
             </tr>
         }
     </tbody>
