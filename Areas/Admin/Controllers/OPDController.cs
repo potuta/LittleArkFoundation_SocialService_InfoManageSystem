@@ -134,6 +134,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             return View(viewModel);
         }
 
+        [HasPermission("CreateOPD")]
         public async Task<IActionResult> ReAssessment(int opdId)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();

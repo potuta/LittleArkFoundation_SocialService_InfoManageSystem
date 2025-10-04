@@ -304,6 +304,60 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
+        [HasPermission("DischargePatient")]
+        public async Task<IActionResult> CancelDischarge(int patientId, int assessmentId)
+        {
+            try
+            {
+                string connectionString = _connectionService.GetCurrentConnectionString();
+                await using var context = new ApplicationDbContext(connectionString);
+
+                var lastDischarge = await context.Discharges
+                    .Where(d => d.PatientID == patientId && d.AssessmentID == assessmentId)
+                    .OrderByDescending(d => d.Id)
+                    .FirstOrDefaultAsync();
+
+                if (lastDischarge == null)
+                {
+                    TempData["ErrorMessage"] = $"No discharge record found for specified patient";
+                    return RedirectToAction("Index", "Form", new { isActive = false });
+                }
+
+                var patient = await context.Patients.FindAsync(patientId);
+               
+                if (patient == null)
+                {
+                    TempData["ErrorMessage"] = $"Patient not found";
+                    return RedirectToAction("Index", "Form", new { isActive = false });
+                }
+
+                context.Discharges.Remove(lastDischarge);
+
+                patient.IsActive = true; // Mark patient as active again
+
+                await context.SaveChangesAsync();
+
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+                TempData["SuccessMessage"] = "Successfully canceled patient's latest discharge.";
+                LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Canceled patient discharge successful. PatientID: {patient.PatientID}, AssessmentID: {assessmentId}");
+                return RedirectToAction("Index", "Form", new { isActive = true }); 
+
+            } 
+            catch (SqlException se)
+            {
+                TempData["ErrorMessage"] = "SQL Error: " + se.Message;
+                LoggingService.LogError("SQL Error: " + se);
+                return RedirectToAction("Index", "Form");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Error: " + ex.Message;
+                LoggingService.LogError("Error: " + ex);
+                return RedirectToAction("Index", "Form");
+            }
+        }
+
         [HasPermission("CreateForm")]
         public async Task<IActionResult> ReAdmitPatient(int id, int assessmentID)
         {

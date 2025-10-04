@@ -289,6 +289,26 @@
                                             Re-Admit
                                         </a>
                                     }
+
+                                    @if (User.HasClaim("Permission", "DischargePatient"))
+                                    {
+                                       <a href="@Url.Action("CancelDischarge", "Discharge", new { area = "Admin", patientId = patient.PatientID, assessmentId = assessment.AssessmentID })"
+                                           class="btn btn-danger hide-when-archived"
+                                           onclick="return confirmLinkClick(this.href, 'Confirm Cancel Discharge', 'Are you sure you want to cancel this patient\'s discharge?');">
+                                           Cancel Discharge
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a class="btn btn-danger text-muted hide-when-archived"
+                                           style="cursor: not-allowed;"
+                                           aria-disabled="true"
+                                           tabindex="-1"
+                                           title="You do not have permission to Cancel Discharge">
+                                           Cancel Discharge     
+                                       </a>
+                                        
+                                    }
                                 }
                             </td>
                             <td style="white-space: nowrap;">@patient.PatientID</td>
