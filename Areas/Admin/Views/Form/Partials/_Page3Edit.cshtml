@@ -266,59 +266,97 @@
             </div>
         </th>
     </tr>
+    <!-- Hearing -->
     <tr>
         <td>
-            Hearing screening/test:
+            @if (Model.MedicalScreenings.HearingTestDate != DateOnly.MinValue)
+            {
+				<div class="checkbox-group">
+					<input type="checkbox" class="test-toggle" data-target="hearing" checked> Hearing screening/test:
+                </div>
+            }
+            else
+            {
+                <div class="checkbox-group">
+					<input type="checkbox" class="test-toggle" data-target="hearing"> Hearing screening/test:
+                </div>
+            }
         </td>
         <td>
             Date
-            <input type="date" asp-for="MedicalScreenings.HearingTestDate" class="medical-dependent" required>
+            <input type="date" asp-for="MedicalScreenings.HearingTestDate" class="hearing medical-dependent" disabled>
         </td>
         <td>
             Outcome
-            <input type="text" asp-for="MedicalScreenings.HearingTestOutcome" class="medical-dependent" placeholder="Type N/A if no answer" required>
+            <input type="text" asp-for="MedicalScreenings.HearingTestOutcome" class="hearing medical-dependent" placeholder="Type N/A if no answer" disabled>
         </td>
     </tr>
+
+    <!-- Vision -->
     <tr>
         <td>
-            Vision screening/test:
+            @if (Model.MedicalScreenings.VisionTestDate != DateOnly.MinValue)
+            {
+				<div class="checkbox-group">
+					<input type="checkbox" class="test-toggle" data-target="vision" checked> Vision screening/test:
+                </div>
+            }
+            else
+            {
+                <div class="checkbox-group">
+					<input type="checkbox" class="test-toggle" data-target="vision"> Vision screening/test:
+                </div>
+            }
         </td>
         <td>
             Date
-            <input type="date" asp-for="MedicalScreenings.VisionTestDate" class="medical-dependent" required>
+            <input type="date" asp-for="MedicalScreenings.VisionTestDate" class="vision medical-dependent" disabled>
         </td>
         <td>
             Outcome
-            <input type="text" asp-for="MedicalScreenings.VisionTestOutcome" class="medical-dependent" placeholder="Type N/A if no answer" required>
+            <input type="text" asp-for="MedicalScreenings.VisionTestOutcome" class="vision medical-dependent" placeholder="Type N/A if no answer" disabled>
         </td>
     </tr>
+
+    <!-- Speech -->
     <tr>
         <td>
-            Speech screening/test:
+            @if (Model.MedicalScreenings.SpeechTestDate != DateOnly.MinValue)
+            {
+				<div class="checkbox-group">
+					<input type="checkbox" class="test-toggle" data-target="speech" checked> Speech screening/test:
+                </div>
+            }
+            else
+            {
+               <div class="checkbox-group">
+					<input type="checkbox" class="test-toggle" data-target="speech"> Speech screening/test:
+                </div> 
+            }
         </td>
         <td>
             Date
-            <input type="date" asp-for="MedicalScreenings.SpeechTestDate" class="medical-dependent" required>
+            <input type="date" asp-for="MedicalScreenings.SpeechTestDate" class="speech medical-dependent" disabled>
         </td>
         <td>
             Outcome
-            <input type="text" asp-for="MedicalScreenings.SpeechTestOutcome" class="medical-dependent" placeholder="Type N/A if no answer" required>
+            <input type="text" asp-for="MedicalScreenings.SpeechTestOutcome" class="speech medical-dependent" placeholder="Type N/A if no answer" disabled>
         </td>
     </tr>
     <tr>
         <td>
             Primary Care Doctor:
-            <input type="text" asp-for="PrimaryCareDoctor.DoctorName" class="medical-dependent" placeholder="Type N/A if no answer" required>
+            <input type="text" asp-for="PrimaryCareDoctor.DoctorName" class="doctor-dependent" placeholder="Type N/A if no answer" required>
         </td>
         <td>
             Facility
-            <input type="text" asp-for="PrimaryCareDoctor.Facility" class="medical-dependent" placeholder="Type N/A if no answer" required>
+            <input type="text" asp-for="PrimaryCareDoctor.Facility" class="doctor-dependent" placeholder="Type N/A if no answer" required>
         </td>
         <td>
             PhoneNumber
             <input type="tel"
                    asp-for="PrimaryCareDoctor.PhoneNumber"
-                   class="medical-dependent"
+                   class="doctor-dependent"
                    inputmode="numeric"
                    pattern="^(0|09\d{9}|0\d{1,2}\d{7,8})$"
                    title="Mobile: 11 digits starting with 09. Or landline e.g. 02xxxxxxx. Or just '0'"
@@ -329,29 +367,69 @@
 </table>
 
 <script>
-    function toggleMedicalScreeningFields() {
+	function toggleMedicalScreeningFields() {
         const hasScreening = document.querySelector('input[name="MedicalScreenings.HasScreeningDone"]:checked')?.value === "True";
-        const dependents = document.querySelectorAll('.medical-dependent');
 
-        dependents.forEach(el => {
+        // Doctor info fields
+        const doctorFields = document.querySelectorAll('.doctor-dependent');
+        doctorFields.forEach(el => {
             if (hasScreening) {
                 el.disabled = false;
                 el.setAttribute("required", "true");
             } else {
                 el.disabled = true;
                 el.removeAttribute("required");
-                el.value = ""; // clear only editable fields
+                el.value = "";
+            }
+        });
+
+        // Test checkboxes
+        const testCheckboxes = document.querySelectorAll('.test-toggle');
+        testCheckboxes.forEach(cb => {
+            if (hasScreening) {
+                cb.disabled = false;
+            } else {
+                cb.disabled = true;
+                cb.checked = false;
+                toggleTestFields(cb); // force-disable its fields
             }
         });
     }
 
-    // Attach event
+    // Handle per-test toggles
+    function toggleTestFields(checkbox) {
+        const target = checkbox.dataset.target;
+        const fields = document.querySelectorAll(`.${target}`);
+
+        fields.forEach(el => {
+            if (checkbox.checked) {
+                el.disabled = false;
+                el.setAttribute("required", "true");
+            } else {
+                el.disabled = true;
+                el.removeAttribute("required");
+                el.value = "";
+            }
+        });
+    }
+
+    // Attach events
     document.querySelectorAll('input[name="MedicalScreenings.HasScreeningDone"]').forEach(radio => {
         radio.addEventListener('change', toggleMedicalScreeningFields);
     });
 
+    document.querySelectorAll('.test-toggle').forEach(cb => {
+        cb.addEventListener('change', () => toggleTestFields(cb));
+    });
+
     // Run on load
     toggleMedicalScreeningFields();
+
+    
+	// Also restore fields for any pre-checked tests
+	document.querySelectorAll('.test-toggle').forEach(cb => {
+		if (cb.checked) toggleTestFields(cb);
+	});
 </script>
 
 <table>
