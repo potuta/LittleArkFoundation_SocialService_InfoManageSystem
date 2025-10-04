@@ -580,7 +580,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                         new ProgressNotesModel
                         {
                             PatientID = patientID,
-                            AssessmentID = assessmentID
+                            AssessmentID = assessmentID,
+                            UserID = int.Parse(userIdClaim.Value),
                         }
                     };
 
