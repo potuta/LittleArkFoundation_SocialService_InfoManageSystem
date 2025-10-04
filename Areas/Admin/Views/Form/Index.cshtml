@@ -398,7 +398,7 @@
                             <label>Duration</label>
                             <div class="d-flex justify-content-center align-items-center">
 								<input type="hidden" id="durationHidden" class="form-control" asp-for="Discharge.Duration" />
-								<input type="number" id="duration" class="form-control" required />
+								<input type="number" id="duration" class="form-control" readonly />
 								<select class="form-select" id="durationOptions">
 									<option value="Minutes">Minutes</option>
 									<option value="Hours">Hours</option>
@@ -568,6 +568,56 @@
           return `${yyyy}-${mm}-${dd}`;
         }
 
+        function computeDuration() {
+			const receivedHB = document.getElementById('receivedHB').value;
+			const issuedMSS = document.getElementById('issuedMSS').value;
+			const durationInput = document.getElementById('duration');
+			const durationHidden = document.getElementById('durationHidden');
+			const durationOptions = document.getElementById('durationOptions').value;
+
+			if (!receivedHB || !issuedMSS) {
+				durationInput.value = '';
+				durationHidden.value = '';
+				return;
+			}
+
+			// Parse times
+			const start = new Date(`1970-01-01T${receivedHB}:00`);
+			const end = new Date(`1970-01-01T${issuedMSS}:00`);
+
+			let diffMs = end - start;
+
+			// If end is before start, assume it crossed midnight
+			if (diffMs < 0) {
+				diffMs += 24 * 60 * 60 * 1000;
+			}
+
+			let diff;
+			switch(durationOptions) {
+				case 'Minutes':
+					diff = diffMs / (1000 * 60);
+					break;
+				case 'Hours':
+					diff = diffMs / (1000 * 60 * 60);
+					break;
+				case 'Days':
+					diff = diffMs / (1000 * 60 * 60 * 24);
+					break;
+				case 'Seconds':
+					diff = diffMs / 1000;
+					break;
+				default:
+					diff = diffMs / (1000 * 60);
+			}
+
+			// Round to 2 decimals
+			diff = Math.round(diff * 100) / 100;
+
+			// Set values
+			durationInput.value = diff;
+			durationHidden.value = `${diff} ${durationOptions}`;
+        }
+
         let dischargeStartTime;
 
         dischargeModal.addEventListener('show.bs.modal', function (event) {
@@ -598,6 +648,12 @@
 
             dischargeStartTime = new Date();
             document.getElementById('receivedHB').value = dischargeStartTime.toLocaleTimeString('en-GB').slice(0, 5);
+
+            document.getElementById('receivedHB').addEventListener('input', computeDuration);
+			document.getElementById('issuedMSS').addEventListener('input', computeDuration);
+			document.getElementById('durationOptions').addEventListener('change', computeDuration);
+
+			computeDuration(); // initial computation
         });
 
         function confirmDischarge() {
@@ -617,33 +673,33 @@
             //     document.getElementById('duration').value = durationText.trim();
             // }
 
-			let duration = parseInt(document.getElementById('duration').value) || 0;
-			let durationOption = document.getElementById('durationOptions').value;
+			// let duration = parseInt(document.getElementById('duration').value) || 0;
+			// let durationOption = document.getElementById('durationOptions').value;
             
-            if (duration <= 1) {
+   //          if (duration <= 1) {
 
-                switch (durationOption) {
-                    case "Minutes":
-                        durationOption = "Minute";
-                        break;
-                    case "Hours":
-                        durationOption = "Hour";
-                        break;
-                    case "Days":
-                        durationOption = "Day";
-                        break;
-                    case "Seconds":
-                        durationOption = "Second";
-                        break;
-                    default:
-                        durationOption = durationOption;
-				}
+   //              switch (durationOption) {
+   //                  case "Minutes":
+   //                      durationOption = "Minute";
+   //                      break;
+   //                  case "Hours":
+   //                      durationOption = "Hour";
+   //                      break;
+   //                  case "Days":
+   //                      durationOption = "Day";
+   //                      break;
+   //                  case "Seconds":
+   //                      durationOption = "Second";
+   //                      break;
+   //                  default:
+   //                      durationOption = durationOption;
+			// 	}
 
-				document.getElementById('durationHidden').value = `${duration} ${durationOption}`;
-			}
-            else {
-				document.getElementById('durationHidden').value = `${duration} ${durationOption}`;
-			}
+			// 	document.getElementById('durationHidden').value = `${duration} ${durationOption}`;
+			// }
+   //          else {
+			// 	document.getElementById('durationHidden').value = `${duration} ${durationOption}`;
+			// }
 
             const form = document.getElementById('dischargeForm');
 
