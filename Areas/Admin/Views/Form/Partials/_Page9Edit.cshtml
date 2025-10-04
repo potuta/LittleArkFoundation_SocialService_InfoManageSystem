@@ -28,7 +28,17 @@
                     bool isPdf = contentType == "application/pdf";
                     bool isImage = contentType.StartsWith("image/");
                 }
-                <input type="hidden" asp-for="ProgressNotes[i].UserID"/>
+
+                <td>
+					<input type="hidden" asp-for="ProgressNotes[i].UserID"/>
+
+                    <input type="text" 
+					   value="@(Model.Users.FirstOrDefault(u => u.UserID == Model.ProgressNotes[i].UserID)?.Username ?? "Unknown User")"
+					   class="text-muted" 
+					   style="background-color:#e9ecef; cursor: not-allowed;" 
+					   readonly />
+                </td>
+
                 <td>
                     <input type="date" asp-for="ProgressNotes[i].Date" required>
                 </td>

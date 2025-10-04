@@ -897,13 +897,13 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             await using var context = new ApplicationDbContext(connectionString);
 
             // USERS & SOCIAL WORKER ROLE ID
-            var socialWorkerRoleId = await context.Roles
-                .Where(r => r.RoleName == "Social Worker")
-                .Select(r => r.RoleID)
-                .FirstOrDefaultAsync();
+            //var socialWorkerRoleId = await context.Roles
+            //    .Where(r => r.RoleName == "Social Worker")
+            //    .Select(r => r.RoleID)
+            //    .FirstOrDefaultAsync();
 
             var users = await context.Users
-                .Where(u => u.RoleID == socialWorkerRoleId)
+                //.Where(u => u.RoleID == socialWorkerRoleId)
                 .ToListAsync();
 
             var assessment = await context.Assessments.FirstOrDefaultAsync(a => a.AssessmentID == assessmentID && a.PatientID == id);

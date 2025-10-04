@@ -5,6 +5,8 @@
 @{
     ViewData["Title"] = "Edit Assessment Form";
     Layout = "_AdminLayout";
+    var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    var currentUserName = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value;
 }
 
 <style>
@@ -619,6 +621,13 @@
                 let newRow = table.insertRow(-1);
 
                 let cols = `
+					<td>
+						<input type="hidden" name="ProgressNotes[${rowCount}].UserID" value="@currentUserId" />
+						<input type="text" value="@currentUserName"
+							   class="text-muted"
+							   style="background-color:#e9ecef; cursor:not-allowed;"
+							   readonly />
+					</td>
                     <td>
                         <input type="date" name="ProgressNotes[${rowCount}].Date" required>
                     </td>
@@ -836,12 +845,15 @@
                     const row = table.rows[i];
                     const index = i - 1;
 
+                    // UserID
+                    row.cells[0].querySelector("input[type='hidden']").name = `ProgressNotes[${index}].UserID`;
+
                     // Date and ProgressNotes
-                    row.cells[0].querySelector("input").name = `ProgressNotes[${index}].Date`;
-                    row.cells[1].querySelector("textarea").name = `ProgressNotes[${index}].ProgressNotes`;
+                    row.cells[1].querySelector("input").name = `ProgressNotes[${index}].Date`;
+                    row.cells[2].querySelector("textarea").name = `ProgressNotes[${index}].ProgressNotes`;
 
                     // File upload inputs and hidden fields
-                    const fileCell = row.cells[2];
+                    const fileCell = row.cells[3];
 
                     const attachmentFile = fileCell.querySelector("input[type='file']");
                     attachmentFile.name = `ProgressNotes[${index}].AttachmentFile`;
