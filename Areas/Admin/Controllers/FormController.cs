@@ -1,4 +1,5 @@
-﻿using DinkToPdf.Contracts;
+﻿using Azure.Identity;
+using DinkToPdf.Contracts;
 using DocumentFormat.OpenXml.InkML;
 using LittleArkFoundation.Areas.Admin.Data;
 using LittleArkFoundation.Areas.Admin.Models;
@@ -1389,21 +1390,23 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 var progressNotes = await context.ProgressNotes
                     .Where(p => p.PatientID == id && p.AssessmentID == assessmentID)
                     .ToListAsync();
+                var users = await context.Users.ToListAsync();
 
                 foreach (var progressNote in progressNotes)
                 {
                     if (progressNote.Attachment != null && progressNote.Attachment.Length > 0)
                     {
+                        var userName = users.FirstOrDefault(u => u.UserID == progressNote.UserID)?.Username ?? "Unknown User";
                         if (progressNote.AttachmentContentType != null && progressNote.AttachmentContentType.StartsWith("image/"))
                         {
                             var parts = progressNote.AttachmentContentType.Split('/');
                             var imageFormat = parts.Length > 1 ? parts[1] : "png"; // Default to png if format is not specified
-                            var imagePdf = await new PDFService(_pdfConverter).ConvertImageToPdfAsync(progressNote.Attachment, progressNote.Date.ToShortDateString(), progressNote.ProgressNotes, imageFormat);
+                            var imagePdf = await new PDFService(_pdfConverter).ConvertImageToPdfAsync(progressNote.Attachment, progressNote.Date.ToShortDateString(), progressNote.ProgressNotes, userName, imageFormat);
                             pdfList.Add(imagePdf);
                         }
                         else if (progressNote.AttachmentContentType == "application/pdf")
                         {
-                            var imagePdf = await new PDFService(_pdfConverter).ConvertImageToPdfAsync(progressNote.Attachment, progressNote.Date.ToShortDateString(), progressNote.ProgressNotes, "pdf");
+                            var imagePdf = await new PDFService(_pdfConverter).ConvertImageToPdfAsync(progressNote.Attachment, progressNote.Date.ToShortDateString(), progressNote.ProgressNotes, userName, "pdf");
                             pdfList.Add(imagePdf);
                         }
 

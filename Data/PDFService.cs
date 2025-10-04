@@ -87,7 +87,7 @@ namespace LittleArkFoundation.Data
             });
         }
 
-        public async Task<byte[]> ConvertImageToPdfAsync(byte[] bytes, string? date, string? text, string? format = "png")
+        public async Task<byte[]> ConvertImageToPdfAsync(byte[] bytes, string? date, string? text, string? msw, string? format = "png")
         {
             if (format?.ToLower() == "pdf") {
                 //src = $"data:application/{format};base64,{base64}";
@@ -154,6 +154,10 @@ namespace LittleArkFoundation.Data
 
                         <div class=""note-container"">
                             <p style=""font-weight: bold; margin: 0; text-align: center;"">DATE: {date?? "N/A"}</p>
+                        </div>
+
+                        <div class=""note-container"">
+                            <p style=""font-weight: bold; margin: 0; text-align: center;"">MSW: {msw?? "N/A"}</p>
                         </div>
 
                         <div class=""note-container"">
