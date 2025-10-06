@@ -425,10 +425,46 @@
             Per Capita Income: <span class="required">*</span>
             <input type="number" asp-for="Household.PerCapitaIncome" min="0"
                    max="99999999.99"
-                   step="0.01" required>
+                   step="0.01" readonly>
         </td>
     </tr>
 </table>
+
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+		const incomeInput = document.getElementById("Household_TotalHouseholdIncome");
+		const sizeInput = document.getElementById("Household_HouseholdSize");
+		const perCapitaInput = document.getElementById("Household_PerCapitaIncome");
+
+		function computePerCapita() {
+			let income = parseFloat(incomeInput.value) || 0;
+			let size = parseInt(sizeInput.value) || 0;
+			let perCapita = 0;
+
+			if (size > 0) {
+				perCapita = income / size;
+			}
+
+			// Round to 2 decimals
+			perCapita = parseFloat(perCapita.toFixed(2));
+
+			// Enforce DECIMAL(10,2) max value
+			const max = 99999999.99; // fits DECIMAL(10,2)
+			if (perCapita > max) {
+				perCapita = max;
+			}
+
+			perCapitaInput.value = perCapita;
+		}
+
+		// Run once on page load
+		computePerCapita();
+
+		// Update dynamically when income or size changes
+		incomeInput.addEventListener("input", computePerCapita);
+		sizeInput.addEventListener("input", computePerCapita);
+	});
+</script>
 
 <div class="section-title">II. MSWD Classification</div>
 <table>
