@@ -63,7 +63,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 // Pagination
                 var totalCount = await query.CountAsync();
                 var patients = await query
-                    .OrderBy(p => p.PatientID) 
+                    .OrderByDescending(p => p.PatientID) 
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
                     .ToListAsync();
