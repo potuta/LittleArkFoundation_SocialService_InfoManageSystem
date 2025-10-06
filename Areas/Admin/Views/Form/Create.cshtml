@@ -804,6 +804,16 @@
             document.querySelectorAll(".expense").forEach(input => {
                 total += Number(input.value) || 0;
             });
+
+            // Format to 2 decimals
+			total = parseFloat(total.toFixed(2));
+
+			// Enforce DECIMAL(12,2) max value
+			const max = 9999999999.99; // 10 digits before decimal + 2 after = 12 total
+			if (total > max) {
+				total = max;
+			}
+
             document.getElementById("total-expenses").value = total;
         });
 
