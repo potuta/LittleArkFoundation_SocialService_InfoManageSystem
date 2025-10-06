@@ -504,7 +504,7 @@ namespace LittleArkFoundation.Data
                 // PRIMARY CARE DOCTOR
                 htmlDoc.SetInnerHtml("//div[@class='Primarycaredoctor']", primarycaredoctor.DoctorName);
                 htmlDoc.SetInnerHtml("//div[@class='Facility']", primarycaredoctor.Facility);
-                htmlDoc.SetInnerHtml("//div[@class='Phonenumber']", primarycaredoctor.PhoneNumber);
+                htmlDoc.SetInnerHtml("//div[@class='Phonenumber']", primarycaredoctor.PhoneNumber.Safe() == "0" ? "" : primarycaredoctor.PhoneNumber.Safe());
             }
 
             // PRESENTING PROBLEMS
@@ -1845,7 +1845,7 @@ namespace LittleArkFoundation.Data
             
             htmlDoc.SetInnerHtml("//div[@class='Describecharges']", legalinvolvement.Charges);
             htmlDoc.SetInnerHtml("//div[@class='Officername']", legalinvolvement.OfficerName);
-            htmlDoc.SetInnerHtml("//div[@class='Contactnum']", legalinvolvement.OfficerContactNum);
+            htmlDoc.SetInnerHtml("//div[@class='Contactnum']", legalinvolvement.OfficerContactNum.Safe() == "0" ? "" : legalinvolvement.OfficerContactNum.Safe());
             htmlDoc.SetInnerHtml("//div[@class='Legaladditionalinfo']", legalinvolvement.AdditionalInfo);
 
             // HISTORY OF ABUSE
