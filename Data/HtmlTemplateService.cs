@@ -63,12 +63,12 @@ namespace LittleArkFoundation.Data
             // REFERRALS
             htmlDoc.SetInnerHtml("//div[@class='Namereferral']", referral.Name);
             htmlDoc.SetInnerHtml("//div[@class='Addressreferral']", referral.Address);
-            htmlDoc.SetInnerHtml("//div[@class='Contactnoreferral']", referral.ContactNo);
+            htmlDoc.SetInnerHtml("//div[@class='Contactnoreferral']", referral.ContactNo.Safe() == "0" ? "" : referral.ContactNo.Safe());
 
             // INFORMANTS
             htmlDoc.SetInnerHtml("//div[@class='Informantname']", informant.Name);
             htmlDoc.SetInnerHtml("//div[@class='Relationtopatient']", informant.RelationToPatient);
-            htmlDoc.SetInnerHtml("//div[@class='Contactnoinformant']", informant.ContactNo);
+            htmlDoc.SetInnerHtml("//div[@class='Contactnoinformant']", informant.ContactNo.Safe() == "0" ? "" : informant.ContactNo.Safe());
             htmlDoc.SetInnerHtml("//div[@class='Addressinformant']", informant.Address);
 
             // PATIENTS
