@@ -89,25 +89,38 @@ namespace LittleArkFoundation.Areas.Admin.Data
             }
  
             // DIAGNOSIS
-            var diagnosisWeights = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
+            var diagnosisPatterns = new Dictionary<string, (int Weight, string[] Keywords)>(StringComparer.OrdinalIgnoreCase)
             {
-                { "AGN", 5 },
-                { "PSGN", 5 },
-                { "AZOTEMIA", 10 },
-                { "NEPHROTIC SYNDROME", 15 },
-                { "EDEMA", 15 },
-                { "OLIGURIA", 20 },
-                { "HYPERTENSION", 25 }
+                { "AGN", (5, new[] { "AGN", "ACUTE GLOMERULONEPHRITIS", "GLOMERULONEPHRITIS" }) },
+                { "PSGN", (5, new[] { "PSGN", "POST STREPTOCOCCAL GLOMERULONEPHRITIS", "POST-STREPTOCOCCAL GLOMERULONEPHRITIS" }) },
+                { "AZOTEMIA", (10, new[] { "AZOTEMIA" }) },
+                { "NEPHROTIC SYNDROME", (15, new[] { "NEPHROTIC", "NEPHROTIC SYNDROME", "NEPHROSIS" }) },
+                { "EDEMA", (15, new[] { "EDEMA", "OEDEMA" }) },
+                { "OLIGURIA", (20, new[] { "OLIGURIA" }) },
+                { "HYPERTENSION", (25, new[] { "HYPERTENSION", "HTN", "HIGH BLOOD PRESSURE" }) }
             };
 
             int diagnosisScore = 0;
+            var matchedConditions = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-            foreach (var part in opd.Diagnosis.Split(',', StringSplitOptions.RemoveEmptyEntries))
+            if (!string.IsNullOrWhiteSpace(opd.Diagnosis))
             {
-                var cleaned = part.Trim();
-                if (diagnosisWeights.TryGetValue(cleaned, out int weight))
+                var diagnosisText = opd.Diagnosis.ToUpperInvariant();
+
+                foreach (var kvp in diagnosisPatterns)
                 {
-                    diagnosisScore += weight;
+                    if (matchedConditions.Contains(kvp.Key))
+                        continue;
+
+                    foreach (var keyword in kvp.Value.Keywords)
+                    {
+                        if (diagnosisText.Contains(keyword, StringComparison.OrdinalIgnoreCase))
+                        {
+                            diagnosisScore += kvp.Value.Weight;
+                            matchedConditions.Add(kvp.Key);
+                            break; // stop checking more synonyms for this condition
+                        }
+                    }
                 }
             }
 
@@ -132,27 +145,36 @@ namespace LittleArkFoundation.Areas.Admin.Data
             }
 
             // ASSISTANCE REQUESTED
-            var highPriorityTests = new[] { "BUN", "CREA" };
-            //var midPriorityTests = new[] { "CBC", "FBS", "LIPID PROFILE" };
-            //var lowPriorityTests = new[] { "URIC ACID", "UA" };
-
-            if (!string.IsNullOrEmpty(opd.AssistanceNeeded))
+            var testPatterns = new Dictionary<string, (int Weight, string[] Keywords)>(StringComparer.OrdinalIgnoreCase)
             {
-                var requestedTests = opd.AssistanceNeeded.ToUpper().Split(',', StringSplitOptions.RemoveEmptyEntries);
-                foreach (var test in requestedTests.Select(t => t.Trim()))
+                { "BUN", (5, new[] { "BUN", "BLOOD UREA NITROGEN", "UREA" }) },
+                { "CREA", (5, new[] { "CREA", "CREATININE" }) },
+                // You can add more here easily:
+                // { "CBC", (3, new[] { "CBC", "COMPLETE BLOOD COUNT" }) },
+                // { "FBS", (3, new[] { "FBS", "FASTING BLOOD SUGAR", "FASTING GLUCOSE" }) },
+                // { "LIPID PROFILE", (2, new[] { "LIPID", "CHOLESTEROL", "TRIGLYCERIDES" }) },
+                // { "UA", (1, new[] { "URINALYSIS", "URINE ANALYSIS", "UA" }) }
+            };
+
+            if (!string.IsNullOrWhiteSpace(opd.AssistanceNeeded))
+            {
+                var assistanceText = opd.AssistanceNeeded.ToUpperInvariant();
+                var matchedTests = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+                foreach (var kvp in testPatterns)
                 {
-                    if (highPriorityTests.Contains(test))
+                    if (matchedTests.Contains(kvp.Key))
+                        continue;
+
+                    foreach (var keyword in kvp.Value.Keywords)
                     {
-                        scores.TryAdd($"Assistance_{test}", 5);
+                        if (assistanceText.Contains(keyword, StringComparison.OrdinalIgnoreCase))
+                        {
+                            scores.TryAdd($"Assistance_{kvp.Key}: {opd.AssistanceNeeded}", kvp.Value.Weight);
+                            matchedTests.Add(kvp.Key);
+                            break; // prevent double-counting
+                        }
                     }
-                    //else if (midPriorityTests.Contains(test))
-                    //{
-                    //    scores.TryAdd($"Assistance_{test}", 5);
-                    //}
-                    //else if (lowPriorityTests.Contains(test))
-                    //{
-                    //    scores.TryAdd($"Assistance_{test}", 3);
-                    //}
                 }
             }
 
