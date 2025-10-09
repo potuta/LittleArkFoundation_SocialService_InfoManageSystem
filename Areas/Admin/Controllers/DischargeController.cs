@@ -361,821 +361,824 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         [HasPermission("CreateForm")]
         public async Task<IActionResult> ReAdmitPatient(int id, int assessmentID)
         {
+            if (!ModelState.IsValid)
+            {
+                TempData["ErrorMessage"] = $"Invalid data submitted.";
+                return RedirectToAction("Index", "Form", new { isActive = false });
+            }
+
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+            await using var transaction = await context.Database.BeginTransactionAsync();
+            
             try
             {
-                string connectionString = _connectionService.GetCurrentConnectionString();
+                var patientID = id;
+                var newAssessmentID = await new AssessmentsRepository(connectionString).GenerateID(id);
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
-                await using (var context = new ApplicationDbContext(connectionString))
+                // ASSESSMENTS
+                var assessment = await context.Assessments.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
+                var newAssessment = new AssessmentsModel
                 {
-                    if (!ModelState.IsValid)
-                    {
-                        TempData["ErrorMessage"] = $"Invalid data submitted.";
-                        return RedirectToAction("Index", "Form", new { isActive = false });
-                    }
+                    AssessmentID = newAssessmentID,
+                    PatientID = patientID,
+                    Age = assessment.Age,
+                    DateOfInterview = DateOnly.FromDateTime(DateTime.Now),
+                    TimeOfInterview = TimeOnly.FromDateTime(DateTime.Now),
+                    BasicWard = assessment.BasicWard,
+                    NonBasicWard = assessment.NonBasicWard,
+                    HealthRecordNo = assessment.HealthRecordNo,
+                    MSWDNo = assessment.MSWDNo,
+                    AssessmentStatement = assessment.AssessmentStatement,
+                    UserID = int.Parse(userIdClaim.Value),
+                    ContactNo = assessment.ContactNo,
+                    Gender = assessment.Gender,
+                    Religion = assessment.Religion,
+                    PermanentAddress = assessment.PermanentAddress,
+                    TemporaryAddress = assessment.TemporaryAddress,
+                    CivilStatus = assessment.CivilStatus,
+                    EducationLevel = assessment.EducationLevel,
+                    Occupation = assessment.Occupation,
+                    MonthlyIncome = assessment.MonthlyIncome,
+                    PhilhealthPIN = assessment.PhilhealthPIN,
+                    PhilhealthMembership = assessment.PhilhealthMembership
+                };
 
-                    var patientID = id;
-                    var newAssessmentID = await new AssessmentsRepository(connectionString).GenerateID(id);
-                    var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                // REFERRALS
+                var referral = await context.Referrals.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
+                var newReferral = new ReferralsModel
+                {
+                    AssessmentID = newAssessmentID,
+                    PatientID = patientID,
+                    ReferralType = referral.ReferralType,
+                    Name = referral.Name,
+                    Address = referral.Address,
+                    ContactNo = referral.ContactNo,
+                    DateOfReferral = DateTime.Now
+                };
 
-                    // ASSESSMENTS
-                    var assessment = await context.Assessments.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
-                    var newAssessment = new AssessmentsModel
-                    {
-                        AssessmentID = newAssessmentID,
-                        PatientID = patientID,
-                        Age = assessment.Age,
-                        DateOfInterview = DateOnly.FromDateTime(DateTime.Now),
-                        TimeOfInterview = TimeOnly.FromDateTime(DateTime.Now),
-                        BasicWard = assessment.BasicWard,
-                        NonBasicWard = assessment.NonBasicWard,
-                        HealthRecordNo = assessment.HealthRecordNo,
-                        MSWDNo = assessment.MSWDNo,
-                        AssessmentStatement = assessment.AssessmentStatement,
-                        UserID = int.Parse(userIdClaim.Value),
-                        ContactNo = assessment.ContactNo,
-                        Gender = assessment.Gender,
-                        Religion = assessment.Religion,
-                        PermanentAddress = assessment.PermanentAddress,
-                        TemporaryAddress = assessment.TemporaryAddress,
-                        CivilStatus = assessment.CivilStatus,
-                        EducationLevel = assessment.EducationLevel,
-                        Occupation = assessment.Occupation,
-                        MonthlyIncome = assessment.MonthlyIncome,
-                        PhilhealthPIN = assessment.PhilhealthPIN,
-                        PhilhealthMembership = assessment.PhilhealthMembership
-                    };
+                // INFORMANTS
+                var informant = await context.Informants.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
+                var newInformant = new InformantsModel
+                {
+                    AssessmentID = newAssessmentID,
+                    PatientID = patientID,
+                    Name = informant.Name,
+                    RelationToPatient = informant.RelationToPatient,
+                    ContactNo = informant.ContactNo,
+                    Address = informant.Address,
+                    DateOfInformant = DateTime.Now
+                };
 
-                    // REFERRALS
-                    var referral = await context.Referrals.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
-                    var newReferral = new ReferralsModel
-                    {
-                        AssessmentID = newAssessmentID,
-                        PatientID = patientID,
-                        ReferralType = referral.ReferralType,
-                        Name = referral.Name,
-                        Address = referral.Address,
-                        ContactNo = referral.ContactNo,
-                        DateOfReferral = DateTime.Now
-                    };
+                // PATIENTS
+                var patient = await context.Patients.FirstOrDefaultAsync(s => s.PatientID == id);
 
-                    // INFORMANTS
-                    var informant = await context.Informants.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
-                    var newInformant = new InformantsModel
-                    {
-                        AssessmentID = newAssessmentID,
-                        PatientID = patientID,
-                        Name = informant.Name,
-                        RelationToPatient = informant.RelationToPatient,
-                        ContactNo = informant.ContactNo,
-                        Address = informant.Address,
-                        DateOfInformant = DateTime.Now
-                    };
+                // FAMILY COMPOSITION
+                var familyComposition = await context.FamilyComposition
+                    .Where(s => s.AssessmentID == assessmentID && s.PatientID == patientID)
+                    .ToListAsync();
 
-                    // PATIENTS
-                    var patient = await context.Patients.FirstOrDefaultAsync(s => s.PatientID == id);
+                var newFamilyComposition = new List<FamilyCompositionModel>();
 
-                    // FAMILY COMPOSITION
-                    var familyComposition = await context.FamilyComposition
-                        .Where(s => s.AssessmentID == assessmentID && s.PatientID == patientID)
-                        .ToListAsync();
-
-                    var newFamilyComposition = new List<FamilyCompositionModel>();
-
-                    foreach (var familyMember in familyComposition)
-                    {
-                        var newMember = new FamilyCompositionModel
-                        {
-                            AssessmentID = newAssessmentID,
-                            PatientID = patientID,
-                            Name = familyMember.Name,
-                            Age = familyMember.Age,
-                            DateOfBirth = familyMember.DateOfBirth,
-                            CivilStatus = familyMember.CivilStatus,
-                            RelationshipToPatient = familyMember.RelationshipToPatient,
-                            LivingWithChild = familyMember.LivingWithChild,
-                            EducationalAttainment = familyMember.EducationalAttainment,
-                            Occupation = familyMember.Occupation,
-                            MonthlyIncome = familyMember.MonthlyIncome
-                        };
-
-                        newFamilyComposition.Add(newMember);
-                    }
-
-                    // HOUSEHOLD
-                    var household = await context.Households.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
-                    var newHousehold = new HouseholdModel
+                foreach (var familyMember in familyComposition)
+                {
+                    var newMember = new FamilyCompositionModel
                     {
                         AssessmentID = newAssessmentID,
                         PatientID = patientID,
-                        OtherSourcesOfIncome = household.OtherSourcesOfIncome,
-                        HouseholdSize = household.HouseholdSize,
-                        TotalHouseholdIncome = household.TotalHouseholdIncome,
-                        PerCapitaIncome = household.PerCapitaIncome
+                        Name = familyMember.Name,
+                        Age = familyMember.Age,
+                        DateOfBirth = familyMember.DateOfBirth,
+                        CivilStatus = familyMember.CivilStatus,
+                        RelationshipToPatient = familyMember.RelationshipToPatient,
+                        LivingWithChild = familyMember.LivingWithChild,
+                        EducationalAttainment = familyMember.EducationalAttainment,
+                        Occupation = familyMember.Occupation,
+                        MonthlyIncome = familyMember.MonthlyIncome
                     };
 
-                    // MSWD CLASSIFICATION
-                    var mswdclassification = await context.MSWDClassification.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
-                    var newMSWDClassification = new MSWDClassificationModel
-                    {
-                        AssessmentID = newAssessmentID,
-                        PatientID = patientID,
-                        MainClassification = mswdclassification.MainClassification,
-                        SubClassification = mswdclassification.SubClassification,
-                        MembershipSector = mswdclassification.MembershipSector
-
-                    };
-
-                    // MONTHLY EXPENSES & UTILITIES
-                    var monthlyExpenses = await context.MonthlyExpenses.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
-                    var newMonthlyExpenses = new MonthlyExpensesModel
-                    {
-                        AssessmentID = newAssessmentID,
-                        PatientID = patientID,
-                        HouseAndLot = monthlyExpenses.HouseAndLot,
-                        FoodAndWater = monthlyExpenses.FoodAndWater,
-                        Education = monthlyExpenses.Education,
-                        Clothing = monthlyExpenses.Clothing,
-                        Communication = monthlyExpenses.Communication,
-                        HouseHelp = monthlyExpenses.HouseHelp,
-                        MedicalExpenses = monthlyExpenses.MedicalExpenses,
-                        Transportation = monthlyExpenses.Transportation,
-                        Others = monthlyExpenses.Others,
-                        OthersAmount = monthlyExpenses.OthersAmount,
-                        Total = monthlyExpenses.Total
-                    };
-
-                    var utilities = await context.Utilities.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
-                    var newUtilities = new UtilitiesModel
-                    {
-                        AssessmentID = newAssessmentID,
-                        PatientID = patientID,
-                        LightSource = utilities.LightSource,
-                        LightSourceAmount = utilities.LightSourceAmount,
-                        FuelSource = utilities.FuelSource,
-                        FuelSourceAmount = utilities.FuelSourceAmount,
-                        WaterSource = utilities.WaterSource
-                    };
-
-                    // MEDICAL HISTORY
-                    var medicalHistory = await context.MedicalHistory.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
-                    var newMedicalHistory = new MedicalHistoryModel
-                    {
-                        AssessmentID = newAssessmentID,
-                        PatientID = patientID,
-                        AdmittingDiagnosis = medicalHistory.AdmittingDiagnosis,
-                        FinalDiagnosis = medicalHistory.FinalDiagnosis,
-                        DurationSymptomsPriorAdmission = medicalHistory.DurationSymptomsPriorAdmission,
-                        PreviousTreatmentDuration = medicalHistory.PreviousTreatmentDuration,
-                        TreatmentPlan = medicalHistory.TreatmentPlan,
-                        HealthAccessibilityProblems = medicalHistory.HealthAccessibilityProblems
-                    };
-
-                    // CHILD HEALTH
-                    var childHealth = await context.ChildHealth.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
-                    var newChildHealth = new ChildHealthModel
-                    {
-                        AssessmentID = newAssessmentID,
-                        PatientID = patientID,
-                        OverallHealth = childHealth.OverallHealth,
-                        HasHealthIssues = childHealth.HasHealthIssues,
-                        DescribeHealthIssues = childHealth.DescribeHealthIssues,
-                        HasRecurrentConditions = childHealth.HasRecurrentConditions,
-                        DescribeRecurrentConditions = childHealth.DescribeRecurrentConditions,
-                        HasEarTubes = childHealth.HasEarTubes
-                    };
-
-                    // DIAGNOSES
-                    var diagnoses = await context.Diagnoses
-                        .Where(s => s.AssessmentID == assessmentID && s.PatientID == patientID)
-                        .ToListAsync();
-
-                    var newDiagnoses = new List<DiagnosesModel>();
-
-                    foreach (var diagnosis in diagnoses)
-                    {
-                        var newDiagnosis = new DiagnosesModel
-                        {
-                            AssessmentID = newAssessmentID,
-                            PatientID = patientID,
-                            MedicalCondition = diagnosis.MedicalCondition,
-                            ReceivingTreatment = diagnosis.ReceivingTreatment,
-                            TreatmentProvider = diagnosis.TreatmentProvider,
-                            DoesCauseStressOrImpairment = diagnosis.DoesCauseStressOrImpairment,
-                            TreatmentHelp = diagnosis.TreatmentHelp
-                        };
-
-                        newDiagnoses.Add(newDiagnosis);
-                    }
-
-                    // MEDICATIONS
-                    var medications = await context.Medications
-                        .Where(s => s.AssessmentID == assessmentID && s.PatientID == patientID)
-                        .ToListAsync();
-
-                    var newMedications = new List<MedicationsModel>();
-
-                    foreach (var medication in medications)
-                    {
-                        var newMedication = new MedicationsModel
-                        {
-                            AssessmentID = newAssessmentID,
-                            PatientID = patientID,
-                            DoesTakeAnyMedication = medication.DoesTakeAnyMedication,
-                            Medication = medication.Medication,
-                            Dosage = medication.Dosage,
-                            Frequency = medication.Frequency,
-                            PrescribedBy = medication.PrescribedBy,
-                            ReasonForMedication = medication.ReasonForMedication,
-                            IsTakingMedicationAsPrescribed = medication.IsTakingMedicationAsPrescribed,
-                            DescribeTakingMedication = medication.DescribeTakingMedication,
-                            AdditionalInfo = medication.AdditionalInfo
-                        };
-
-                        newMedications.Add(newMedication);
-                    }
-
-                    // HOSPITALIZATION HISTORY
-                    var hospitalizationHistory = await context.HospitalizationHistory
-                        .Where(s => s.AssessmentID == assessmentID && s.PatientID == patientID)
-                        .ToListAsync();
-
-                    var newHospitalizationHistory = new List<HospitalizationHistoryModel>();
-
-                    foreach (var hospitalization in hospitalizationHistory)
-                    {
-                        var newHospitalization = new HospitalizationHistoryModel
-                        {
-                            AssessmentID = newAssessmentID,
-                            PatientID = patientID,
-                            HasSeriousAccidentOrIllness = hospitalization.HasSeriousAccidentOrIllness,
-                            Reason = hospitalization.Reason,
-                            Date = hospitalization.Date,
-                            Location = hospitalization.Location
-                        };
-
-                        newHospitalizationHistory.Add(newHospitalization);
-                    }
-
-                    // MEDICAL SCREENINGS
-                    var medicalscreenings = await context.MedicalScreenings.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
-                    var newMedicalScreenings = new MedicalScreeningsModel
-                    {
-                        AssessmentID = newAssessmentID,
-                        PatientID = patientID,
-                        HasScreeningDone = medicalscreenings.HasScreeningDone,
-                        HearingTestDate = medicalscreenings.HearingTestDate,
-                        HearingTestOutcome = medicalscreenings.HearingTestOutcome,
-                        VisionTestDate = medicalscreenings.VisionTestDate,
-                        VisionTestOutcome = medicalscreenings.VisionTestOutcome,
-                        SpeechTestDate = medicalscreenings.SpeechTestDate,
-                        SpeechTestOutcome = medicalscreenings.SpeechTestOutcome
-                    };
-
-                    // PRIMARY CARE DOCTOR
-                    var primaryCareDoctor = await context.PrimaryCareDoctor.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
-                    var newPrimaryCareDoctor = new PrimaryCareDoctorModel
-                    {
-                        AssessmentID = newAssessmentID,
-                        PatientID = patientID,
-                        DoctorName = primaryCareDoctor.DoctorName,
-                        Facility = primaryCareDoctor.Facility,
-                        PhoneNumber = primaryCareDoctor.PhoneNumber
-                    };
-
-                    // PRESENTING PROBLEMS
-                    var presentingproblems = await context.PresentingProblems.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
-                    var newPresentingProblems = new PresentingProblemsModel
-                    {
-                        AssessmentID = newAssessmentID,
-                        PatientID = patientID,
-                        PresentingProblem = presentingproblems.PresentingProblem,
-                        Severity = presentingproblems.Severity,
-                        ChangeInSleepPattern = presentingproblems.ChangeInSleepPattern,
-                        Concentration = presentingproblems.Concentration,
-                        ChangeInAppetite = presentingproblems.ChangeInAppetite,
-                        IncreasedAnxiety = presentingproblems.IncreasedAnxiety,
-                        MoodSwings = presentingproblems.MoodSwings,
-                        BehavioralChanges = presentingproblems.BehavioralChanges,
-                        Victimization = presentingproblems.Victimization,
-                        DescribeOtherConcern = presentingproblems.DescribeOtherConcern,
-                        DurationOfStress = presentingproblems.DurationOfStress,
-                        CopingLevel = presentingproblems.CopingLevel,
-                        OtherFamilySituation = presentingproblems.OtherFamilySituation
-                    };
-
-                    // RECENT LOSSES
-                    var recentlosses = await context.RecentLosses.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
-                    var newRecentLosses = new RecentLossesModel
-                    {
-                        AssessmentID = newAssessmentID,
-                        PatientID = patientID,
-                        FamilyMemberLoss = recentlosses.FamilyMemberLoss,
-                        FriendLoss = recentlosses.FriendLoss,
-                        HealthLoss = recentlosses.HealthLoss,
-                        LifestyleLoss = recentlosses.LifestyleLoss,
-                        JobLoss = recentlosses.JobLoss,
-                        IncomeLoss = recentlosses.IncomeLoss,
-                        HousingLoss = recentlosses.HousingLoss,
-                        NoneLoss = recentlosses.NoneLoss,
-                        Name = recentlosses.Name,
-                        Date = recentlosses.Date,
-                        NatureOfLoss = recentlosses.NatureOfLoss,
-                        OtherLosses = recentlosses.OtherLosses,
-                        AdditionalInfo = recentlosses.AdditionalInfo
-                    };
-
-                    // PREGNANCY BIRTH HISTORY
-                    var pregnancyBirthHistory = await context.PregnancyBirthHistory.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
-                    var newPregnancyBirthHistory = new PregnancyBirthHistoryModel
-                    {
-                        AssessmentID = newAssessmentID,
-                        PatientID = patientID,
-                        HasPregnancyComplications = pregnancyBirthHistory.HasPregnancyComplications,
-                        DescribePregnancyComplications = pregnancyBirthHistory.DescribePregnancyComplications,
-                        IsFullTermBirth = pregnancyBirthHistory.IsFullTermBirth,
-                        HasBirthComplications = pregnancyBirthHistory.HasBirthComplications,
-                        DescribeBirthComplications = pregnancyBirthHistory.DescribeBirthComplications,
-                        HasConsumedDrugs = pregnancyBirthHistory.HasConsumedDrugs,
-                        BirthWeightLbs = pregnancyBirthHistory.BirthWeightLbs,
-                        BirthWeightOz = pregnancyBirthHistory.BirthWeightOz,
-                        BirthHealth = pregnancyBirthHistory.BirthHealth,
-                        LengthOfHospitalStay = pregnancyBirthHistory.LengthOfHospitalStay,
-                        PostpartumDepression = pregnancyBirthHistory.PostpartumDepression,
-                        WasChildAdopted = pregnancyBirthHistory.WasChildAdopted,
-                        ChildAdoptedAge = pregnancyBirthHistory.ChildAdoptedAge,
-                        AdoptionType = pregnancyBirthHistory.AdoptionType,
-                        AdoptionCountry = pregnancyBirthHistory.AdoptionCountry
-                    };
-
-                    // DEVELOPMENTAL HISTORY
-                    var developmentalhistory = await context.DevelopmentalHistory.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
-                    var newDevelopmentalHistory = new DevelopmentalHistoryModel
-                    {
-                        AssessmentID = newAssessmentID,
-                        PatientID = patientID,
-                        RolledOverAge = developmentalhistory.RolledOverAge,
-                        CrawledAge = developmentalhistory.CrawledAge,
-                        WalkedAge = developmentalhistory.WalkedAge,
-                        TalkedAge = developmentalhistory.TalkedAge,
-                        ToiletTrainedAge = developmentalhistory.ToiletTrainedAge,
-                        SpeechConcerns = developmentalhistory.SpeechConcerns,
-                        MotorSkillsConcerns = developmentalhistory.MotorSkillsConcerns,
-                        CognitiveConcerns = developmentalhistory.CognitiveConcerns,
-                        SensoryConcerns = developmentalhistory.SensoryConcerns,
-                        BehavioralConcerns = developmentalhistory.BehavioralConcerns,
-                        EmotionalConcerns = developmentalhistory.EmotionalConcerns,
-                        SocialConcerns = developmentalhistory.SocialConcerns,
-                        HasSignificantDisturbance = developmentalhistory.HasSignificantDisturbance,
-                        DescribeSignificantDisturbance = developmentalhistory.DescribeSignificantDisturbance
-                    };
-
-                    // MENTAL HEALTH HISTORY
-                    var mentalHealthHistory = await context.MentalHealthHistory
-                        .Where(s => s.AssessmentID == assessmentID && s.PatientID == patientID)
-                        .ToListAsync();
-
-                    var newMentalHealthHistory = new List<MentalHealthHistoryModel>();
-
-                    foreach (var mentalHealth in mentalHealthHistory)
-                    {
-                        var newMentalHealth = new MentalHealthHistoryModel
-                        {
-                            AssessmentID = newAssessmentID,
-                            PatientID = patientID,
-                            HasReceivedCounseling = mentalHealth.HasReceivedCounseling,
-                            DateOfService = mentalHealth.DateOfService,
-                            Provider = mentalHealth.Provider,
-                            ReasonForTreatment = mentalHealth.ReasonForTreatment,
-                            WereServicesHelpful = mentalHealth.WereServicesHelpful
-                        };
-
-                        newMentalHealthHistory.Add(newMentalHealth);
-                    }
-
-                    // FAMILY HISTORY   
-                    var familyHistory = await context.FamilyHistory
-                        .Where(s => s.AssessmentID == assessmentID && s.PatientID == patientID)
-                        .ToListAsync();
-
-                    var newFamilyHistory = new List<FamilyHistoryModel>();
-
-                    foreach (var history in familyHistory)
-                    {
-                        var newHistory = new FamilyHistoryModel
-                        {
-                            AssessmentID = newAssessmentID,
-                            PatientID = patientID,
-                            IsSelf = history.IsSelf,
-                            HasDepression = history.HasDepression,
-                            HasAnxiety = history.HasAnxiety,
-                            HasBipolarDisorder = history.HasBipolarDisorder,
-                            HasSchizophrenia = history.HasSchizophrenia,
-                            HasADHD_ADD = history.HasADHD_ADD,
-                            HasTraumaHistory = history.HasTraumaHistory,
-                            HasAbusiveBehavior = history.HasAbusiveBehavior,
-                            HasAlcoholAbuse = history.HasAlcoholAbuse,
-                            HasDrugAbuse = history.HasDrugAbuse,
-                            HasIncarceration = history.HasIncarceration,
-                            AdditionalInfo = history.AdditionalInfo
-
-                        };
-
-                        newFamilyHistory.Add(newHistory);
-                    }
-
-                    // SAFETY CONCERNS
-                    var safetyConcerns = await context.SafetyConcerns.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
-                    var newSafetyConcerns = new SafetyConcernsModel
-                    {
-                        AssessmentID = newAssessmentID,
-                        PatientID = patientID,
-                        IsSuicidal = safetyConcerns.IsSuicidal,
-                        DescribeSuicidal = safetyConcerns.DescribeSuicidal,
-                        HasAttemptedSuicide = safetyConcerns.HasAttemptedSuicide,
-                        DescribeAttemptedSuicide = safetyConcerns.DescribeAttemptedSuicide,
-                        IsThereHistoryOfSuicide = safetyConcerns.IsThereHistoryOfSuicide,
-                        DescribeHistoryOfSuicide = safetyConcerns.DescribeHistoryOfSuicide,
-                        HasSelfHarm = safetyConcerns.HasSelfHarm,
-                        IsHomicidal = safetyConcerns.IsHomicidal,
-                        DescribeHomicidal = safetyConcerns.DescribeHomicidal,
-                        AdditionalInfo = safetyConcerns.AdditionalInfo
-                    };
-
-                    // CURRENT FUNCTIONING
-                    var currentFunctioning = await context.CurrentFunctioning.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
-                    var newCurrentFunctioning = new CurrentFunctioningModel
-                    {
-                        AssessmentID = newAssessmentID,
-                        PatientID = patientID,
-                        EatingConcerns = currentFunctioning.EatingConcerns,
-                        HygieneConcerns = currentFunctioning.HygieneConcerns,
-                        SleepingConcerns = currentFunctioning.SleepingConcerns,
-                        ActivitiesConcerns = currentFunctioning.ActivitiesConcerns,
-                        SocialRelationshipsConcerns = currentFunctioning.SocialRelationshipsConcerns,
-                        DescribeConcerns = currentFunctioning.DescribeConcerns,
-                        EnergyLevel = currentFunctioning.EnergyLevel,
-                        PhysicalLevel = currentFunctioning.PhysicalLevel,
-                        AnxiousLevel = currentFunctioning.AnxiousLevel,
-                        HappyLevel = currentFunctioning.HappyLevel,
-                        CuriousLevel = currentFunctioning.CuriousLevel,
-                        AngryLevel = currentFunctioning.AngryLevel,
-                        IntensityLevel = currentFunctioning.IntensityLevel,
-                        PersistenceLevel = currentFunctioning.PersistenceLevel,
-                        SensitivityLevel = currentFunctioning.SensitivityLevel,
-                        PerceptivenessLevel = currentFunctioning.PerceptivenessLevel,
-                        AdaptabilityLevel = currentFunctioning.AdaptabilityLevel,
-                        AttentionSpanLevel = currentFunctioning.AttentionSpanLevel
-                    };
-
-                    // PARENT CHILD RELATIONSHIP
-                    var parentchildrelationship = await context.ParentChildRelationship.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
-                    var newParentChildRelationship = new ParentChildRelationshipModel
-                    {
-                        AssessmentID = newAssessmentID,
-                        PatientID = patientID,
-                        ParentingExperience = parentchildrelationship.ParentingExperience,
-                        Challenges = parentchildrelationship.Challenges,
-                        DisciplineMethods = parentchildrelationship.DisciplineMethods
-                    };
-
-                    // EDUCATION
-                    var education = await context.Education.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
-                    var newEducation = new EducationModel
-                    {
-                        AssessmentID = newAssessmentID,
-                        PatientID = patientID,
-                        IsCurrentlyEnrolled = education.IsCurrentlyEnrolled,
-                        SchoolName = education.SchoolName,
-                        ChildGradeLevel = education.ChildGradeLevel,
-                        SummerGradeLevel = education.SummerGradeLevel,
-                        DescribeChildAttendance = education.DescribeChildAttendance,
-                        ChildAttendance = education.ChildAttendance,
-                        DescribeChildAchievements = education.DescribeChildAchievements,
-                        DescribeChildAttitude = education.DescribeChildAttitude,
-                        HasDisciplinaryIssues = education.HasDisciplinaryIssues,
-                        DescribeDisciplinaryIssues = education.DescribeDisciplinaryIssues,
-                        HasSpecialEducation = education.HasSpecialEducation,
-                        DescribeSpecialEducation = education.DescribeSpecialEducation,
-                        HasHomeStudy = education.HasHomeStudy,
-                        DescribeHomeStudy = education.DescribeHomeStudy,
-                        HasDiagnosedLearningDisability = education.HasDiagnosedLearningDisability,
-                        DescribeDiagnosedLearningDisability = education.DescribeDiagnosedLearningDisability,
-                        HasSpecialServices = education.HasSpecialServices,
-                        DescribeSpecialServices = education.DescribeSpecialServices
-                    };
-
-                    // EMPLOYMENT
-                    var employment = await context.Employment.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
-                    var newEmployment = new EmploymentModel
-                    {
-                        AssessmentID = newAssessmentID,
-                        PatientID = patientID,
-                        IsCurrentlyEmployed = employment.IsCurrentlyEmployed,
-                        Location = employment.Location,
-                        JobDuration = employment.JobDuration,
-                        IsEnjoyingJob = employment.IsEnjoyingJob
-                    };
-
-                    // HOUSING
-                    var housing = await context.Housing.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
-                    var newHousing = new HousingModel
-                    {
-                        AssessmentID = newAssessmentID,
-                        PatientID = patientID,
-                        IsStable = housing.IsStable,
-                        DescribeIfUnstable = housing.DescribeIfUnstable,
-                        HousingType = housing.HousingType,
-                        DurationLivedInHouse = housing.DurationLivedInHouse,
-                        TimesMoved = housing.TimesMoved,
-                        AdditionalInfo = housing.AdditionalInfo
-                    };
-
-                    // FOSTER CARE
-                    var fosterCare = await context.FosterCare.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
-                    var newFosterCare = new FosterCareModel
-                    {
-                        AssessmentID = newAssessmentID,
-                        PatientID = patientID,
-                        HasBeenFosterCared = fosterCare.HasBeenFosterCared,
-                        FosterAgeStart = fosterCare.FosterAgeStart,
-                        FosterAgeEnd = fosterCare.FosterAgeEnd,
-                        Reason = fosterCare.Reason,
-                        PlacementType = fosterCare.PlacementType,
-                        CurrentStatus = fosterCare.CurrentStatus,
-                        OutOfCareReason = fosterCare.OutOfCareReason
-                    };
-
-                    // ALCOHOL DRUG ASSESSMENT
-                    var alcoholDrugAssessment = await context.AlcoholDrugAssessment.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
-                    var newAlcoholDrugAssessment = new AlcoholDrugAssessmentModel
-                    {
-                        AssessmentID = newAssessmentID,
-                        PatientID = patientID,
-                        TobaccoUse = alcoholDrugAssessment.TobaccoUse,
-                        AlcoholUse = alcoholDrugAssessment.AlcoholUse,
-                        RecreationalMedicationUse = alcoholDrugAssessment.RecreationalMedicationUse,
-                        HasOverdosed = alcoholDrugAssessment.HasOverdosed,
-                        OverdoseDate = alcoholDrugAssessment.OverdoseDate,
-                        HasAlcoholProblems = alcoholDrugAssessment.HasAlcoholProblems,
-                        LegalProblems = alcoholDrugAssessment.LegalProblems,
-                        SocialPeerProblems = alcoholDrugAssessment.SocialPeerProblems,
-                        WorkProblems = alcoholDrugAssessment.WorkProblems,
-                        FamilyProblems = alcoholDrugAssessment.FamilyProblems,
-                        FriendsProblems = alcoholDrugAssessment.FriendsProblems,
-                        FinancialProblems = alcoholDrugAssessment.FinancialProblems,
-                        DescribeProblems = alcoholDrugAssessment.DescribeProblems,
-                        ContinuedUse = alcoholDrugAssessment.ContinuedUse
-                    };
-
-                    // LEGAL INVOLVEMENT
-                    var legalInvolvement = await context.LegalInvolvement.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
-                    var newLegalInvolvement = new LegalInvolvementModel
-                    {
-                        AssessmentID = newAssessmentID,
-                        PatientID = patientID,
-                        HasCustodyCase = legalInvolvement.HasCustodyCase,
-                        DescribeCustodyCase = legalInvolvement.DescribeCustodyCase,
-                        HasCPSInvolvement = legalInvolvement.HasCPSInvolvement,
-                        DescribeCPSInvolvement = legalInvolvement.DescribeCPSInvolvement,
-                        LegalStatus = legalInvolvement.LegalStatus,
-                        ProbationParoleLength = legalInvolvement.ProbationParoleLength,
-                        Charges = legalInvolvement.Charges,
-                        OfficerName = legalInvolvement.OfficerName,
-                        OfficerContactNum = legalInvolvement.OfficerContactNum,
-                        AdditionalInfo = legalInvolvement.AdditionalInfo
-                    };
-
-                    // HISTORY OF ABUSE
-                    var historyOfAbuse = await context.HistoryOfAbuse.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
-                    var newHistoryOfAbuse = new HistoryOfAbuseModel
-                    {
-                        AssessmentID = newAssessmentID,
-                        PatientID = patientID,
-                        HasBeenAbused = historyOfAbuse.HasBeenAbused,
-                        SexualAbuse = historyOfAbuse.SexualAbuse,
-                        SexualAbuseByWhom = historyOfAbuse.SexualAbuseByWhom,
-                        SexualAbuseAgeOfChild = historyOfAbuse.SexualAbuseAgeOfChild,
-                        SexualAbuseReported = historyOfAbuse.SexualAbuseReported,
-                        PhysicalAbuse = historyOfAbuse.PhysicalAbuse,
-                        PhysicalAbuseByWhom = historyOfAbuse.PhysicalAbuseByWhom,
-                        PhysicalAbuseAgeOfChild = historyOfAbuse.PhysicalAbuseAgeOfChild,
-                        PhysicalAbuseReported = historyOfAbuse.PhysicalAbuseReported,
-                        EmotionalAbuse = historyOfAbuse.EmotionalAbuse,
-                        EmotionalAbuseByWhom = historyOfAbuse.EmotionalAbuseByWhom,
-                        EmotionalAbuseAgeOfChild = historyOfAbuse.EmotionalAbuseAgeOfChild,
-                        EmotionalAbuseReported = historyOfAbuse.EmotionalAbuseReported,
-                        VerbalAbuse = historyOfAbuse.VerbalAbuse,
-                        VerbalAbuseByWhom = historyOfAbuse.VerbalAbuseByWhom,
-                        VerbalAbuseAgeOfChild = historyOfAbuse.VerbalAbuseAgeOfChild,
-                        VerbalAbuseReported = historyOfAbuse.VerbalAbuseReported,
-                        AbandonedAbuse = historyOfAbuse.AbandonedAbuse,
-                        AbandonedAbuseByWhom = historyOfAbuse.AbandonedAbuseByWhom,
-                        AbandonedAbuseAgeOfChild = historyOfAbuse.AbandonedAbuseAgeOfChild,
-                        AbandonedAbuseReported = historyOfAbuse.AbandonedAbuseReported,
-                        PsychologicalAbuse = historyOfAbuse.PsychologicalAbuse,
-                        PsychologicalAbuseByWhom = historyOfAbuse.PsychologicalAbuseByWhom,
-                        PsychologicalAbuseAgeOfChild = historyOfAbuse.PsychologicalAbuseAgeOfChild,
-                        PsychologicalAbuseReported = historyOfAbuse.PsychologicalAbuseReported,
-                        VictimOfBullying = historyOfAbuse.VictimOfBullying,
-                        SafetyConcerns = historyOfAbuse.SafetyConcerns,
-                        DescribeSafetyConcerns = historyOfAbuse.DescribeSafetyConcerns,
-                        AdditionalInfo = historyOfAbuse.AdditionalInfo
-                    };
-
-                    // HISTORY OF VIOLENCE
-                    var historyOfViolence = await context.HistoryOfViolence.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
-                    var newHistoryOfViolence = new HistoryOfViolenceModel
-                    {
-                        AssessmentID = newAssessmentID,
-                        PatientID = patientID,
-                        HasBeenAccused = historyOfViolence.HasBeenAccused,
-                        SexualAbuse = historyOfViolence.SexualAbuse,
-                        SexualAbuseToWhom = historyOfViolence.SexualAbuseToWhom,
-                        SexualAbuseAgeOfChild = historyOfViolence.SexualAbuseAgeOfChild,
-                        SexualAbuseReported = historyOfViolence.SexualAbuseReported,
-                        PhysicalAbuse = historyOfViolence.PhysicalAbuse,
-                        PhysicalAbuseToWhom = historyOfViolence.PhysicalAbuseToWhom,
-                        PhysicalAbuseAgeOfChild = historyOfViolence.PhysicalAbuseAgeOfChild,
-                        PhysicalAbuseReported = historyOfViolence.PhysicalAbuseReported,
-                        EmotionalAbuse = historyOfViolence.EmotionalAbuse,
-                        EmotionalAbuseToWhom = historyOfViolence.EmotionalAbuseToWhom,
-                        EmotionalAbuseAgeOfChild = historyOfViolence.EmotionalAbuseAgeOfChild,
-                        EmotionalAbuseReported = historyOfViolence.EmotionalAbuseReported,
-                        VerbalAbuse = historyOfViolence.VerbalAbuse,
-                        VerbalAbuseToWhom = historyOfViolence.VerbalAbuseToWhom,
-                        VerbalAbuseAgeOfChild = historyOfViolence.VerbalAbuseAgeOfChild,
-                        VerbalAbuseReported = historyOfViolence.VerbalAbuseReported,
-                        AbandonedAbuse = historyOfViolence.AbandonedAbuse,
-                        AbandonedAbuseToWhom = historyOfViolence.AbandonedAbuseToWhom,
-                        AbandonedAbuseAgeOfChild = historyOfViolence.AbandonedAbuseAgeOfChild,
-                        AbandonedAbuseReported = historyOfViolence.AbandonedAbuseReported,
-                        Bullying = historyOfViolence.Bullying,
-                        AdditionalInfo = historyOfViolence.AdditionalInfo
-                    };
-
-                    // STRENGTHS RESOURCES
-                    var strengthsResources = await context.StrengthsResources.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
-                    var newStrengthsResources = new StrengthsResourcesModel
-                    {
-                        AssessmentID = newAssessmentID,
-                        PatientID = patientID,
-                        Strengths = strengthsResources.Strengths,
-                        Limitations = strengthsResources.Limitations,
-                        Resources = strengthsResources.Resources,
-                        Experiences = strengthsResources.Experiences,
-                        AlreadyDoing = strengthsResources.AlreadyDoing,
-                        ParentsSupport = strengthsResources.ParentsSupport,
-                        PartnerSupport = strengthsResources.PartnerSupport,
-                        SiblingsSupport = strengthsResources.SiblingsSupport,
-                        ExtendedFamilySupport = strengthsResources.ExtendedFamilySupport,
-                        FriendsSupport = strengthsResources.FriendsSupport,
-                        NeighborsSupport = strengthsResources.NeighborsSupport,
-                        SchoolStaffSupport = strengthsResources.SchoolStaffSupport,
-                        ChurchSupport = strengthsResources.ChurchSupport,
-                        PastorSupport = strengthsResources.PastorSupport,
-                        TherapistSupport = strengthsResources.TherapistSupport,
-                        GroupSupport = strengthsResources.GroupSupport,
-                        CommunityServiceSupport = strengthsResources.CommunityServiceSupport,
-                        DoctorSupport = strengthsResources.DoctorSupport,
-                        OthersSupport = strengthsResources.OthersSupport,
-                        Others = strengthsResources.Others
-                    };
-
-                    // GOALS
-                    var goals = await context.Goals.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
-                    var newGoals = new GoalsModel
-                    {
-                        AssessmentID = newAssessmentID,
-                        PatientID = patientID,
-                        CurrentNeeds = goals.CurrentNeeds,
-                        HopeToGain = goals.HopeToGain,
-                        Goal1 = goals.Goal1,
-                        Goal2 = goals.Goal2,
-                        Goal3 = goals.Goal3,
-                        AdditionalInfo = goals.AdditionalInfo
-                    };
-
-                    // PROGRESS NOTES
-                    var progressnotes = await context.ProgressNotes
-                        .Where(s => s.AssessmentID == assessmentID && s.PatientID == patientID)
-                        .ToListAsync();
-                    var newProgressNotes = new List<ProgressNotesModel>();
-                    foreach (var progressNote in progressnotes)
-                    {
-                        var newProgressNote = new ProgressNotesModel
-                        {
-                            AssessmentID = newAssessmentID,
-                            PatientID = patientID,
-                            Date = progressNote.Date,
-                            ProgressNotes = progressNote.ProgressNotes,
-                            Attachment = progressNote.Attachment,
-                            AttachmentContentType = progressNote.AttachmentContentType,
-                            UserID = progressNote.UserID
-                        };
-                        newProgressNotes.Add(newProgressNote);
-                    }
-
-                    // GENERAL ADMISSION
-                    var generalAdmission = await context.GeneralAdmission.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
-                    var newGeneralAdmission = new GeneralAdmissionModel
-                    {
-                        AssessmentID = newAssessmentID,
-                        PatientID = patientID,
-                        Date = DateOnly.FromDateTime(DateTime.Now),
-                        isOld = true,
-                        HospitalNo = generalAdmission.HospitalNo,
-                        FirstName = generalAdmission.FirstName,
-                        MiddleName = generalAdmission.MiddleName,
-                        LastName = generalAdmission.LastName,
-                        Ward = generalAdmission.Ward,
-                        Class = generalAdmission.Class,
-                        Age = generalAdmission.Age,
-                        Gender = generalAdmission.Gender,
-                        Time = TimeOnly.FromDateTime(DateTime.Now),
-                        Diagnosis = generalAdmission.Diagnosis,
-                        CompleteAddress = generalAdmission.CompleteAddress,
-                        Origin = generalAdmission.Origin,
-                        ContactNumber = generalAdmission.ContactNumber,
-                        Referral = generalAdmission.Referral,
-                        Occupation = generalAdmission.Occupation,
-                        StatsOccupation = generalAdmission.StatsOccupation,
-                        IncomeRange = generalAdmission.IncomeRange,
-                        MonthlyIncome = generalAdmission.MonthlyIncome,
-                        EconomicStatus = generalAdmission.EconomicStatus,
-                        HouseholdSize = generalAdmission.HouseholdSize,
-                        MaritalStatus = generalAdmission.MaritalStatus,
-                        isPWD = generalAdmission.isPWD,
-                        EducationalAttainment = generalAdmission.EducationalAttainment,
-                        FatherEducationalAttainment = generalAdmission.FatherEducationalAttainment,
-                        MotherEducationalAttainment = generalAdmission.MotherEducationalAttainment,
-                        isInterviewed = generalAdmission.isInterviewed,
-                        DwellingType = generalAdmission.DwellingType,
-                        LightSource = generalAdmission.LightSource,
-                        WaterSource = generalAdmission.WaterSource,
-                        FuelSource = generalAdmission.FuelSource,
-                        PHIC = generalAdmission.PHIC,
-                        MSW = User.FindFirstValue(ClaimTypes.Name),
-                        UserID = int.Parse(userIdClaim.Value)
-                    };
-
-                    // Change patient to active
-                    patient.IsActive = true;
-
-                    await context.Assessments.AddAsync(newAssessment);
-                    await context.SaveChangesAsync();
-
-                    // Update the rest of the form
-                    await context.Referrals.AddAsync(newReferral);
-                    await context.Informants.AddAsync(newInformant);
-                    await context.FamilyComposition.AddRangeAsync(newFamilyComposition);
-                    await context.Households.AddAsync(newHousehold);
-                    await context.MSWDClassification.AddAsync(newMSWDClassification);
-                    await context.MonthlyExpenses.AddAsync(newMonthlyExpenses);
-                    await context.Utilities.AddAsync(newUtilities);
-                    await context.MedicalHistory.AddAsync(newMedicalHistory);
-                    await context.ChildHealth.AddAsync(newChildHealth);
-                    await context.Diagnoses.AddRangeAsync(newDiagnoses);
-                    await context.Medications.AddRangeAsync(newMedications);
-                    await context.HospitalizationHistory.AddRangeAsync(newHospitalizationHistory);
-                    await context.MedicalScreenings.AddAsync(newMedicalScreenings);
-                    await context.PrimaryCareDoctor.AddAsync(newPrimaryCareDoctor);
-                    await context.PresentingProblems.AddAsync(newPresentingProblems);
-                    await context.RecentLosses.AddAsync(newRecentLosses);
-                    await context.PregnancyBirthHistory.AddAsync(newPregnancyBirthHistory);
-                    await context.DevelopmentalHistory.AddAsync(newDevelopmentalHistory);
-                    await context.MentalHealthHistory.AddRangeAsync(newMentalHealthHistory);
-                    await context.FamilyHistory.AddRangeAsync(newFamilyHistory);
-                    await context.SafetyConcerns.AddAsync(newSafetyConcerns);
-                    await context.CurrentFunctioning.AddAsync(newCurrentFunctioning);
-                    await context.ParentChildRelationship.AddAsync(newParentChildRelationship);
-                    await context.Education.AddAsync(newEducation);
-                    await context.Employment.AddAsync(newEmployment);
-                    await context.Housing.AddAsync(newHousing);
-                    await context.FosterCare.AddAsync(newFosterCare);
-                    await context.AlcoholDrugAssessment.AddAsync(newAlcoholDrugAssessment);
-                    await context.LegalInvolvement.AddAsync(newLegalInvolvement);
-                    await context.HistoryOfAbuse.AddAsync(newHistoryOfAbuse);
-                    await context.HistoryOfViolence.AddAsync(newHistoryOfViolence);
-                    await context.StrengthsResources.AddAsync(newStrengthsResources);
-                    await context.Goals.AddAsync(newGoals);
-                    await context.ProgressNotes.AddRangeAsync(newProgressNotes);
-                    await context.GeneralAdmission.AddAsync(newGeneralAdmission);
-                    await context.SaveChangesAsync();
-
-                    TempData["SuccessMessage"] = "Successfully re-admitted patient.";
-                    LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Patient Re-admission successful. Created new AssessmentID: {newAssessmentID}");
-                    return RedirectToAction("Edit", "Form", new { id = patientID, assessmentID = newAssessmentID });
-
+                    newFamilyComposition.Add(newMember);
                 }
+
+                // HOUSEHOLD
+                var household = await context.Households.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
+                var newHousehold = new HouseholdModel
+                {
+                    AssessmentID = newAssessmentID,
+                    PatientID = patientID,
+                    OtherSourcesOfIncome = household.OtherSourcesOfIncome,
+                    HouseholdSize = household.HouseholdSize,
+                    TotalHouseholdIncome = household.TotalHouseholdIncome,
+                    PerCapitaIncome = household.PerCapitaIncome
+                };
+
+                // MSWD CLASSIFICATION
+                var mswdclassification = await context.MSWDClassification.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
+                var newMSWDClassification = new MSWDClassificationModel
+                {
+                    AssessmentID = newAssessmentID,
+                    PatientID = patientID,
+                    MainClassification = mswdclassification.MainClassification,
+                    SubClassification = mswdclassification.SubClassification,
+                    MembershipSector = mswdclassification.MembershipSector
+
+                };
+
+                // MONTHLY EXPENSES & UTILITIES
+                var monthlyExpenses = await context.MonthlyExpenses.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
+                var newMonthlyExpenses = new MonthlyExpensesModel
+                {
+                    AssessmentID = newAssessmentID,
+                    PatientID = patientID,
+                    HouseAndLot = monthlyExpenses.HouseAndLot,
+                    FoodAndWater = monthlyExpenses.FoodAndWater,
+                    Education = monthlyExpenses.Education,
+                    Clothing = monthlyExpenses.Clothing,
+                    Communication = monthlyExpenses.Communication,
+                    HouseHelp = monthlyExpenses.HouseHelp,
+                    MedicalExpenses = monthlyExpenses.MedicalExpenses,
+                    Transportation = monthlyExpenses.Transportation,
+                    Others = monthlyExpenses.Others,
+                    OthersAmount = monthlyExpenses.OthersAmount,
+                    Total = monthlyExpenses.Total
+                };
+
+                var utilities = await context.Utilities.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
+                var newUtilities = new UtilitiesModel
+                {
+                    AssessmentID = newAssessmentID,
+                    PatientID = patientID,
+                    LightSource = utilities.LightSource,
+                    LightSourceAmount = utilities.LightSourceAmount,
+                    FuelSource = utilities.FuelSource,
+                    FuelSourceAmount = utilities.FuelSourceAmount,
+                    WaterSource = utilities.WaterSource
+                };
+
+                // MEDICAL HISTORY
+                var medicalHistory = await context.MedicalHistory.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
+                var newMedicalHistory = new MedicalHistoryModel
+                {
+                    AssessmentID = newAssessmentID,
+                    PatientID = patientID,
+                    AdmittingDiagnosis = medicalHistory.AdmittingDiagnosis,
+                    FinalDiagnosis = medicalHistory.FinalDiagnosis,
+                    DurationSymptomsPriorAdmission = medicalHistory.DurationSymptomsPriorAdmission,
+                    PreviousTreatmentDuration = medicalHistory.PreviousTreatmentDuration,
+                    TreatmentPlan = medicalHistory.TreatmentPlan,
+                    HealthAccessibilityProblems = medicalHistory.HealthAccessibilityProblems
+                };
+
+                // CHILD HEALTH
+                var childHealth = await context.ChildHealth.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
+                var newChildHealth = new ChildHealthModel
+                {
+                    AssessmentID = newAssessmentID,
+                    PatientID = patientID,
+                    OverallHealth = childHealth.OverallHealth,
+                    HasHealthIssues = childHealth.HasHealthIssues,
+                    DescribeHealthIssues = childHealth.DescribeHealthIssues,
+                    HasRecurrentConditions = childHealth.HasRecurrentConditions,
+                    DescribeRecurrentConditions = childHealth.DescribeRecurrentConditions,
+                    HasEarTubes = childHealth.HasEarTubes
+                };
+
+                // DIAGNOSES
+                var diagnoses = await context.Diagnoses
+                    .Where(s => s.AssessmentID == assessmentID && s.PatientID == patientID)
+                    .ToListAsync();
+
+                var newDiagnoses = new List<DiagnosesModel>();
+
+                foreach (var diagnosis in diagnoses)
+                {
+                    var newDiagnosis = new DiagnosesModel
+                    {
+                        AssessmentID = newAssessmentID,
+                        PatientID = patientID,
+                        MedicalCondition = diagnosis.MedicalCondition,
+                        ReceivingTreatment = diagnosis.ReceivingTreatment,
+                        TreatmentProvider = diagnosis.TreatmentProvider,
+                        DoesCauseStressOrImpairment = diagnosis.DoesCauseStressOrImpairment,
+                        TreatmentHelp = diagnosis.TreatmentHelp
+                    };
+
+                    newDiagnoses.Add(newDiagnosis);
+                }
+
+                // MEDICATIONS
+                var medications = await context.Medications
+                    .Where(s => s.AssessmentID == assessmentID && s.PatientID == patientID)
+                    .ToListAsync();
+
+                var newMedications = new List<MedicationsModel>();
+
+                foreach (var medication in medications)
+                {
+                    var newMedication = new MedicationsModel
+                    {
+                        AssessmentID = newAssessmentID,
+                        PatientID = patientID,
+                        DoesTakeAnyMedication = medication.DoesTakeAnyMedication,
+                        Medication = medication.Medication,
+                        Dosage = medication.Dosage,
+                        Frequency = medication.Frequency,
+                        PrescribedBy = medication.PrescribedBy,
+                        ReasonForMedication = medication.ReasonForMedication,
+                        IsTakingMedicationAsPrescribed = medication.IsTakingMedicationAsPrescribed,
+                        DescribeTakingMedication = medication.DescribeTakingMedication,
+                        AdditionalInfo = medication.AdditionalInfo
+                    };
+
+                    newMedications.Add(newMedication);
+                }
+
+                // HOSPITALIZATION HISTORY
+                var hospitalizationHistory = await context.HospitalizationHistory
+                    .Where(s => s.AssessmentID == assessmentID && s.PatientID == patientID)
+                    .ToListAsync();
+
+                var newHospitalizationHistory = new List<HospitalizationHistoryModel>();
+
+                foreach (var hospitalization in hospitalizationHistory)
+                {
+                    var newHospitalization = new HospitalizationHistoryModel
+                    {
+                        AssessmentID = newAssessmentID,
+                        PatientID = patientID,
+                        HasSeriousAccidentOrIllness = hospitalization.HasSeriousAccidentOrIllness,
+                        Reason = hospitalization.Reason,
+                        Date = hospitalization.Date,
+                        Location = hospitalization.Location
+                    };
+
+                    newHospitalizationHistory.Add(newHospitalization);
+                }
+
+                // MEDICAL SCREENINGS
+                var medicalscreenings = await context.MedicalScreenings.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
+                var newMedicalScreenings = new MedicalScreeningsModel
+                {
+                    AssessmentID = newAssessmentID,
+                    PatientID = patientID,
+                    HasScreeningDone = medicalscreenings.HasScreeningDone,
+                    HearingTestDate = medicalscreenings.HearingTestDate,
+                    HearingTestOutcome = medicalscreenings.HearingTestOutcome,
+                    VisionTestDate = medicalscreenings.VisionTestDate,
+                    VisionTestOutcome = medicalscreenings.VisionTestOutcome,
+                    SpeechTestDate = medicalscreenings.SpeechTestDate,
+                    SpeechTestOutcome = medicalscreenings.SpeechTestOutcome
+                };
+
+                // PRIMARY CARE DOCTOR
+                var primaryCareDoctor = await context.PrimaryCareDoctor.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
+                var newPrimaryCareDoctor = new PrimaryCareDoctorModel
+                {
+                    AssessmentID = newAssessmentID,
+                    PatientID = patientID,
+                    DoctorName = primaryCareDoctor.DoctorName,
+                    Facility = primaryCareDoctor.Facility,
+                    PhoneNumber = primaryCareDoctor.PhoneNumber
+                };
+
+                // PRESENTING PROBLEMS
+                var presentingproblems = await context.PresentingProblems.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
+                var newPresentingProblems = new PresentingProblemsModel
+                {
+                    AssessmentID = newAssessmentID,
+                    PatientID = patientID,
+                    PresentingProblem = presentingproblems.PresentingProblem,
+                    Severity = presentingproblems.Severity,
+                    ChangeInSleepPattern = presentingproblems.ChangeInSleepPattern,
+                    Concentration = presentingproblems.Concentration,
+                    ChangeInAppetite = presentingproblems.ChangeInAppetite,
+                    IncreasedAnxiety = presentingproblems.IncreasedAnxiety,
+                    MoodSwings = presentingproblems.MoodSwings,
+                    BehavioralChanges = presentingproblems.BehavioralChanges,
+                    Victimization = presentingproblems.Victimization,
+                    DescribeOtherConcern = presentingproblems.DescribeOtherConcern,
+                    DurationOfStress = presentingproblems.DurationOfStress,
+                    CopingLevel = presentingproblems.CopingLevel,
+                    OtherFamilySituation = presentingproblems.OtherFamilySituation
+                };
+
+                // RECENT LOSSES
+                var recentlosses = await context.RecentLosses.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
+                var newRecentLosses = new RecentLossesModel
+                {
+                    AssessmentID = newAssessmentID,
+                    PatientID = patientID,
+                    FamilyMemberLoss = recentlosses.FamilyMemberLoss,
+                    FriendLoss = recentlosses.FriendLoss,
+                    HealthLoss = recentlosses.HealthLoss,
+                    LifestyleLoss = recentlosses.LifestyleLoss,
+                    JobLoss = recentlosses.JobLoss,
+                    IncomeLoss = recentlosses.IncomeLoss,
+                    HousingLoss = recentlosses.HousingLoss,
+                    NoneLoss = recentlosses.NoneLoss,
+                    Name = recentlosses.Name,
+                    Date = recentlosses.Date,
+                    NatureOfLoss = recentlosses.NatureOfLoss,
+                    OtherLosses = recentlosses.OtherLosses,
+                    AdditionalInfo = recentlosses.AdditionalInfo
+                };
+
+                // PREGNANCY BIRTH HISTORY
+                var pregnancyBirthHistory = await context.PregnancyBirthHistory.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
+                var newPregnancyBirthHistory = new PregnancyBirthHistoryModel
+                {
+                    AssessmentID = newAssessmentID,
+                    PatientID = patientID,
+                    HasPregnancyComplications = pregnancyBirthHistory.HasPregnancyComplications,
+                    DescribePregnancyComplications = pregnancyBirthHistory.DescribePregnancyComplications,
+                    IsFullTermBirth = pregnancyBirthHistory.IsFullTermBirth,
+                    HasBirthComplications = pregnancyBirthHistory.HasBirthComplications,
+                    DescribeBirthComplications = pregnancyBirthHistory.DescribeBirthComplications,
+                    HasConsumedDrugs = pregnancyBirthHistory.HasConsumedDrugs,
+                    BirthWeightLbs = pregnancyBirthHistory.BirthWeightLbs,
+                    BirthWeightOz = pregnancyBirthHistory.BirthWeightOz,
+                    BirthHealth = pregnancyBirthHistory.BirthHealth,
+                    LengthOfHospitalStay = pregnancyBirthHistory.LengthOfHospitalStay,
+                    PostpartumDepression = pregnancyBirthHistory.PostpartumDepression,
+                    WasChildAdopted = pregnancyBirthHistory.WasChildAdopted,
+                    ChildAdoptedAge = pregnancyBirthHistory.ChildAdoptedAge,
+                    AdoptionType = pregnancyBirthHistory.AdoptionType,
+                    AdoptionCountry = pregnancyBirthHistory.AdoptionCountry
+                };
+
+                // DEVELOPMENTAL HISTORY
+                var developmentalhistory = await context.DevelopmentalHistory.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
+                var newDevelopmentalHistory = new DevelopmentalHistoryModel
+                {
+                    AssessmentID = newAssessmentID,
+                    PatientID = patientID,
+                    RolledOverAge = developmentalhistory.RolledOverAge,
+                    CrawledAge = developmentalhistory.CrawledAge,
+                    WalkedAge = developmentalhistory.WalkedAge,
+                    TalkedAge = developmentalhistory.TalkedAge,
+                    ToiletTrainedAge = developmentalhistory.ToiletTrainedAge,
+                    SpeechConcerns = developmentalhistory.SpeechConcerns,
+                    MotorSkillsConcerns = developmentalhistory.MotorSkillsConcerns,
+                    CognitiveConcerns = developmentalhistory.CognitiveConcerns,
+                    SensoryConcerns = developmentalhistory.SensoryConcerns,
+                    BehavioralConcerns = developmentalhistory.BehavioralConcerns,
+                    EmotionalConcerns = developmentalhistory.EmotionalConcerns,
+                    SocialConcerns = developmentalhistory.SocialConcerns,
+                    HasSignificantDisturbance = developmentalhistory.HasSignificantDisturbance,
+                    DescribeSignificantDisturbance = developmentalhistory.DescribeSignificantDisturbance
+                };
+
+                // MENTAL HEALTH HISTORY
+                var mentalHealthHistory = await context.MentalHealthHistory
+                    .Where(s => s.AssessmentID == assessmentID && s.PatientID == patientID)
+                    .ToListAsync();
+
+                var newMentalHealthHistory = new List<MentalHealthHistoryModel>();
+
+                foreach (var mentalHealth in mentalHealthHistory)
+                {
+                    var newMentalHealth = new MentalHealthHistoryModel
+                    {
+                        AssessmentID = newAssessmentID,
+                        PatientID = patientID,
+                        HasReceivedCounseling = mentalHealth.HasReceivedCounseling,
+                        DateOfService = mentalHealth.DateOfService,
+                        Provider = mentalHealth.Provider,
+                        ReasonForTreatment = mentalHealth.ReasonForTreatment,
+                        WereServicesHelpful = mentalHealth.WereServicesHelpful
+                    };
+
+                    newMentalHealthHistory.Add(newMentalHealth);
+                }
+
+                // FAMILY HISTORY   
+                var familyHistory = await context.FamilyHistory
+                    .Where(s => s.AssessmentID == assessmentID && s.PatientID == patientID)
+                    .ToListAsync();
+
+                var newFamilyHistory = new List<FamilyHistoryModel>();
+
+                foreach (var history in familyHistory)
+                {
+                    var newHistory = new FamilyHistoryModel
+                    {
+                        AssessmentID = newAssessmentID,
+                        PatientID = patientID,
+                        IsSelf = history.IsSelf,
+                        HasDepression = history.HasDepression,
+                        HasAnxiety = history.HasAnxiety,
+                        HasBipolarDisorder = history.HasBipolarDisorder,
+                        HasSchizophrenia = history.HasSchizophrenia,
+                        HasADHD_ADD = history.HasADHD_ADD,
+                        HasTraumaHistory = history.HasTraumaHistory,
+                        HasAbusiveBehavior = history.HasAbusiveBehavior,
+                        HasAlcoholAbuse = history.HasAlcoholAbuse,
+                        HasDrugAbuse = history.HasDrugAbuse,
+                        HasIncarceration = history.HasIncarceration,
+                        AdditionalInfo = history.AdditionalInfo
+
+                    };
+
+                    newFamilyHistory.Add(newHistory);
+                }
+
+                // SAFETY CONCERNS
+                var safetyConcerns = await context.SafetyConcerns.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
+                var newSafetyConcerns = new SafetyConcernsModel
+                {
+                    AssessmentID = newAssessmentID,
+                    PatientID = patientID,
+                    IsSuicidal = safetyConcerns.IsSuicidal,
+                    DescribeSuicidal = safetyConcerns.DescribeSuicidal,
+                    HasAttemptedSuicide = safetyConcerns.HasAttemptedSuicide,
+                    DescribeAttemptedSuicide = safetyConcerns.DescribeAttemptedSuicide,
+                    IsThereHistoryOfSuicide = safetyConcerns.IsThereHistoryOfSuicide,
+                    DescribeHistoryOfSuicide = safetyConcerns.DescribeHistoryOfSuicide,
+                    HasSelfHarm = safetyConcerns.HasSelfHarm,
+                    IsHomicidal = safetyConcerns.IsHomicidal,
+                    DescribeHomicidal = safetyConcerns.DescribeHomicidal,
+                    AdditionalInfo = safetyConcerns.AdditionalInfo
+                };
+
+                // CURRENT FUNCTIONING
+                var currentFunctioning = await context.CurrentFunctioning.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
+                var newCurrentFunctioning = new CurrentFunctioningModel
+                {
+                    AssessmentID = newAssessmentID,
+                    PatientID = patientID,
+                    EatingConcerns = currentFunctioning.EatingConcerns,
+                    HygieneConcerns = currentFunctioning.HygieneConcerns,
+                    SleepingConcerns = currentFunctioning.SleepingConcerns,
+                    ActivitiesConcerns = currentFunctioning.ActivitiesConcerns,
+                    SocialRelationshipsConcerns = currentFunctioning.SocialRelationshipsConcerns,
+                    DescribeConcerns = currentFunctioning.DescribeConcerns,
+                    EnergyLevel = currentFunctioning.EnergyLevel,
+                    PhysicalLevel = currentFunctioning.PhysicalLevel,
+                    AnxiousLevel = currentFunctioning.AnxiousLevel,
+                    HappyLevel = currentFunctioning.HappyLevel,
+                    CuriousLevel = currentFunctioning.CuriousLevel,
+                    AngryLevel = currentFunctioning.AngryLevel,
+                    IntensityLevel = currentFunctioning.IntensityLevel,
+                    PersistenceLevel = currentFunctioning.PersistenceLevel,
+                    SensitivityLevel = currentFunctioning.SensitivityLevel,
+                    PerceptivenessLevel = currentFunctioning.PerceptivenessLevel,
+                    AdaptabilityLevel = currentFunctioning.AdaptabilityLevel,
+                    AttentionSpanLevel = currentFunctioning.AttentionSpanLevel
+                };
+
+                // PARENT CHILD RELATIONSHIP
+                var parentchildrelationship = await context.ParentChildRelationship.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
+                var newParentChildRelationship = new ParentChildRelationshipModel
+                {
+                    AssessmentID = newAssessmentID,
+                    PatientID = patientID,
+                    ParentingExperience = parentchildrelationship.ParentingExperience,
+                    Challenges = parentchildrelationship.Challenges,
+                    DisciplineMethods = parentchildrelationship.DisciplineMethods
+                };
+
+                // EDUCATION
+                var education = await context.Education.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
+                var newEducation = new EducationModel
+                {
+                    AssessmentID = newAssessmentID,
+                    PatientID = patientID,
+                    IsCurrentlyEnrolled = education.IsCurrentlyEnrolled,
+                    SchoolName = education.SchoolName,
+                    ChildGradeLevel = education.ChildGradeLevel,
+                    SummerGradeLevel = education.SummerGradeLevel,
+                    DescribeChildAttendance = education.DescribeChildAttendance,
+                    ChildAttendance = education.ChildAttendance,
+                    DescribeChildAchievements = education.DescribeChildAchievements,
+                    DescribeChildAttitude = education.DescribeChildAttitude,
+                    HasDisciplinaryIssues = education.HasDisciplinaryIssues,
+                    DescribeDisciplinaryIssues = education.DescribeDisciplinaryIssues,
+                    HasSpecialEducation = education.HasSpecialEducation,
+                    DescribeSpecialEducation = education.DescribeSpecialEducation,
+                    HasHomeStudy = education.HasHomeStudy,
+                    DescribeHomeStudy = education.DescribeHomeStudy,
+                    HasDiagnosedLearningDisability = education.HasDiagnosedLearningDisability,
+                    DescribeDiagnosedLearningDisability = education.DescribeDiagnosedLearningDisability,
+                    HasSpecialServices = education.HasSpecialServices,
+                    DescribeSpecialServices = education.DescribeSpecialServices
+                };
+
+                // EMPLOYMENT
+                var employment = await context.Employment.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
+                var newEmployment = new EmploymentModel
+                {
+                    AssessmentID = newAssessmentID,
+                    PatientID = patientID,
+                    IsCurrentlyEmployed = employment.IsCurrentlyEmployed,
+                    Location = employment.Location,
+                    JobDuration = employment.JobDuration,
+                    IsEnjoyingJob = employment.IsEnjoyingJob
+                };
+
+                // HOUSING
+                var housing = await context.Housing.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
+                var newHousing = new HousingModel
+                {
+                    AssessmentID = newAssessmentID,
+                    PatientID = patientID,
+                    IsStable = housing.IsStable,
+                    DescribeIfUnstable = housing.DescribeIfUnstable,
+                    HousingType = housing.HousingType,
+                    DurationLivedInHouse = housing.DurationLivedInHouse,
+                    TimesMoved = housing.TimesMoved,
+                    AdditionalInfo = housing.AdditionalInfo
+                };
+
+                // FOSTER CARE
+                var fosterCare = await context.FosterCare.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
+                var newFosterCare = new FosterCareModel
+                {
+                    AssessmentID = newAssessmentID,
+                    PatientID = patientID,
+                    HasBeenFosterCared = fosterCare.HasBeenFosterCared,
+                    FosterAgeStart = fosterCare.FosterAgeStart,
+                    FosterAgeEnd = fosterCare.FosterAgeEnd,
+                    Reason = fosterCare.Reason,
+                    PlacementType = fosterCare.PlacementType,
+                    CurrentStatus = fosterCare.CurrentStatus,
+                    OutOfCareReason = fosterCare.OutOfCareReason
+                };
+
+                // ALCOHOL DRUG ASSESSMENT
+                var alcoholDrugAssessment = await context.AlcoholDrugAssessment.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
+                var newAlcoholDrugAssessment = new AlcoholDrugAssessmentModel
+                {
+                    AssessmentID = newAssessmentID,
+                    PatientID = patientID,
+                    TobaccoUse = alcoholDrugAssessment.TobaccoUse,
+                    AlcoholUse = alcoholDrugAssessment.AlcoholUse,
+                    RecreationalMedicationUse = alcoholDrugAssessment.RecreationalMedicationUse,
+                    HasOverdosed = alcoholDrugAssessment.HasOverdosed,
+                    OverdoseDate = alcoholDrugAssessment.OverdoseDate,
+                    HasAlcoholProblems = alcoholDrugAssessment.HasAlcoholProblems,
+                    LegalProblems = alcoholDrugAssessment.LegalProblems,
+                    SocialPeerProblems = alcoholDrugAssessment.SocialPeerProblems,
+                    WorkProblems = alcoholDrugAssessment.WorkProblems,
+                    FamilyProblems = alcoholDrugAssessment.FamilyProblems,
+                    FriendsProblems = alcoholDrugAssessment.FriendsProblems,
+                    FinancialProblems = alcoholDrugAssessment.FinancialProblems,
+                    DescribeProblems = alcoholDrugAssessment.DescribeProblems,
+                    ContinuedUse = alcoholDrugAssessment.ContinuedUse
+                };
+
+                // LEGAL INVOLVEMENT
+                var legalInvolvement = await context.LegalInvolvement.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
+                var newLegalInvolvement = new LegalInvolvementModel
+                {
+                    AssessmentID = newAssessmentID,
+                    PatientID = patientID,
+                    HasCustodyCase = legalInvolvement.HasCustodyCase,
+                    DescribeCustodyCase = legalInvolvement.DescribeCustodyCase,
+                    HasCPSInvolvement = legalInvolvement.HasCPSInvolvement,
+                    DescribeCPSInvolvement = legalInvolvement.DescribeCPSInvolvement,
+                    LegalStatus = legalInvolvement.LegalStatus,
+                    ProbationParoleLength = legalInvolvement.ProbationParoleLength,
+                    Charges = legalInvolvement.Charges,
+                    OfficerName = legalInvolvement.OfficerName,
+                    OfficerContactNum = legalInvolvement.OfficerContactNum,
+                    AdditionalInfo = legalInvolvement.AdditionalInfo
+                };
+
+                // HISTORY OF ABUSE
+                var historyOfAbuse = await context.HistoryOfAbuse.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
+                var newHistoryOfAbuse = new HistoryOfAbuseModel
+                {
+                    AssessmentID = newAssessmentID,
+                    PatientID = patientID,
+                    HasBeenAbused = historyOfAbuse.HasBeenAbused,
+                    SexualAbuse = historyOfAbuse.SexualAbuse,
+                    SexualAbuseByWhom = historyOfAbuse.SexualAbuseByWhom,
+                    SexualAbuseAgeOfChild = historyOfAbuse.SexualAbuseAgeOfChild,
+                    SexualAbuseReported = historyOfAbuse.SexualAbuseReported,
+                    PhysicalAbuse = historyOfAbuse.PhysicalAbuse,
+                    PhysicalAbuseByWhom = historyOfAbuse.PhysicalAbuseByWhom,
+                    PhysicalAbuseAgeOfChild = historyOfAbuse.PhysicalAbuseAgeOfChild,
+                    PhysicalAbuseReported = historyOfAbuse.PhysicalAbuseReported,
+                    EmotionalAbuse = historyOfAbuse.EmotionalAbuse,
+                    EmotionalAbuseByWhom = historyOfAbuse.EmotionalAbuseByWhom,
+                    EmotionalAbuseAgeOfChild = historyOfAbuse.EmotionalAbuseAgeOfChild,
+                    EmotionalAbuseReported = historyOfAbuse.EmotionalAbuseReported,
+                    VerbalAbuse = historyOfAbuse.VerbalAbuse,
+                    VerbalAbuseByWhom = historyOfAbuse.VerbalAbuseByWhom,
+                    VerbalAbuseAgeOfChild = historyOfAbuse.VerbalAbuseAgeOfChild,
+                    VerbalAbuseReported = historyOfAbuse.VerbalAbuseReported,
+                    AbandonedAbuse = historyOfAbuse.AbandonedAbuse,
+                    AbandonedAbuseByWhom = historyOfAbuse.AbandonedAbuseByWhom,
+                    AbandonedAbuseAgeOfChild = historyOfAbuse.AbandonedAbuseAgeOfChild,
+                    AbandonedAbuseReported = historyOfAbuse.AbandonedAbuseReported,
+                    PsychologicalAbuse = historyOfAbuse.PsychologicalAbuse,
+                    PsychologicalAbuseByWhom = historyOfAbuse.PsychologicalAbuseByWhom,
+                    PsychologicalAbuseAgeOfChild = historyOfAbuse.PsychologicalAbuseAgeOfChild,
+                    PsychologicalAbuseReported = historyOfAbuse.PsychologicalAbuseReported,
+                    VictimOfBullying = historyOfAbuse.VictimOfBullying,
+                    SafetyConcerns = historyOfAbuse.SafetyConcerns,
+                    DescribeSafetyConcerns = historyOfAbuse.DescribeSafetyConcerns,
+                    AdditionalInfo = historyOfAbuse.AdditionalInfo
+                };
+
+                // HISTORY OF VIOLENCE
+                var historyOfViolence = await context.HistoryOfViolence.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
+                var newHistoryOfViolence = new HistoryOfViolenceModel
+                {
+                    AssessmentID = newAssessmentID,
+                    PatientID = patientID,
+                    HasBeenAccused = historyOfViolence.HasBeenAccused,
+                    SexualAbuse = historyOfViolence.SexualAbuse,
+                    SexualAbuseToWhom = historyOfViolence.SexualAbuseToWhom,
+                    SexualAbuseAgeOfChild = historyOfViolence.SexualAbuseAgeOfChild,
+                    SexualAbuseReported = historyOfViolence.SexualAbuseReported,
+                    PhysicalAbuse = historyOfViolence.PhysicalAbuse,
+                    PhysicalAbuseToWhom = historyOfViolence.PhysicalAbuseToWhom,
+                    PhysicalAbuseAgeOfChild = historyOfViolence.PhysicalAbuseAgeOfChild,
+                    PhysicalAbuseReported = historyOfViolence.PhysicalAbuseReported,
+                    EmotionalAbuse = historyOfViolence.EmotionalAbuse,
+                    EmotionalAbuseToWhom = historyOfViolence.EmotionalAbuseToWhom,
+                    EmotionalAbuseAgeOfChild = historyOfViolence.EmotionalAbuseAgeOfChild,
+                    EmotionalAbuseReported = historyOfViolence.EmotionalAbuseReported,
+                    VerbalAbuse = historyOfViolence.VerbalAbuse,
+                    VerbalAbuseToWhom = historyOfViolence.VerbalAbuseToWhom,
+                    VerbalAbuseAgeOfChild = historyOfViolence.VerbalAbuseAgeOfChild,
+                    VerbalAbuseReported = historyOfViolence.VerbalAbuseReported,
+                    AbandonedAbuse = historyOfViolence.AbandonedAbuse,
+                    AbandonedAbuseToWhom = historyOfViolence.AbandonedAbuseToWhom,
+                    AbandonedAbuseAgeOfChild = historyOfViolence.AbandonedAbuseAgeOfChild,
+                    AbandonedAbuseReported = historyOfViolence.AbandonedAbuseReported,
+                    Bullying = historyOfViolence.Bullying,
+                    AdditionalInfo = historyOfViolence.AdditionalInfo
+                };
+
+                // STRENGTHS RESOURCES
+                var strengthsResources = await context.StrengthsResources.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
+                var newStrengthsResources = new StrengthsResourcesModel
+                {
+                    AssessmentID = newAssessmentID,
+                    PatientID = patientID,
+                    Strengths = strengthsResources.Strengths,
+                    Limitations = strengthsResources.Limitations,
+                    Resources = strengthsResources.Resources,
+                    Experiences = strengthsResources.Experiences,
+                    AlreadyDoing = strengthsResources.AlreadyDoing,
+                    ParentsSupport = strengthsResources.ParentsSupport,
+                    PartnerSupport = strengthsResources.PartnerSupport,
+                    SiblingsSupport = strengthsResources.SiblingsSupport,
+                    ExtendedFamilySupport = strengthsResources.ExtendedFamilySupport,
+                    FriendsSupport = strengthsResources.FriendsSupport,
+                    NeighborsSupport = strengthsResources.NeighborsSupport,
+                    SchoolStaffSupport = strengthsResources.SchoolStaffSupport,
+                    ChurchSupport = strengthsResources.ChurchSupport,
+                    PastorSupport = strengthsResources.PastorSupport,
+                    TherapistSupport = strengthsResources.TherapistSupport,
+                    GroupSupport = strengthsResources.GroupSupport,
+                    CommunityServiceSupport = strengthsResources.CommunityServiceSupport,
+                    DoctorSupport = strengthsResources.DoctorSupport,
+                    OthersSupport = strengthsResources.OthersSupport,
+                    Others = strengthsResources.Others
+                };
+
+                // GOALS
+                var goals = await context.Goals.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
+                var newGoals = new GoalsModel
+                {
+                    AssessmentID = newAssessmentID,
+                    PatientID = patientID,
+                    CurrentNeeds = goals.CurrentNeeds,
+                    HopeToGain = goals.HopeToGain,
+                    Goal1 = goals.Goal1,
+                    Goal2 = goals.Goal2,
+                    Goal3 = goals.Goal3,
+                    AdditionalInfo = goals.AdditionalInfo
+                };
+
+                // PROGRESS NOTES
+                var progressnotes = await context.ProgressNotes
+                    .Where(s => s.AssessmentID == assessmentID && s.PatientID == patientID)
+                    .ToListAsync();
+                var newProgressNotes = new List<ProgressNotesModel>();
+                foreach (var progressNote in progressnotes)
+                {
+                    var newProgressNote = new ProgressNotesModel
+                    {
+                        AssessmentID = newAssessmentID,
+                        PatientID = patientID,
+                        Date = progressNote.Date,
+                        ProgressNotes = progressNote.ProgressNotes,
+                        Attachment = progressNote.Attachment,
+                        AttachmentContentType = progressNote.AttachmentContentType,
+                        UserID = progressNote.UserID
+                    };
+                    newProgressNotes.Add(newProgressNote);
+                }
+
+                // GENERAL ADMISSION
+                var generalAdmission = await context.GeneralAdmission.FirstOrDefaultAsync(s => s.AssessmentID == assessmentID && s.PatientID == patientID);
+                var newGeneralAdmission = new GeneralAdmissionModel
+                {
+                    AssessmentID = newAssessmentID,
+                    PatientID = patientID,
+                    Date = DateOnly.FromDateTime(DateTime.Now),
+                    isOld = true,
+                    HospitalNo = generalAdmission.HospitalNo,
+                    FirstName = generalAdmission.FirstName,
+                    MiddleName = generalAdmission.MiddleName,
+                    LastName = generalAdmission.LastName,
+                    Ward = generalAdmission.Ward,
+                    Class = generalAdmission.Class,
+                    Age = generalAdmission.Age,
+                    Gender = generalAdmission.Gender,
+                    Time = TimeOnly.FromDateTime(DateTime.Now),
+                    Diagnosis = generalAdmission.Diagnosis,
+                    CompleteAddress = generalAdmission.CompleteAddress,
+                    Origin = generalAdmission.Origin,
+                    ContactNumber = generalAdmission.ContactNumber,
+                    Referral = generalAdmission.Referral,
+                    Occupation = generalAdmission.Occupation,
+                    StatsOccupation = generalAdmission.StatsOccupation,
+                    IncomeRange = generalAdmission.IncomeRange,
+                    MonthlyIncome = generalAdmission.MonthlyIncome,
+                    EconomicStatus = generalAdmission.EconomicStatus,
+                    HouseholdSize = generalAdmission.HouseholdSize,
+                    MaritalStatus = generalAdmission.MaritalStatus,
+                    isPWD = generalAdmission.isPWD,
+                    EducationalAttainment = generalAdmission.EducationalAttainment,
+                    FatherEducationalAttainment = generalAdmission.FatherEducationalAttainment,
+                    MotherEducationalAttainment = generalAdmission.MotherEducationalAttainment,
+                    isInterviewed = generalAdmission.isInterviewed,
+                    DwellingType = generalAdmission.DwellingType,
+                    LightSource = generalAdmission.LightSource,
+                    WaterSource = generalAdmission.WaterSource,
+                    FuelSource = generalAdmission.FuelSource,
+                    PHIC = generalAdmission.PHIC,
+                    MSW = User.FindFirstValue(ClaimTypes.Name),
+                    UserID = int.Parse(userIdClaim.Value)
+                };
+
+                // Change patient to active
+                patient.IsActive = true;
+
+                await context.Assessments.AddAsync(newAssessment);
+                await context.SaveChangesAsync();
+
+                // Update the rest of the form
+                await context.Referrals.AddAsync(newReferral);
+                await context.Informants.AddAsync(newInformant);
+                await context.FamilyComposition.AddRangeAsync(newFamilyComposition);
+                await context.Households.AddAsync(newHousehold);
+                await context.MSWDClassification.AddAsync(newMSWDClassification);
+                await context.MonthlyExpenses.AddAsync(newMonthlyExpenses);
+                await context.Utilities.AddAsync(newUtilities);
+                await context.MedicalHistory.AddAsync(newMedicalHistory);
+                await context.ChildHealth.AddAsync(newChildHealth);
+                await context.Diagnoses.AddRangeAsync(newDiagnoses);
+                await context.Medications.AddRangeAsync(newMedications);
+                await context.HospitalizationHistory.AddRangeAsync(newHospitalizationHistory);
+                await context.MedicalScreenings.AddAsync(newMedicalScreenings);
+                await context.PrimaryCareDoctor.AddAsync(newPrimaryCareDoctor);
+                await context.PresentingProblems.AddAsync(newPresentingProblems);
+                await context.RecentLosses.AddAsync(newRecentLosses);
+                await context.PregnancyBirthHistory.AddAsync(newPregnancyBirthHistory);
+                await context.DevelopmentalHistory.AddAsync(newDevelopmentalHistory);
+                await context.MentalHealthHistory.AddRangeAsync(newMentalHealthHistory);
+                await context.FamilyHistory.AddRangeAsync(newFamilyHistory);
+                await context.SafetyConcerns.AddAsync(newSafetyConcerns);
+                await context.CurrentFunctioning.AddAsync(newCurrentFunctioning);
+                await context.ParentChildRelationship.AddAsync(newParentChildRelationship);
+                await context.Education.AddAsync(newEducation);
+                await context.Employment.AddAsync(newEmployment);
+                await context.Housing.AddAsync(newHousing);
+                await context.FosterCare.AddAsync(newFosterCare);
+                await context.AlcoholDrugAssessment.AddAsync(newAlcoholDrugAssessment);
+                await context.LegalInvolvement.AddAsync(newLegalInvolvement);
+                await context.HistoryOfAbuse.AddAsync(newHistoryOfAbuse);
+                await context.HistoryOfViolence.AddAsync(newHistoryOfViolence);
+                await context.StrengthsResources.AddAsync(newStrengthsResources);
+                await context.Goals.AddAsync(newGoals);
+                await context.ProgressNotes.AddRangeAsync(newProgressNotes);
+                await context.GeneralAdmission.AddAsync(newGeneralAdmission);
+                await context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+                TempData["SuccessMessage"] = "Successfully re-admitted patient.";
+                LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Patient Re-admission successful. Created new AssessmentID: {newAssessmentID}");
+                return RedirectToAction("Edit", "Form", new { id = patientID, assessmentID = newAssessmentID });
+                
             }
             catch (SqlException se)
             {
+                await transaction.RollbackAsync();
                 TempData["ErrorMessage"] = "SQL Error: " + se.Message;
                 LoggingService.LogError("SQL Error: " + se);
                 return RedirectToAction("Index", "Form");
             }
             catch (Exception ex)
             {
+                await transaction.RollbackAsync();
                 TempData["ErrorMessage"] = "Error: " + ex.Message;
                 LoggingService.LogError("Error: " + ex);
                 return RedirectToAction("Index", "Form");
