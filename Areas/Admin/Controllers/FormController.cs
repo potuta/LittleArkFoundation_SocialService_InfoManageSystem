@@ -396,336 +396,341 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         [HasPermission("CreateForm")]
         public async Task<IActionResult> Create(FormViewModel formViewModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(formViewModel);
+            }
+
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+            await using var transaction = await context.Database.BeginTransactionAsync();
+
             try
             {
-                string connectionString = _connectionService.GetCurrentConnectionString();
 
-                await using (var context = new ApplicationDbContext(connectionString))
+                // Save Patient first to get the ID, avoids Forein Key constraint
+                await context.Patients.AddAsync(formViewModel.Patient);
+                await context.SaveChangesAsync();
+
+                var patientID = formViewModel.Patient.PatientID;
+                var assessmentID = await new AssessmentsRepository(connectionString).GenerateID(patientID);
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+                // ASSESSMENTS
+                formViewModel.Assessments.PatientID = patientID;
+                formViewModel.Assessments.AssessmentID = assessmentID;
+                formViewModel.Assessments.UserID = int.Parse(userIdClaim.Value);
+
+                // REFERRALS
+                formViewModel.Referrals.PatientID = patientID;
+                formViewModel.Referrals.AssessmentID = assessmentID;
+                formViewModel.Referrals.DateOfReferral = formViewModel.Assessments.DateOfInterview.ToDateTime(formViewModel.Assessments.TimeOfInterview);
+
+                // INFORMANTS
+                formViewModel.Informants.PatientID = patientID;
+                formViewModel.Informants.AssessmentID = assessmentID;
+                formViewModel.Informants.DateOfInformant = formViewModel.Assessments.DateOfInterview.ToDateTime(formViewModel.Assessments.TimeOfInterview);
+
+                // FAMILY COMPOSITION
+                foreach (var familyMember in formViewModel.FamilyMembers)
                 {
-                    if (!ModelState.IsValid)
+                    familyMember.PatientID = patientID;
+                    familyMember.AssessmentID = assessmentID;
+                }
+
+                // HOUSEHOLD
+                formViewModel.Household.PatientID = patientID;
+                formViewModel.Household.AssessmentID = assessmentID;
+
+                // MSWD CLASSIFICATION
+                formViewModel.MSWDClassification.PatientID = patientID;
+                formViewModel.MSWDClassification.AssessmentID = assessmentID;
+
+                // MONTHLY EXPENSES & UTILITIES
+                formViewModel.MonthlyExpenses.PatientID = patientID;
+                formViewModel.MonthlyExpenses.AssessmentID = assessmentID;
+                formViewModel.Utilities.PatientID = patientID;
+                formViewModel.Utilities.AssessmentID = assessmentID;
+
+                // MEDICAL HISTORY
+                formViewModel.MedicalHistory.PatientID = patientID;
+                formViewModel.MedicalHistory.AssessmentID = assessmentID;
+
+                // CHILD HEALTH
+                formViewModel.ChildHealth.PatientID = patientID;
+                formViewModel.ChildHealth.AssessmentID = assessmentID;
+
+                // DIAGNOSES
+                foreach (var diagnosis in formViewModel.Diagnoses)
+                {
+                    diagnosis.PatientID = patientID;
+                    diagnosis.AssessmentID = assessmentID;
+                }
+
+                // MEDICATIONS
+                foreach (var medication in formViewModel.Medications)
+                {
+                    medication.PatientID = patientID;
+                    medication.AssessmentID = assessmentID;
+                }
+
+                // HOSPITALIZATION HISTORY
+                foreach (var hospitalization in formViewModel.HospitalizationHistory)
+                {
+                    hospitalization.PatientID = patientID;
+                    hospitalization.AssessmentID = assessmentID;
+                }
+
+                // MEDICAL SCREENINGS
+                formViewModel.MedicalScreenings.PatientID = patientID;
+                formViewModel.MedicalScreenings.AssessmentID = assessmentID;
+
+                // PRIMARY CARE DOCTOR
+                formViewModel.PrimaryCareDoctor.PatientID = patientID;
+                formViewModel.PrimaryCareDoctor.AssessmentID = assessmentID;
+
+                // PRESENTING PROBLEMS
+                formViewModel.PresentingProblems.PatientID = patientID;
+                formViewModel.PresentingProblems.AssessmentID = assessmentID;
+
+                // RECENT LOSSES
+                formViewModel.RecentLosses.PatientID = patientID;
+                formViewModel.RecentLosses.AssessmentID = assessmentID;
+
+                // PREGNANCY BIRTH HISTORY
+                formViewModel.PregnancyBirthHistory.PatientID = patientID;
+                formViewModel.PregnancyBirthHistory.AssessmentID = assessmentID;
+
+                // DEVELOPMENTAL HISTORY
+                formViewModel.DevelopmentalHistory.PatientID = patientID;
+                formViewModel.DevelopmentalHistory.AssessmentID = assessmentID;
+
+                // MENTAL HEALTH HISTORY
+                foreach (var mentalHealthHistory in formViewModel.MentalHealthHistory)
+                {
+                    mentalHealthHistory.PatientID = patientID;
+                    mentalHealthHistory.AssessmentID = assessmentID;
+                }
+
+                // FAMILY HISTORY   
+                foreach (var familyHistory in formViewModel.FamilyHistory)
+                {
+                    familyHistory.PatientID = patientID;
+                    familyHistory.AssessmentID = assessmentID;
+                }
+
+                // SAFETY CONCERNS
+                formViewModel.SafetyConcerns.PatientID = patientID;
+                formViewModel.SafetyConcerns.AssessmentID = assessmentID;
+
+                // CURRENT FUNCTIONING
+                formViewModel.CurrentFunctioning.PatientID = patientID;
+                formViewModel.CurrentFunctioning.AssessmentID = assessmentID;
+
+                // PARENT CHILD RELATIONSHIP
+                formViewModel.ParentChildRelationship.PatientID = patientID;
+                formViewModel.ParentChildRelationship.AssessmentID = assessmentID;
+
+                // EDUCATION
+                formViewModel.Education.PatientID = patientID;
+                formViewModel.Education.AssessmentID = assessmentID;
+
+                // EMPLOYMENT
+                formViewModel.Employment.PatientID = patientID;
+                formViewModel.Employment.AssessmentID = assessmentID;
+
+                // HOUSING
+                formViewModel.Housing.PatientID = patientID;
+                formViewModel.Housing.AssessmentID = assessmentID;
+
+                // FOSTER CARE
+                formViewModel.FosterCare.PatientID = patientID;
+                formViewModel.FosterCare.AssessmentID = assessmentID;
+
+                // ALCOHOL DRUG ASSESSMENT
+                formViewModel.AlcoholDrugAssessment.PatientID = patientID;
+                formViewModel.AlcoholDrugAssessment.AssessmentID = assessmentID;
+
+                // LEGAL INVOLVEMENT
+                formViewModel.LegalInvolvement.PatientID = patientID;
+                formViewModel.LegalInvolvement.AssessmentID = assessmentID;
+
+                // HISTORY OF ABUSE
+                formViewModel.HistoryOfAbuse.PatientID = patientID;
+                formViewModel.HistoryOfAbuse.AssessmentID = assessmentID;
+
+                // HISTORY OF VIOLENCE
+                formViewModel.HistoryOfViolence.PatientID = patientID;
+                formViewModel.HistoryOfViolence.AssessmentID = assessmentID;
+
+                // STRENGTHS RESOURCES
+                formViewModel.StrengthsResources.PatientID = patientID;
+                formViewModel.StrengthsResources.AssessmentID = assessmentID;
+
+                // GOALS
+                formViewModel.Goals.PatientID = patientID;
+                formViewModel.Goals.AssessmentID = assessmentID;
+
+                // PROGRESS NOTES
+                //foreach (var progressNote in formViewModel.ProgressNotes)
+                //{
+                //    progressNote.PatientID = patientID;
+                //    progressNote.AssessmentID = assessmentID;
+                //}
+                formViewModel.ProgressNotes = new List<ProgressNotesModel>{
+                    new ProgressNotesModel
                     {
-                        return View(formViewModel);
+                        PatientID = patientID,
+                        AssessmentID = assessmentID,
+                        UserID = int.Parse(userIdClaim.Value),
+                    }
+                };
+
+                // GENERAL ADMISSION
+                if (formViewModel.GeneralAdmissionId > 0)
+                {
+                    var existingAdmission = await context.GeneralAdmission.FindAsync(formViewModel.GeneralAdmissionId);
+                    if (existingAdmission != null)
+                    {
+                        // Update existing admission
+                        existingAdmission.AssessmentID = assessmentID;
+                        existingAdmission.PatientID = patientID;
+                        existingAdmission.isInterviewed = true;
+                    }
+                }
+                else
+                {
+                    var educationalAttainment = "N/A";
+                    switch (formViewModel.Assessments.EducationLevel)
+                    {
+                        case "Primary":
+                            educationalAttainment = "Elementary Graduate";
+                            break;
+                        case "Secondary":
+                            educationalAttainment = "Senior High School Graduate";
+                            break;
+                        case "Vocational":
+                            educationalAttainment = "Vocational Graduate";
+                            break;
+                        case "Tertiary":
+                            educationalAttainment = "College Graduate";
+                            break;
+                        case "No Educational Attainment":
+                            educationalAttainment = "N/A";
+                            break;
                     }
 
-                    // Save Patient first to get the ID, avoids Forein Key constraint
-                    await context.Patients.AddAsync(formViewModel.Patient);
-                    await context.SaveChangesAsync();
+                    var motherEducationalAttainment = formViewModel.FamilyMembers
+                        .FirstOrDefault(f => string.Equals(f.RelationshipToPatient, "Mother", StringComparison.OrdinalIgnoreCase))
+                        ?.EducationalAttainment ?? "N/A";
 
-                    var patientID = formViewModel.Patient.PatientID;
-                    var assessmentID = await new AssessmentsRepository(connectionString).GenerateID(patientID);
-                    var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                    var fatherEducationalAttainment = formViewModel.FamilyMembers
+                        .FirstOrDefault(f => string.Equals(f.RelationshipToPatient, "Father", StringComparison.OrdinalIgnoreCase))
+                        ?.EducationalAttainment ?? "N/A";
 
-                    // ASSESSMENTS
-                    formViewModel.Assessments.PatientID = patientID;
-                    formViewModel.Assessments.AssessmentID = assessmentID;
-                    formViewModel.Assessments.UserID = int.Parse(userIdClaim.Value);
-
-                    // REFERRALS
-                    formViewModel.Referrals.PatientID = patientID;
-                    formViewModel.Referrals.AssessmentID = assessmentID;
-                    formViewModel.Referrals.DateOfReferral = formViewModel.Assessments.DateOfInterview.ToDateTime(formViewModel.Assessments.TimeOfInterview);
-
-                    // INFORMANTS
-                    formViewModel.Informants.PatientID = patientID;
-                    formViewModel.Informants.AssessmentID = assessmentID;
-                    formViewModel.Informants.DateOfInformant = formViewModel.Assessments.DateOfInterview.ToDateTime(formViewModel.Assessments.TimeOfInterview);
-
-                    // FAMILY COMPOSITION
-                    foreach (var familyMember in formViewModel.FamilyMembers)
+                    var generalAdmission = new GeneralAdmissionModel
                     {
-                        familyMember.PatientID = patientID;
-                        familyMember.AssessmentID = assessmentID;
-                    }
-
-                    // HOUSEHOLD
-                    formViewModel.Household.PatientID = patientID;
-                    formViewModel.Household.AssessmentID = assessmentID;
-
-                    // MSWD CLASSIFICATION
-                    formViewModel.MSWDClassification.PatientID = patientID;
-                    formViewModel.MSWDClassification.AssessmentID = assessmentID;
-
-                    // MONTHLY EXPENSES & UTILITIES
-                    formViewModel.MonthlyExpenses.PatientID = patientID;
-                    formViewModel.MonthlyExpenses.AssessmentID = assessmentID;
-                    formViewModel.Utilities.PatientID = patientID;
-                    formViewModel.Utilities.AssessmentID = assessmentID;
-
-                    // MEDICAL HISTORY
-                    formViewModel.MedicalHistory.PatientID = patientID;
-                    formViewModel.MedicalHistory.AssessmentID = assessmentID;
-
-                    // CHILD HEALTH
-                    formViewModel.ChildHealth.PatientID = patientID;
-                    formViewModel.ChildHealth.AssessmentID = assessmentID;
-
-                    // DIAGNOSES
-                    foreach (var diagnosis in formViewModel.Diagnoses)
-                    {
-                        diagnosis.PatientID = patientID;
-                        diagnosis.AssessmentID = assessmentID;
-                    }
-
-                    // MEDICATIONS
-                    foreach (var medication in formViewModel.Medications)
-                    {
-                        medication.PatientID = patientID;
-                        medication.AssessmentID = assessmentID;
-                    }
-
-                    // HOSPITALIZATION HISTORY
-                    foreach (var hospitalization in formViewModel.HospitalizationHistory)
-                    {
-                        hospitalization.PatientID = patientID;
-                        hospitalization.AssessmentID = assessmentID;
-                    }
-
-                    // MEDICAL SCREENINGS
-                    formViewModel.MedicalScreenings.PatientID = patientID;
-                    formViewModel.MedicalScreenings.AssessmentID = assessmentID;
-
-                    // PRIMARY CARE DOCTOR
-                    formViewModel.PrimaryCareDoctor.PatientID = patientID;
-                    formViewModel.PrimaryCareDoctor.AssessmentID = assessmentID;
-
-                    // PRESENTING PROBLEMS
-                    formViewModel.PresentingProblems.PatientID = patientID;
-                    formViewModel.PresentingProblems.AssessmentID = assessmentID;
-
-                    // RECENT LOSSES
-                    formViewModel.RecentLosses.PatientID = patientID;
-                    formViewModel.RecentLosses.AssessmentID = assessmentID;
-
-                    // PREGNANCY BIRTH HISTORY
-                    formViewModel.PregnancyBirthHistory.PatientID = patientID;
-                    formViewModel.PregnancyBirthHistory.AssessmentID = assessmentID;
-
-                    // DEVELOPMENTAL HISTORY
-                    formViewModel.DevelopmentalHistory.PatientID = patientID;
-                    formViewModel.DevelopmentalHistory.AssessmentID = assessmentID;
-
-                    // MENTAL HEALTH HISTORY
-                    foreach (var mentalHealthHistory in formViewModel.MentalHealthHistory)
-                    {
-                        mentalHealthHistory.PatientID = patientID;
-                        mentalHealthHistory.AssessmentID = assessmentID;
-                    }
-
-                    // FAMILY HISTORY   
-                    foreach (var familyHistory in formViewModel.FamilyHistory)
-                    {
-                        familyHistory.PatientID = patientID;
-                        familyHistory.AssessmentID = assessmentID;
-                    }
-
-                    // SAFETY CONCERNS
-                    formViewModel.SafetyConcerns.PatientID = patientID;
-                    formViewModel.SafetyConcerns.AssessmentID = assessmentID;
-
-                    // CURRENT FUNCTIONING
-                    formViewModel.CurrentFunctioning.PatientID = patientID;
-                    formViewModel.CurrentFunctioning.AssessmentID = assessmentID;
-
-                    // PARENT CHILD RELATIONSHIP
-                    formViewModel.ParentChildRelationship.PatientID = patientID;
-                    formViewModel.ParentChildRelationship.AssessmentID = assessmentID;
-
-                    // EDUCATION
-                    formViewModel.Education.PatientID = patientID;
-                    formViewModel.Education.AssessmentID = assessmentID;
-
-                    // EMPLOYMENT
-                    formViewModel.Employment.PatientID = patientID;
-                    formViewModel.Employment.AssessmentID = assessmentID;
-
-                    // HOUSING
-                    formViewModel.Housing.PatientID = patientID;
-                    formViewModel.Housing.AssessmentID = assessmentID;
-
-                    // FOSTER CARE
-                    formViewModel.FosterCare.PatientID = patientID;
-                    formViewModel.FosterCare.AssessmentID = assessmentID;
-
-                    // ALCOHOL DRUG ASSESSMENT
-                    formViewModel.AlcoholDrugAssessment.PatientID = patientID;
-                    formViewModel.AlcoholDrugAssessment.AssessmentID = assessmentID;
-
-                    // LEGAL INVOLVEMENT
-                    formViewModel.LegalInvolvement.PatientID = patientID;
-                    formViewModel.LegalInvolvement.AssessmentID = assessmentID;
-
-                    // HISTORY OF ABUSE
-                    formViewModel.HistoryOfAbuse.PatientID = patientID;
-                    formViewModel.HistoryOfAbuse.AssessmentID = assessmentID;
-
-                    // HISTORY OF VIOLENCE
-                    formViewModel.HistoryOfViolence.PatientID = patientID;
-                    formViewModel.HistoryOfViolence.AssessmentID = assessmentID;
-
-                    // STRENGTHS RESOURCES
-                    formViewModel.StrengthsResources.PatientID = patientID;
-                    formViewModel.StrengthsResources.AssessmentID = assessmentID;
-
-                    // GOALS
-                    formViewModel.Goals.PatientID = patientID;
-                    formViewModel.Goals.AssessmentID = assessmentID;
-
-                    // PROGRESS NOTES
-                    //foreach (var progressNote in formViewModel.ProgressNotes)
-                    //{
-                    //    progressNote.PatientID = patientID;
-                    //    progressNote.AssessmentID = assessmentID;
-                    //}
-                    formViewModel.ProgressNotes = new List<ProgressNotesModel>{
-                        new ProgressNotesModel
-                        {
-                            PatientID = patientID,
-                            AssessmentID = assessmentID,
-                            UserID = int.Parse(userIdClaim.Value),
-                        }
+                        AssessmentID = assessmentID,
+                        PatientID = patientID,
+                        Date = formViewModel.Assessments.DateOfInterview,
+                        isOld = false,
+                        HospitalNo = 0, // This will be set later
+                        FirstName = formViewModel.Patient.FirstName,
+                        MiddleName = formViewModel.Patient.MiddleName,
+                        LastName = formViewModel.Patient.LastName,
+                        Ward = formViewModel.Assessments.BasicWard,
+                        Class = formViewModel.MSWDClassification.SubClassification,
+                        Age = formViewModel.Assessments.Age,
+                        Gender = formViewModel.Assessments.Gender,
+                        Time = formViewModel.Assessments.TimeOfInterview,
+                        Diagnosis = formViewModel.MedicalHistory.AdmittingDiagnosis,
+                        CompleteAddress = formViewModel.Assessments.PermanentAddress,
+                        ContactNumber = formViewModel.Assessments.ContactNo,
+                        Referral = formViewModel.Referrals.ReferralType,
+                        Occupation = formViewModel.Assessments.Occupation,
+                        MonthlyIncome = formViewModel.Assessments.MonthlyIncome.Value,
+                        HouseholdSize = formViewModel.Household.HouseholdSize,
+                        EducationalAttainment = educationalAttainment,
+                        MotherEducationalAttainment = motherEducationalAttainment,
+                        FatherEducationalAttainment = fatherEducationalAttainment,
+                        isInterviewed = true,
+                        MSW = User.FindFirstValue(ClaimTypes.Name), // Assuming the MSW is the user who is logged in
+                        UserID = int.Parse(userIdClaim.Value),
                     };
 
-                    // GENERAL ADMISSION
-                    if (formViewModel.GeneralAdmissionId > 0)
-                    {
-                        var existingAdmission = await context.GeneralAdmission.FindAsync(formViewModel.GeneralAdmissionId);
-                        if (existingAdmission != null)
-                        {
-                            // Update existing admission
-                            existingAdmission.AssessmentID = assessmentID;
-                            existingAdmission.PatientID = patientID;
-                            existingAdmission.isInterviewed = true;
-                        }
-                    }
-                    else
-                    {
-                        var educationalAttainment = "N/A";
-                        switch (formViewModel.Assessments.EducationLevel)
-                        {
-                            case "Primary":
-                                educationalAttainment = "Elementary Graduate";
-                                break;
-                            case "Secondary":
-                                educationalAttainment = "Senior High School Graduate";
-                                break;
-                            case "Vocational":
-                                educationalAttainment = "Vocational Graduate";
-                                break;
-                            case "Tertiary":
-                                educationalAttainment = "College Graduate";
-                                break;
-                            case "No Educational Attainment":
-                                educationalAttainment = "N/A";
-                                break;
-                        }
-
-                        var motherEducationalAttainment = formViewModel.FamilyMembers
-                            .FirstOrDefault(f => string.Equals(f.RelationshipToPatient, "Mother", StringComparison.OrdinalIgnoreCase))
-                            ?.EducationalAttainment ?? "N/A";
-
-                        var fatherEducationalAttainment = formViewModel.FamilyMembers
-                            .FirstOrDefault(f => string.Equals(f.RelationshipToPatient, "Father", StringComparison.OrdinalIgnoreCase))
-                            ?.EducationalAttainment ?? "N/A";
-
-                        var generalAdmission = new GeneralAdmissionModel
-                        {
-                            AssessmentID = assessmentID,
-                            PatientID = patientID,
-                            Date = formViewModel.Assessments.DateOfInterview,
-                            isOld = false,
-                            HospitalNo = 0, // This will be set later
-                            FirstName = formViewModel.Patient.FirstName,
-                            MiddleName = formViewModel.Patient.MiddleName,
-                            LastName = formViewModel.Patient.LastName,
-                            Ward = formViewModel.Assessments.BasicWard,
-                            Class = formViewModel.MSWDClassification.SubClassification,
-                            Age = formViewModel.Assessments.Age,
-                            Gender = formViewModel.Assessments.Gender,
-                            Time = formViewModel.Assessments.TimeOfInterview,
-                            Diagnosis = formViewModel.MedicalHistory.AdmittingDiagnosis,
-                            CompleteAddress = formViewModel.Assessments.PermanentAddress,
-                            ContactNumber = formViewModel.Assessments.ContactNo,
-                            Referral = formViewModel.Referrals.ReferralType,
-                            Occupation = formViewModel.Assessments.Occupation,
-                            MonthlyIncome = formViewModel.Assessments.MonthlyIncome.Value,
-                            HouseholdSize = formViewModel.Household.HouseholdSize,
-                            EducationalAttainment = educationalAttainment,
-                            MotherEducationalAttainment = motherEducationalAttainment,
-                            FatherEducationalAttainment = fatherEducationalAttainment,
-                            isInterviewed = true,
-                            MSW = User.FindFirstValue(ClaimTypes.Name), // Assuming the MSW is the user who is logged in
-                            UserID = int.Parse(userIdClaim.Value),
-                        };
-
-                        await context.GeneralAdmission.AddAsync(generalAdmission);
-                    }
-
-                    // OPD
-                    if (formViewModel.OpdId > 0)
-                    {
-                        var opd = await context.OPD.FindAsync(formViewModel.OpdId);
-                        if (opd != null)
-                        {
-                            opd.IsAdmitted = true;
-                            opd.AssessmentID = assessmentID;
-                            opd.PatientID = patientID;
-                        }
-                    }
-
-                    await context.Assessments.AddAsync(formViewModel.Assessments);
-                    await context.SaveChangesAsync();
-
-                    // Update the rest of the form
-                    await context.Referrals.AddAsync(formViewModel.Referrals);
-                    await context.Informants.AddAsync(formViewModel.Informants);
-                    await context.FamilyComposition.AddRangeAsync(formViewModel.FamilyMembers);
-                    await context.Households.AddAsync(formViewModel.Household);
-                    await context.MSWDClassification.AddAsync(formViewModel.MSWDClassification);
-                    await context.MonthlyExpenses.AddAsync(formViewModel.MonthlyExpenses);
-                    await context.Utilities.AddAsync(formViewModel.Utilities);
-                    await context.MedicalHistory.AddAsync(formViewModel.MedicalHistory);
-                    await context.ChildHealth.AddAsync(formViewModel.ChildHealth);
-                    await context.Diagnoses.AddRangeAsync(formViewModel.Diagnoses);
-                    await context.Medications.AddRangeAsync(formViewModel.Medications);
-                    await context.HospitalizationHistory.AddRangeAsync(formViewModel.HospitalizationHistory);
-                    await context.MedicalScreenings.AddAsync(formViewModel.MedicalScreenings);
-                    await context.PrimaryCareDoctor.AddAsync(formViewModel.PrimaryCareDoctor);
-                    await context.PresentingProblems.AddAsync(formViewModel.PresentingProblems);
-                    await context.RecentLosses.AddAsync(formViewModel.RecentLosses);
-                    await context.PregnancyBirthHistory.AddAsync(formViewModel.PregnancyBirthHistory);
-                    await context.DevelopmentalHistory.AddAsync(formViewModel.DevelopmentalHistory);
-                    await context.MentalHealthHistory.AddRangeAsync(formViewModel.MentalHealthHistory);
-                    await context.FamilyHistory.AddRangeAsync(formViewModel.FamilyHistory);
-                    await context.SafetyConcerns.AddAsync(formViewModel.SafetyConcerns);
-                    await context.CurrentFunctioning.AddAsync(formViewModel.CurrentFunctioning);
-                    await context.ParentChildRelationship.AddAsync(formViewModel.ParentChildRelationship);
-                    await context.Education.AddAsync(formViewModel.Education);
-                    await context.Employment.AddAsync(formViewModel.Employment);
-                    await context.Housing.AddAsync(formViewModel.Housing);
-                    await context.FosterCare.AddAsync(formViewModel.FosterCare);
-                    await context.AlcoholDrugAssessment.AddAsync(formViewModel.AlcoholDrugAssessment);
-                    await context.LegalInvolvement.AddAsync(formViewModel.LegalInvolvement);
-                    await context.HistoryOfAbuse.AddAsync(formViewModel.HistoryOfAbuse);
-                    await context.HistoryOfViolence.AddAsync(formViewModel.HistoryOfViolence);
-                    await context.StrengthsResources.AddAsync(formViewModel.StrengthsResources);
-                    await context.Goals.AddAsync(formViewModel.Goals);
-                    await context.ProgressNotes.AddRangeAsync(formViewModel.ProgressNotes);
-                    //await context.GeneralAdmission.AddAsync(generalAdmission);
-                    await context.SaveChangesAsync();
-
-                    TempData["SuccessMessage"] = "Successfully created new form";
-                    LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Admission Patient creation successful. Created new AssessmentID: {assessmentID} and PatientID: {patientID}");
-                    return RedirectToAction("Index");
+                    await context.GeneralAdmission.AddAsync(generalAdmission);
                 }
+
+                // OPD
+                if (formViewModel.OpdId > 0)
+                {
+                    var opd = await context.OPD.FindAsync(formViewModel.OpdId);
+                    if (opd != null)
+                    {
+                        opd.IsAdmitted = true;
+                        opd.AssessmentID = assessmentID;
+                        opd.PatientID = patientID;
+                    }
+                }
+
+                await context.Assessments.AddAsync(formViewModel.Assessments);
+                await context.SaveChangesAsync();
+
+                // Update the rest of the form
+                await context.Referrals.AddAsync(formViewModel.Referrals);
+                await context.Informants.AddAsync(formViewModel.Informants);
+                await context.FamilyComposition.AddRangeAsync(formViewModel.FamilyMembers);
+                await context.Households.AddAsync(formViewModel.Household);
+                await context.MSWDClassification.AddAsync(formViewModel.MSWDClassification);
+                await context.MonthlyExpenses.AddAsync(formViewModel.MonthlyExpenses);
+                await context.Utilities.AddAsync(formViewModel.Utilities);
+                await context.MedicalHistory.AddAsync(formViewModel.MedicalHistory);
+                await context.ChildHealth.AddAsync(formViewModel.ChildHealth);
+                await context.Diagnoses.AddRangeAsync(formViewModel.Diagnoses);
+                await context.Medications.AddRangeAsync(formViewModel.Medications);
+                await context.HospitalizationHistory.AddRangeAsync(formViewModel.HospitalizationHistory);
+                await context.MedicalScreenings.AddAsync(formViewModel.MedicalScreenings);
+                await context.PrimaryCareDoctor.AddAsync(formViewModel.PrimaryCareDoctor);
+                await context.PresentingProblems.AddAsync(formViewModel.PresentingProblems);
+                await context.RecentLosses.AddAsync(formViewModel.RecentLosses);
+                await context.PregnancyBirthHistory.AddAsync(formViewModel.PregnancyBirthHistory);
+                await context.DevelopmentalHistory.AddAsync(formViewModel.DevelopmentalHistory);
+                await context.MentalHealthHistory.AddRangeAsync(formViewModel.MentalHealthHistory);
+                await context.FamilyHistory.AddRangeAsync(formViewModel.FamilyHistory);
+                await context.SafetyConcerns.AddAsync(formViewModel.SafetyConcerns);
+                await context.CurrentFunctioning.AddAsync(formViewModel.CurrentFunctioning);
+                await context.ParentChildRelationship.AddAsync(formViewModel.ParentChildRelationship);
+                await context.Education.AddAsync(formViewModel.Education);
+                await context.Employment.AddAsync(formViewModel.Employment);
+                await context.Housing.AddAsync(formViewModel.Housing);
+                await context.FosterCare.AddAsync(formViewModel.FosterCare);
+                await context.AlcoholDrugAssessment.AddAsync(formViewModel.AlcoholDrugAssessment);
+                await context.LegalInvolvement.AddAsync(formViewModel.LegalInvolvement);
+                await context.HistoryOfAbuse.AddAsync(formViewModel.HistoryOfAbuse);
+                await context.HistoryOfViolence.AddAsync(formViewModel.HistoryOfViolence);
+                await context.StrengthsResources.AddAsync(formViewModel.StrengthsResources);
+                await context.Goals.AddAsync(formViewModel.Goals);
+                await context.ProgressNotes.AddRangeAsync(formViewModel.ProgressNotes);
+                //await context.GeneralAdmission.AddAsync(generalAdmission);
+                await context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+                TempData["SuccessMessage"] = "Successfully created new form";
+                LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Admission Patient creation successful. Created new AssessmentID: {assessmentID} and PatientID: {patientID}");
+                return RedirectToAction("Index");
+            
             }
             catch (SqlException se)
             {
+                await transaction.RollbackAsync();
                 TempData["ErrorMessage"] = "SQL Error: " + se.Message;
                 LoggingService.LogError("SQL Error: " + se);
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
+                await transaction.RollbackAsync();
                 TempData["ErrorMessage"] = "Error: " + ex.Message;
                 LoggingService.LogError("Error: " + ex);
                 return RedirectToAction("Index");
@@ -1008,11 +1013,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
         [HasPermission("EditForm")]
         public async Task<IActionResult> Edit(FormViewModel formViewModel)
         {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+            await using var transaction = await context.Database.BeginTransactionAsync();
+
             try
             {
-                string connectionString = _connectionService.GetCurrentConnectionString();
-
-                await using var context = new ApplicationDbContext(connectionString);
                 int id = formViewModel.Patient.PatientID;
                 int assessmentId = formViewModel.Assessments.AssessmentID;
                 var familyMembers = context.FamilyComposition.Where(f => f.AssessmentID == assessmentId && f.PatientID == id);
@@ -1253,18 +1259,22 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 context.Goals.Update(formViewModel.Goals);
                 await context.SaveChangesAsync();
 
+                await transaction.CommitAsync();
+
                 TempData["SuccessMessage"] = $"Successfully edited PatientID: {id}";
                 LoggingService.LogInformation($"UserID: {User.FindFirst(ClaimTypes.NameIdentifier).Value}. Admission Patient edit successful. Edited AssessmentID: {assessmentId} and PatientID: {id}");
                 return RedirectToAction("Index");
             }
             catch (SqlException se)
             {
+                await transaction.RollbackAsync();
                 TempData["ErrorMessage"] = "SQL Error: " + se.Message;
                 LoggingService.LogError("SQL Error: " + se);
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
+                await transaction.RollbackAsync();
                 TempData["ErrorMessage"] = "Error: " + ex.Message;
                 LoggingService.LogError("Error: " + ex);
                 return RedirectToAction("Index");
