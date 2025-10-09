@@ -383,6 +383,8 @@ namespace LittleArkFoundation.Data
                 await using var connection = new SqlConnection(_connectionService.GetDefaultConnectionString());
                 await connection.OpenAsync();
 
+                using var transaction = connection.BeginTransaction();
+
                 // Executes each command separately to handle errors more clearly
                 var commands = new[]
                 {
@@ -397,21 +399,35 @@ namespace LittleArkFoundation.Data
                     "DBCC CHECKIDENT ('OPDPatients', RESEED, 0);",
                 };
 
-                foreach (var query in commands)
+                string currentCommand = string.Empty;
+                try
                 {
-                    await using var command = new SqlCommand(query, connection);
-                    await command.ExecuteNonQueryAsync();
+                    foreach (var query in commands)
+                    {
+                        currentCommand = query;
+                        await using var command = new SqlCommand(query, connection, transaction);
+                        await command.ExecuteNonQueryAsync();
+                    }
+
+                    transaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    LoggingService.LogError($"Error during data cleanup on command: {currentCommand}. Exception: {ex}");
+                    transaction.Rollback();
+                    throw;
                 }
 
                 return true;
-
             }
             catch (SqlException ex)
             {
+                LoggingService.LogError("SQL Error during data removal: " + ex);
                 throw;
             }
             catch (Exception ex)
             {
+                LoggingService.LogError("Error during data removal: " + ex);
                 throw;
             }
         }
