@@ -347,6 +347,18 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 case "LM":
                     maritalStatus = "Legitimate";
                     break;
+                case "M":
+                    maritalStatus = "Married";
+                    break;
+                case "SP":
+                    maritalStatus = "Separated";
+                    break;
+                case "D":
+                    maritalStatus = "Divorced";
+                    break;
+                case "CL":
+                    maritalStatus = "Common Law";
+                    break;
                 default:
                     maritalStatus = "N/A";
                     break;
@@ -650,6 +662,38 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                         .FirstOrDefault(f => string.Equals(f.RelationshipToPatient, "Father", StringComparison.OrdinalIgnoreCase))
                         ?.EducationalAttainment ?? "N/A";
 
+                    var maritalStatus = "N/A";
+                    switch (formViewModel.Assessments.CivilStatus.Safe().ToUpper())
+                    {
+                        case "SINGLE":
+                            maritalStatus = "S";
+                            break;
+                        case "WIDOWED":
+                            maritalStatus = "W";
+                            break;
+                        case "ILLEGITIMATE":
+                            maritalStatus = "LI";
+                            break;
+                        case "LEGITIMATE":
+                            maritalStatus = "LM";
+                            break;
+                        case "MARRIED":
+                            maritalStatus = "M";
+                            break;
+                        case "SEPARATED":
+                            maritalStatus = "SP";
+                            break;
+                        case "COMMON LAW":
+                            maritalStatus = "CL";
+                            break;
+                        case "DIVORCED":
+                            maritalStatus = "D";
+                            break;
+                        default:
+                            maritalStatus = "N/A";
+                            break;
+                    }
+                    
                     var generalAdmission = new GeneralAdmissionModel
                     {
                         AssessmentID = assessmentID,
@@ -675,6 +719,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                         EducationalAttainment = educationalAttainment,
                         MotherEducationalAttainment = motherEducationalAttainment,
                         FatherEducationalAttainment = fatherEducationalAttainment,
+                        MaritalStatus = maritalStatus,
                         isInterviewed = true,
                         MSW = User.FindFirstValue(ClaimTypes.Name), // Assuming the MSW is the user who is logged in
                         UserID = int.Parse(userIdClaim.Value),
@@ -1200,9 +1245,51 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                         .FirstOrDefault(f => string.Equals(f.RelationshipToPatient, "Father", StringComparison.OrdinalIgnoreCase))
                         ?.EducationalAttainment ?? "N/A";
 
-                    generalAdmission.FirstName = formViewModel.Patient.FirstName;
-                    generalAdmission.MiddleName = formViewModel.Patient.MiddleName;
-                    generalAdmission.LastName = formViewModel.Patient.LastName;
+                    var maritalStatus = "N/A";
+                    switch (formViewModel.Assessments.CivilStatus.Safe().ToUpper())
+                    {
+                        case "SINGLE":
+                            maritalStatus = "S";
+                            break;
+                        case "WIDOWED":
+                            maritalStatus = "W";
+                            break;
+                        case "ILLEGITIMATE":
+                            maritalStatus = "LI";
+                            break;
+                        case "LEGITIMATE":
+                            maritalStatus = "LM";
+                            break;
+                        case "MARRIED":
+                            maritalStatus = "M";
+                            break;
+                        case "SEPARATED":
+                            maritalStatus = "SP";
+                            break;
+                        case "COMMON LAW":
+                            maritalStatus = "CL";
+                            break;
+                        case "DIVORCED":
+                            maritalStatus = "D";
+                            break;
+                        default:
+                            maritalStatus = "N/A";
+                            break;    
+                    }
+
+                    if (formViewModel.Patient.FirstName != generalAdmission.FirstName ||
+                        formViewModel.Patient.MiddleName != generalAdmission.MiddleName ||
+                        formViewModel.Patient.LastName != generalAdmission.LastName)
+                    {
+                        var gaList = await context.GeneralAdmission.Where(g => g.PatientID == id).ToListAsync();
+                        foreach (var item in gaList)
+                        {
+                            item.FirstName = formViewModel.Patient.FirstName;
+                            item.MiddleName = formViewModel.Patient.MiddleName;
+                            item.LastName = formViewModel.Patient.LastName;
+                        }
+                    }
+
                     generalAdmission.Ward = formViewModel.Assessments.BasicWard;
                     generalAdmission.Class = formViewModel.MSWDClassification.SubClassification;
                     generalAdmission.Age = formViewModel.Assessments.Age;
@@ -1218,6 +1305,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     generalAdmission.EducationalAttainment = educationalAttainment;
                     generalAdmission.MotherEducationalAttainment = motherEducationalAttainment;
                     generalAdmission.FatherEducationalAttainment = fatherEducationalAttainment;
+                    generalAdmission.MaritalStatus = maritalStatus;
                     // No need to call Update here unless using a detached context
                     // context.GeneralAdmission.Update(generalAdmission);
                 }
