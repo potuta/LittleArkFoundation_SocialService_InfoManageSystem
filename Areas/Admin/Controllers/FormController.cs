@@ -13,6 +13,7 @@ using LittleArkFoundation.Areas.Admin.Models.HospitalizationHistory;
 using LittleArkFoundation.Areas.Admin.Models.MedicalHistory;
 using LittleArkFoundation.Areas.Admin.Models.Medications;
 using LittleArkFoundation.Areas.Admin.Models.MentalHealthHistory;
+using LittleArkFoundation.Areas.Admin.Models.MonthlyExpenses;
 using LittleArkFoundation.Areas.Admin.Models.MSWDClassification;
 using LittleArkFoundation.Areas.Admin.Models.Patients;
 using LittleArkFoundation.Areas.Admin.Models.ProgressNotes;
@@ -363,7 +364,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     maritalStatus = "N/A";
                     break;
             }
-
+            
             var assessment = new AssessmentsModel
             {
                 Age = generalAdmission.Age,
@@ -403,6 +404,49 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 }
             };
 
+            var fuelSource = "N/A";
+            switch (generalAdmission.FuelSource.Safe().ToUpper())
+            {
+                case "LPG":
+                    fuelSource = "Gas";
+                    break;
+                case "C":
+                    fuelSource = "Charcoal";
+                    break;
+                case "W":
+                    fuelSource = "Firewood";
+                    break;
+            }
+
+            var lightSource = "N/A";
+            switch (generalAdmission.LightSource.Safe().ToUpper())
+            {
+                case "E":
+                    lightSource = "Electric";
+                    break;
+                case "C/L":
+                    lightSource = "Candle";
+                    break;
+            }
+
+            var waterSource = "N/A";
+            switch (generalAdmission.WaterSource.Safe().ToUpper())
+            {
+                case "N":
+                    waterSource = "Artesian Well";
+                    break;
+                case "DW":
+                    waterSource = "Water District";
+                    break;
+            }
+
+            var utilities = new UtilitiesModel
+            {
+                LightSource = lightSource,
+                WaterSource = waterSource,
+                FuelSource = fuelSource
+            };
+
             var viewModel = new FormViewModel()
             {
                 Users = users,
@@ -418,6 +462,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 Referrals = referral,
                 MedicalHistory = medicalHistory,
                 Assessments = assessment,
+                Utilities = utilities,
                 GeneralAdmissionId = Id
             };
 
