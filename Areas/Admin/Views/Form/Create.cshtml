@@ -318,9 +318,21 @@
 
                 let cols = `
                     <td><input type="text" name="FamilyMembers[${rowCount}].Name" required></td>
-                     <td><input type="text" name="FamilyMembers[${rowCount}].Age" required></td>
+                    <td><input type="text" name="FamilyMembers[${rowCount}].Age" required></td>
                     <td><input type="date" name="FamilyMembers[${rowCount}].DateOfBirth" required></td>
-                    <td><input type="text" name="FamilyMembers[${rowCount}].CivilStatus" required></td>
+                    <td>
+                        <select name="FamilyMembers[${rowCount}].CivilStatus" required>
+							<option value="N/A">N/A</option>
+                            <option value="Single">Single</option>
+							<option value="Married">Married</option>
+							<option value="Widowed">Widowed</option>
+							<option value="Divorced">Divorced</option>
+							<option value="Separated">Separated</option>
+							<option value="Common-law">Common-law</option>
+							<option value="Legitimate">Legitimate</option>
+							<option value="Illegitimate">Illegitimate</option>
+                        </select>
+					</td>
                     <td><input type="text" name="FamilyMembers[${rowCount}].RelationshipToPatient" required></td>
                     <td>
                         <select name="FamilyMembers[${rowCount}].LivingWithChild" required>
@@ -330,6 +342,7 @@
                     </td>
                     <td>
                         <select name="FamilyMembers[${rowCount}].EducationalAttainment" required>
+                            <option value="N/A">No Data / Not Specified</option>
                             <option value="Master’s Degree">Master’s Degree</option>
                             <option value="College Graduate">College Graduate</option>
                             <option value="College Level">College Level (Undergraduate, not completed)</option>
@@ -344,7 +357,6 @@
                             <option value="No Schooling">No Schooling</option>
                             <option value="Out of School">Out of School</option>
                             <option value="Illiterate">Illiterate (cannot read and write)</option>
-                            <option value="N/A">No Data / Not Specified</option>
                         </select>
                     </td>
                     <td><input type="text" name="FamilyMembers[${rowCount}].Occupation" required></td>
@@ -692,7 +704,7 @@
                     row.cells[0].querySelector("input").name = `FamilyMembers[${i - 1}].Name`;
                     row.cells[1].querySelector("input").name = `FamilyMembers[${i - 1}].Age`;
                     row.cells[2].querySelector("input").name = `FamilyMembers[${i - 1}].DateOfBirth`;
-                    row.cells[3].querySelector("input").name = `FamilyMembers[${i - 1}].CivilStatus`;
+                    row.cells[3].querySelector("select").name = `FamilyMembers[${i - 1}].CivilStatus`;
                     row.cells[4].querySelector("input").name = `FamilyMembers[${i - 1}].RelationshipToPatient`;
                     row.cells[5].querySelector("select").name = `FamilyMembers[${i - 1}].LivingWithChild`;
                     row.cells[6].querySelector("select").name = `FamilyMembers[${i - 1}].EducationalAttainment`;

@@ -17,6 +17,7 @@ using LittleArkFoundation.Areas.Admin.Models.MSWDClassification;
 using LittleArkFoundation.Areas.Admin.Models.Patients;
 using LittleArkFoundation.Areas.Admin.Models.ProgressNotes;
 using LittleArkFoundation.Areas.Admin.Models.Referrals;
+using LittleArkFoundation.Areas.Admin.Services.Html;
 using LittleArkFoundation.Authorize;
 using LittleArkFoundation.Data;
 using Microsoft.AspNetCore.Mvc;
@@ -331,6 +332,26 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 LastName = generalAdmission.LastName,
             };
 
+            var maritalStatus = "N/A";
+            switch (generalAdmission.MaritalStatus.Safe().ToUpper())
+            {
+                case "S":
+                    maritalStatus = "Single";
+                    break;
+                case "W":
+                    maritalStatus = "Widowed";
+                    break;
+                case "LI":
+                    maritalStatus = "Illegitimate";
+                    break;
+                case "LM":
+                    maritalStatus = "Legitimate";
+                    break;
+                default:
+                    maritalStatus = "N/A";
+                    break;
+            }
+
             var assessment = new AssessmentsModel
             {
                 Age = generalAdmission.Age,
@@ -338,6 +359,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 Gender = generalAdmission.Gender,
                 PermanentAddress = generalAdmission.CompleteAddress,
                 MonthlyIncome = generalAdmission.MonthlyIncome,
+                CivilStatus = maritalStatus,
             };
 
             var mswdClassification = new MSWDClassificationModel

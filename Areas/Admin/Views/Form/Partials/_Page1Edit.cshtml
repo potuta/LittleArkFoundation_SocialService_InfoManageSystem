@@ -362,7 +362,19 @@
                            required>
                 </td>
                 <td><input type="date" asp-for="FamilyMembers[i].DateOfBirth" required></td>
-                <td><input type="text" asp-for="FamilyMembers[i].CivilStatus" required></td>
+                <td>
+                    <select asp-for="FamilyMembers[i].CivilStatus" required>
+                        <option value="N/A">N/A</option>
+                        <option value="Single">Single</option>
+                        <option value="Married">Married</option>
+                        <option value="Widowed">Widowed</option>
+                        <option value="Divorced">Divorced</option>
+                        <option value="Separated">Separated</option>
+                        <option value="Common-law">Common-law</option>
+                        <option value="Legitimate">Legitimate</option>
+                        <option value="Illegitimate">Illegitimate</option>
+					</select>
+				</td>
                 <td><input type="text" asp-for="FamilyMembers[i].RelationshipToPatient" required></td>
                 <td>
                     <select asp-for="FamilyMembers[i].LivingWithChild" required>
@@ -372,6 +384,7 @@
                 </td>
                 <td>
                     <select asp-for="FamilyMembers[i].EducationalAttainment" required>
+                        <option value="N/A">No Data / Not Specified</option>
                         <option value="Master’s Degree">Master’s Degree</option>
                         <option value="College Graduate">College Graduate</option>
                         <option value="College Level">College Level (Undergraduate, not completed)</option>
@@ -386,7 +399,6 @@
                         <option value="No Schooling">No Schooling</option>
                         <option value="Out of School">Out of School</option>
                         <option value="Illiterate">Illiterate (cannot read and write)</option>
-                        <option value="N/A">No Data / Not Specified</option>
                     </select>
                 </td>
                 <td><input type="text" asp-for="FamilyMembers[i].Occupation" required></td>
