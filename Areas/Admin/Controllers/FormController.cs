@@ -738,7 +738,61 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                             maritalStatus = "N/A";
                             break;
                     }
-                    
+
+                    var lightSource = "N/A";
+                    switch (formViewModel.Utilities.LightSource.Safe().ToUpper())
+                    {
+                        case "ELECTRIC":
+                            lightSource = "E";
+                            break;
+                        case "CANDLE":
+                            lightSource = "C/L";
+                            break;
+                    }
+
+                    var waterSource = "N/A";
+                    switch (formViewModel.Utilities.WaterSource.Safe().ToUpper())
+                    {
+                        case "ARTESIAN WELL":
+                            waterSource = "N";
+                            break;
+                        case "WATER DISTRICT":
+                            waterSource = "DW";
+                            break;
+                        case "PUBLIC":
+                            waterSource = "S";
+                            break;
+                        case "PRIVATE":
+                            waterSource = "S";
+                            break;
+                        default:
+                            waterSource = "N/A";
+                            break;
+                    }
+
+                    var fuelSource = "N/A";
+                    switch (formViewModel.Utilities.FuelSource.Safe().ToUpper())
+                    {
+                        case "GAS":
+                            fuelSource = "LPG";
+                            break;
+                        case "CHARCOAL":
+                            fuelSource = "C";
+                            break;
+                        case "FIREWOOD":
+                            fuelSource = "W";
+                            break;
+                        case "ELECTRIC":
+                            fuelSource = "E";
+                            break;
+                        case "KEROSENE":
+                            fuelSource = "K";
+                            break;
+                        default:
+                            fuelSource = "N/A";
+                            break;
+                    }
+
                     var generalAdmission = new GeneralAdmissionModel
                     {
                         AssessmentID = assessmentID,
@@ -765,6 +819,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                         MotherEducationalAttainment = motherEducationalAttainment,
                         FatherEducationalAttainment = fatherEducationalAttainment,
                         MaritalStatus = maritalStatus,
+                        FuelSource = fuelSource,
+                        WaterSource = waterSource,
+                        LightSource = lightSource,
                         isInterviewed = true,
                         MSW = User.FindFirstValue(ClaimTypes.Name), // Assuming the MSW is the user who is logged in
                         UserID = int.Parse(userIdClaim.Value),
