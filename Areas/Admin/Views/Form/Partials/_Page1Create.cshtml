@@ -364,17 +364,34 @@
                 </td>
                 <td><input type="date" name="FamilyMembers[@i].DateOfBirth" value="@Model.FamilyMembers[i].DateOfBirth" required></td>
                 <td>
-                    <select name="FamilyMembers[@i].CivilStatus" required>
-                        <option value="N/A">N/A</option>
-                        <option value="Single">Single</option>
-                        <option value="Married">Married</option>
-                        <option value="Widowed">Widowed</option>
-                        <option value="Divorced">Divorced</option>
-                        <option value="Separated">Separated</option>
-                        <option value="Common-law">Common-law</option>
-                        <option value="Legitimate">Legitimate</option>
-                        <option value="Illegitimate">Illegitimate</option>
-					</select>    
+                    @if (Model.GeneralAdmissionId > 0 && Model.FamilyMembers.Count == 2)
+                    {
+                       <select asp-for="FamilyMembers[i].CivilStatus" required>
+							<option value="N/A">N/A</option>
+							<option value="Single">Single</option>
+							<option value="Married">Married</option>
+							<option value="Widowed">Widowed</option>
+							<option value="Divorced">Divorced</option>
+							<option value="Separated">Separated</option>
+							<option value="Common-law">Common-law</option>
+							<option value="Legitimate">Legitimate</option>
+							<option value="Illegitimate">Illegitimate</option>
+                        </select>
+                    }
+                    else
+                    {
+						<select name="FamilyMembers[@i].CivilStatus" required>
+							<option value="N/A">N/A</option>
+							<option value="Single">Single</option>
+							<option value="Married">Married</option>
+							<option value="Widowed">Widowed</option>
+							<option value="Divorced">Divorced</option>
+							<option value="Separated">Separated</option>
+							<option value="Common-law">Common-law</option>
+							<option value="Legitimate">Legitimate</option>
+							<option value="Illegitimate">Illegitimate</option>
+						</select>    
+                    }
                 </td>
                 <td><input type="text" name="FamilyMembers[@i].RelationshipToPatient" value="@Model.FamilyMembers[i].RelationshipToPatient" required></td>
                 <td>
@@ -384,23 +401,46 @@
                     </select>
                 </td>
                 <td>
-                    <select name="FamilyMembers[@i].EducationalAttainment" value="@Model.FamilyMembers[i].EducationalAttainment" required>
-                        <option value="N/A">No Data / Not Specified</option>
-                        <option value="Master’s Degree">Master’s Degree</option>
-                        <option value="College Graduate">College Graduate</option>
-                        <option value="College Level">College Level (Undergraduate, not completed)</option>
-                        <option value="Vocational Graduate">Vocational Graduate</option>
-                        <option value="Senior High School Level">Senior High School Level (not completed)</option>
-                        <option value="Senior High School Graduate">Senior High School Graduate</option>
-                        <option value="Junior High School Level">Junior High School Level (not completed)</option>
-                        <option value="Junior High School Graduate">Junior High School Graduate</option>
-                        <option value="Elementary Graduate">Elementary Graduate</option>
-                        <option value="Elementary Level">Elementary Level (not completed)</option>
-                        <option value="Pre-School">Pre-School</option>
-                        <option value="No Schooling">No Schooling</option>
-                        <option value="Out of School">Out of School</option>
-                        <option value="Illiterate">Illiterate (cannot read and write)</option>
-                    </select>
+                    @if (Model.GeneralAdmissionId > 0 && Model.FamilyMembers.Count == 2)
+                    {
+                       <select asp-for="FamilyMembers[i].EducationalAttainment" required>
+							<option value="N/A">No Data / Not Specified</option>
+							<option value="Master’s Degree">Master’s Degree</option>
+							<option value="College Graduate">College Graduate</option>
+							<option value="College Level">College Level (Undergraduate, not completed)</option>
+							<option value="Vocational Graduate">Vocational Graduate</option>
+							<option value="Senior High School Level">Senior High School Level (not completed)</option>
+							<option value="Senior High School Graduate">Senior High School Graduate</option>
+							<option value="Junior High School Level">Junior High School Level (not completed)</option>
+							<option value="Junior High School Graduate">Junior High School Graduate</option>
+							<option value="Elementary Graduate">Elementary Graduate</option>
+							<option value="Elementary Level">Elementary Level (not completed)</option>
+							<option value="Pre-School">Pre-School</option>
+							<option value="No Schooling">No Schooling</option>
+							<option value="Out of School">Out of School</option>
+							<option value="Illiterate">Illiterate (cannot read and write)</option>
+						</select> 
+                    }
+                    else
+                    {
+						<select name="FamilyMembers[@i].EducationalAttainment" value="@Model.FamilyMembers[i].EducationalAttainment" required>
+							<option value="N/A">No Data / Not Specified</option>
+							<option value="Master’s Degree">Master’s Degree</option>
+							<option value="College Graduate">College Graduate</option>
+							<option value="College Level">College Level (Undergraduate, not completed)</option>
+							<option value="Vocational Graduate">Vocational Graduate</option>
+							<option value="Senior High School Level">Senior High School Level (not completed)</option>
+							<option value="Senior High School Graduate">Senior High School Graduate</option>
+							<option value="Junior High School Level">Junior High School Level (not completed)</option>
+							<option value="Junior High School Graduate">Junior High School Graduate</option>
+							<option value="Elementary Graduate">Elementary Graduate</option>
+							<option value="Elementary Level">Elementary Level (not completed)</option>
+							<option value="Pre-School">Pre-School</option>
+							<option value="No Schooling">No Schooling</option>
+							<option value="Out of School">Out of School</option>
+							<option value="Illiterate">Illiterate (cannot read and write)</option>
+						</select>
+                    }
                 </td>
                 <td><input type="text" name="FamilyMembers[@i].Occupation" value="@Model.FamilyMembers[i].Occupation" required></td>
                 <td><input type="number" name="FamilyMembers[@i].MonthlyIncome"
