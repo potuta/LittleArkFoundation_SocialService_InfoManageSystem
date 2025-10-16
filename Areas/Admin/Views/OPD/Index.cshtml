@@ -464,12 +464,125 @@
                                             }
                                         </ul>
                                         <hr />
-                                        <p class="text-end text-secondary fw-medium small mb-0">
-                                            Threshold: ≥ 25
-                                        </p>
+                                        <div class="d-flex justify-content-between">
+											<button type="button"
+													class="badge bg-secondary ms-2 border-0 view-criteria-btn"
+													data-bs-toggle="modal"
+													data-bs-target="#criteria-modal"
+													data-parent-modal="#@modalId">
+												<i class="bi bi-eye"></i> View Criteria
+											</button>
+
+                                            <p class="text-end text-secondary fw-medium small mb-0">
+												Threshold: ≥ 25
+											</p>
+                                        </div>
                                         <p class="text-end fw-bold">
                                             Total Score: <span class="@(isEligible ? "text-success" : "text-danger")">@totalScore</span>
                                         </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Criteria Modal -->
+                        <div class="modal fade" id="criteria-modal" tabindex="-1" aria-labelledby="criteria-modal-label" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="criteria-modal-label">Decision Criteria Breakdown</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                             <h6 class="ms-2">Criterian</h6>
+                                             <h6 class="me-2">Weight</h6>
+                                        </div>
+                                        <ul class="list-group">
+											<li class="list-group-item d-flex justify-content-between align-items-center">
+												Hypertension												
+                                                <span class="badge bg-primary rounded-pill">25</span>
+											</li>
+
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+												Oliguria												
+                                                <span class="badge bg-primary rounded-pill">20</span>
+											</li>
+
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+												Edema											
+                                                <span class="badge bg-primary rounded-pill">15</span>
+											</li>
+
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+												Nephrotic syndrome										
+                                                <span class="badge bg-primary rounded-pill">15</span>
+											</li>
+
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+												Azotemia (e.g. BUN/Cr)										
+                                                <span class="badge bg-primary rounded-pill">10</span>
+											</li>
+
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+												PSGN / AGN									
+                                                <span class="badge bg-primary rounded-pill">5</span>
+											</li>
+                                        </ul>
+
+                                        <div class="list-group-item d-flex justify-content-between align-items-center mt-3">
+                                             <h6 class="ms-2">Age</h6>
+                                             <h6 class="me-2">Modifier</h6>
+                                        </div>
+
+                                        <ul class="list-group">
+											<li class="list-group-item d-flex justify-content-between align-items-center">
+												&lt; 1 year
+                                                <span class="badge bg-primary rounded-pill">+10</span>
+											</li>
+
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+												1 - 4 years												
+                                                <span class="badge bg-primary rounded-pill">+5</span>
+											</li>
+
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+												&ge; 40 years											
+                                                <span class="badge bg-primary rounded-pill">+10</span>
+											</li>
+                                            
+                                        </ul>
+
+                                        <div class="list-group-item d-flex justify-content-between align-items-center mt-3">
+                                             <h6 class="ms-2"></h6>
+                                             <h6 class="me-2">Threshold</h6>
+                                        </div>
+
+                                        <ul class="list-group">
+											<li class="list-group-item d-flex justify-content-between align-items-center">
+												Green flag (Eligible for admission)
+                                                <span class="badge bg-primary rounded-pill">Total &ge; 25</span>
+											</li>
+
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+												Yellow flag (Further Review)
+                                                <span class="badge bg-primary rounded-pill">Total &gt; 15 &lt; 25</span>
+											</li>
+
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+												Red flag (Not eligible)
+                                                <span class="badge bg-primary rounded-pill">Total &le; 15</span>
+											</li>
+
+                                                                                        
+                                        </ul>
+
+                                        <hr />
+										<button type="button" class="badge bg-secondary ms-2 border-0" id="backToScoreBtn">
+											<i class="bi bi-arrow-left-circle"></i> Back to Score
+										</button>
+
+
                                     </div>
                                 </div>
                             </div>
@@ -672,6 +785,40 @@
         }
 
     </script>
+
+    <script>
+		document.addEventListener('DOMContentLoaded', function () {
+			let lastParentModalId = null;
+
+			// When any "View Criteria" button is clicked
+			document.querySelectorAll('.view-criteria-btn').forEach(btn => {
+				btn.addEventListener('click', function () {
+					lastParentModalId = this.getAttribute('data-parent-modal'); // e.g. "#scoreBreakdownModal_123"
+				});
+			});
+
+			const backBtn = document.getElementById('backToScoreBtn');
+			const criteriaModalEl = document.getElementById('criteria-modal');
+
+			backBtn.addEventListener('click', function () {
+				const criteriaModalInstance = bootstrap.Modal.getInstance(criteriaModalEl);
+				criteriaModalInstance.hide(); // close the criteria modal
+
+				// When the criteria modal is fully hidden, reopen the correct weighted score modal
+				criteriaModalEl.addEventListener('hidden.bs.modal', function handler() {
+					if (lastParentModalId) {
+						const parentModalEl = document.querySelector(lastParentModalId);
+						if (parentModalEl) {
+							const parentModal = new bootstrap.Modal(parentModalEl);
+							parentModal.show();
+						}
+					}
+					criteriaModalEl.removeEventListener('hidden.bs.modal', handler);
+				});
+			});
+		});
+	</script>
+
 }
 
 
