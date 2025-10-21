@@ -120,9 +120,21 @@
             </tr>
 
             <tr>
-                <td>
-                    First Name: <span class="required">*</span>
-                    <input type="text" asp-for="GeneralAdmission.FirstName" placeholder="Type N/A if No Answer" required>
+                <td class="d-flex">
+                    <div>
+						First Name: <span class="required">*</span>
+						<input type="text" asp-for="GeneralAdmission.FirstName" placeholder="Type N/A if No Answer" required>
+                    </div>
+                    <div>
+                        Suffix: 
+                        <select asp-for="GeneralAdmission.Suffix" >
+							<option value="">-- Select Suffix --</option>
+							@foreach (var suffix in Model.Suffixes)
+							{
+								<option value="@suffix">@suffix</option>
+							}    
+						</select>
+                    </div>
 
                 </td>
                 <td>
@@ -175,24 +187,24 @@
             </tr>
 
             <tr>
-            </tr>
-            <td>
-                Gender: <span class="required">*</span>
-                <select asp-for="GeneralAdmission.Gender" required>
-                    <option>Male</option>
-                    <option>Female</option>
-                    <option>LGBTQIA+</option>
-                </select>
-            </td>
-            <td>
-                Time of Interview: <span class="required">*</span>
-                <input type="time" asp-for="GeneralAdmission.Time" id="timeInput" required>
-            </td>
-            <td>
-                Diagnosis: <span class="required">*</span>
-                <textarea type="text" asp-for="GeneralAdmission.Diagnosis" placeholder="Type N/A if No Answer" required></textarea>
+				<td>
+					Gender: <span class="required">*</span>
+					<select asp-for="GeneralAdmission.Gender" required>
+						<option>Male</option>
+						<option>Female</option>
+						<option>LGBTQIA+</option>
+					</select>
+				</td>
+				<td>
+					Time of Interview: <span class="required">*</span>
+					<input type="time" asp-for="GeneralAdmission.Time" id="timeInput" required>
+				</td>
+				<td>
+					Diagnosis: <span class="required">*</span>
+					<textarea type="text" asp-for="GeneralAdmission.Diagnosis" placeholder="Type N/A if No Answer" required></textarea>
 
-            </td>
+				</td>
+            </tr>
 
             <tr>
                 <td>

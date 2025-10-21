@@ -167,6 +167,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     FirstName = existingOPD.FirstName,
                     LastName = existingOPD.LastName,
                     MiddleName = existingOPD.MiddleName,
+                    Suffix = existingOPD.Suffix,
                     ContactNo = existingOPD.ContactNo,
                     Age = existingOPD.Age,
                     Gender = existingOPD.Gender,
@@ -177,10 +178,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     MotherFirstName = existingOPD.MotherFirstName,
                     MotherMiddleName = existingOPD.MotherMiddleName,
                     MotherLastName = existingOPD.MotherLastName,
+                    MotherSuffix = existingOPD.MotherSuffix,
                     MotherOccupation = existingOPD.MotherOccupation,
                     FatherFirstName = existingOPD.FatherFirstName,
                     FatherMiddleName = existingOPD.FatherMiddleName,
                     FatherLastName = existingOPD.FatherLastName,
+                    FatherSuffix = existingOPD.FatherSuffix,
                     FatherOccupation = existingOPD.FatherOccupation,
                     MonthlyIncome = existingOPD.MonthlyIncome,
                     NoOfChildren = existingOPD.NoOfChildren,
@@ -571,7 +574,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     {
                         if (existingOPD.FirstName != viewModel.OPD.FirstName ||
                             existingOPD.LastName != viewModel.OPD.LastName ||
-                            existingOPD.MiddleName != viewModel.OPD.MiddleName)
+                            existingOPD.MiddleName != viewModel.OPD.MiddleName ||
+                            existingOPD.Suffix != viewModel.OPD.Suffix)
                         {
                             while (count == 0)
                             {
@@ -592,6 +596,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                             existingOPD.FirstName = viewModel.OPD.FirstName;
                             existingOPD.LastName = viewModel.OPD.LastName;
                             existingOPD.MiddleName = viewModel.OPD.MiddleName;
+                            existingOPD.Suffix = viewModel.OPD.Suffix;
 
                         }
                     }
@@ -680,6 +685,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                             existingOPD.FirstName = viewModel.OPD.FirstName;
                             existingOPD.LastName = viewModel.OPD.LastName;
                             existingOPD.MiddleName = viewModel.OPD.MiddleName;
+                            existingOPD.Suffix = viewModel.OPD.Suffix;
 
                         }
                     }
@@ -829,7 +835,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 worksheet.Cell(dataRow, 2).Value = opd.Id;
                 worksheet.Cell(dataRow, 3).Value = opd.IsOld ? "Old" : "New";
                 worksheet.Cell(dataRow, 4).Value = opd.Class;
-                worksheet.Cell(dataRow, 5).Value = $"{opd.LastName}, {opd.FirstName} {opd.MiddleName}";
+                worksheet.Cell(dataRow, 5).Value = $"{opd.LastName}, {opd.FirstName} {opd.MiddleName} {opd.Suffix}";
                 worksheet.Cell(dataRow, 6).Value = opd.Age;
                 worksheet.Cell(dataRow, 7).Value = opd.Gender;
                 worksheet.Cell(dataRow, 8).Value = opd.IsPWD ? "Yes" : "No";
@@ -1394,7 +1400,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             {
                 worksheet.Cell(dataRow, 1).Value = opd.MSW;
                 worksheet.Cell(dataRow, 2).Value = opd.Date.ToShortDateString();
-                worksheet.Cell(dataRow, 3).Value = $"{opd.LastName}, {opd.FirstName} {opd.MiddleName}";
+                worksheet.Cell(dataRow, 3).Value = $"{opd.LastName}, {opd.FirstName} {opd.MiddleName} {opd.Suffix}";
                 worksheet.Cell(dataRow, 4).Value = opd.AssistanceNeeded;
                 worksheet.Cell(dataRow, 5).Value = opd.Amount;
                 worksheet.Cell(dataRow, 6).Value = opd.AmountExtended;
@@ -1504,7 +1510,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             {
                 worksheet.Cell(dataRow, 1).Value = opd.MSW;
                 worksheet.Cell(dataRow, 2).Value = opd.Date.ToShortDateString();
-                worksheet.Cell(dataRow, 3).Value = $"{opd.LastName}, {opd.FirstName} {opd.MiddleName}";
+                worksheet.Cell(dataRow, 3).Value = $"{opd.LastName}, {opd.FirstName} {opd.MiddleName} {opd.Suffix}";
                 worksheet.Cell(dataRow, 4).Value = opd.Resources;
                 worksheet.Cell(dataRow, 5).Value = opd.GLProponent;
                 worksheet.Cell(dataRow, 6).Value = opd.GLAmountReceived;

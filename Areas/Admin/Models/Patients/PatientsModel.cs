@@ -8,6 +8,7 @@
         public string FirstName { get; set; }
         public string? MiddleName { get; set; } 
         public string LastName { get; set; }
+        public string? Suffix { get; set; }
         public DateOnly DateOfBirth { get; set; }
         public string Sex { get; set; }
         public string PlaceOfBirth { get; set; }    

@@ -130,9 +130,21 @@
             </tr>
 
             <tr>
-                <td>
-                    First Name: <span class="required">*</span>
-                    <input type="text" asp-for="OPD.FirstName" placeholder="Type N/A if No Answer" required>
+                <td class="d-flex">
+                    <div>
+						First Name: <span class="required">*</span>
+						<input type="text" asp-for="OPD.FirstName" placeholder="Type N/A if No Answer" required>
+                    </div>
+                    <div>
+                        Suffix:
+                        <select asp-for="OPD.Suffix" >
+							<option value="">-- Select Suffix --</option>
+							@foreach (var suffix in Model.Suffixes)
+							{
+								<option value="@suffix">@suffix</option>
+							}    
+						</select>
+                    </div>
 
                 </td>
                 <td>
@@ -301,10 +313,21 @@
         <div class="section-title">Parents Information</div>
         <table>
             <tr>
-                <td>
-                    Mother's First Name: <span class="required">*</span>
-                    <input type="text" asp-for="OPD.MotherFirstName" placeholder="Type N/A if No Answer" required>
-
+                <td class="d-flex">
+                    <div>
+						Mother's First Name: <span class="required">*</span>
+						<input type="text" asp-for="OPD.MotherFirstName" placeholder="Type N/A if No Answer" required>
+                    </div>
+                    <div>
+                        Suffix:
+                        <select asp-for="OPD.MotherSuffix" >
+							<option value="">-- Select Suffix --</option>
+							@foreach (var suffix in Model.Suffixes)
+							{
+								<option value="@suffix">@suffix</option>
+							}    
+						</select>
+                    </div>
                 </td>
                 <td>
                     Mother's Middle Name:
@@ -324,9 +347,21 @@
             </tr>
 
             <tr>
-                <td>
-                    Father's First Name: <span class="required">*</span>
-                    <input type="text" asp-for="OPD.FatherFirstName" placeholder="Type N/A if No Answer" required>
+                <td class="d-flex">
+                    <div>
+						Father's First Name: <span class="required">*</span>
+						<input type="text" asp-for="OPD.FatherFirstName" placeholder="Type N/A if No Answer" required>
+                    </div>
+                    <div>
+                        Suffix:
+                        <select asp-for="OPD.FatherSuffix" >
+							<option value="">-- Select Suffix --</option>
+							@foreach (var suffix in Model.Suffixes)
+							{
+								<option value="@suffix">@suffix</option>
+							}    
+						</select>
+                    </div>
 
                 </td>
                 <td>

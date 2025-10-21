@@ -1,4 +1,5 @@
 ﻿using LittleArkFoundation.Areas.Admin.Models.Statistics;
+using LittleArkFoundation.Areas.Admin.Services.Assessments;
 
 namespace LittleArkFoundation.Areas.Admin.Models.OPD
 {
@@ -14,6 +15,7 @@ namespace LittleArkFoundation.Areas.Admin.Models.OPD
         public OPDPatientsModel OPDPatient { get; set; } = new OPDPatientsModel();
         public List<OPDPatientsModel> OPDPatientsList { get; set; } = new List<OPDPatientsModel> { new OPDPatientsModel() };
         public int OPDId { get; set; } = 0;
+        public List<string>? Suffixes { get; set; } = NameSuffixHelper.GetSuffixes(10);
 
         // Pagination properties
         public int? CurrentPage { get; set; } = 1;

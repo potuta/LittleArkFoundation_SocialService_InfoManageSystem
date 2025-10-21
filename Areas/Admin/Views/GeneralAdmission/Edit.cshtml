@@ -126,16 +126,45 @@
             </tr>
 
             <tr>
-                <td>
-                    First Name: <span class="required">*</span>
-                    @if (Model.GeneralAdmission.isInterviewed)
-                    {
-                        <input type="text" asp-for="GeneralAdmission.FirstName" placeholder="Type N/A if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly>
-                    }
-                    else
-                    {
-                        <input type="text" asp-for="GeneralAdmission.FirstName" placeholder="Type N/A if No Answer" required>
-                    }
+                <td class="d-flex">
+                    <div>
+
+						First Name: <span class="required">*</span>
+						@if (Model.GeneralAdmission.isInterviewed)
+						{
+							<input type="text" asp-for="GeneralAdmission.FirstName" placeholder="Type N/A if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly>
+						}
+						else
+						{
+							<input type="text" asp-for="GeneralAdmission.FirstName" placeholder="Type N/A if No Answer" required>
+						}
+                    </div>
+
+                     <div>
+						Suffix:
+                        @if (Model.GeneralAdmission.isInterviewed){
+
+							<select asp-for="GeneralAdmission.Suffix" disabled >
+								<option value="">-- Select Suffix --</option>
+								@foreach (var suffix in Model.Suffixes)
+								{
+									<option value="@suffix">@suffix</option>
+								}    
+                            </select>
+							<input type="hidden" asp-for="GeneralAdmission.Suffix" />
+                        }
+                        else
+                        {
+                            <select asp-for="GeneralAdmission.Suffix" >
+								<option value="">-- Select Suffix --</option>
+								@foreach (var suffix in Model.Suffixes)
+								{
+									<option value="@suffix">@suffix</option>
+								}    
+                            </select>
+                            
+                        }
+                    </div>
 
                 </td>
                 <td>
@@ -233,43 +262,43 @@
             </tr>
 
             <tr>
+				<td>
+					Gender: <span class="required">*</span>
+
+					@if (Model.GeneralAdmission.isInterviewed)
+					{
+						<select asp-for="GeneralAdmission.Gender" disabled>
+							<option>Male</option>
+							<option>Female</option>
+							<option>LGBTQIA+</option>
+						</select>
+						<input type="hidden" asp-for="GeneralAdmission.Gender" />
+					}
+					else
+					{
+						<select asp-for="GeneralAdmission.Gender" required>
+							<option>Male</option>
+							<option>Female</option>
+							<option>LGBTQIA+</option>
+						</select>
+					}
+				</td>
+				<td>
+					Time of Interview: <span class="required">*</span>
+					<input type="time" asp-for="GeneralAdmission.Time" id="timeInput" style="background-color:#e9ecef; cursor: not-allowed;" required>
+				</td>
+				<td>
+					Diagnosis: <span class="required">*</span>
+					@if (Model.GeneralAdmission.isInterviewed) {
+						<textarea type="text" asp-for="GeneralAdmission.Diagnosis" placeholder="Type N/A if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly></textarea>
+					}
+					else
+					{
+						<textarea type="text" asp-for="GeneralAdmission.Diagnosis" placeholder="Type N/A if No Answer" required></textarea>
+					}
+
+				</td>
             </tr>
-            <td>
-                Gender: <span class="required">*</span>
-
-                @if (Model.GeneralAdmission.isInterviewed)
-                {
-                    <select asp-for="GeneralAdmission.Gender" disabled>
-                        <option>Male</option>
-                        <option>Female</option>
-                        <option>LGBTQIA+</option>
-                    </select>
-                    <input type="hidden" asp-for="GeneralAdmission.Gender" />
-                }
-                else
-                {
-                    <select asp-for="GeneralAdmission.Gender" required>
-                        <option>Male</option>
-                        <option>Female</option>
-                        <option>LGBTQIA+</option>
-                    </select>
-                }
-            </td>
-            <td>
-                Time of Interview: <span class="required">*</span>
-                <input type="time" asp-for="GeneralAdmission.Time" id="timeInput" style="background-color:#e9ecef; cursor: not-allowed;" required>
-            </td>
-            <td>
-                Diagnosis: <span class="required">*</span>
-                @if (Model.GeneralAdmission.isInterviewed) {
-                    <textarea type="text" asp-for="GeneralAdmission.Diagnosis" placeholder="Type N/A if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly></textarea>
-                }
-                else
-                {
-                    <textarea type="text" asp-for="GeneralAdmission.Diagnosis" placeholder="Type N/A if No Answer" required></textarea>
-                }
-
-            </td>
 
             <tr>
                 <td>

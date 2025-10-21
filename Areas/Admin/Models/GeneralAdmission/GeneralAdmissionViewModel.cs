@@ -1,5 +1,6 @@
 ﻿using LittleArkFoundation.Areas.Admin.Models.ProgressNotes;
 using LittleArkFoundation.Areas.Admin.Models.Statistics;
+using LittleArkFoundation.Areas.Admin.Services.Assessments;
 
 namespace LittleArkFoundation.Areas.Admin.Models.GeneralAdmission
 {
@@ -12,6 +13,7 @@ namespace LittleArkFoundation.Areas.Admin.Models.GeneralAdmission
         public List<ProgressNotesModel> ProgressNotes { get; set; } = new List<ProgressNotesModel> { new ProgressNotesModel() };
         public StatisticsModel? Statistics { get; set; } = new StatisticsModel();
         public List<StatisticsModel> StatisticsList { get; set; } = new List<StatisticsModel> { new StatisticsModel() };
+        public List<string>? Suffixes { get; set; } = NameSuffixHelper.GetSuffixes(10);
 
         // Pagination properties
         public int? CurrentPage { get; set; } = 1;

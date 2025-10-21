@@ -11,6 +11,7 @@
         public string FirstName { get; set; } = "N/A";
         public string? MiddleName { get; set; }
         public string LastName { get; set; } = "N/A";
+        public string? Suffix { get; set; }
         public string Ward { get; set; } = "N/A";
         public string Class { get; set; } = "N/A";
         public string Age { get; set; } = "0";

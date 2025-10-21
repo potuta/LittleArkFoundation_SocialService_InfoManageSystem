@@ -607,7 +607,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 worksheet.Cell(dataRow, 2).Value = admission.Id;
                 worksheet.Cell(dataRow, 3).Value = admission.isOld ? "Old" : "New";
                 worksheet.Cell(dataRow, 4).Value = admission.HospitalNo;
-                worksheet.Cell(dataRow, 5).Value = $"{admission.LastName}, {admission.FirstName} {admission.MiddleName}";
+                worksheet.Cell(dataRow, 5).Value = $"{admission.LastName}, {admission.FirstName} {admission.MiddleName} {admission.Suffix}";
                 worksheet.Cell(dataRow, 6).Value = admission.Ward;
                 worksheet.Cell(dataRow, 7).Value = admission.Class;
                 worksheet.Cell(dataRow, 8).Value = admission.Age;
@@ -1520,7 +1520,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             {
                 worksheet.Cell(dataRow, 1).Value = ga.MSW;
                 worksheet.Cell(dataRow, 2).Value = ga.Date.ToShortDateString();
-                worksheet.Cell(dataRow, 3).Value = $"{ga.LastName}, {ga.FirstName} {ga.MiddleName}";
+                worksheet.Cell(dataRow, 3).Value = $"{ga.LastName}, {ga.FirstName} {ga.MiddleName} {ga.Suffix}";
                 worksheet.Cell(dataRow, 4).Value = ga.Ward;
 
                 dataRow++;

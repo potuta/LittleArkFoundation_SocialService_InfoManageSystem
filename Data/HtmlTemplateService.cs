@@ -73,7 +73,7 @@ namespace LittleArkFoundation.Data
 
             // PATIENTS
             htmlDoc.SetInnerHtml("//div[@class='Patientsurname']", patient.LastName);
-            htmlDoc.SetInnerHtml("//div[@class='Patientfirstname']", patient.FirstName);
+            htmlDoc.SetInnerHtml("//div[@class='Patientfirstname']", $"{patient.FirstName} {patient.Suffix}");
             htmlDoc.SetInnerHtml("//div[@class='Patientmiddlename']", patient.MiddleName);
             htmlDoc.SetInnerHtml("//div[@class='Dateofbirth']", patient.DateOfBirth.Safe());
             htmlDoc.SetInnerHtml("//div[@class='Age']", assessment.Age);

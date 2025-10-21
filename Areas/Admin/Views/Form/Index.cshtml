@@ -164,6 +164,7 @@
                         <th>FirstName</th>
                         <th>MiddleName</th>
                         <th>LastName</th>
+                        <th>Suffix</th>
                         <th>DateOfBirth</th>
                         <th>Age</th>
                         <th>Sex</th>
@@ -250,6 +251,7 @@
                                            data-patient-fn="@patient.FirstName"
                                            data-patient-mn="@patient.MiddleName"
                                            data-patient-ln="@patient.LastName"
+                                           data-patient-sf="@patient.Suffix"
                                            data-patient-ward="@assessment.BasicWard"
                                            data-patient-class="@mswdclassification.SubClassification"
                                            data-userID="@userId.Value"
@@ -315,6 +317,7 @@
                             <td style="white-space: nowrap;">@patient.FirstName</td>
                             <td style="white-space: nowrap;">@patient.MiddleName</td>
                             <td style="white-space: nowrap;">@patient.LastName</td>
+                            <td style="white-space: nowrap;">@patient.Suffix</td>
                             <td style="white-space: nowrap;">@patient.DateOfBirth</td>
                             <td style="white-space: nowrap;">@assessment.Age</td>
                             <td style="white-space: nowrap;">@patient.Sex</td>
@@ -366,6 +369,10 @@
                         <div class="col-md-4">
                             <label>Last Name</label>
                             <input type="text" class="form-control text-muted" style="cursor: not-allowed;" asp-for="Discharge.LastName" id="dischargeLastName" readonly />
+                        </div>
+                        <div class="col-md-4">
+                            <label>Suffix</label>
+                            <input type="text" class="form-control text-muted" style="cursor: not-allowed;" asp-for="Discharge.Suffix" id="dischargeSuffix" readonly />
                         </div>
 
                         <div class="col-md-4">
@@ -631,6 +638,7 @@
             const patientFn = button.getAttribute('data-patient-fn');
             const patientMn = button.getAttribute('data-patient-mn');
             const patientLn = button.getAttribute('data-patient-ln');
+            const patientSf = button.getAttribute('data-patient-sf');
             const patientWard = button.getAttribute('data-patient-ward');
             const patientClass = button.getAttribute('data-patient-class');
             const msw = button.getAttribute('data-msw');
@@ -641,6 +649,7 @@
             document.getElementById('dischargeFirstName').value = patientFn;
             document.getElementById('dischargeMiddleName').value = patientMn;
             document.getElementById('dischargeLastName').value = patientLn;
+            document.getElementById('dischargeSuffix').value = patientSf;
             document.getElementById('dischargeWard').value = patientWard;
             document.getElementById('dischargeClass').value = patientClass || "N/A";
             document.getElementById('dischargeMSW').value = msw;

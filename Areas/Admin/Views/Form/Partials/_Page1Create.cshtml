@@ -160,10 +160,22 @@
             <input type="text" asp-for="Patient.LastName" required>
             <span asp-validation-for="Patient.LastName" class="text-danger"></span>
         </td>
-        <td>
-            Patient's First Name: <span class="required">*</span>
-            <input type="text" asp-for="Patient.FirstName" required>
-            <span asp-validation-for="Patient.FirstName" class="text-danger"></span>
+        <td class="d-flex">
+            <div>
+				Patient's First Name: <span class="required">*</span>
+				<input type="text" asp-for="Patient.FirstName" required>
+				<span asp-validation-for="Patient.FirstName" class="text-danger"></span>
+			</div>
+            <div>
+				Suffix:
+				<select asp-for="Patient.Suffix" >
+					<option value="">-- Select Suffix --</option>
+					@foreach (var suffix in Model.Suffixes)
+					{
+						<option value="@suffix">@suffix</option>
+					}    
+				</select>
+            </div>
         </td>
         <td>
             Patient's Middle Name:

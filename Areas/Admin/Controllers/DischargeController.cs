@@ -264,6 +264,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     FirstName = discharge.FirstName,
                     MiddleName = discharge.MiddleName,
                     LastName = discharge.LastName,
+                    Suffix = discharge.Suffix,
                     Ward = discharge.Ward,
                     Class = discharge.Class,
                     ProcessedDate = discharge.ProcessedDate,
@@ -1087,6 +1088,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     FirstName = generalAdmission.FirstName,
                     MiddleName = generalAdmission.MiddleName,
                     LastName = generalAdmission.LastName,
+                    Suffix = generalAdmission.Suffix,
                     Ward = generalAdmission.Ward,
                     Class = generalAdmission.Class,
                     Age = generalAdmission.Age,
@@ -1278,7 +1280,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 worksheet.Cell(row, 1).Value = discharge.Id;
                 worksheet.Cell(row, 2).Value = discharge.ProcessedDate.ToString();
                 worksheet.Cell(row, 3).Value = discharge.DischargedDate.ToString();
-                worksheet.Cell(row, 4).Value = $"{discharge.LastName}, {discharge.FirstName} {discharge.MiddleName}";
+                worksheet.Cell(row, 4).Value = $"{discharge.LastName}, {discharge.FirstName} {discharge.MiddleName} {discharge.Suffix}";
                 worksheet.Cell(row, 5).Value = discharge.Ward;
                 worksheet.Cell(row, 6).Value = discharge.ReceivedHB.ToString();
                 worksheet.Cell(row, 7).Value = discharge.IssuedMSS.ToString();

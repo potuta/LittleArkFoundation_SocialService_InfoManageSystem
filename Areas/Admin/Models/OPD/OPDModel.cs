@@ -13,6 +13,7 @@
         public string FirstName { get; set; }
         public string? MiddleName { get; set; }
         public string LastName { get; set; }
+        public string? Suffix { get; set; }
         public string ContactNo { get; set; } 
         public string Age { get; set; }
         public string Gender { get; set; } 
@@ -23,10 +24,12 @@
         public string MotherFirstName { get; set; }
         public string? MotherMiddleName { get; set; }
         public string MotherLastName { get; set; }
+        public string? MotherSuffix { get; set; }
         public string MotherOccupation { get; set; }
         public string FatherFirstName { get; set; }
         public string? FatherMiddleName { get; set; }
         public string FatherLastName { get; set; }
+        public string? FatherSuffix { get; set; }
         public string FatherOccupation { get; set; }
         public decimal MonthlyIncome { get; set; }
         public int NoOfChildren { get; set; }

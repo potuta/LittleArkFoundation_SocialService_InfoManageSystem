@@ -33,6 +33,7 @@ using LittleArkFoundation.Areas.Admin.Models.RecentLosses;
 using LittleArkFoundation.Areas.Admin.Models.Referrals;
 using LittleArkFoundation.Areas.Admin.Models.SafetyConcerns;
 using LittleArkFoundation.Areas.Admin.Models.StrengthsResources;
+using LittleArkFoundation.Areas.Admin.Services.Assessments;
 
 
 namespace LittleArkFoundation.Areas.Admin.Models.Form
@@ -78,6 +79,7 @@ namespace LittleArkFoundation.Areas.Admin.Models.Form
         public List<ProgressNotesModel>? ProgressNotes { get; set; } = new List<ProgressNotesModel>() { new ProgressNotesModel() };
         public int OpdId { get; set; } = 0;
         public int GeneralAdmissionId { get; set; } = 0;
+        public List<string>? Suffixes { get; set; } = NameSuffixHelper.GetSuffixes(10);
 
     }
 }

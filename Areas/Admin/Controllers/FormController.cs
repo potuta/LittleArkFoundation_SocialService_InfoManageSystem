@@ -244,6 +244,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 FirstName = opd.FirstName,
                 MiddleName = opd.MiddleName,
                 LastName = opd.LastName,
+                Suffix = opd.Suffix
             };
 
             var assessment = new AssessmentsModel
@@ -274,13 +275,13 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             {
                 new FamilyCompositionModel
                 {
-                    Name = $"{opd.MotherFirstName} {opd.MotherMiddleName} {opd.MotherLastName}",
+                    Name = $"{opd.MotherFirstName} {opd.MotherMiddleName} {opd.MotherLastName} {opd.MotherSuffix}",
                     Occupation = opd.MotherOccupation,
                     RelationshipToPatient = "Mother"
                 },
                 new FamilyCompositionModel
                 {
-                    Name = $"{opd.FatherFirstName} {opd.FatherMiddleName} {opd.FatherLastName}",
+                    Name = $"{opd.FatherFirstName} {opd.FatherMiddleName} {opd.FatherLastName} {opd.FatherSuffix}",
                     Occupation = opd.FatherOccupation,
                     RelationshipToPatient = "Father"
                 }
@@ -331,6 +332,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 FirstName = generalAdmission.FirstName,
                 MiddleName = generalAdmission.MiddleName,
                 LastName = generalAdmission.LastName,
+                Suffix = generalAdmission.Suffix
             };
 
             var maritalStatus = "N/A";
@@ -803,6 +805,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                         FirstName = formViewModel.Patient.FirstName,
                         MiddleName = formViewModel.Patient.MiddleName,
                         LastName = formViewModel.Patient.LastName,
+                        Suffix = formViewModel.Patient.Suffix,
                         Ward = formViewModel.Assessments.BasicWard,
                         Class = formViewModel.MSWDClassification.SubClassification,
                         Age = formViewModel.Assessments.Age,
@@ -1381,7 +1384,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                     if (formViewModel.Patient.FirstName != generalAdmission.FirstName ||
                         formViewModel.Patient.MiddleName != generalAdmission.MiddleName ||
-                        formViewModel.Patient.LastName != generalAdmission.LastName)
+                        formViewModel.Patient.LastName != generalAdmission.LastName ||
+                        formViewModel.Patient.Suffix != generalAdmission.Suffix)
                     {
                         var gaList = await context.GeneralAdmission.Where(g => g.PatientID == id).ToListAsync();
                         foreach (var item in gaList)
@@ -1389,6 +1393,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                             item.FirstName = formViewModel.Patient.FirstName;
                             item.MiddleName = formViewModel.Patient.MiddleName;
                             item.LastName = formViewModel.Patient.LastName;
+                            item.Suffix = formViewModel.Patient.Suffix;
                         }
                     }
 
