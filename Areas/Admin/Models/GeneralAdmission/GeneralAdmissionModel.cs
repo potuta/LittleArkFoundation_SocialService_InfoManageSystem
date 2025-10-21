@@ -9,7 +9,7 @@
         public bool isOld { get; set; } = false;
         public int HospitalNo { get; set; } = 0;
         public string FirstName { get; set; } = "N/A";
-        public string MiddleName { get; set; } = "N/A";
+        public string? MiddleName { get; set; }
         public string LastName { get; set; } = "N/A";
         public string Ward { get; set; } = "N/A";
         public string Class { get; set; } = "N/A";

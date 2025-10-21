@@ -139,14 +139,14 @@
 
                 </td>
                 <td>
-                    Middle Name: <span class="required">*</span>
+                    Middle Name:
                     @if (Model.GeneralAdmission.isInterviewed)
                     {
-                        <input type="text" asp-for="GeneralAdmission.MiddleName" placeholder="Type N/A if No Answer" style="background-color:#e9ecef; cursor: not-allowed;" readonly>
+                        <input type="text" asp-for="GeneralAdmission.MiddleName" style="background-color:#e9ecef; cursor: not-allowed;" readonly>
                     }
                     else
                     {
-                        <input type="text" asp-for="GeneralAdmission.MiddleName" placeholder="Type N/A if No Answer" required>
+                        <input type="text" asp-for="GeneralAdmission.MiddleName">
                     }
                 </td>
                 <td>
