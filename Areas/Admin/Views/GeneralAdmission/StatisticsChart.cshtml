@@ -110,17 +110,49 @@
     </a>
 </div>
 
-<div class="text-center mb-3">
+<div class="text-center mb-2">
     <h5>Filter by Month</h5>
     @for (int i = 1; i <= 12; i++)
     {
         var monthName = new DateTime(2025, i, 1).ToString("MMM");
         <a asp-action="StatisticsChart"
+        asp-route-userID="@(ViewBag.SelectedUserID ?? 0)"
            asp-route-month="@i"
            class="btn btn-sm @(i == (ViewBag.SelectedMonth ?? DateTime.Now.Month) ? "btn-secondary" : "btn-outline-secondary") m-1">
             @monthName
         </a>
     }
+</div>
+
+<div class="d-flex justify-content-center mb-3">
+    @* MSW filter *@
+	<button type="button" class="btn @(ViewBag.SelectedUserID > 0 ? "btn-secondary" : "btn-outline-secondary") btn-sm dropdown-toggle d-flex align-items-center gap-1 me-2" data-bs-toggle="dropdown" aria-expanded="false">
+		@if (ViewBag.SelectedUserID == 0)
+		{
+			<span class="mb-0">Filter by MSW</span>
+		}
+		else
+		{
+			<span class="mb-0">@ViewBag.SelectedUserName</span>
+		}
+	</button>
+	<ul class="dropdown-menu dropdown-menu-end">
+		<li>
+			<a class="dropdown-item"
+            asp-action="StatisticsChart"
+            asp-route-userID="0"
+           asp-route-month="@(ViewBag.SelectedMonth ?? DateTime.Now.Month)">All</a>
+		</li>
+		@foreach (var user in Model.Users)
+		{
+			<li>
+				<a class="dropdown-item" 
+                asp-action="StatisticsChart"
+            asp-route-userID="@user.UserID"
+           asp-route-month="@(ViewBag.SelectedMonth ?? DateTime.Now.Month)">@user.Username</a>
+			</li>
+		}
+	</ul>
 </div>
 
 <div class="d-flex justify-content-center align-items-center">

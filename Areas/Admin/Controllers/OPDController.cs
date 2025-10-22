@@ -2936,7 +2936,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
-        public async Task<IActionResult> StatisticsChart(int? month)
+        public async Task<IActionResult> StatisticsChart(int? month, int? userID)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
@@ -2978,6 +2978,13 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     };
 
             var totalSourcesMonthly = new Dictionary<int, int>();
+
+            if (userID > 0)
+            {
+                opdList = opdList.Where(m => m.UserID == userID).ToList();
+                statisticsList = statisticsList.Where(s => s.UserID == userID).ToList();
+            }
+
             for (int i = 1; i <= 12; i++)
             {
                 totalSourcesMonthly[i] = sourceOfReferral.Sum(source =>
@@ -3125,6 +3132,15 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var monthStatisticsList = statisticsList
                 .Where(s => s.Date.HasValue && s.Date.Value.Month == selectedMonth)
                 .ToList();
+
+            if (userID > 0)
+            {
+                monthOPDList = monthOPDList.Where(m => m.UserID == userID).ToList();
+                monthStatisticsList = monthStatisticsList.Where(s => s.UserID == userID).ToList();
+            }
+
+            ViewBag.SelectedUserID = userID ?? 0;
+            ViewBag.SelectedUserName = userID > 0 ? users.FirstOrDefault(u => u.UserID == userID)?.Username : "All Users";
 
             // Build monthly breakdown by referral source
             var sourcesBreakdown = sourceOfReferral.ToDictionary(
