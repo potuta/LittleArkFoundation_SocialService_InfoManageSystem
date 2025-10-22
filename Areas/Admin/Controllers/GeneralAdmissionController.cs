@@ -29,7 +29,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             _connectionService = connectionService;
         }
 
-        public async Task<IActionResult> Index(string? sortToggle, string? sortByMonth, int page = 1, int pageSize = 20)
+        public async Task<IActionResult> Index(string? sortToggle, string? sortByMonth, string? sortByUserID, int page = 1, int pageSize = 20)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
@@ -58,6 +58,14 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 .Concat(noPatientIdRecords)
                 .OrderByDescending(o => o.Id)
                 .ToList(); 
+
+            if (!string.IsNullOrEmpty(sortByUserID))
+            {
+                allLatestRecords = allLatestRecords.Where(patient => patient.UserID == int.Parse(sortByUserID)).ToList();
+                var user = await context.Users.FindAsync(int.Parse(sortByUserID));
+                ViewBag.sortBy = user.Username;
+                ViewBag.sortByUserID = user.UserID.ToString();
+            }
             
             if (sortToggleValue == "Interviewed")
             {

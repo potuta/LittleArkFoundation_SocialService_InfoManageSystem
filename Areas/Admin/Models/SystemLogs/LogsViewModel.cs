@@ -4,6 +4,8 @@
     {
         public List<LogsModel>? LogsList { get; set; }
         public LogsModel? Log { get; set; }
+        public List<UsersModel> Users { get; set; } = new List<UsersModel> { new UsersModel() };
+
 
         // Pagination properties
         public int CurrentPage { get; set; } = 1;

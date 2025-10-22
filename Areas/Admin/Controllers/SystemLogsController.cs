@@ -23,7 +23,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             _hubContext = hubContext;
         }
 
-        public async Task<IActionResult> Index(string? sortByMonth, int page = 1, int pageSize = 20)
+        public async Task<IActionResult> Index(string? sortByMonth, string? level, string? sortByUserID, int page = 1, int pageSize = 20)
         {
             try
             {
@@ -31,6 +31,20 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 await using var context = new ApplicationDbContext(connectionString);
 
                 var query = context.Logs.AsQueryable();
+
+                if (!string.IsNullOrEmpty(sortByUserID))
+                {
+                    query = query.Where(d => d.Message.Contains($"UserID: {sortByUserID}"));
+                    var user = await context.Users.FindAsync(int.Parse(sortByUserID));
+                    ViewBag.sortByUsername = user.Username;
+                    ViewBag.sortByUserID = user.UserID.ToString();
+                }
+
+                if (!string.IsNullOrEmpty(level))
+                {
+                    query = query.Where(d => d.Level.Equals(level));
+                    ViewBag.sortBy = level;
+                }
 
                 if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime dateTime))
                 {
@@ -46,8 +60,11 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     .Take(pageSize)
                     .ToListAsync();
 
+                var users = await context.Users.ToListAsync();
+
                 var logsViewModel = new LogsViewModel
                 {
+                    Users = users,
                     LogsList = logs,
                     CurrentPage = page,
                     PageSize = pageSize,
@@ -64,7 +81,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
-        public async Task<IActionResult> Search(string searchString, string? level, int page = 1, int pageSize = 20)
+        public async Task<IActionResult> Search(string searchString, string? level, string? sortByUserID, int page = 1, int pageSize = 20)
         {
             try
             {
@@ -80,6 +97,14 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     .Where(l => string.IsNullOrEmpty(searchString) ||
                     l.TimeStamp.Date == DateTime.Parse(searchString).Date);
 
+                if (!string.IsNullOrEmpty(sortByUserID))
+                {
+                    query = query.Where(d => d.Message.Contains($"UserID: {sortByUserID}"));
+                    var user = await context.Users.FindAsync(int.Parse(sortByUserID));
+                    ViewBag.sortByUsername = user.Username;
+                    ViewBag.sortByUserID = user.UserID.ToString();
+                }
+
                 if (!string.IsNullOrEmpty(level))
                 {
                     query = query.Where(d => d.Level.Equals(level));
@@ -94,8 +119,11 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                     .Take(pageSize)
                     .ToListAsync();
 
+                var users = await context.Users.ToListAsync();
+
                 var logsViewModel = new LogsViewModel
                 {
+                    Users = users,
                     LogsList = logs,
                     CurrentPage = page,
                     PageSize = pageSize,
@@ -114,12 +142,20 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
         }
 
-        public async Task<IActionResult> SortBy(string? level, string? sortByMonth, string? viewName = "Index", int page = 1, int pageSize = 20)
+        public async Task<IActionResult> SortBy(string? level, string? sortByMonth, string? sortByUserID, string? viewName = "Index", int page = 1, int pageSize = 20)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
 
             var query = context.Logs.AsQueryable();
+
+            if (!string.IsNullOrEmpty(sortByUserID))
+            {
+                query = query.Where(d => d.Message.Contains($"UserID: {sortByUserID}"));
+                var user = await context.Users.FindAsync(int.Parse(sortByUserID));
+                ViewBag.sortByUsername = user.Username;
+                ViewBag.sortByUserID = user.UserID.ToString();
+            }
 
             if (!string.IsNullOrEmpty(level))
             {
@@ -141,10 +177,11 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 .Take(pageSize)
                 .ToListAsync();
 
-            var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            var users = await context.Users.ToListAsync();
 
             var viewModel = new LogsViewModel
             {
+                Users = users,
                 LogsList = logs,
                 CurrentPage = page,
                 PageSize = pageSize,

@@ -34,7 +34,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             _connectionService = connectionService;
         }
 
-        public async Task<IActionResult> Index(string? sortToggle, string? sortByMonth, int page = 1, int pageSize = 20)
+        public async Task<IActionResult> Index(string? sortToggle, string? sortByMonth, string? sortByUserID, int page = 1, int pageSize = 20)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
@@ -51,6 +51,14 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 .Where(o => latestIds.Contains(o.Id))
                 .OrderByDescending(o => o.Id)
                 .ToListAsync();
+
+            if (!string.IsNullOrEmpty(sortByUserID))
+            {
+                latestRecords = latestRecords.Where(opd => opd.UserID == int.Parse(sortByUserID)).ToList();
+                var user = await context.Users.FindAsync(int.Parse(sortByUserID));
+                ViewBag.sortBy = user.Username;
+                ViewBag.sortByUserID = user.UserID.ToString();
+            }
 
             if (sortToggleValue == "Admitted")
             {

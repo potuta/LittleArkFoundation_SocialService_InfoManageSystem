@@ -64,12 +64,20 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             _connectionService = connectionService;
         }
 
-        public async Task<IActionResult> Index(string? sortByMonth, int page = 1, int pageSize = 20)
+        public async Task<IActionResult> Index(string? sortByMonth, string? sortByUserID, int page = 1, int pageSize = 20)
         {
             string connectionString = _connectionService.GetCurrentConnectionString();
             await using var context = new ApplicationDbContext(connectionString);
 
             var query = context.Discharges.AsQueryable();
+
+            if (!string.IsNullOrEmpty(sortByUserID))
+            {
+                query = query.Where(d => d.UserID == int.Parse(sortByUserID));
+                var user = await context.Users.FindAsync(int.Parse(sortByUserID));
+                ViewBag.sortBy = user.Username;
+                ViewBag.sortByUserID = user.UserID.ToString();
+            }
 
             if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
             {
