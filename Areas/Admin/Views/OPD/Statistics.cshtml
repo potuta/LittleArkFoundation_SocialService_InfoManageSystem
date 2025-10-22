@@ -142,13 +142,17 @@
             </button>
         </form>
 
-        <button type="button" class="btn btn-success btn-sm" style="margin-left:5px;"
+        <button type="button" class="btn btn-success btn-sm" style="margin-left:5px; border-radius: 5px;"
                 data-bs-toggle="modal"
                 data-bs-target="#exportModal"
                 data-bs-toggle="tooltip"
                 title="Download Excel">
             <i class="bi bi-file-earmark-arrow-down"></i> Download Excel
         </button>
+
+        <a class="btn btn-primary ms-1 btn-sm" style="border-radius: 5px;" asp-action="StatisticsChart" asp-controller="OPD">
+			<i class="bi bi-graph-up-arrow"></i> View Chart 
+		</a>
 
         <!-- Download/Export Excel Modal -->
         <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">

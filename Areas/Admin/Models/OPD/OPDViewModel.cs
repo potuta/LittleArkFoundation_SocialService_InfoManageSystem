@@ -26,7 +26,11 @@ namespace LittleArkFoundation.Areas.Admin.Models.OPD
         // Statistics filtering properties
         public Dictionary<int, int>? TotalSourcesMonthly { get; set; } = new Dictionary<int, int>();
         public Dictionary<int, int>? TotalCaseloadMonthly { get; set; } = new Dictionary<int, int>();
+        public Dictionary<int, int>? TotalCaseManagementMonthly { get; set; } = new Dictionary<int, int>();
         public Dictionary<int, int>? TotalOPDMonthly { get; set; } = new Dictionary<int, int>();
         public Dictionary<int, Dictionary<string, int>>? TotalStatisticsMonthly { get; set; } = new Dictionary<int, Dictionary<string, int>>();
+        public Dictionary<string, int>? CaseloadBreakdown { get; set; } = new Dictionary<string, int>();
+        public Dictionary<string, int>? CaseManagementBreakdown { get; set; } = new Dictionary<string, int>();
+        public Dictionary<string, int>? SourcesBreakdown { get; set; } = new Dictionary<string, int>();
     }
 }

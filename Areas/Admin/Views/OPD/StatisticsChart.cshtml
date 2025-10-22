@@ -1,0 +1,566 @@
+﻿@using System.Text.Json
+@model LittleArkFoundation.Areas.Admin.Models.OPD.OPDViewModel
+@{
+    ViewData["Title"] = "Statistics";
+    Layout = "_AdminLayout";
+    string? sortBy = ViewBag.sortBy ?? "";
+    string? sortByUserID = ViewBag.sortByUserID ?? "";
+    string? sortByMonth = ViewBag.sortByMonth ?? "";
+    bool matchedUser = Model.Users.Any(u => u.Username == sortBy);
+
+}
+
+<style>
+    .menu-bar a {
+        min-width: 100px;
+        text-align: center;
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .header-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+    }
+
+        .header-bar h2 {
+            margin-bottom: 0;
+        }
+
+    .sticky-col {
+        position: sticky;
+        left: 0;
+        background: white;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .container-general {
+		margin: 10px;
+        padding: 25px;
+        width: 100%;
+        max-width: 1260px;
+        /* height: 500px; */
+        /* border: 1px solid #5a5a5a; */
+        border-radius: 15px;
+        align-items: center;
+        text-align: center;
+        color: white;
+        background-color: rgb(125 125 125);
+        box-shadow: 0px 0px 15px rgb(217, 217, 217);
+    }
+
+    .container-general canvas {
+        width: 100% !important;
+        height: auto !important;
+    }
+
+</style>
+
+<div class="header-bar">
+    <h2>OPD Statistics</h2>
+
+    <div class="menu-bar d-flex gap-2">
+        <a class="btn btn-outline-dark @(
+           ViewContext.RouteData.Values["action"]?.ToString() == "Index" ||
+           ViewContext.RouteData.Values["action"]?.ToString() == "SortBy" ||
+           ViewContext.RouteData.Values["action"]?.ToString() == "Search"
+           ? "active" : "")"
+           asp-action="Index" asp-controller="OPD">Main</a>
+
+        <a class="btn btn-outline-dark @(ViewContext.RouteData.Values["action"]?.ToString() == "Reports" ? "active" : "")"
+           asp-action="Reports" asp-controller="OPD">Reports</a>
+
+        <a class="btn btn-outline-dark @(
+                ViewContext.RouteData.Values["action"]?.ToString() == "Statistics" ||
+                ViewContext.RouteData.Values["action"]?.ToString() == "SortByStatistics" ||
+                ViewContext.RouteData.Values["action"]?.ToString() == "EditStatistics" ||
+					 ViewContext.RouteData.Values["action"]?.ToString() == "StatisticsChart"
+                ? "active" : "")"
+           asp-action="Statistics" asp-controller="OPD">Statistics</a>
+    </div>
+</div>
+<hr />
+
+<!-- Back to List -->
+<div class="mt-2">
+    <a class="btn btn-outline-secondary mb-3" asp-controller="OPD" asp-action="Statistics">
+        <i class="bi bi-arrow-left-square"></i> Back to List
+    </a>
+</div>
+
+<div class="text-center mb-3">
+    <h5>Filter by Month</h5>
+    @for (int i = 1; i <= 12; i++)
+    {
+        var monthName = new DateTime(2025, i, 1).ToString("MMM");
+        <a asp-action="StatisticsChart"
+           asp-route-month="@i"
+           class="btn btn-sm @(i == (ViewBag.SelectedMonth ?? DateTime.Now.Month) ? "btn-secondary" : "btn-outline-secondary") m-1">
+            @monthName
+        </a>
+    }
+</div>
+
+<div class="d-flex justify-content-center align-items-center">
+   
+    <div class="container-general">
+	   <div>
+            <canvas id="sourcesBreakdown"></canvas>
+        </div>
+    </div>
+
+    <div class="container-general">
+	   <div>
+            <canvas id="caseLoadBreakdown"></canvas>
+        </div>
+    </div>
+
+    <div class="container-general">
+	   <div>
+            <canvas id="caseManagementBreakdown"></canvas>
+        </div>
+    </div>
+    
+</div>
+
+<div class="d-flex justify-content-center align-items-center">
+   
+    <div class="container-general">
+        <div>
+            <canvas id="generalSourceOfReferral"></canvas>
+        </div>
+    </div>
+
+    <div class="container-general">
+	   <div>
+            <canvas id="generalCaseload"></canvas>
+        </div>
+    </div>
+
+    <div class="container-general">
+	   <div>
+            <canvas id="generalCaseManagement"></canvas>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/Chart.js/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
+    <script>
+        var ctx = document.getElementById('generalSourceOfReferral').getContext('2d');
+        var generalChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['JAN', 'FEB', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
+                datasets: [{
+                    label: 'Counts',
+                    data: [
+                        @(Model.TotalSourcesMonthly[1]),
+                        @(Model.TotalSourcesMonthly[2]),
+                        @(Model.TotalSourcesMonthly[3]),
+                        @(Model.TotalSourcesMonthly[4]),
+                        @(Model.TotalSourcesMonthly[5]),
+                        @(Model.TotalSourcesMonthly[6]),
+                        @(Model.TotalSourcesMonthly[7]),
+                        @(Model.TotalSourcesMonthly[8]),
+                        @(Model.TotalSourcesMonthly[9]),
+                        @(Model.TotalSourcesMonthly[10]),
+                        @(Model.TotalSourcesMonthly[11]),
+                        @(Model.TotalSourcesMonthly[12]),
+                        
+                    ],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(255, 159, 64, 0.7)',
+                        'rgba(255, 99, 132, 0.7)'
+                    ],
+                    borderRadius: 8, // rounded corners
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Source of Referrals',
+                        color: 'white', 
+                        font: {
+                            size: 18,
+                            weight: 'bold'
+                        },
+                        padding: { top: 10, bottom: 20 }
+                    },
+                    legend: {
+                        display: false
+                    },
+                    datalabels: {
+                        color: 'white', // labels visible on dark background
+                        anchor: 'end',
+                        align: 'top',
+                        font: {
+                            weight: 'bold'
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)' // faint gridlines
+                        },
+                        ticks: {
+                            color: 'white'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0,
+                            color: 'white'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    }
+                }
+            },
+            plugins: [ChartDataLabels]
+        });
+
+        var c2 = document.getElementById('generalCaseload').getContext('2d');
+        var caseload = new Chart(c2, {
+            type: 'line',
+            data: {
+                labels: ['JAN', 'FEB', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
+                datasets: [{
+                    label: 'Counts',
+                    data: [
+                        @(Model.TotalCaseloadMonthly[1]),
+                        @(Model.TotalCaseloadMonthly[2]),
+                        @(Model.TotalCaseloadMonthly[3]),
+                        @(Model.TotalCaseloadMonthly[4]),
+                        @(Model.TotalCaseloadMonthly[5]),
+                        @(Model.TotalCaseloadMonthly[6]),
+                        @(Model.TotalCaseloadMonthly[7]),
+                        @(Model.TotalCaseloadMonthly[8]),
+                        @(Model.TotalCaseloadMonthly[9]),
+                        @(Model.TotalCaseloadMonthly[10]),
+                        @(Model.TotalCaseloadMonthly[11]),
+                        @(Model.TotalCaseloadMonthly[12]),
+                        
+                    ],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(255, 159, 64, 0.7)',
+                        'rgba(255, 99, 132, 0.7)'
+                    ],
+                    borderRadius: 8, // rounded corners
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Caseload Services',
+                        color: 'white', 
+                        font: {
+                            size: 18,
+                            weight: 'bold'
+                        },
+                        padding: { top: 10, bottom: 20 }
+                    },
+                    legend: {
+                        display: false
+                    },
+                    datalabels: {
+                        color: 'white', // labels visible on dark background
+                        anchor: 'end',
+                        align: 'top',
+                        font: {
+                            weight: 'bold'
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)' // faint gridlines
+                        },
+                        ticks: {
+                            color: 'white'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0,
+                            color: 'white'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    }
+                }
+            },
+            plugins: [ChartDataLabels]
+        });
+
+        var c3 = document.getElementById('generalCaseManagement').getContext('2d');
+        var caseManagement = new Chart(c3, {
+            type: 'line',
+            data: {
+                labels: ['JAN', 'FEB', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
+                datasets: [{
+                    label: 'Counts',
+                    data: [
+                        @(Model.TotalCaseManagementMonthly[1]),
+                        @(Model.TotalCaseManagementMonthly[2]),
+                        @(Model.TotalCaseManagementMonthly[3]),
+                        @(Model.TotalCaseManagementMonthly[4]),
+                        @(Model.TotalCaseManagementMonthly[5]),
+                        @(Model.TotalCaseManagementMonthly[6]),
+                        @(Model.TotalCaseManagementMonthly[7]),
+                        @(Model.TotalCaseManagementMonthly[8]),
+                        @(Model.TotalCaseManagementMonthly[9]),
+                        @(Model.TotalCaseManagementMonthly[10]),
+                        @(Model.TotalCaseManagementMonthly[11]),
+                        @(Model.TotalCaseManagementMonthly[12]),
+                        
+                    ],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(255, 159, 64, 0.7)',
+                        'rgba(255, 99, 132, 0.7)'
+                    ],
+                    borderRadius: 8, // rounded corners
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Case Management Services',
+                        color: 'white', 
+                        font: {
+                            size: 18,
+                            weight: 'bold'
+                        },
+                        padding: { top: 10, bottom: 20 }
+                    },
+                    legend: {
+                        display: false
+                    },
+                    datalabels: {
+                        color: 'white', // labels visible on dark background
+                        anchor: 'end',
+                        align: 'top',
+                        font: {
+                            weight: 'bold'
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)' // faint gridlines
+                        },
+                        ticks: {
+                            color: 'white'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0,
+                            color: 'white'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    }
+                }
+            },
+            plugins: [ChartDataLabels]
+        });
+
+    </script>
+
+    <script>
+        // Parse JSON objects from Razor
+        var sourcesBreakdown = JSON.parse('@Html.Raw(JsonSerializer.Serialize(Model.SourcesBreakdown))');
+        var caseloadBreakdown = JSON.parse('@Html.Raw(JsonSerializer.Serialize(Model.CaseloadBreakdown))');
+		var caseManagementBreakdown = JSON.parse('@Html.Raw(JsonSerializer.Serialize(Model.CaseManagementBreakdown))');
+
+		// --- CASELOAD PIE CHART ---
+		var c4 = document.getElementById('caseLoadBreakdown').getContext('2d');
+		var caseloadChart = new Chart(c4, {
+			type: 'pie',
+			data: {
+				labels: Object.keys(caseloadBreakdown),
+				datasets: [{
+					label: 'Counts',
+					data: Object.values(caseloadBreakdown),
+					backgroundColor: [
+						'rgba(54, 162, 235, 0.7)',
+						'rgba(75, 192, 192, 0.7)',
+						'rgba(255, 159, 64, 0.7)',
+						'rgba(255, 99, 132, 0.7)',
+						'rgba(153, 102, 255, 0.7)',
+						'rgba(255, 205, 86, 0.7)',
+						'rgba(201, 203, 207, 0.7)',
+						'rgba(255, 99, 71, 0.7)'
+					],
+					borderRadius: 8,
+					borderSkipped: false
+				}]
+			},
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				plugins: {
+					title: {
+						display: true,
+						text: 'Caseload Breakdown',
+						color: 'white',
+						font: {
+							size: 18,
+							weight: 'bold'
+						},
+						padding: { top: 10, bottom: 20 }
+					},
+					legend: {
+						display: true,
+						labels: { color: 'white' }
+					},
+					datalabels: {
+						color: 'white',
+						anchor: 'end',
+						align: 'top',
+						font: { weight: 'bold' }
+					}
+				}
+			},
+			plugins: [ChartDataLabels]
+		});
+
+		// --- CASE MANAGEMENT PIE CHART ---
+		var c5 = document.getElementById('caseManagementBreakdown').getContext('2d');
+		var caseManagementChart = new Chart(c5, {
+			type: 'pie',
+			data: {
+				labels: Object.keys(caseManagementBreakdown),
+				datasets: [{
+					label: 'Counts',
+					data: Object.values(caseManagementBreakdown),
+					backgroundColor: [
+						'rgba(54, 162, 235, 0.7)',
+						'rgba(75, 192, 192, 0.7)',
+						'rgba(255, 159, 64, 0.7)',
+						'rgba(255, 99, 132, 0.7)',
+						'rgba(153, 102, 255, 0.7)',
+						'rgba(255, 205, 86, 0.7)',
+						'rgba(201, 203, 207, 0.7)',
+						'rgba(255, 99, 71, 0.7)'
+					],
+					borderRadius: 8,
+					borderSkipped: false
+				}]
+			},
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				plugins: {
+					title: {
+						display: true,
+						text: 'Case Management Breakdown',
+						color: 'white',
+						font: {
+							size: 18,
+							weight: 'bold'
+						},
+						padding: { top: 10, bottom: 20 }
+					},
+					legend: {
+						display: true,
+						labels: { color: 'white' }
+					},
+					datalabels: {
+						color: 'white',
+						anchor: 'end',
+						align: 'top',
+						font: { weight: 'bold' }
+					}
+				}
+			},
+			plugins: [ChartDataLabels]
+		});
+
+		// --- CASELOAD PIE CHART ---
+		var c6 = document.getElementById('sourcesBreakdown').getContext('2d');
+		var sourcesChart = new Chart(c6, {
+			type: 'pie',
+			data: {
+				labels: Object.keys(sourcesBreakdown),
+				datasets: [{
+					label: 'Counts',
+					data: Object.values(sourcesBreakdown),
+					backgroundColor: [
+						'rgba(54, 162, 235, 0.7)',
+						'rgba(75, 192, 192, 0.7)',
+						'rgba(255, 159, 64, 0.7)',
+						'rgba(255, 99, 132, 0.7)',
+						'rgba(153, 102, 255, 0.7)',
+						'rgba(255, 205, 86, 0.7)',
+						'rgba(201, 203, 207, 0.7)',
+						'rgba(255, 99, 71, 0.7)'
+					],
+					borderRadius: 8,
+					borderSkipped: false
+				}]
+			},
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				plugins: {
+					title: {
+						display: true,
+						text: 'Caseload Breakdown',
+						color: 'white',
+						font: {
+							size: 18,
+							weight: 'bold'
+						},
+						padding: { top: 10, bottom: 20 }
+					},
+					legend: {
+						display: true,
+						labels: { color: 'white' }
+					},
+					datalabels: {
+						color: 'white',
+						anchor: 'end',
+						align: 'top',
+						font: { weight: 'bold' }
+					}
+				}
+			},
+			plugins: [ChartDataLabels]
+		});
+
+    </script>
+
+}

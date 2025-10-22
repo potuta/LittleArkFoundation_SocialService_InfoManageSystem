@@ -2921,5 +2921,383 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 return RedirectToAction("Index");
             }
         }
+
+        public async Task<IActionResult> StatisticsChart(int? month)
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+
+            var opdList = await context.OPD.ToListAsync();
+            var statisticsList = await context.Statistics.Where(s => s.Type == "OPD").ToListAsync();
+
+            var totalOPDMonthlyDictionary = new Dictionary<int, int>();
+            var totalStatisticsMonthlyDictionary = new Dictionary<int, Dictionary<string, int>>();
+            for (int i = 1; i <= 12; i++)
+            {
+                totalOPDMonthlyDictionary[i] = opdList?.Count(o => o.Date.Month == i) ?? 0;
+                totalStatisticsMonthlyDictionary[i] = StatisticsHelper.SumForMonth(statisticsList, i);
+            }
+
+            if ((opdList == null || !opdList.Any())
+                && (totalStatisticsMonthlyDictionary.Values.Sum(dict => dict.Values.Sum()) == 0))
+            {
+                TempData["ErrorMessage"] = "No OPD records found for selected filters.";
+                return RedirectToAction("Index");
+            }
+
+            //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
+            //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
+            var users = await context.Users.ToListAsync();
+
+            var sourceOfReferral = new Dictionary<string, string>
+                    {
+                                { "1. Government Hospital", "Govt. Hosp." },
+                                { "2. Private Hospital", "Private/Clinic" },
+                                { "3. Politicians", "Politicians" },
+                                { "4. Media", "Media" },
+                                { "5. Health Care Team", "Health Care Team" },
+                                { "6. NGOs/Private Welfare Agencies", "NGO/Private Welfare" },
+                                { "7. Government Agencies (DSWD, DOH Officials)", "Govt. Agencies" },
+                                { "8. Walk-in", "Walk in" },
+                                { "9. Others (employers, former pts, colleagues, friends)", "Others" },
+
+                    };
+
+            var totalSourcesMonthly = new Dictionary<int, int>();
+            for (int i = 1; i <= 12; i++)
+            {
+                totalSourcesMonthly[i] = sourceOfReferral.Sum(source =>
+                    opdList.Count(m =>
+                        string.Equals(m.SourceOfReferral, source.Value, StringComparison.OrdinalIgnoreCase) &&
+                        m.Date.Month == i));
+            }
+
+            var totalCaseloadMonthly = new Dictionary<int, int>();
+            var totalCaseManagementMonthly = new Dictionary<int, int>();
+
+            for (int i = 1; i <= 12; i++)
+            {
+                // Filter data once per month
+                var monthOPD = opdList.Where(m => m.Date.Month == i).ToList();
+                var monthStatistics = statisticsList.Where(s => s.Date.HasValue && s.Date.Value.Month == i).ToList();
+
+                //  Caseload without progress notes
+                totalCaseloadMonthly[i] =
+                    monthOPD.Count(m => !m.IsOld) +
+                    monthOPD.Count(m => m.IsOld) +
+                    monthOPD.Count(m => m.IsPWD) +
+                    (monthStatistics.Sum(s => s.ii_ClosedSummary ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_NoPatients_IndigenousPeople ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_NoPatients_GovernmentWorkers ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Planning_SocioEconomicClassification ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Planning_PreAdmissionPlanning ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Planning_InformationServices ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Concrete_ProvisionDiscount ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Concrete_FacilitatingReferrals ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Concrete_OutgoingReferrals_MedicalAssistance ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Concrete_OutgoingReferrals_DiscountProcedure ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Concrete_OutgoingReferrals_TransportationFare ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Concrete_OutgoingReferrals_InstitutionalPlacement ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Concrete_OutgoingReferrals_TemporaryShelter ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Concrete_OutgoingReferrals_FuneralAssistance ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Concrete_OutgoingReferrals_OthersSpecify ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Concrete_IncomingReferrals ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Psychosocial_TenLeading_StressFamily ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Psychosocial_TenLeading_RefusalPatientTakeHome ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Psychosocial_TenLeading_AnxietyHealth ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Psychosocial_TenLeading_MaritalProblem ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Psychosocial_TenLeading_RefusalPatientTreatment ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Psychosocial_TenLeading_UnbecomingAttitude ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Psychosocial_TenLeading_EmotionalProblem ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Psychosocial_TenLeading_NeglectedChildren ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Psychosocial_TenLeading_SexuallyAbuse ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Psychosocial_TenLeading_AdjustedProblem ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Psychosocial_FamilyCounseling_SocialWorker ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Psychosocial_FamilyCounseling_HealthCareTeam ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Psychosocial_PsychosocialCrisis ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Psychosocial_GroupWork ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Psychosocial_PatientsEducation ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Psychosocial_MutualSupport ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Psychosocial_AdvocacyGroup ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Discharges_DischargePlanning ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Discharges_FacilitationDischarge ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Discharges_PreTerminationCounseling ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Discharges_HomeConduction ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Support_Ward_Individual ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Support_Ward_Team ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Case_MultiDisciplinary ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Case_MSWD ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_FollowUp_HomeVisit ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_FollowUp_LettersSent ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_FollowUp_ContactRelativesTelephone ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_FollowUp_ContactRelativesMassMedia ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Coordination_Physicians ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Coordination_Nurses ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Coordination_Pharmacist ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Coordination_Nutritionist ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Coordination_OtherStaff ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Coordination_Management ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Consultive_Physicians ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Consultive_OfficeStaff ?? 0)) +
+                    (monthStatistics.Sum(s => s.ii_Consultive_OutsideHospital ?? 0));
+
+
+                // Case Management Services
+                totalCaseManagementMonthly[i] =
+                    (monthStatistics.Sum(s => s.iii_PreAdmissionCounseling ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_IntakeInterview ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_CollateralInterview ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_IssuanceMSSCard ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_IndicateClassification ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_PsychosocialAssessment ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_PsychosocialCounseling ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_CoordinationMultidisciplinary ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_CompletionIntakeForm ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_HealthEducation ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_CrisisIntervention ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_ConcreteServices_Facilitation ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_ConcreteServices_Transportation ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_ConcreteServices_MaterialAssistance ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_ConcreteServices_FinancialAssistance ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_Referral_Facilitating ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_Referral_Preparing ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_Referral_Coordination ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_WardRounds ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_HomeVisitation ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_AdvocacyRole ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_Education ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_Therapeutic_Abandoned ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_Therapeutic_SexuallyAbused ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_Therapeutic_Neglected ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_Therapeutic_Battered ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_ProtectiveServices ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_GriefWork ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_Behavioral ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_Networking ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_Politicians ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_CoordinationMassMedia ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_ConsultationAdvisory ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_AttendanceCaseConference ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_AttendanceClinical_Discharge ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_AttendanceClinical_Facilitation ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_AttendanceClinical_Home ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_FollowUpServices ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_Documentation_Profile ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_Documentation_GroupWork ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_Documentation_SocialCase ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_Documentation_HomeVisit ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_Palliative ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_FacilitationUnclaimed ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_PostDischarge ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_FollowUpServicesText ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_FollowUpTreatment ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_FollowUpRehabilitation ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_Rehabilitation_Skills ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_Rehabilitation_Job ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_Rehabilitation_Capital ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_MSWDFund ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_HospitalActivity ?? 0)) +
+                    (monthStatistics.Sum(s => s.iii_LinkageDonors ?? 0));
+                    
+            }
+
+            int selectedMonth = month ?? DateTime.Now.Month;
+            ViewBag.SelectedMonth = month ?? DateTime.Now.Month;
+
+            var monthOPDList = opdList
+                .Where(m => m.Date.Month == selectedMonth)
+                .ToList();
+
+            var monthStatisticsList = statisticsList
+                .Where(s => s.Date.HasValue && s.Date.Value.Month == selectedMonth)
+                .ToList();
+
+            // Build monthly breakdown by referral source
+            var sourcesBreakdown = sourceOfReferral.ToDictionary(
+                kvp => kvp.Value, // label, e.g., "Govt. Hosp."
+                kvp => monthOPDList.Count(m =>
+                    string.Equals(m.SourceOfReferral, kvp.Value, StringComparison.OrdinalIgnoreCase))
+            );
+
+            // Prepare caseload breakdown for the selected month
+           var caseloadBreakdown = new Dictionary<string, int>
+            {
+                // Admissions
+                ["Admissions"] =
+                    monthOPDList.Count(m => !m.IsOld) +
+                    monthOPDList.Count(m => m.IsOld) +
+                    monthOPDList.Count(m => m.IsPWD),
+
+                // Closed & Government-Related Clients
+                ["Closed and Government-Related Cases"] =
+                    (monthStatisticsList.Sum(s => s.ii_ClosedSummary ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_NoPatients_IndigenousPeople ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_NoPatients_GovernmentWorkers ?? 0)),
+
+                // Planning Services
+                ["Planning Services"] =
+                    (monthStatisticsList.Sum(s => s.ii_Planning_SocioEconomicClassification ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Planning_PreAdmissionPlanning ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Planning_InformationServices ?? 0)),
+
+                // Concrete Services
+                ["Concrete Services"] =
+                    (monthStatisticsList.Sum(s => s.ii_Concrete_ProvisionDiscount ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Concrete_FacilitatingReferrals ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Concrete_OutgoingReferrals_MedicalAssistance ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Concrete_OutgoingReferrals_DiscountProcedure ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Concrete_OutgoingReferrals_TransportationFare ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Concrete_OutgoingReferrals_InstitutionalPlacement ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Concrete_OutgoingReferrals_TemporaryShelter ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Concrete_OutgoingReferrals_FuneralAssistance ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Concrete_OutgoingReferrals_OthersSpecify ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Concrete_IncomingReferrals ?? 0)),
+
+                // Psychosocial Services
+                ["Psychosocial Services"] =
+                    (monthStatisticsList.Sum(s => s.ii_Psychosocial_TenLeading_StressFamily ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Psychosocial_TenLeading_RefusalPatientTakeHome ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Psychosocial_TenLeading_AnxietyHealth ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Psychosocial_TenLeading_MaritalProblem ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Psychosocial_TenLeading_RefusalPatientTreatment ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Psychosocial_TenLeading_UnbecomingAttitude ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Psychosocial_TenLeading_EmotionalProblem ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Psychosocial_TenLeading_NeglectedChildren ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Psychosocial_TenLeading_SexuallyAbuse ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Psychosocial_TenLeading_AdjustedProblem ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Psychosocial_FamilyCounseling_SocialWorker ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Psychosocial_FamilyCounseling_HealthCareTeam ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Psychosocial_PsychosocialCrisis ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Psychosocial_GroupWork ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Psychosocial_PatientsEducation ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Psychosocial_MutualSupport ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Psychosocial_AdvocacyGroup ?? 0)),
+
+                // Discharge Services
+                ["Discharge Services"] =
+                    (monthStatisticsList.Sum(s => s.ii_Discharges_DischargePlanning ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Discharges_FacilitationDischarge ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Discharges_PreTerminationCounseling ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Discharges_HomeConduction ?? 0)),
+
+                // Support Services
+                ["Support Services"] =
+                    (monthStatisticsList.Sum(s => s.ii_Support_Ward_Individual ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Support_Ward_Team ?? 0)),
+
+                // Case Conferences
+                ["Case Conferences"] =
+                    (monthStatisticsList.Sum(s => s.ii_Case_MultiDisciplinary ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Case_MSWD ?? 0)),
+
+                // Follow-Up Services
+                ["Follow-up Services"] =
+                    (monthStatisticsList.Sum(s => s.ii_FollowUp_HomeVisit ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_FollowUp_LettersSent ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_FollowUp_ContactRelativesTelephone ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_FollowUp_ContactRelativesMassMedia ?? 0)),
+
+                // Coordination and Consultations
+                ["Coordination and Consultations"] =
+                    (monthStatisticsList.Sum(s => s.ii_Coordination_Physicians ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Coordination_Nurses ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Coordination_Pharmacist ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Coordination_Nutritionist ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Coordination_OtherStaff ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Coordination_Management ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Consultive_Physicians ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Consultive_OfficeStaff ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.ii_Consultive_OutsideHospital ?? 0))   
+            };
+
+            // Prepare case management breakdown
+            var caseManagementBreakdown = new Dictionary<string, int>
+            {
+                 ["Pre-Admission - Crisis Intervention"] =
+                    (monthStatisticsList.Sum(s => s.iii_PreAdmissionCounseling ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_IntakeInterview ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_CollateralInterview ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_IssuanceMSSCard ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_IndicateClassification ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_PsychosocialAssessment ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_PsychosocialCounseling ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_CoordinationMultidisciplinary ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_CompletionIntakeForm ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_HealthEducation ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_CrisisIntervention ?? 0)),
+
+                ["Concrete Services"] =
+                    (monthStatisticsList.Sum(s => s.iii_ConcreteServices_Facilitation ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_ConcreteServices_Transportation ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_ConcreteServices_MaterialAssistance ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_ConcreteServices_FinancialAssistance ?? 0)),
+
+                ["Referrals"] =
+                    (monthStatisticsList.Sum(s => s.iii_Referral_Facilitating ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_Referral_Preparing ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_Referral_Coordination ?? 0)),
+
+                ["Ward Rounds - Education"] =
+                    (monthStatisticsList.Sum(s => s.iii_WardRounds ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_HomeVisitation ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_AdvocacyRole ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_Education ?? 0)),
+
+                ["Therapeutic Social Work Services"] =
+                    (monthStatisticsList.Sum(s => s.iii_Therapeutic_Abandoned ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_Therapeutic_SexuallyAbused ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_Therapeutic_Neglected ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_Therapeutic_Battered ?? 0)),
+
+                ["Protective Services - Attendance to Case Conferences"] =
+                    (monthStatisticsList.Sum(s => s.iii_ProtectiveServices ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_GriefWork ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_Behavioral ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_Networking ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_Politicians ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_CoordinationMassMedia ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_ConsultationAdvisory ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_AttendanceCaseConference ?? 0)),
+
+                ["Follow-up, Documentation, and Rehabilitation"] =
+                    (monthStatisticsList.Sum(s => s.iii_AttendanceClinical_Discharge ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_AttendanceClinical_Facilitation ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_AttendanceClinical_Home ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_FollowUpServices ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_Documentation_Profile ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_Documentation_GroupWork ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_Documentation_SocialCase ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_Documentation_HomeVisit ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_Palliative ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_FacilitationUnclaimed ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_PostDischarge ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_FollowUpServicesText ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_FollowUpTreatment ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_FollowUpRehabilitation ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_Rehabilitation_Skills ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_Rehabilitation_Job ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_Rehabilitation_Capital ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_MSWDFund ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_HospitalActivity ?? 0)) +
+                    (monthStatisticsList.Sum(s => s.iii_LinkageDonors ?? 0))             
+            };
+
+            var viewModel = new OPDViewModel
+            {
+                Users = users,
+                OPDList = opdList,
+                StatisticsList = statisticsList,
+                TotalSourcesMonthly = totalSourcesMonthly,
+                TotalCaseloadMonthly = totalCaseloadMonthly,
+                TotalOPDMonthly = totalOPDMonthlyDictionary,
+                TotalStatisticsMonthly = totalStatisticsMonthlyDictionary,
+                TotalCaseManagementMonthly = totalCaseManagementMonthly,
+                CaseloadBreakdown = caseloadBreakdown,
+                CaseManagementBreakdown = caseManagementBreakdown,
+                SourcesBreakdown = sourcesBreakdown
+            };
+
+            return View(viewModel);
+        }
     }
 }
