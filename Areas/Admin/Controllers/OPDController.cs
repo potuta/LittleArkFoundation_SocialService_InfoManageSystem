@@ -75,12 +75,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 .Take(pageSize)
                 .ToList();
 
-            var scoredList = new List<(OPDModel opd, Dictionary<string, int> scores, bool isEligible)>();
+            var scoredList = new List<(OPDModel opd, Dictionary<string, (int Score, string Description)> scores, bool isEligible)>();
             var _scoreService = new OPDScoringService(connectionString);
             foreach (var opd in opdList)
             {
                 var scores = await _scoreService.GetWeightedScoresAsync(opd);
-                var isEligible = await _scoreService.IsEligibleForAdmissionAsync(scores.Values.Sum());
+                var isEligible = await _scoreService.IsEligibleForAdmissionAsync(scores.Values.Sum(x => x.Score));
                 scoredList.Add((opd, scores, isEligible));
             }
 
@@ -116,12 +116,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 return RedirectToAction("Index");
             }
 
-            var scoredList = new List<(OPDModel opd, Dictionary<string, int> scores, bool isEligible)>();
+            var scoredList = new List<(OPDModel opd, Dictionary<string, (int Score, string Description)> scores, bool isEligible)>();
             var _scoreService = new OPDScoringService(connectionString);
             foreach (var opd in opdList)
             {
                 var scores = await _scoreService.GetWeightedScoresAsync(opd);
-                var isEligible = await _scoreService.IsEligibleForAdmissionAsync(scores.Values.Sum());
+                var isEligible = await _scoreService.IsEligibleForAdmissionAsync(scores.Values.Sum(x => x.Score));
                 scoredList.Add((opd, scores, isEligible));
             }
 
@@ -273,12 +273,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 .Take(pageSize)
                 .ToList();
             
-            var scoredList = new List<(OPDModel opd, Dictionary<string, int> scores, bool isEligible)>();
+            var scoredList = new List<(OPDModel opd, Dictionary<string, (int Score, string Description)> scores, bool isEligible)>();
             var _scoreService = new OPDScoringService(connectionString);
             foreach (var opd in opdList)
             {
                 var scores = await _scoreService.GetWeightedScoresAsync(opd);
-                var isEligible = await _scoreService.IsEligibleForAdmissionAsync(scores.Values.Sum());
+                var isEligible = await _scoreService.IsEligibleForAdmissionAsync(scores.Values.Sum(x => x.Score));
                 scoredList.Add((opd, scores, isEligible));
             }
 
@@ -348,12 +348,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 .Take(pageSize)
                 .ToList();
 
-            var scoredList = new List<(OPDModel opd, Dictionary<string, int> scores, bool isEligible)>();
+            var scoredList = new List<(OPDModel opd, Dictionary<string, (int Score, string Description)> scores, bool isEligible)>();
             var _scoreService = new OPDScoringService(connectionString);
             foreach (var opd in opdList)
             {
                 var scores = await _scoreService.GetWeightedScoresAsync(opd);
-                var isEligible = await _scoreService.IsEligibleForAdmissionAsync(scores.Values.Sum());
+                var isEligible = await _scoreService.IsEligibleForAdmissionAsync(scores.Values.Sum(x => x.Score));
                 scoredList.Add((opd, scores, isEligible));
             }
 

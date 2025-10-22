@@ -115,7 +115,7 @@
                     {
 						var opd = item.opd;
 						var scores = item.scores;
-						var totalScore = scores.Values.Sum();
+                        var totalScore = scores.Values.Sum(s => s.Score);
                         var isEligible = item.isEligible;
 
                         var modalId = $"scoreBreakdownModal_{opd.Id}";
@@ -311,12 +311,16 @@
                                         </div>
                                         <ul class="list-group">
                                             @foreach (var score in scores)
-                                            {
-                                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                    @score.Key 
-                                                    <span class="badge bg-primary rounded-pill">@score.Value</span>
-                                                </li>
-                                            }
+											{
+												<li class="list-group-item d-flex justify-content-between align-items-center">
+													<div>
+														<strong>@score.Key</strong><br />
+														<small class="text-muted">@score.Value.Description</small>
+													</div>
+													<span class="badge bg-primary rounded-pill">@score.Value.Score</span>
+												</li>
+											}
+   
                                         </ul>
                                         <hr />
                                         <p class="text-end text-secondary fw-medium small mb-0">
