@@ -10,6 +10,7 @@ namespace LittleArkFoundation.Areas.Admin.Models.GeneralAdmission
         public GeneralAdmissionModel GeneralAdmission { get; set; } = new GeneralAdmissionModel();
         public UsersModel? User { get; set; } = new UsersModel();
         public List<UsersModel> Users { get; set; } = new List<UsersModel> { new UsersModel() };
+        public List<UsersModel>? UsersList { get; set; } = new List<UsersModel> { new UsersModel() };
         public List<ProgressNotesModel> ProgressNotes { get; set; } = new List<ProgressNotesModel> { new ProgressNotesModel() };
         public StatisticsModel? Statistics { get; set; } = new StatisticsModel();
         public List<StatisticsModel> StatisticsList { get; set; } = new List<StatisticsModel> { new StatisticsModel() };

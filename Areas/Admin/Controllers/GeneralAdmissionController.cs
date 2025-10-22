@@ -303,6 +303,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             await using var context = new ApplicationDbContext(connectionString);
 
             var query = context.GeneralAdmission.AsQueryable();
+            var users = await context.Users.ToListAsync();
 
             if (!string.IsNullOrEmpty(sortByUserID))
             {
@@ -310,6 +311,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 var user = await context.Users.FindAsync(int.Parse(sortByUserID));
                 ViewBag.sortBy = user.Username;
                 ViewBag.sortByUserID = user.UserID.ToString();
+                users = await context.Users.Where(u => u.UserID == int.Parse(sortByUserID)).ToListAsync();    
             }
 
             if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
@@ -322,12 +324,13 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
-            var users = await context.Users.ToListAsync();
+            var usersList = await context.Users.ToListAsync();
 
             var viewModel = new GeneralAdmissionViewModel
             {
                 GeneralAdmissions = generalAdmissions,
-                Users = users
+                Users = users,
+                UsersList = usersList
             };
 
             return View(viewName, viewModel);
@@ -695,6 +698,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             var viewModel = new GeneralAdmissionViewModel
             {
                 Users = users,
+                UsersList = users,
                 GeneralAdmissions = generalAdmissions
             };
 
@@ -737,10 +741,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             bool filterByMonth = DateTime.TryParseExact(month, "yyyy-MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedMonth);
 
             var query = context.GeneralAdmission.AsQueryable();
+            var users = await context.Users.ToListAsync();
 
             if (userID > 0)
             {
                 query = query.Where(g => g.UserID == userID);
+                users = await context.Users.Where(u => u.UserID == userID).ToListAsync();
             }
 
             if (filterByMonth)
@@ -774,7 +780,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
-            var users = await context.Users.ToListAsync();
+            var usersList = await context.Users.ToListAsync();
 
             // HEADERS
             // COUNT OF DATE PROCESSED BY MSW
@@ -1558,10 +1564,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             bool filterByMonth = DateTime.TryParseExact(month, "yyyy-MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedMonth);
 
             var query = context.GeneralAdmission.AsQueryable();
+            var users = await context.Users.ToListAsync();
 
             if (userID > 0)
             {
                 query = query.Where(g => g.UserID == userID);
+                users = await context.Users.Where(u => u.UserID == userID).ToListAsync();
             }
 
             if (filterByMonth)
@@ -1595,7 +1603,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
-            var users = await context.Users.ToListAsync();
+            var usersList = await context.Users.ToListAsync();
 
             // HEADERS
             // COUNT OF DATE PROCESSED BY MSW
@@ -1707,10 +1715,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             bool filterByMonth = DateTime.TryParseExact(month, "yyyy-MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedMonth);
 
             var query = context.GeneralAdmission.AsQueryable();
+            var users = await context.Users.ToListAsync();
 
             if (userID > 0)
             {
                 query = query.Where(g => g.UserID == userID);
+                users = await context.Users.Where(u => u.UserID == userID).ToListAsync();
             }
 
             if (filterByMonth)
@@ -1744,7 +1754,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
-            var users = await context.Users.ToListAsync();
+            var usersList = await context.Users.ToListAsync();
 
             // HEADERS
             // COUNT OF DATE PROCESSED BY MSW
@@ -1956,10 +1966,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             bool filterByMonth = DateTime.TryParseExact(month, "yyyy-MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedMonth);
 
             var query = context.GeneralAdmission.AsQueryable();
+            var users = await context.Users.ToListAsync();
 
             if (userID > 0)
             {
                 query = query.Where(g => g.UserID == userID);
+                users = await context.Users.Where(u => u.UserID == userID).ToListAsync();
             }
 
             if (filterByMonth)
@@ -1993,7 +2005,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
-            var users = await context.Users.ToListAsync();
+            var usersList = await context.Users.ToListAsync();
 
             // HEADERS
             // COUNT OF DATE PROCESSED BY MSW

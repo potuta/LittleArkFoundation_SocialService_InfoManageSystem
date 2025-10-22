@@ -391,6 +391,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             await using var context = new ApplicationDbContext(connectionString);
 
             IQueryable<OPDModel> query = context.OPD.AsQueryable();
+            var users = await context.Users.ToListAsync();
 
             if (!string.IsNullOrEmpty(sortByUserID))
             {
@@ -398,6 +399,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 var user = await context.Users.FindAsync(int.Parse(sortByUserID));
                 ViewBag.sortBy = user.Username;
                 ViewBag.sortByUserID = user.UserID.ToString();
+                users = await context.Users.Where(u => u.UserID == int.Parse(sortByUserID)).ToListAsync();
             }
 
             if (!string.IsNullOrWhiteSpace(sortByMonth) && DateTime.TryParse(sortByMonth, out DateTime month))
@@ -425,12 +427,13 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
-            var users = await context.Users.ToListAsync();
+            var usersList = await context.Users.ToListAsync();
 
             var viewModel = new OPDViewModel
             {
                 OPDList = opdList,
                 Users = users,
+                UsersList = usersList,
                 CurrentPage = page,
                 PageSize = pageSize,
                 TotalCount = totalCount,
@@ -931,6 +934,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             {
                 OPDList = opdList,
                 Users = users,
+                UsersList = users,
                 CurrentPage = page,
                 PageSize = pageSize,
                 TotalCount = totalCount,
@@ -967,10 +971,12 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             bool filterByMonth = DateTime.TryParseExact(month, "yyyy-MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedMonth);
 
             IQueryable<OPDModel> query = context.OPD;
+            var users = await context.Users.ToListAsync();
 
             if (userID > 0)
             {
                 query = query.Where(opd => opd.UserID == userID);
+                users = await context.Users.Where(u => u.UserID == userID).ToListAsync();
             }
 
             if (filterByMonth)
@@ -1001,7 +1007,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             //var roleIDSocialWorker = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Social Worker");
             //var users = await context.Users.Where(u => u.RoleID == roleIDSocialWorker.RoleID).ToListAsync();
-            var users = await context.Users.ToListAsync();
+            var usersList = await context.Users.ToListAsync();
 
             // HEADERS
             // COUNT OF DATE PROCESSED BY MSW
@@ -3130,8 +3136,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             // Prepare caseload breakdown for the selected month
            var caseloadBreakdown = new Dictionary<string, int>
             {
-                // Admissions
-                ["Admissions"] =
+                // OPD's
+                ["OPD's"] =
                     monthOPDList.Count(m => !m.IsOld) +
                     monthOPDList.Count(m => m.IsOld) +
                     monthOPDList.Count(m => m.IsPWD),
