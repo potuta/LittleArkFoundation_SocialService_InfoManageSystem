@@ -34,7 +34,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                 if (!string.IsNullOrEmpty(sortByUserID))
                 {
-                    query = query.Where(d => d.Message.Contains($"UserID: {sortByUserID}"));
+                    var likePattern = $"UserID: {sortByUserID}%";
+                    query = query.Where(d => EF.Functions.Like(d.Message, likePattern));
                     var user = await context.Users.FindAsync(int.Parse(sortByUserID));
                     ViewBag.sortByUsername = user.Username;
                     ViewBag.sortByUserID = user.UserID.ToString();
@@ -99,7 +100,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
                 if (!string.IsNullOrEmpty(sortByUserID))
                 {
-                    query = query.Where(d => d.Message.Contains($"UserID: {sortByUserID}"));
+                    var likePattern = $"UserID: {sortByUserID}%";
+                    query = query.Where(d => EF.Functions.Like(d.Message, likePattern));
                     var user = await context.Users.FindAsync(int.Parse(sortByUserID));
                     ViewBag.sortByUsername = user.Username;
                     ViewBag.sortByUserID = user.UserID.ToString();
@@ -151,7 +153,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             if (!string.IsNullOrEmpty(sortByUserID))
             {
-                query = query.Where(d => d.Message.Contains($"UserID: {sortByUserID}"));
+                var likePattern = $"UserID: {sortByUserID}%";
+                query = query.Where(d => EF.Functions.Like(d.Message, likePattern));
                 var user = await context.Users.FindAsync(int.Parse(sortByUserID));
                 ViewBag.sortByUsername = user.Username;
                 ViewBag.sortByUserID = user.UserID.ToString();
