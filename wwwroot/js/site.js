@@ -189,6 +189,17 @@ document.addEventListener("DOMContentLoaded", function () {
             h2.prepend(icon);
         }
     }
+    else if (controller === "Criteria" || controller === "AgeModifier" || controller === "FlagEvaluation") {
+        const h2 = document.getElementsByTagName("h2")[0];
+        if (h2) {
+            // Create the icon element
+            const icon = document.createElement("i");
+            icon.className = "bi bi-info-circle";
+            icon.style.marginRight = "8px"; // spacing between icon and text
+            // Insert icon before the text
+            h2.prepend(icon);
+        }
+    }
 });
 
 document.addEventListener("DOMContentLoaded", async function () {

@@ -269,6 +269,26 @@
                 </a>
             }
 
+            @if (User.HasClaim("Permission", "ManageDSS"))
+            {
+                <a asp-area="Admin" asp-controller="Criteria" asp-action="Index" 
+                class="btn-left @(
+						ViewContext.RouteData.Values["controller"]?.ToString() == "Criteria" ||
+						ViewContext.RouteData.Values["controller"]?.ToString() == "AgeModifier" ||
+						ViewContext.RouteData.Values["controller"]?.ToString() == "FlagEvaluation" 
+                    ? "active" : "")"
+                   data-bs-toggle="tooltip"
+                   title="System Logs">
+                    <i class="bi bi-info-circle-fill"></i> <span>DSS</span>
+                </a>
+            }
+            else
+            {
+                <a class="btn-left text-muted" style="cursor: not-allowed;" title="You do not have permission">
+                    <i class="bi bi-info-circle-fill"></i> <span>DSS</span>
+                </a>
+            }
+
         </div>
 
         <div class="btn-group d-block">
