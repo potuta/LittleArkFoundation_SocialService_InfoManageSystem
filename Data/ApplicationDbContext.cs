@@ -41,6 +41,9 @@ using LittleArkFoundation.Areas.Admin.Models.ProgressNotes;
 using LittleArkFoundation.Areas.Admin.Models.OPD;
 using LittleArkFoundation.Areas.Admin.Models.GeneralAdmission;
 using LittleArkFoundation.Areas.Admin.Models.Statistics;
+using LittleArkFoundation.Areas.Admin.Models.Criteria;
+using LittleArkFoundation.Areas.Admin.Models.AgeModifier;
+using LittleArkFoundation.Areas.Admin.Models.FlagEvaluation;
 
 namespace LittleArkFoundation.Data
 {
@@ -109,6 +112,9 @@ namespace LittleArkFoundation.Data
         public DbSet<GeneralAdmissionModel> GeneralAdmission { get; set; }
         public DbSet<StatisticsModel> Statistics { get; set; }
         public DbSet<OPDPatientsModel> OPDPatients { get; set; }
+        public DbSet<CriteriaModel> Criteria { get; set; }
+        public DbSet<AgeModifierModel> AgeModifier { get; set; }
+        public DbSet<FlagEvaluationModel> FlagEvaluation { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -528,6 +534,33 @@ namespace LittleArkFoundation.Data
 
             modelBuilder.Entity<OPDPatientsModel>()
                 .Property(o => o.OPDId)
+                .ValueGeneratedOnAdd();
+
+            // Criteria
+            modelBuilder.Entity<CriteriaModel>()
+                .ToTable("Criteria")
+                .HasKey(c => c.Id);
+
+            modelBuilder.Entity<CriteriaModel>()
+                .Property(c => c.Id)
+                .ValueGeneratedOnAdd();
+
+            // AgeModifier
+            modelBuilder.Entity<AgeModifierModel>()
+                .ToTable("AgeModifier")
+                .HasKey(a => a.Id);
+
+            modelBuilder.Entity<AgeModifierModel>()
+                .Property(a => a.Id)
+                .ValueGeneratedOnAdd();
+
+            // FlagEvaluation
+            modelBuilder.Entity<FlagEvaluationModel>()
+                .ToTable("FlagEvaluation")
+                .HasKey(f => f.Id);
+
+            modelBuilder.Entity<FlagEvaluationModel>()
+                .Property(f => f.Id)
                 .ValueGeneratedOnAdd();
         }
     }
