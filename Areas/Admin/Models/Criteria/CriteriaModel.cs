@@ -6,5 +6,6 @@
         public int DiagnosisID { get; set; }
         public string Diagnosis { get; set; }
         public int Weight { get; set; }
+        public bool IsDisplayName { get; set; }
     }
 }

@@ -1,0 +1,169 @@
+﻿@using LittleArkFoundation.Areas.Admin.Models.Criteria
+@model CriteriaViewModel
+@{
+	ViewData["Title"] = "DSS";
+    Layout = "_AdminLayout";
+}
+
+<style>
+    .menu-bar a {
+        min-width: 100px;
+        text-align: center;
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .header-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+    }
+
+        .header-bar h2 {
+            margin-bottom: 0;
+        }
+
+    .sticky-col {
+        position: sticky;
+        left: 0;
+        background: white;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .names{
+        white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		max-width: 300px;
+    }
+
+</style>
+
+<div class="header-bar">
+    <h2>Decision Support System</h2>
+
+    <div class="menu-bar d-flex gap-2">
+        <a class="btn btn-outline-dark @(
+           ViewContext.RouteData.Values["controller"]?.ToString() == "Criteria" &&
+           (
+               ViewContext.RouteData.Values["action"]?.ToString() == "Index" ||
+               ViewContext.RouteData.Values["action"]?.ToString() == "Edit"
+           ) ? "active" : "")"
+           asp-action="Index" asp-controller="Criteria">Diagnosis</a>
+
+        <a class="btn btn-outline-dark @(
+           ViewContext.RouteData.Values["controller"]?.ToString() == "AgeModifier" &&
+           (
+               ViewContext.RouteData.Values["action"]?.ToString() == "Index" ||
+               ViewContext.RouteData.Values["action"]?.ToString() == "Edit"
+           ) ? "active" : "")"
+           asp-action="Index" asp-controller="AgeModifier">Age Modifier</a>
+
+	   <a class="btn btn-outline-dark @(
+           ViewContext.RouteData.Values["controller"]?.ToString() == "FlagEvaluation" &&
+           (
+               ViewContext.RouteData.Values["action"]?.ToString() == "Index" ||
+               ViewContext.RouteData.Values["action"]?.ToString() == "Edit"
+           ) ? "active" : "")"
+           asp-action="Index" asp-controller="FlagEvaluation">Flag Evaluation</a>
+    </div>
+</div>
+<hr />
+
+<div class="d-flex justify-content-between align-items-center flex-wrap">
+    @* Left toggles/buttons *@
+    <div class="d-flex align-items-center gap-3">
+		@if (User.HasClaim("Permission", "CreateDSS"))
+		{
+            <a class="btn btn-success hide-when-archived" asp-action="Create" asp-controller="Criteria">
+				<i class="bi bi-file-earmark-medical"></i> Add New Diagnosis 
+			</a>
+		}
+		else
+		{
+			<a class="btn btn-success text-muted hide-when-archived"
+			   style="cursor: not-allowed;"
+			   aria-disabled="true"
+			   tabindex="-1"
+			   title="You do not have permission to add a new diagnosis">
+				<i class="bi bi-file-earmark-medical"></i> Add New Diagnosis
+			</a>
+		}
+
+    </div>
+
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert" style="width: 60%;">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="width: 60%;">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th class="sticky-col" style="left: 0; z-index: 2;">Actions</th>
+                        <th>Diagnosis</th>
+                        <th>Weight / Score</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    @foreach (var c in Model.CriteriaDisplayNamesList)
+                    {
+                        var names = Model.CriteriaList.Where(cid => cid.DiagnosisID == c.DiagnosisID && !cid.IsDisplayName).Select(cid => cid.Diagnosis).ToList();
+                        <tr>
+                            <td class="sticky-col d-flex gap-1" style="white-space: nowrap; left: 0; z-index: 1;">
+                                @if (User.HasClaim("Permission", "EditDSS"))
+                                    {
+                                        <a href="@Url.Action("Edit", new { id = c.Id })" class="btn btn-primary hide-when-archived"
+                                            data-bs-toggle="tooltip"
+                                            title="Edit">
+                                            <i class="bx bx-edit"></i>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a class="btn btn-primary text-muted hide-when-archived"
+                                           style="cursor: not-allowed;"
+                                           aria-disabled="true"
+                                           tabindex="-1"
+                                           title="You do not have permission to edit diagnosis">
+                                            <i class="bx bx-edit"></i>
+                                        </a>
+                                    }     
+                            </td>
+                            <td class="names">
+                                @c.Diagnosis
+                                @if (names.Any())
+								{
+									<text> / @string.Join(" / ", names)</text>
+								}
+                            </td>
+                            <td style="white-space: nowrap;">
+                                @c.Weight
+							</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
