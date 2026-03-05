@@ -1,0 +1,317 @@
+﻿@using LittleArkFoundation.Areas.Admin.Models.AgeModifier
+@model AgeModifierViewModel
+@{
+	ViewData["Title"] = "DSS";
+    Layout = "_AdminLayout";
+}
+
+<style>
+    .menu-bar a {
+        min-width: 100px;
+        text-align: center;
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .header-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+    }
+
+        .header-bar h2 {
+            margin-bottom: 0;
+        }
+
+    .sticky-col {
+        position: sticky;
+        left: 0;
+        background: white;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+</style>
+
+<div class="header-bar">
+    <h2>Decision Support System</h2>
+
+    <div class="menu-bar d-flex gap-2">
+        <a class="btn btn-outline-dark @(
+           ViewContext.RouteData.Values["controller"]?.ToString() == "Criteria" &&
+           (
+               ViewContext.RouteData.Values["action"]?.ToString() == "Index" ||
+               ViewContext.RouteData.Values["action"]?.ToString() == "Edit"
+           ) ? "active" : "")"
+           asp-action="Index" asp-controller="Criteria">Diagnosis</a>
+
+        <a class="btn btn-outline-dark @(
+           ViewContext.RouteData.Values["controller"]?.ToString() == "AgeModifier" &&
+           (
+               ViewContext.RouteData.Values["action"]?.ToString() == "Index" ||
+               ViewContext.RouteData.Values["action"]?.ToString() == "Edit"
+           ) ? "active" : "")"
+           asp-action="Index" asp-controller="AgeModifier">Age Modifier</a>
+
+	   <a class="btn btn-outline-dark @(
+           ViewContext.RouteData.Values["controller"]?.ToString() == "FlagEvaluation" &&
+           (
+               ViewContext.RouteData.Values["action"]?.ToString() == "Index" ||
+               ViewContext.RouteData.Values["action"]?.ToString() == "Edit"
+           ) ? "active" : "")"
+           asp-action="Index" asp-controller="FlagEvaluation">Flag Evaluation</a>
+    </div>
+</div>
+<hr />
+
+<div class="d-flex justify-content-between align-items-center flex-wrap">
+    @* Left toggles/buttons *@
+    <div class="d-flex align-items-center gap-3">
+		@if (User.HasClaim("Permission", "EditDSS"))
+		{
+		   <button type="button" class="btn btn-success hide-when-archived" data-bs-toggle="modal" data-bs-target="#editAgeModifierModal"
+                    data-bs-toggle="tooltip"
+                    title="Edit Age Modifier">
+                 <i class="bx bx-edit"></i> Edit Age Modifier
+            </button>
+		}
+		else
+		{
+			<a class="btn btn-success text-muted hide-when-archived"
+			   style="cursor: not-allowed;"
+			   aria-disabled="true"
+			   tabindex="-1"
+			   title="You do not have permission to add a new diagnosis">
+               <i class="bx bx-edit"></i> Edit Age Modifier
+           </a>
+		}
+
+    </div>
+
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert" style="width: 60%;">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="width: 60%;">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="container-fluid px-0 mx-0" style="max-width: 1600px;">
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table" style="min-width: 1200px;">
+            <thead>
+                @if (Model != null)
+                {
+                    <tr>
+                        <th class="sticky-col" style="left: 0; z-index: 2;">Age</th>
+                        <th>Modifier</th>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    @foreach (var item in Model.AgesList)
+                    {
+                        <tr>
+							<td>@item.age</td>
+							<td>+@item.modifier</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Edit Age Modifier -->
+<div class="modal fade" id="editAgeModifierModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">
+                     Edit Age Modifier
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <form id="editAgeModifierForm" asp-action="Edit" asp-controller="AgeModifier" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div class="list-group-item d-flex justify-content-between align-items-center mt-3">
+						 <h6 class="ms-2">Age</h6>
+						 <h6 class="me-2">Modifier</h6>
+					</div>
+
+					<ul class="list-group">
+						
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-3 py-2">
+
+							<!-- Hidden fields -->
+							<input type="hidden" asp-for="AgeModifierList[0].Id" />
+							<input type="hidden" asp-for="AgeModifierList[0].Condition" />
+
+							<!-- Age condition part -->
+							<div class="d-flex align-items-center gap-2 flex-grow-1" style="max-width: 220px;">
+								&lt;
+                                <div style="max-width: 80px;">
+									<input type="number" 
+										   class="form-control text-center" 
+										   min="1" step="1" 
+										   asp-for="AgeModifierList[0].Age" 
+										   required>
+								</div>
+								<span class="text-muted">year</span>
+							</div>
+
+							<!-- Modifier part -->
+							<div class="input-group" style="max-width: 100px;">
+								<span class="input-group-text">+</span>
+								<input type="number" 
+									   class="form-control text-center" 
+									   min="1" step="1" 
+									   asp-for="AgeModifierList[0].Modifier" 
+									   required>
+							</div>
+
+						</li>
+
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-3 py-2">
+
+							<!-- Hidden fields -->
+							<input type="hidden" asp-for="AgeModifierList[1].Id" />
+							<input type="hidden" asp-for="AgeModifierList[1].Condition" />
+                            <input type="hidden" asp-for="AgeModifierList[2].Id" />
+							<input type="hidden" asp-for="AgeModifierList[2].Condition" />
+							<input type="hidden" asp-for="AgeModifierList[2].Modifier" />
+
+							<!-- Age condition part -->
+							<div class="d-flex align-items-center gap-2 flex-grow-1" style="max-width: 220px;">
+                                <div style="max-width: 80px;">
+									<input id="leftAge" type="number" 
+										   class="form-control text-center" 
+										   min="1" step="1" 
+										   asp-for="AgeModifierList[1].Age" 
+										   required>
+								</div>
+                                -
+                                <div style="max-width: 80px;">
+									<input id="rightAge" type="number" 
+										   class="form-control text-center" 
+										   min="1" step="1" 
+										   asp-for="AgeModifierList[2].Age" 
+										   required>
+								</div>
+
+								<span class="text-muted">years</span>
+							</div>
+
+							<!-- Modifier part -->
+							<div class="input-group" style="max-width: 100px;">
+								<span class="input-group-text">+</span>
+								<input type="number" 
+									   class="form-control text-center" 
+									   min="1" step="1" 
+									   asp-for="AgeModifierList[1].Modifier" 
+									   required>
+							</div>
+
+						</li>
+
+                        <div class="invalid-feedback text-center">
+							Right age must be greater than or equal to left age.
+						</div>
+
+						<li class="list-group-item d-flex justify-content-between align-items-center px-3 py-2">
+
+							<!-- Hidden fields -->
+							<input type="hidden" asp-for="AgeModifierList[3].Id" />
+							<input type="hidden" asp-for="AgeModifierList[3].Condition" />
+
+							<!-- Age condition part -->
+							<div class="d-flex align-items-center gap-2 flex-grow-1" style="max-width: 220px;">
+								&ge;
+                                <div style="max-width: 80px;">
+									<input type="number" 
+										   class="form-control text-center" 
+										   min="1" step="1" 
+										   asp-for="AgeModifierList[3].Age" 
+										   required>
+								</div>
+								<span class="text-muted">year</span>
+							</div>
+
+							<!-- Modifier part -->
+							<div class="input-group" style="max-width: 100px;">
+								<span class="input-group-text">+</span>
+								<input type="number" 
+									   class="form-control text-center" 
+									   min="1" step="1" 
+									   asp-for="AgeModifierList[3].Modifier" 
+									   required>
+							</div>
+
+						</li>
+						
+					</ul>
+
+					<div class="modal-footer">
+                        <button type="button"
+                                class="btn btn-outline-secondary"
+                                data-bs-dismiss="modal">
+                            Close
+                        </button>
+
+                        <button type="submit"
+                                class="btn btn-success"
+                                onclick="return confirmFormSubmit('editAgeModifierForm', 'Confirm Edit Age Modifier', 'Are you sure you want to edit age modifier?')">
+                            <i class="bi bi-floppy"></i> Save Changes
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+		const leftAgeInput = document.getElementById("leftAge");
+		const rightAgeInput = document.getElementById("rightAge");
+
+		function validateAgeRange() {
+
+			const leftAge = parseInt(leftAgeInput.value);
+			const rightAge = parseInt(rightAgeInput.value);
+
+			if (!isNaN(leftAge) && !isNaN(rightAge) && leftAge > rightAge) {
+
+				rightAgeInput.setCustomValidity("Right age must be greater than or equal to left age.");
+				rightAgeInput.classList.add("is-invalid");
+
+			} else {
+
+				rightAgeInput.setCustomValidity("");
+				rightAgeInput.classList.remove("is-invalid");
+
+			}
+		}
+
+		leftAgeInput.addEventListener("input", validateAgeRange);
+		rightAgeInput.addEventListener("input", validateAgeRange);
+	</script>    
+}
