@@ -194,6 +194,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 TempData["SuccessMessage"] =
                     $"Successfully edited Diagnosis: {criteria.Diagnosis}";
 
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Criteria Diagnosis edited successfully. Criteria Diagnosis: {criteria.Diagnosis}");
+
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
@@ -201,6 +204,61 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 await transaction.RollbackAsync();
                 TempData["ErrorMessage"] = "An error occurred while saving changes.";
                 LoggingService.LogError(ex.ToString());
+                return RedirectToAction("Index");
+            }
+        }
+
+        [HasPermission("CreateDSS")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            string connectionString = _connectionService.GetCurrentConnectionString();
+            await using var context = new ApplicationDbContext(connectionString);
+            await using var transaction = await context.Database.BeginTransactionAsync();
+
+            try
+            {
+                var criteria = await context.Criteria.FindAsync(id);
+
+                if (criteria == null)
+                {
+                    TempData["ErrorMessage"] = "Criteria not found.";
+                    return RedirectToAction("Index");
+                }
+
+                var criteriaList = await context.Criteria
+                    .Where(c => c.DiagnosisID == criteria.DiagnosisID)
+                    .ToListAsync();
+
+                //if (!criteriaList.Any())
+                //{
+                //    TempData["ErrorMessage"] = "No criteria found to delete.";
+                //    return RedirectToAction("Index");
+                //}
+
+                context.Criteria.RemoveRange(criteriaList);
+
+                await context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                TempData["SuccessMessage"] = $"Successfully deleted Diagnosis: {criteria.Diagnosis}";
+
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                LoggingService.LogInformation($"UserID: {userIdClaim.Value}. Criteria Diagnosis deleted successfully. Criteria Diagnosis: {criteria.Diagnosis}");
+
+                return RedirectToAction("Index");
+            }
+            catch (SqlException ex)
+            {
+                await transaction.RollbackAsync();
+                LoggingService.LogError($"SQL Error: {ex}");
+                TempData["ErrorMessage"] = "SQL Error: " + ex.Message;
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                LoggingService.LogError($"Error: {ex}");
+                TempData["ErrorMessage"] = "Error: " + ex.Message;
                 return RedirectToAction("Index");
             }
         }
