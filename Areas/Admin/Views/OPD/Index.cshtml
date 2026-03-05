@@ -35,6 +35,20 @@
         box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     }
 
+    .dssToggle {
+        background-color: #198754;
+        /* border: #6c757d 1px solid;  */
+        border-radius: 10px;
+        padding: 5px 16px;
+        padding-right: 9px;
+        color: white;
+    }
+
+    .form-check-input:checked{
+        background-color: #6c757d;
+        border-color: #ffffff;
+    }
+
 </style>
 
 
@@ -127,11 +141,23 @@
             </a>
         </div>
 
-        <div class="form-check form-switch mb-0">
+        @* <div class="form-check form-switch mb-0">
+          <label class="form-check-label" for="dssFlexSwitchCheckChecked"><i class="bi bi-info-circle-fill"></i> DSS</label>
           <input class="form-check-input" type="checkbox" role="switch" id="dssFlexSwitchCheckChecked" 
           onchange="updateDSSEnabled()" checked>
-          <label class="form-check-label" for="dssFlexSwitchCheckChecked">Enable DSS</label>
-        </div>
+        </div> *@
+
+        <div class="dssToggle d-flex align-items-center gap-2">
+			<i class="bi bi-info-circle"></i>
+			<span>DSS</span>
+			<div class="form-check form-switch mb-0">
+				<input class="form-check-input"
+					   type="checkbox"
+					   id="dssFlexSwitchCheckChecked"
+					   onchange="updateDSSEnabled()"
+					   checked>
+			</div>
+		</div>
     </div>
 
     @* Right toggles/buttons *@
