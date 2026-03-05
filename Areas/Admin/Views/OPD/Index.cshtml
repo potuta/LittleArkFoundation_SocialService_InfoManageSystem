@@ -49,6 +49,13 @@
         border-color: #ffffff;
     }
 
+    .names{
+        white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		max-width: 500px;
+    }
+
 </style>
 
 
@@ -537,35 +544,20 @@
 					 <h6 class="me-2">Weight</h6>
 				</div>
 				<ul class="list-group">
-					<li class="list-group-item d-flex justify-content-between align-items-center">
-						Hypertension												
-						<span class="badge bg-primary rounded-pill">25</span>
-					</li>
-
-					<li class="list-group-item d-flex justify-content-between align-items-center">
-						Oliguria												
-						<span class="badge bg-primary rounded-pill">20</span>
-					</li>
-
-					<li class="list-group-item d-flex justify-content-between align-items-center">
-						Edema											
-						<span class="badge bg-primary rounded-pill">15</span>
-					</li>
-
-					<li class="list-group-item d-flex justify-content-between align-items-center">
-						Nephrotic syndrome										
-						<span class="badge bg-primary rounded-pill">15</span>
-					</li>
-
-					<li class="list-group-item d-flex justify-content-between align-items-center">
-						Azotemia (e.g. BUN/Cr)										
-						<span class="badge bg-primary rounded-pill">10</span>
-					</li>
-
-					<li class="list-group-item d-flex justify-content-between align-items-center">
-						PSGN / AGN									
-						<span class="badge bg-primary rounded-pill">5</span>
-					</li>
+                    @foreach (var c in Model.CriteriaDisplayNamesList)
+                    {
+                        var names = Model.CriteriaList.Where(cid => cid.DiagnosisID == c.DiagnosisID && !cid.IsDisplayName).Select(cid => cid.Diagnosis).ToList();
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div class="names">
+								@c.Diagnosis												
+                                @if (names.Any())
+								{
+									<text> / @string.Join(" / ", names)</text>
+								}
+                            </div>
+							<span class="badge bg-primary rounded-pill">@c.Weight</span>
+						</li>
+                    }
 				</ul>
 
 				<div class="list-group-item d-flex justify-content-between align-items-center mt-3">
@@ -592,7 +584,7 @@
 				</ul>
 
 				<div class="list-group-item d-flex justify-content-between align-items-center mt-3">
-					 <h6 class="ms-2"></h6>
+					 <h6 class="ms-2">Flag Evaluation</h6>
 					 <h6 class="me-2">Threshold</h6>
 				</div>
 

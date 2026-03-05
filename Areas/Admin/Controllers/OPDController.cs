@@ -93,6 +93,9 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
             }
 
             var users = await context.Users.ToListAsync();
+            
+            var criteriaList = await context.Criteria.ToListAsync();
+            var criteriaDisplayNamesList = await context.Criteria.Where(c => c.IsDisplayName).ToListAsync();
 
             var viewModel = new OPDViewModel
             {
@@ -102,6 +105,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 CurrentPage = page,
                 PageSize = pageSize,
                 TotalCount = totalCount,
+                CriteriaList = criteriaList,
+                CriteriaDisplayNamesList = criteriaDisplayNamesList
             };
 
             return View(viewModel);
