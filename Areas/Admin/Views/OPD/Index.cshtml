@@ -567,18 +567,18 @@
 
 				<ul class="list-group">
 					<li class="list-group-item d-flex justify-content-between align-items-center">
-						&lt; 1 year
-						<span class="badge bg-primary rounded-pill">+10</span>
+						&le; @Model.AgeModifierList[0].Age year
+						<span class="badge bg-primary rounded-pill">+@Model.AgeModifierList[0].Modifier</span>
 					</li>
 
 					<li class="list-group-item d-flex justify-content-between align-items-center">
-						1 - 4 years												
-						<span class="badge bg-primary rounded-pill">+5</span>
+						@Model.AgeModifierList[1].Age - @Model.AgeModifierList[2].Age years												
+						<span class="badge bg-primary rounded-pill">+@Model.AgeModifierList[1].Modifier</span>
 					</li>
 
 					<li class="list-group-item d-flex justify-content-between align-items-center">
-						&ge; 40 years											
-						<span class="badge bg-primary rounded-pill">+10</span>
+						&ge; @Model.AgeModifierList[3].Age years											
+						<span class="badge bg-primary rounded-pill">+@Model.AgeModifierList[3].Modifier</span>
 					</li>
 					
 				</ul>

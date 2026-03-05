@@ -1,4 +1,5 @@
-﻿using LittleArkFoundation.Areas.Admin.Models.Criteria;
+﻿using LittleArkFoundation.Areas.Admin.Models.AgeModifier;
+using LittleArkFoundation.Areas.Admin.Models.Criteria;
 using LittleArkFoundation.Areas.Admin.Models.Statistics;
 using LittleArkFoundation.Areas.Admin.Services.Assessments;
 
@@ -23,6 +24,7 @@ namespace LittleArkFoundation.Areas.Admin.Models.OPD
         public List<string>? Suffixes { get; set; } = NameSuffixHelper.GetSuffixes(10);
         public List<CriteriaModel> CriteriaList { get; set; } = new List<CriteriaModel> { new CriteriaModel() };
         public List<CriteriaModel> CriteriaDisplayNamesList { get; set; } = new List<CriteriaModel> { new CriteriaModel() };
+        public List<AgeModifierModel> AgeModifierList { get; set; } = new List<AgeModifierModel> { new AgeModifierModel() };
 
         // Pagination properties
         public int? CurrentPage { get; set; } = 1;

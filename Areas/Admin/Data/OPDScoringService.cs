@@ -27,6 +27,7 @@ namespace LittleArkFoundation.Areas.Admin.Data
             await using var context = new ApplicationDbContext(_connectionString);
 
             // --- AGE ---
+            var ageModifierList = await context.AgeModifier.ToListAsync();
             var opdAge = opd.Age?.Trim();
             if (!string.IsNullOrEmpty(opdAge) && System.Text.RegularExpressions.Regex.IsMatch(opdAge, @"\d"))
             {
@@ -34,16 +35,16 @@ namespace LittleArkFoundation.Areas.Admin.Data
                 {
                     var age = int.Parse(opdAge);
 
-                    if (age == 1)
-                        scores["Age"] = (10, "Baby (age = 1)");
-                    else if (age > 1 && age <= 5)
-                        scores["Age"] = (5, "Child (age between 2–5)");
-                    else if (age > 40)
-                        scores["Age"] = (10, "Adult (age > 40)");
+                    if (age == ageModifierList[0].Age)
+                        scores["Age"] = (ageModifierList[0].Modifier, "Baby/Infant (age = 1)");
+                    else if (age > ageModifierList[1].Age && age <= ageModifierList[2].Age)
+                        scores["Age"] = (ageModifierList[1].Modifier, "Child (age between 2–5)");
+                    else if (age >= ageModifierList[3].Age)
+                        scores["Age"] = (ageModifierList[3].Modifier, "Adult (age > 40)");
                 }
                 else
                 {
-                    scores["Age"] = (10, $"Infant (non-numeric age: {opd.Age})");
+                    scores["Age"] = (ageModifierList[0].Modifier, $"Baby/Infant (non-numeric age: {opd.Age})");
                 }
             }
 

@@ -26,7 +26,7 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             var ageModifiers = await context.AgeModifier.ToListAsync();
             var agesList = new List<(string age, int modifier)>();
-            agesList.Add(("< " + ageModifiers[0].Age.ToString() + " Year", ageModifiers[0].Modifier));
+            agesList.Add(("<= " + ageModifiers[0].Age.ToString() + " Year", ageModifiers[0].Modifier));
             agesList.Add(($"{ageModifiers[1].Age.ToString()} - {ageModifiers[2].Age.ToString()} Years", ageModifiers[1].Modifier));
             agesList.Add((">= " + ageModifiers[3].Age.ToString() + " Year", ageModifiers[3].Modifier));
 
