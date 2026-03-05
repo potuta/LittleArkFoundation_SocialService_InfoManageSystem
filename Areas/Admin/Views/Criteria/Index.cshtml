@@ -76,9 +76,14 @@
     <div class="d-flex align-items-center gap-3">
 		@if (User.HasClaim("Permission", "CreateDSS"))
 		{
-            <a class="btn btn-success hide-when-archived" asp-action="Create" asp-controller="Criteria">
+   @*          <a class="btn btn-success hide-when-archived" asp-action="Create" asp-controller="Criteria">
 				<i class="bi bi-file-earmark-medical"></i> Add New Diagnosis 
-			</a>
+			</a> *@
+            <button type="button" class="btn btn-success hide-when-archived" data-bs-toggle="modal" data-bs-target="#createCriteriaModal"
+                    data-bs-toggle="tooltip"
+                    title="Create New">
+                <i class="bi bi-file-earmark-medical"></i> Create New Diagnosis
+            </button>
 		}
 		else
 		{
@@ -87,7 +92,7 @@
 			   aria-disabled="true"
 			   tabindex="-1"
 			   title="You do not have permission to add a new diagnosis">
-				<i class="bi bi-file-earmark-medical"></i> Add New Diagnosis
+				<i class="bi bi-file-earmark-medical"></i> Create New Diagnosis
 			</a>
 		}
 
@@ -118,7 +123,7 @@
                 {
                     <tr>
                         <th class="sticky-col" style="left: 0; z-index: 2;">Actions</th>
-                        <th>Diagnosis</th>
+                        <th>Diagnosis & Keywords / Synonyms</th>
                         <th>Weight / Score</th>
                     </tr>
                 }
@@ -165,5 +170,37 @@
                 }
             </tbody>
         </table>
+    </div>
+</div>
+
+<!-- Create Criteria Modal -->
+<div class="modal fade" id="createCriteriaModal" tabindex="-1" aria-labelledby="createRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createRoleModalLabel">Create New Diagnosis</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createCriteriaForm" asp-action="Create" asp-controller="Criteria" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="mb-3">
+                        <label asp-for="Criteria.Diagnosis" class="form-label">Diagnosis Name <span class="required">*</span></label>
+                        <input type="text" class="form-control" asp-for="Criteria.Diagnosis" required>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Criteria.Weight" class="form-label">Weight / Score <span class="required">*</span></label>
+                        <input type="text" class="form-control" min="1" step="1" asp-for="Criteria.Weight" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success"
+                                onclick="return confirmFormSubmit('createCriteriaForm', 'Confirm Create Diagnosis', 'Are you sure you want to create new diagnosis?')">
+							Add Diagnosis
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </div>

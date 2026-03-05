@@ -1,0 +1,259 @@
+﻿@using LittleArkFoundation.Areas.Admin.Models.Criteria
+@model CriteriaViewModel
+@{
+	ViewData["Title"] = "DSS";
+    Layout = "_AdminLayout";
+}
+
+<style>
+    
+    .form-container {
+        width: 100%;
+        max-width: 1200px;
+        margin: auto;
+        border: 1px solid #000;
+        padding: 20px;
+    }
+
+    table {
+        font-size: small;
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        border: 1px solid black;
+        padding: 5px;
+        text-align: left;
+        font-size: medium;
+    }
+
+    .section-title {
+        background-color: #f2f2f2;
+        font-weight: bold;
+        padding: 5px;
+        text-align: center;
+    }
+
+    input, select {
+        width: 98%;
+        font-size: medium;
+        padding: 5px;
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+    .required {
+        color: red;
+        font-weight: bold;
+    }
+
+    .checkbox-group, .radio-group {
+        display: flex;
+        align-items: center;
+        gap: 10px; /* Adjust spacing between checkbox/radio and text */
+        margin-bottom: 5px;
+    }
+
+        .checkbox-group input[type="checkbox"],
+        .radio-group input[type="radio"] {
+            transform: scale(1.2); /* Slightly increase size for better visibility */
+            padding: 0;
+            margin: 0;
+            width: 2rem;
+        }
+
+    textarea {
+        width: 100%;
+    }
+
+    .names{
+        white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		max-width: 300px;
+    }
+
+</style>
+
+@* <h2>Edit Diagnosis</h2>
+<hr /> *@
+
+<!-- Back to List -->
+<div class="mt-2">
+    <a class="btn btn-back btn-outline-secondary mb-3" asp-controller="Criteria" asp-action="Index">
+        <i class="bi bi-arrow-left-square"></i> Back to List
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert" style="width: 60%;">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="width: 60%;">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div>
+    <form id="editCriteriaDiagnosis" asp-action="Edit" method="post">
+		@Html.AntiForgeryToken()
+        <input type="hidden" asp-for="CriteriaList[0].Id" />
+        <input type="hidden" asp-for="CriteriaList[0].DiagnosisID" />
+
+        <div class="form-container">
+            <h2 style="text-align: center;">Edit Diagnosis</h2>
+
+            <table>
+                <tr>
+                    <td>
+                        Diagnosis Name: <span class="required">*</span>
+                        <input type="text" class="form-control" asp-for="CriteriaList[0].Diagnosis" required>
+                        <input type="hidden" asp-for="CriteriaList[0].IsDisplayName" value="true" />
+                    </td>
+                    <td>
+                        Weight: <span class="required">*</span>
+                        <input type="number"
+						   class="form-control"
+						   asp-for="CriteriaList[0].Weight"
+						   min="1"
+						   step="1"
+						   required>
+                    </td>
+                </tr>
+			</table>
+
+            <table id="criteriaDiagnosis-table">
+                <tr>
+                    <th>
+                        Keywords / Synonyms
+                    </th>
+				    <th style="text-align: center;">
+						<button type="button" id="criteriaDiagnosis-button-add" onclick="addRow(this)">➕ Add Row</button>
+                    </th>
+                </tr>
+                <tbody class="criteriaDiagnosis-input">
+					@for (int i = 1; i < Model.CriteriaList.Count; i++)
+					{
+						<tr>
+							<td>
+								<input type="hidden" asp-for="CriteriaList[i].Id" />
+								<input type="hidden" asp-for="CriteriaList[i].DiagnosisID"/>
+								<input type="text"
+									   asp-for="CriteriaList[i].Diagnosis"
+									   required />
+								<input type="hidden"
+									   asp-for="CriteriaList[i].IsDisplayName"
+									   value="false" />
+								<input type="hidden"
+									   asp-for="CriteriaList[i].Weight" />
+							</td>
+							<td style="text-align: center;">
+								<button type="button" id="criteriaDiagnosis-button-remove" onclick="removeRow(this)">❌</button>
+							</td>
+						</tr>
+					}    
+                </tbody>
+            </table>
+    
+		</div>
+
+        @* --- Add new here --- *@
+
+        <div class="mt-2" style="text-align: center;">
+            <button type="submit" class="btn btn-sm btn-success"
+                    onclick="return confirmFormSubmit('editCriteriaDiagnosis', 'Confirm Submission', 'Are you sure you want to submit?')">
+                <i class="bi bi-floppy"></i> Submit
+            </button>
+        </div>
+        <div class="mt-2" style="text-align: center;">
+            <a class="btn btn-back btn-sm btn-outline-secondary" asp-action="Index">
+                <i class="bi bi-x-square"></i> Cancel
+           </a>
+        </div>
+
+    </form>
+</div>
+
+@section Scripts{
+    <script>
+		let displayId = @Model.CriteriaList.FirstOrDefault(c => c.IsDisplayName)?.DiagnosisID ?? 0;
+		let weight = @Model.CriteriaList.FirstOrDefault(c => c.IsDisplayName)?.Weight ?? 0;
+
+        function addRow() {
+            let table = document.getElementById("criteriaDiagnosis-table");
+			let index = table.rows.length; // Exclude header row
+			let newRow = table.insertRow(-1); // Insert at the end
+
+			let cols = `
+				<td>
+					<input type="hidden" name="CriteriaList[${index}].Id" value="0" />
+					<input type="hidden" name="CriteriaList[${index}].DiagnosisID" value="${displayId}" />
+					<input type="text" name="CriteriaList[${index}].Diagnosis" required />
+					<input type="hidden" name="CriteriaList[${index}].IsDisplayName" value="false" />
+					<input type="hidden"
+						   name="CriteriaList[${index}].Weight" value="${weight}" />
+				</td>
+				<td style="text-align: center;">
+					<button type="button" onclick="removeRow(this)">❌</button>
+				</td>
+			`;
+
+			newRow.innerHTML = cols;
+		}
+
+        function removeRow(button) {
+            let row = button.parentNode.parentNode;
+			row.remove();
+			updateCriteriaNames();
+		}
+		
+        function updateCriteriaNames() {
+
+			let rows = document.querySelectorAll("#criteriaDiagnosis-table tbody tr");
+
+			rows.forEach((row, index) => {
+
+				let modelIndex = index; // start at 1 because 0 is Diagnosis Name
+
+				let inputs = row.querySelectorAll("input");
+
+				inputs.forEach(input => {
+
+					if (input.name.includes(".Id"))
+						input.name = `CriteriaList[${modelIndex}].Id`;
+
+					else if (input.name.includes(".DiagnosisID"))
+						input.name = `CriteriaList[${modelIndex}].DiagnosisID`;
+
+					else if (input.name.includes(".Diagnosis"))
+						input.name = `CriteriaList[${modelIndex}].Diagnosis`;
+
+					else if (input.name.includes(".IsDisplayName"))
+						input.name = `CriteriaList[${modelIndex}].IsDisplayName`;
+
+					else if (input.name.includes(".Weight"))
+						input.name = `CriteriaList[${modelIndex}].Weight`;
+
+				});
+
+			});
+
+		}
+        
+	</script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            enableUnsavedChangesWarning({
+                formSelector: "#editCriteriaDiagnosis"
+            });
+        });
+    </script>    
+}
+
