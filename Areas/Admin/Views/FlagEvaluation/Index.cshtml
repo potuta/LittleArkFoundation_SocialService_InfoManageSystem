@@ -1,5 +1,5 @@
-﻿@using LittleArkFoundation.Areas.Admin.Models.AgeModifier
-@model AgeModifierViewModel
+﻿@using LittleArkFoundation.Areas.Admin.Models.FlagEvaluation
+@model FlagEvaluationViewModel
 @{
 	ViewData["Title"] = "DSS";
     Layout = "_AdminLayout";
@@ -69,10 +69,10 @@
     <div class="d-flex align-items-center gap-3">
 		@if (User.HasClaim("Permission", "EditDSS"))
 		{
-		   <button type="button" class="btn btn-success hide-when-archived" data-bs-toggle="modal" data-bs-target="#editAgeModifierModal"
+		   <button type="button" class="btn btn-success hide-when-archived" data-bs-toggle="modal" data-bs-target="#editFlagEvaluationModal"
                     data-bs-toggle="tooltip"
-                    title="Edit Age Modifier">
-                 <i class="bx bx-edit"></i> Edit Age Modifier
+                    title="Edit Flag Evaluation">
+                 <i class="bx bx-edit"></i> Edit Flag Evaluation
             </button>
 		}
 		else
@@ -81,8 +81,8 @@
 			   style="cursor: not-allowed;"
 			   aria-disabled="true"
 			   tabindex="-1"
-			   title="You do not have permission to add a new diagnosis">
-               <i class="bx bx-edit"></i> Edit Age Modifier
+			   title="You do not have permission to edit flag evaluation">
+               <i class="bx bx-edit"></i> Edit Flag Evaluation
            </a>
 		}
 
@@ -121,16 +121,16 @@
                 @if (Model != null)
                 {
 					<tr>
-						<td>&le; @Model.AgeModifierList[0].Age year</td>
-						<td>+@Model.AgeModifierList[0].Modifier</td>
+						<td>@Model.FlagEvaluationList[0].Flag</td>
+						<td>&ge; @Model.FlagEvaluationList[0].Threshold</td>
 					</tr>
 					<tr>
-						<td>@Model.AgeModifierList[1].Age - @Model.AgeModifierList[2].Age years</td>
-						<td>+@Model.AgeModifierList[1].Modifier</td>
+						<td>@Model.FlagEvaluationList[1].Flag</td>
+						<td>&gt; @Model.FlagEvaluationList[1].Threshold &lt; @Model.FlagEvaluationList[2].Threshold</td>
 					</tr>
 					<tr>
-						<td>&ge; @Model.AgeModifierList[3].Age years</td>
-						<td>+@Model.AgeModifierList[3].Modifier</td>
+						<td>@Model.FlagEvaluationList[3].Flag</td>
+						<td>&le; @Model.FlagEvaluationList[3].Threshold</td>
 					</tr>
                 }
             </tbody>
@@ -138,26 +138,26 @@
     </div>
 </div>
 
-<!-- Edit Age Modifier -->
-<div class="modal fade" id="editAgeModifierModal" tabindex="-1" aria-hidden="true">
+<!-- Edit Flag Evaluation -->
+<div class="modal fade" id="editFlagEvaluationModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-md">
         <div class="modal-content">
 
             <div class="modal-header">
                 <h5 class="modal-title">
-                     Edit Age Modifier
+                     Edit Flag Evaluation
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
             <div class="modal-body">
 
-                <form id="editAgeModifierForm" asp-action="Edit" asp-controller="AgeModifier" method="post">
+                <form id="editFlagEvaluationForm" asp-action="Edit" asp-controller="FlagEvaluation" method="post">
                     @Html.AntiForgeryToken()
 
                     <div class="list-group-item d-flex justify-content-between align-items-center mt-3">
-						 <h6 class="ms-2">Age</h6>
-						 <h6 class="me-2">Modifier</h6>
+						 <h6 class="ms-2">Flag</h6>
+						 <h6 class="ms-2">Threshold</h6>
 					</div>
 
 					<ul class="list-group">
@@ -165,29 +165,26 @@
                         <li class="list-group-item d-flex justify-content-between align-items-center px-3 py-2">
 
 							<!-- Hidden fields -->
-							<input type="hidden" asp-for="AgeModifierList[0].Id" />
-							<input type="hidden" asp-for="AgeModifierList[0].Condition" />
+							<input type="hidden" asp-for="FlagEvaluationList[0].Id" />
+							<input type="hidden" asp-for="FlagEvaluationList[0].Condition" />
+							<input type="hidden" asp-for="FlagEvaluationList[0].Flag" />
 
-							<!-- Age condition part -->
+							<!-- Flag part -->
 							<div class="d-flex align-items-center gap-2 flex-grow-1" style="max-width: 220px;">
-								&le;
-                                <div style="max-width: 80px;">
-									<input type="number" 
-										   class="form-control text-center" 
-										   min="1" step="1" 
-										   asp-for="AgeModifierList[0].Age" 
-										   required>
+                                <div style="font-size: larger;">
+									<span class="badge bg-success p-2">
+										<i class="bi bi-flag-fill"></i> @Model.FlagEvaluationList[0].Flag Flag
+									</span>
 								</div>
-								<span class="text-muted">year</span>
 							</div>
 
-							<!-- Modifier part -->
+							<!-- Threshold part -->
 							<div class="input-group" style="max-width: 100px;">
-								<span class="input-group-text">+</span>
+								<span class="input-group-text">&ge;</span>
 								<input type="number" 
 									   class="form-control text-center" 
 									   min="1" step="1" 
-									   asp-for="AgeModifierList[0].Modifier" 
+									   asp-for="FlagEvaluationList[0].Threshold" 
 									   required>
 							</div>
 
@@ -196,75 +193,67 @@
                         <li class="list-group-item d-flex justify-content-between align-items-center px-3 py-2">
 
 							<!-- Hidden fields -->
-							<input type="hidden" asp-for="AgeModifierList[1].Id" />
-							<input type="hidden" asp-for="AgeModifierList[1].Condition" />
-                            <input type="hidden" asp-for="AgeModifierList[2].Id" />
-							<input type="hidden" asp-for="AgeModifierList[2].Condition" />
-							<input type="hidden" asp-for="AgeModifierList[2].Modifier" />
+							<input type="hidden" asp-for="FlagEvaluationList[1].Id" />
+							<input type="hidden" asp-for="FlagEvaluationList[1].Condition" />
+							<input type="hidden" asp-for="FlagEvaluationList[1].Flag" />
+                            <input type="hidden" asp-for="FlagEvaluationList[2].Id" />
+							<input type="hidden" asp-for="FlagEvaluationList[2].Condition" />
+							<input type="hidden" asp-for="FlagEvaluationList[2].Flag" />
 
-							<!-- Age condition part -->
+							<!-- Flag part -->
 							<div class="d-flex align-items-center gap-2 flex-grow-1" style="max-width: 220px;">
-                                <div style="max-width: 80px;">
-									<input id="leftAge" type="number" 
-										   class="form-control text-center" 
-										   min="1" step="1" 
-										   asp-for="AgeModifierList[1].Age" 
-										   required>
+								<div style="font-size: larger;">
+									<span class="badge bg-warning p-2">
+										<i class="bi bi-flag-fill"></i> @Model.FlagEvaluationList[1].Flag Flag
+									</span>
 								</div>
-                                -
-                                <div style="max-width: 80px;">
-									<input id="rightAge" type="number" 
-										   class="form-control text-center" 
-										   min="1" step="1" 
-										   asp-for="AgeModifierList[2].Age" 
-										   required>
-								</div>
-
-								<span class="text-muted">years</span>
 							</div>
 
-							<!-- Modifier part -->
-							<div class="input-group" style="max-width: 100px;">
-								<span class="input-group-text">+</span>
-								<input type="number" 
+							<!-- Threshold part -->
+							<div class="input-group" style="max-width: 250px;">
+								<span class="input-group-text">&gt;</span>
+								<input id="leftNum" type="number" 
 									   class="form-control text-center" 
 									   min="1" step="1" 
-									   asp-for="AgeModifierList[1].Modifier" 
+									   asp-for="FlagEvaluationList[1].Threshold" 
+									   required>
+								<span class="input-group-text">&lt;</span>
+								<input id="rightNum" type="number" 
+									   class="form-control text-center" 
+									   min="1" step="1" 
+									   asp-for="FlagEvaluationList[2].Threshold" 
 									   required>
 							</div>
 
 						</li>
 
                         <div class="invalid-feedback text-center">
-							Right age must be greater than or equal to left age.
+							Right threshold must be greater than or equal to left threshold.
 						</div>
 
 						<li class="list-group-item d-flex justify-content-between align-items-center px-3 py-2">
 
 							<!-- Hidden fields -->
-							<input type="hidden" asp-for="AgeModifierList[3].Id" />
-							<input type="hidden" asp-for="AgeModifierList[3].Condition" />
+							<input type="hidden" asp-for="FlagEvaluationList[3].Id" />
+							<input type="hidden" asp-for="FlagEvaluationList[3].Condition" />
+							<input type="hidden" asp-for="FlagEvaluationList[3].Flag" />
 
-							<!-- Age condition part -->
+							<!-- Flag part -->
 							<div class="d-flex align-items-center gap-2 flex-grow-1" style="max-width: 220px;">
-								&ge;
-                                <div style="max-width: 80px;">
-									<input type="number" 
-										   class="form-control text-center" 
-										   min="1" step="1" 
-										   asp-for="AgeModifierList[3].Age" 
-										   required>
+                                <div style="font-size: larger;">
+									<span class="badge bg-danger p-2">
+										<i class="bi bi-flag-fill"></i> @Model.FlagEvaluationList[3].Flag Flag
+									</span>
 								</div>
-								<span class="text-muted">year</span>
 							</div>
 
-							<!-- Modifier part -->
+							<!-- Threshold part -->
 							<div class="input-group" style="max-width: 100px;">
-								<span class="input-group-text">+</span>
+								<span class="input-group-text">&le;</span>
 								<input type="number" 
 									   class="form-control text-center" 
 									   min="1" step="1" 
-									   asp-for="AgeModifierList[3].Modifier" 
+									   asp-for="FlagEvaluationList[3].Threshold" 
 									   required>
 							</div>
 
@@ -281,7 +270,7 @@
 
                         <button type="submit"
                                 class="btn btn-success"
-                                onclick="return confirmFormSubmit('editAgeModifierForm', 'Confirm Edit Age Modifier', 'Are you sure you want to edit age modifier?')">
+                                onclick="return confirmFormSubmit('editFlagEvaluationForm', 'Confirm Edit Flag Evaluation', 'Are you sure you want to edit flag evaluation?')">
                             <i class="bi bi-floppy"></i> Save Changes
                         </button>
                     </div>
@@ -295,28 +284,28 @@
 
 @section Scripts {
     <script>
-		const leftAgeInput = document.getElementById("leftAge");
-		const rightAgeInput = document.getElementById("rightAge");
+		const leftThreshold = document.getElementById("leftNum");
+		const rightThreshold = document.getElementById("rightNum");
 
-		function validateAgeRange() {
+		function validateThresholdRange() {
 
-			const leftAge = parseInt(leftAgeInput.value);
-			const rightAge = parseInt(rightAgeInput.value);
+			const left = parseInt(leftThreshold.value);
+			const right = parseInt(rightThreshold.value);
 
-			if (!isNaN(leftAge) && !isNaN(rightAge) && leftAge > rightAge) {
+			if (!isNaN(left) && !isNaN(right) && left > right) {
 
-				rightAgeInput.setCustomValidity("Right age must be greater than or equal to left age.");
-				rightAgeInput.classList.add("is-invalid");
+				rightThreshold.setCustomValidity("Right threshold must be greater than or equal to left threshold.");
+				rightThreshold.classList.add("is-invalid");
 
 			} else {
 
-				rightAgeInput.setCustomValidity("");
-				rightAgeInput.classList.remove("is-invalid");
+				rightThreshold.setCustomValidity("");
+				rightThreshold.classList.remove("is-invalid");
 
 			}
 		}
 
-		leftAgeInput.addEventListener("input", validateAgeRange);
-		rightAgeInput.addEventListener("input", validateAgeRange);
+		leftThreshold.addEventListener("input", validateThresholdRange);
+		rightThreshold.addEventListener("input", validateThresholdRange);
 	</script>    
 }
