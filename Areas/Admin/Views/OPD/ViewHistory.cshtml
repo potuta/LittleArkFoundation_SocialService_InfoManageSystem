@@ -30,6 +30,13 @@
         box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     }
 
+    .names{
+        white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		max-width: 500px;
+    }
+
 </style>
 
 <div class="header-bar">
@@ -320,12 +327,22 @@
 													<span class="badge bg-primary rounded-pill">@score.Value.Score</span>
 												</li>
 											}
-   
+    
                                         </ul>
                                         <hr />
-                                        <p class="text-end text-secondary fw-medium small mb-0">
-                                            Threshold: ≥ 25
-                                        </p>
+                                        <div class="d-flex justify-content-between">
+											<button type="button"
+													class="badge bg-secondary ms-2 border-0 view-criteria-btn"
+													data-bs-toggle="modal"
+													data-bs-target="#criteria-modal"
+													data-parent-modal="#@modalId">
+												<i class="bi bi-eye"></i> View Criteria
+											</button>
+
+                                            <p class="text-end text-secondary fw-medium small mb-0">
+												Threshold: &ge; @Model.FlagEvaluationList[0].Threshold
+											</p>
+                                        </div>
                                         <p class="text-end fw-bold">
                                             Total Score: <span class="@(isEligible ? "text-success" : "text-danger")">@totalScore</span>
                                         </p>
@@ -340,6 +357,93 @@
             </tbody>
         </table>
     </div>
+</div>
+
+<!-- Criteria Modal -->
+<div class="modal fade" id="criteria-modal" tabindex="-1" aria-labelledby="criteria-modal-label" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="criteria-modal-label">Decision Criteria Breakdown</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="list-group-item d-flex justify-content-between align-items-center">
+					 <h6 class="ms-2">Criteria</h6>
+					 <h6 class="me-2">Weight</h6>
+				</div>
+				<ul class="list-group">
+                    @foreach (var c in Model.CriteriaDisplayNamesList)
+                    {
+                        var names = Model.CriteriaList.Where(cid => cid.DiagnosisID == c.DiagnosisID && !cid.IsDisplayName).Select(cid => cid.Diagnosis).ToList();
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div class="names">
+								@c.Diagnosis												
+                                @if (names.Any())
+								{
+									<text> / @string.Join(" / ", names)</text>
+								}
+                            </div>
+							<span class="badge bg-primary rounded-pill">@c.Weight</span>
+						</li>
+                    }
+				</ul>
+
+				<div class="list-group-item d-flex justify-content-between align-items-center mt-3">
+					 <h6 class="ms-2">Age</h6>
+					 <h6 class="me-2">Modifier</h6>
+				</div>
+
+				<ul class="list-group">
+					<li class="list-group-item d-flex justify-content-between align-items-center">
+						&le; @Model.AgeModifierList[0].Age year
+						<span class="badge bg-primary rounded-pill">+@Model.AgeModifierList[0].Modifier</span>
+					</li>
+
+					<li class="list-group-item d-flex justify-content-between align-items-center">
+						@Model.AgeModifierList[1].Age - @Model.AgeModifierList[2].Age years												
+						<span class="badge bg-primary rounded-pill">+@Model.AgeModifierList[1].Modifier</span>
+					</li>
+
+					<li class="list-group-item d-flex justify-content-between align-items-center">
+						&ge; @Model.AgeModifierList[3].Age years											
+						<span class="badge bg-primary rounded-pill">+@Model.AgeModifierList[3].Modifier</span>
+					</li>
+					
+				</ul>
+
+				<div class="list-group-item d-flex justify-content-between align-items-center mt-3">
+					 <h6 class="ms-2">Flag Evaluation</h6>
+					 <h6 class="me-2">Threshold</h6>
+				</div>
+
+				<ul class="list-group">
+					<li class="list-group-item d-flex justify-content-between align-items-center">
+						<span class="badge bg-success p-2"><i class="bi bi-flag-fill"></i> @Model.FlagEvaluationList[0].Flag flag (Eligible for admission)</span>
+						<span class="badge bg-primary rounded-pill">Total &ge; @Model.FlagEvaluationList[0].Threshold</span>
+					</li>
+
+					<li class="list-group-item d-flex justify-content-between align-items-center">
+						<span class="badge bg-warning p-2"><i class="bi bi-flag-fill"></i> @Model.FlagEvaluationList[1].Flag flag (Further Review)</span>
+						<span class="badge bg-primary rounded-pill">Total &gt; @Model.FlagEvaluationList[1].Threshold &lt; @Model.FlagEvaluationList[2].Threshold</span>
+					</li>
+
+					<li class="list-group-item d-flex justify-content-between align-items-center">
+						<span class="badge bg-danger p-2"><i class="bi bi-flag-fill"></i> @Model.FlagEvaluationList[3].Flag flag (Not eligible)</span>
+						<span class="badge bg-primary rounded-pill">Total &le; @Model.FlagEvaluationList[3].Threshold</span>
+					</li>
+																
+				</ul>
+
+				<hr />
+				<button type="button" class="badge bg-secondary ms-2 border-0" id="backToScoreBtn">
+					<i class="bi bi-arrow-left-circle"></i> Back to Score
+				</button>
+
+
+			</div>
+		</div>
+	</div>
 </div>
 
 @section Scripts {
@@ -368,5 +472,38 @@
         }
 
     </script>
+
+    <script>
+		document.addEventListener('DOMContentLoaded', function () {
+			let lastParentModalId = null;
+
+			// When any "View Criteria" button is clicked
+			document.querySelectorAll('.view-criteria-btn').forEach(btn => {
+				btn.addEventListener('click', function () {
+					lastParentModalId = this.getAttribute('data-parent-modal'); // e.g. "#scoreBreakdownModal_123"
+				});
+			});
+
+			const backBtn = document.getElementById('backToScoreBtn');
+			const criteriaModalEl = document.getElementById('criteria-modal');
+
+			backBtn.addEventListener('click', function () {
+				const criteriaModalInstance = bootstrap.Modal.getInstance(criteriaModalEl);
+				criteriaModalInstance.hide(); // close the criteria modal
+
+				// When the criteria modal is fully hidden, reopen the correct weighted score modal
+				criteriaModalEl.addEventListener('hidden.bs.modal', function handler() {
+					if (lastParentModalId) {
+						const parentModalEl = document.querySelector(lastParentModalId);
+						if (parentModalEl) {
+							const parentModal = new bootstrap.Modal(parentModalEl);
+							parentModal.show();
+						}
+					}
+					criteriaModalEl.removeEventListener('hidden.bs.modal', handler);
+				});
+			});
+		});
+	</script>
 }
 

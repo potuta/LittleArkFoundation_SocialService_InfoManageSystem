@@ -144,10 +144,21 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 scoredList.Add((opd, scores, isEligible));
             }
 
+            var criteriaList = await context.Criteria.ToListAsync();
+            var criteriaDisplayNamesList = await context.Criteria.Where(c => c.IsDisplayName).ToListAsync();
+
+            var ageModifierList = await context.AgeModifier.ToListAsync();
+
+            var flagEvaluationList = await context.FlagEvaluation.ToListAsync();
+
             var viewModel = new OPDViewModel
             {
                 OPDList = opdList,
                 OPDScoringList = scoredList,
+                CriteriaList = criteriaList,
+                CriteriaDisplayNamesList = criteriaDisplayNamesList,
+                AgeModifierList = ageModifierList,
+                FlagEvaluationList = flagEvaluationList
             };
 
             return View(viewModel);
