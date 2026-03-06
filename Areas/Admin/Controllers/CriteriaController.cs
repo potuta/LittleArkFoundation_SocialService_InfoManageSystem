@@ -148,16 +148,18 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 {
                     var existingCriteria = await context.Criteria.FindAsync(item.Id);
                     var diagnosis = item.Diagnosis.Trim().ToUpper();
+
+                    bool exists = await context.Criteria.AnyAsync(c => c.Diagnosis.ToUpper() == diagnosis && c.DiagnosisID != criteria.DiagnosisID);
+
+                    if (exists)
+                    {
+                        TempData["ErrorMessage"] = $"A criteria with the name '{diagnosis}' already exists.";
+                        await transaction.RollbackAsync();
+                        return View(viewModel);
+                    }
+
                     if (existingCriteria != null)
                     {
-                        bool exists = await context.Criteria.AnyAsync(c => c.Diagnosis.ToUpper() == diagnosis && c.DiagnosisID != item.DiagnosisID);
-
-                        if (exists)
-                        {
-                            TempData["ErrorMessage"] = $"A criteria with the name '{diagnosis}' already exists.";
-                            await transaction.RollbackAsync();
-                            return View(viewModel);
-                        }
 
                         existingCriteria.Diagnosis = diagnosis;
                         existingCriteria.Weight = weight;
