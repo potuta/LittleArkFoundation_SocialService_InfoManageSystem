@@ -1,5 +1,6 @@
 ﻿using LittleArkFoundation.Areas.Admin.Models.AgeModifier;
 using LittleArkFoundation.Areas.Admin.Models.Criteria;
+using LittleArkFoundation.Areas.Admin.Models.FlagEvaluation;
 using LittleArkFoundation.Areas.Admin.Models.Statistics;
 using LittleArkFoundation.Areas.Admin.Services.Assessments;
 
@@ -25,6 +26,7 @@ namespace LittleArkFoundation.Areas.Admin.Models.OPD
         public List<CriteriaModel> CriteriaList { get; set; } = new List<CriteriaModel> { new CriteriaModel() };
         public List<CriteriaModel> CriteriaDisplayNamesList { get; set; } = new List<CriteriaModel> { new CriteriaModel() };
         public List<AgeModifierModel> AgeModifierList { get; set; } = new List<AgeModifierModel> { new AgeModifierModel() };
+        public List<FlagEvaluationModel> FlagEvaluationList { get; set; } = new List<FlagEvaluationModel>() { new FlagEvaluationModel() };
 
         // Pagination properties
         public int? CurrentPage { get; set; } = 1;

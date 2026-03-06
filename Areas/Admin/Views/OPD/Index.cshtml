@@ -397,7 +397,7 @@
                                 }
                                 else
                                 {
-                                    if (totalScore >= 15 && totalScore < 25)
+                                    if (totalScore > Model.FlagEvaluationList[1].Threshold && totalScore < Model.FlagEvaluationList[2].Threshold)
                                     {
                                         <button type="button"
                                                 class="badge bg-warning text-dark ms-2 border-0"
@@ -406,7 +406,7 @@
                                             <i class="bi bi-flag-fill"></i> Further Review
                                         </button>
                                     }
-                                    else if (totalScore < 15)
+                                    else if (totalScore <= Model.FlagEvaluationList[3].Threshold)
                                     {
                                         <button type="button"
                                                 class="badge bg-danger text-dark ms-2 border-0"
@@ -511,7 +511,7 @@
 											</button>
 
                                             <p class="text-end text-secondary fw-medium small mb-0">
-												Threshold: ≥ 25
+												Threshold: &ge; @Model.FlagEvaluationList[0].Threshold
 											</p>
                                         </div>
                                         <p class="text-end fw-bold">
@@ -590,20 +590,19 @@
 
 				<ul class="list-group">
 					<li class="list-group-item d-flex justify-content-between align-items-center">
-						Green flag (Eligible for admission)
-						<span class="badge bg-primary rounded-pill">Total &ge; 25</span>
+						<span class="badge bg-success p-2"><i class="bi bi-flag-fill"></i> @Model.FlagEvaluationList[0].Flag flag (Eligible for admission)</span>
+						<span class="badge bg-primary rounded-pill">Total &ge; @Model.FlagEvaluationList[0].Threshold</span>
 					</li>
 
 					<li class="list-group-item d-flex justify-content-between align-items-center">
-						Yellow flag (Further Review)
-						<span class="badge bg-primary rounded-pill">Total &gt; 15 &lt; 25</span>
+						<span class="badge bg-warning p-2"><i class="bi bi-flag-fill"></i> @Model.FlagEvaluationList[1].Flag flag (Further Review)</span>
+						<span class="badge bg-primary rounded-pill">Total &gt; @Model.FlagEvaluationList[1].Threshold &lt; @Model.FlagEvaluationList[2].Threshold</span>
 					</li>
 
 					<li class="list-group-item d-flex justify-content-between align-items-center">
-						Red flag (Not eligible)
-						<span class="badge bg-primary rounded-pill">Total &le; 15</span>
+						<span class="badge bg-danger p-2"><i class="bi bi-flag-fill"></i> @Model.FlagEvaluationList[3].Flag flag (Not eligible)</span>
+						<span class="badge bg-primary rounded-pill">Total &le; @Model.FlagEvaluationList[3].Threshold</span>
 					</li>
-
 																
 				</ul>
 

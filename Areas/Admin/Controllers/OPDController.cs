@@ -99,6 +99,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
 
             var ageModifierList = await context.AgeModifier.ToListAsync();
 
+            var flagEvaluationList = await context.FlagEvaluation.ToListAsync();
+
             var viewModel = new OPDViewModel
             {
                 OPDList = opdList,
@@ -109,7 +111,8 @@ namespace LittleArkFoundation.Areas.Admin.Controllers
                 TotalCount = totalCount,
                 CriteriaList = criteriaList,
                 CriteriaDisplayNamesList = criteriaDisplayNamesList,
-                AgeModifierList = ageModifierList
+                AgeModifierList = ageModifierList,
+                FlagEvaluationList = flagEvaluationList
             };
 
             return View(viewModel);

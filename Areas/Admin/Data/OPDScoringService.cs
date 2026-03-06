@@ -68,7 +68,12 @@ namespace LittleArkFoundation.Areas.Admin.Data
 
         public async Task<bool> IsEligibleForAdmissionAsync(int totalScore)
         {
-            return totalScore >= 25; 
+            await using var context = new ApplicationDbContext(_connectionString);
+            var flagEvaluationGreenFlagThreshold = await context.FlagEvaluation
+                .Where(f => f.Flag.ToUpper() == "GREEN")
+                .Select(f => f.Threshold)
+                .FirstOrDefaultAsync();
+            return totalScore >= flagEvaluationGreenFlagThreshold; 
         }
 
         private (int Score, string Description) CalculateDiagnosisScore(string diagnosisText, List<CriteriaModel> criteriaList)
